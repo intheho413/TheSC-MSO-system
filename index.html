@@ -298,13 +298,14 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 /* 출고 수정 표: 퍼센트 고정 레이아웃 → 화면 폭에 항상 꽉 맞게 정렬 (날짜·거래처·품목·Lot·수량·출고가·저장) */
 #stock-tab-edit .tbl-wrap table{table-layout:fixed;width:100%;min-width:680px}
 #stock-tab-edit .tbl-wrap th,#stock-tab-edit .tbl-wrap td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;padding:10px 8px}
-#stock-tab-edit .tbl-wrap th:nth-child(1),#stock-tab-edit .tbl-wrap td:nth-child(1){width:12%}
-#stock-tab-edit .tbl-wrap th:nth-child(2),#stock-tab-edit .tbl-wrap td:nth-child(2){width:15%}
-#stock-tab-edit .tbl-wrap th:nth-child(3),#stock-tab-edit .tbl-wrap td:nth-child(3){width:19%}
-#stock-tab-edit .tbl-wrap th:nth-child(4),#stock-tab-edit .tbl-wrap td:nth-child(4){width:22%}
-#stock-tab-edit .tbl-wrap th:nth-child(5),#stock-tab-edit .tbl-wrap td:nth-child(5){width:9%}
-#stock-tab-edit .tbl-wrap th:nth-child(6),#stock-tab-edit .tbl-wrap td:nth-child(6){width:14%}
-#stock-tab-edit .tbl-wrap th:nth-child(7),#stock-tab-edit .tbl-wrap td:nth-child(7){width:9%;overflow:visible}
+#stock-tab-edit .tbl-wrap th:nth-child(1),#stock-tab-edit .tbl-wrap td:nth-child(1){width:11%}
+#stock-tab-edit .tbl-wrap th:nth-child(2),#stock-tab-edit .tbl-wrap td:nth-child(2){width:14%}
+#stock-tab-edit .tbl-wrap th:nth-child(3),#stock-tab-edit .tbl-wrap td:nth-child(3){width:18%}
+#stock-tab-edit .tbl-wrap th:nth-child(4),#stock-tab-edit .tbl-wrap td:nth-child(4){width:21%}
+#stock-tab-edit .tbl-wrap th:nth-child(5),#stock-tab-edit .tbl-wrap td:nth-child(5){width:8%}
+#stock-tab-edit .tbl-wrap th:nth-child(6),#stock-tab-edit .tbl-wrap td:nth-child(6){width:13%}
+#stock-tab-edit .tbl-wrap th:nth-child(7),#stock-tab-edit .tbl-wrap td:nth-child(7){width:15%;overflow:visible}
+#stock-tab-edit .tbl-wrap td:nth-child(7) .btn{padding:5px 9px;font-size:12px}
 #stock-tab-edit .tbl-wrap td .form-control{width:100%;display:block}
 .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
 .badge-blue{background:rgba(58,130,255,0.15);color:#60a5fa}
@@ -775,7 +776,7 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
     <div class="info-box" style="margin-top:12px">수량·출고가(단가)를 수정하면 합계·부가세·마진이 자동 재계산되고, 수량 변경 시 재고도 자동 보정됩니다.</div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th>날짜</th><th>거래처</th><th>품목</th><th>Lot No.</th><th>수량</th><th>출고가(단가)</th><th>저장</th></tr></thead>
+        <thead><tr><th>날짜</th><th>거래처</th><th>품목</th><th>Lot No.</th><th>수량</th><th>출고가(단가)</th><th>작업</th></tr></thead>
         <tbody id="stock-edit-tbody"><tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">조회 버튼을 눌러 출고 내역을 불러오세요</td></tr></tbody>
       </table>
     </div>
@@ -1486,6 +1487,7 @@ function switchTab(group, name, el) {
   el.classList.add('active');
 
   if(group==='recv' && name==='pie') setTimeout(initRecvPie,100);
+  if(group==='stock' && name==='edit') loadEditList();
 }
 
 // ── Expander ────────────────────────────────────
@@ -2253,18 +2255,7 @@ async function initStockPage() {
     }).join('');
   }
 
-  // 출고 수정 내역
-  const editTbody = document.getElementById('stock-edit-tbody');
-  if(editTbody) {
-    editTbody.innerHTML = souts.map(r => `<tr>
-      <td><input type="radio" name="edit-sel" value="${r.id}"></td>
-      <td>${r.date||''}</td>
-      <td>${clientMap[r.client_id]||'—'}</td>
-      <td>${prodMap[r.product_id]||'—'}</td>
-      <td>${r.quantity||0}</td>
-      <td>${W(r.supply_amount)}</td>
-    </tr>`).join('') || emptyRow(6);
-  }
+  // 출고 수정 표는 loadEditList()가 단독 담당 (여기서 건드리지 않음)
 }
 
 // ── 수금현황 페이지 초기화 ───────────────────────
@@ -2710,7 +2701,7 @@ async function loadEditList() {
       <td><select class="form-control" style="font-size:12px;padding:6px 8px" id="edit-lot-${r.id}">${lotOpts}</select></td>
       <td><input type="number" class="form-control" style="padding:6px 8px" value="${r.quantity||0}" min="1" id="edit-qty-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:6px 8px" value="${unit}" step="1000" id="edit-price-${r.id}"></td>
-      <td><button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="saveEditRow(${r.id})">저장</button></td>
+      <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" onclick="saveEditRow(${r.id})">저장</button><button class="btn btn-danger" onclick="deleteOutRow(${r.id})">삭제</button></div></td>
     </tr>`;
   }).join('');
 }
@@ -2771,6 +2762,26 @@ async function saveEditRow(id) {
     showToast(`수정 완료 — Lot ${label}, 수량 ${newQty}, 마진율 ${marginRate}%`);
     await loadMasterData(); loadEditList(); initStockPage();
   } else showToast('수정 실패');
+}
+
+// 출고 내역 삭제 (재고 복원 + stock_out 삭제)
+async function deleteOutRow(id) {
+  const d = editRowData[id];
+  if(!d){ showToast('행 정보를 찾을 수 없습니다'); return; }
+  if(!confirm('이 출고 내역을 삭제할까요?\n삭제하면 되돌릴 수 없으며, 사용된 Lot의 재고가 복원됩니다.')) return;
+  // 사용된 lot 재고 복원
+  const oldName = (_parseLot(d.note).split(',')[0]||'').trim();
+  if(oldName){
+    const lots = await dbQuery('stock_in', `?product_id=eq.${d.product_id}&lot_number=eq.${encodeURIComponent(oldName)}&select=id,remaining_qty,quantity`);
+    const l = lots&&lots[0];
+    if(l) await _patchRem(l.id, Math.min((l.remaining_qty||0)+d.oldQty, l.quantity||((l.remaining_qty||0)+d.oldQty)));
+  }
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_out?id=eq.${id}`,{method:'DELETE',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+  if(res.ok || res.status===204 || res.status===200){
+    showToast('출고 내역이 삭제되었습니다 (재고 복원)');
+    await loadMasterData(); loadEditList(); initStockPage();
+  } else showToast('삭제 실패');
 }
 
 // ══ 리포트 엑셀 다운로드 ═════════════════════════
