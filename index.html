@@ -10,6 +10,8 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.50.0/build/docxtemplater.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & Base ── */
@@ -151,9 +153,9 @@ html.light .btn-secondary:hover{background:rgba(0,0,0,0.08);color:#1e293b}
 html.light .tbl-wrap{border-color:rgba(255,255,255,0.7);
   background:linear-gradient(160deg,rgba(255,255,255,0.8),rgba(255,255,255,0.55));
   box-shadow:0 8px 28px rgba(100,120,180,0.14),inset 0 1px 0 rgba(255,255,255,0.85)}
-html.light th{background:rgba(255,255,255,0.5);color:rgba(0,0,0,0.45);border-bottom-color:rgba(0,0,0,0.07)}
-html.light td{color:#374151;border-bottom-color:rgba(0,0,0,0.05)}
-html.light tr:hover td{background:rgba(96,165,250,0.07)}
+html.light .tbl-wrap th{background:rgba(255,255,255,0.5);color:rgba(0,0,0,0.45);border-bottom-color:rgba(0,0,0,0.07)}
+html.light .tbl-wrap td{color:#374151;border-bottom-color:rgba(0,0,0,0.05)}
+html.light .tbl-wrap tr:hover td{background:rgba(96,165,250,0.07)}
 html.light .expander{border-color:rgba(0,0,0,0.08)}
 html.light .expander-header{background:rgba(0,0,0,0.02);color:rgba(0,0,0,0.7)}
 html.light .expander-header:hover{background:rgba(0,0,0,0.04)}
@@ -238,6 +240,13 @@ html.light .tog-btn.active{background:rgba(37,99,235,0.1);border-color:#2563eb;c
               font-family:'Inter',sans-serif;transition:border-color .15s;outline:none}
 .form-control:focus{border-color:#3A82FF;background:rgba(58,130,255,0.06)}
 .form-control option{background:#1e2d45;color:#e2e8f0}
+/* select와 datalist 입력의 드롭다운 화살표 통일 */
+select.form-control, input.form-control[list]{
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+input.form-control[list]::-webkit-calendar-picker-indicator{opacity:0;width:20px;cursor:pointer}
 .form-row{display:grid;gap:12px}
 .form-row.cols-2{grid-template-columns:1fr 1fr}
 .form-row.cols-3{grid-template-columns:3fr 2fr 2fr}
@@ -271,18 +280,22 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 .btn-full{width:100%}
 .btn-group{display:flex;gap:8px;margin-top:12px}
 
-/* ── Table (글래스) ── */
+/* ── Table (글래스) — .tbl-wrap 내부로 한정하여 외부 문서 렌더링에 영향 없음 ── */
 .tbl-wrap{overflow-x:auto;border-radius:16px;border:1px solid rgba(255,255,255,0.09);
    background:linear-gradient(160deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02));
    box-shadow:0 8px 28px rgba(0,0,0,0.22),inset 0 1px 0 rgba(255,255,255,0.08);
    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:rgba(255,255,255,0.05);padding:12px 16px;text-align:left;
+.tbl-wrap table{width:100%;border-collapse:collapse;font-size:13px}
+.tbl-wrap th{background:rgba(255,255,255,0.05);padding:12px 16px;text-align:left;
    font-size:11px;font-weight:600;color:rgba(255,255,255,0.5);
    letter-spacing:.4px;border-bottom:1px solid rgba(255,255,255,0.09)}
-td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);color:#cbd5e1;line-height:1.4}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(120,170,255,0.06)}
+.tbl-wrap td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);color:#cbd5e1;line-height:1.4}
+.tbl-wrap tr:last-child td{border-bottom:none}
+.tbl-wrap tr:hover td{background:rgba(120,170,255,0.06)}
+/* 출고 수정 표: 줄바꿈 방지 + 거래처/품목 말줄임으로 칸 어긋남 방지 */
+#stock-tab-edit .tbl-wrap td,#stock-tab-edit .tbl-wrap th{white-space:nowrap;vertical-align:middle;padding:10px 12px}
+#stock-tab-edit .tbl-wrap td:nth-child(2),#stock-tab-edit .tbl-wrap td:nth-child(3){max-width:150px;overflow:hidden;text-overflow:ellipsis}
+#stock-tab-edit .tbl-wrap .form-control{display:inline-block;vertical-align:middle}
 .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
 .badge-blue{background:rgba(58,130,255,0.15);color:#60a5fa}
 .badge-green{background:rgba(34,197,94,0.15);color:#4ade80}
@@ -293,6 +306,14 @@ tr:hover td{background:rgba(120,170,255,0.06)}
 
 /* ── Divider ── */
 .divider{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:16px 0}
+
+/* ── 계약서 미리보기 (docx-preview) ── */
+#cont-preview{background:#5a5f66;border-radius:10px;max-height:620px;overflow:auto;padding:18px}
+#cont-preview .docx-wrapper{background:transparent;padding:0;display:flex;flex-direction:column;align-items:center;gap:14px}
+#cont-preview .docx-wrapper>section.docx{box-shadow:0 6px 24px rgba(0,0,0,0.4);margin:0}
+#cont-preview .docx{color:#000}
+/* docx-preview가 'none' 문단 테두리를 줄로 잘못 렌더링하는 문제 보정 (표 테두리는 유지) */
+#cont-preview .docx p{border:none !important}
 
 /* ── Expander (글래스) ── */
 .expander{border:1px solid rgba(255,255,255,0.09);border-radius:14px;margin-bottom:12px;overflow:hidden;
@@ -574,13 +595,13 @@ tr:hover td{background:rgba(120,170,255,0.06)}
       <div class="form-row cols-32">
         <div class="form-group">
           <label class="form-label">품목 선택</label>
-          <select class="form-control" id="in-prod">
+          <select class="form-control" id="in-prod" onchange="onInProdChange()">
             <option value="">로딩 중...</option>
           </select>
         </div>
         <div></div>
       </div>
-      <div class="form-row cols-2">
+      <div class="form-row cols-3">
         <div class="form-group">
           <label class="form-label">수량</label>
           <input type="number" class="form-control" value="1" min="1" id="in-qty">
@@ -589,7 +610,12 @@ tr:hover td{background:rgba(120,170,255,0.06)}
           <label class="form-label">입고가</label>
           <input type="number" class="form-control" value="85000" step="1000" id="in-price">
         </div>
+        <div class="form-group">
+          <label class="form-label">유통기한 (선택)</label>
+          <input type="date" class="form-control" id="in-expiry">
+        </div>
       </div>
+      <div class="info-box" style="margin-bottom:12px">Lot No.는 입고 등록 시 <b>입고일·품목 기준으로 자동 생성</b>됩니다.</div>
       <button class="btn btn-secondary btn-full" onclick="addToCart()">목록에 추가</button>
     </div>
 
@@ -599,14 +625,14 @@ tr:hover td{background:rgba(120,170,255,0.06)}
         <div class="card-title">입고 목록</div>
         <div class="tbl-wrap" style="margin-bottom:14px">
           <table>
-            <thead><tr><th>#</th><th>품목</th><th>수량</th><th>입고가</th><th>소계</th><th></th></tr></thead>
+            <thead><tr><th>#</th><th>품목</th><th>수량</th><th>입고가</th><th>유통기한</th><th>소계</th><th></th></tr></thead>
             <tbody id="in-cart-body"></tbody>
           </table>
         </div>
         <div class="info-box" id="in-total">합계 매입금액: ₩0</div>
         <div class="form-group" style="margin-top:12px">
           <label class="form-label">공통 메모</label>
-          <input type="text" class="form-control" placeholder="메모 입력 (선택)">
+          <input type="text" class="form-control" id="in-note" placeholder="메모 입력 (선택)">
         </div>
         <div class="btn-group">
           <button class="btn btn-primary" style="flex:1" onclick="submitCart()">입고 등록 완료</button>
@@ -619,7 +645,7 @@ tr:hover td{background:rgba(120,170,255,0.06)}
     <div style="font-size:15px;font-weight:600;color:#fff;margin:20px 0 12px">전체 입고 내역</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>삭제</th><th>날짜</th><th>품목</th><th>수량</th><th>입고가</th><th>입고합계</th><th>잔여수량</th></tr></thead>
+        <thead><tr><th>삭제</th><th>날짜</th><th>품목</th><th>Lot No.</th><th>수량</th><th>입고가</th><th>입고합계</th><th>잔여</th><th>유통기한</th></tr></thead>
         <tbody id="stock-in-tbody"></tbody>
       </table>
     </div>
@@ -656,24 +682,57 @@ tr:hover td{background:rgba(120,170,255,0.06)}
       </div>
       <hr class="divider">
       <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:12px">품목 추가</div>
-      <div class="form-group">
-        <label class="form-label">품목 선택</label>
-        <select class="form-control" id="out-prod">
-          <option value="">로딩 중...</option>
-        </select>
+      <div class="form-row cols-2">
+        <div class="form-group">
+          <label class="form-label">품목 선택</label>
+          <select class="form-control" id="out-prod" onchange="onOutProdChange()">
+            <option value="">로딩 중...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lot 선택</label>
+          <select class="form-control" id="out-lot">
+            <option value="auto">자동 (FIFO · 선입선출)</option>
+          </select>
+        </div>
       </div>
       <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">수량</label>
-          <input type="number" class="form-control" value="1" min="1">
+          <input type="number" class="form-control" value="1" min="1" id="out-qty">
         </div>
         <div class="form-group">
-          <label class="form-label">출고가 (할인 적용)</label>
-          <input type="number" class="form-control" value="68000" step="1000">
+          <label class="form-label">출고가 (단가, 직접 수정 가능)</label>
+          <input type="number" class="form-control" value="0" step="1000" id="out-price">
         </div>
       </div>
-      <button class="btn btn-secondary btn-full">목록에 추가</button>
+      <div class="info-box" id="out-price-info" style="margin-bottom:12px">거래처·품목 선택 시 <b>납품가×(1−할인율)</b>로 자동 계산됩니다. 프로모션·특별가는 출고가를 직접 수정하세요.</div>
+      <div class="form-group">
+        <label class="form-label">메모 (선택)</label>
+        <input type="text" class="form-control" id="out-note" placeholder="프로모션/특별가 사유 등 (전체 공통)">
+      </div>
+      <button class="btn btn-secondary btn-full" onclick="addOutItem()">목록에 추가</button>
     </div>
+
+    <!-- 출고 카트 (복수 품목) -->
+    <div id="out-cart-section" style="display:none">
+      <div class="card">
+        <div class="card-title">출고 목록</div>
+        <div class="tbl-wrap" style="margin-bottom:14px">
+          <table>
+            <thead><tr><th>#</th><th>품목</th><th>Lot</th><th>수량</th><th>출고가</th><th>소계</th><th></th></tr></thead>
+            <tbody id="out-cart-body"></tbody>
+          </table>
+        </div>
+        <div class="info-box" id="out-cart-total">합계 출고금액: ₩0</div>
+        <div class="btn-group">
+          <button class="btn btn-primary" style="flex:1" onclick="submitOutCart()">출고 등록 완료</button>
+          <button class="btn btn-danger" onclick="clearOutCart()">전체 초기화</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:15px;font-weight:600;color:#fff;margin:20px 0 12px">전체 출고 내역</div>
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>날짜</th><th>거래처</th><th>품목</th><th>수량</th><th>출고가</th><th>합계</th><th>마진</th></tr></thead>
@@ -688,11 +747,11 @@ tr:hover td{background:rgba(120,170,255,0.06)}
       <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">기간 시작</label>
-          <input type="date" class="form-control">
+          <input type="date" class="form-control" id="edit-from">
         </div>
         <div class="form-group">
           <label class="form-label">기간 종료</label>
-          <input type="date" class="form-control">
+          <input type="date" class="form-control" id="edit-to">
         </div>
       </div>
       <div class="form-group">
@@ -701,12 +760,13 @@ tr:hover td{background:rgba(120,170,255,0.06)}
           <option value="">전체</option>
         </select>
       </div>
-      <button class="btn btn-primary">조회</button>
+      <button class="btn btn-primary" onclick="loadEditList()">조회</button>
     </div>
+    <div class="info-box" style="margin-top:12px">수량·출고가(단가)를 수정하면 합계·부가세·마진이 자동 재계산되고, 수량 변경 시 재고도 자동 보정됩니다.</div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th>선택</th><th>날짜</th><th>거래처</th><th>품목</th><th>수량</th><th>출고가</th></tr></thead>
-        <tbody id="stock-edit-tbody"></tbody>
+        <thead><tr><th>날짜</th><th>거래처</th><th>품목</th><th>Lot No.</th><th>수량</th><th>출고가(단가)</th><th>저장</th></tr></thead>
+        <tbody id="stock-edit-tbody"><tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">조회 버튼을 눌러 출고 내역을 불러오세요</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -755,14 +815,14 @@ tr:hover td{background:rgba(120,170,255,0.06)}
         </div>
         <div class="form-group">
           <label class="form-label">수금액</label>
-          <input type="number" class="form-control" placeholder="0" step="10000">
+          <input type="number" class="form-control" placeholder="0" step="10000" id="pay-amount">
         </div>
       </div>
       <div class="form-group">
         <label class="form-label">메모</label>
-        <input type="text" class="form-control" placeholder="메모 입력 (선택)">
+        <input type="text" class="form-control" placeholder="메모 입력 (선택)" id="pay-note">
       </div>
-      <button class="btn btn-primary btn-full" onclick="showToast('수금이 등록되었습니다.')">수금 등록</button>
+      <button class="btn btn-primary btn-full" onclick="submitPayment()">수금 등록</button>
     </div>
   </div>
 
@@ -774,9 +834,10 @@ tr:hover td{background:rgba(120,170,255,0.06)}
         <option value="">거래처 선택</option>
       </select>
     </div>
+    <div class="info-box" style="margin-top:12px">수금 내역은 날짜·금액을 직접 수정하거나 삭제할 수 있습니다. (출고 내역은 출고수정 탭에서 관리)</div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th>날짜</th><th>구분</th><th>금액</th><th>수금액</th></tr></thead>
+        <thead><tr><th>날짜</th><th>구분</th><th>출고액</th><th>수금액</th><th>작업</th></tr></thead>
         <tbody id="ledger-tbody"></tbody>
       </table>
     </div>
@@ -809,10 +870,9 @@ tr:hover td{background:rgba(120,170,255,0.06)}
             <input type="text" class="form-control" placeholder="제품명 입력">
           </div>
           <div class="form-group">
-            <label class="form-label">제품군</label>
-            <select class="form-control" id="prod-group-sel">
-              <option value="">제품군 선택</option>
-            </select>
+            <label class="form-label">제품군 (선택 또는 직접 입력)</label>
+            <input class="form-control" id="prod-group-sel" list="prod-group-list" placeholder="기존 제품군 선택 또는 새로 입력" autocomplete="off">
+            <datalist id="prod-group-list"></datalist>
           </div>
           <div class="form-group">
             <label class="form-label">규격</label>
@@ -1239,7 +1299,6 @@ tr:hover td{background:rgba(120,170,255,0.06)}
 
   <!-- 계약서 발급 -->
   <div id="med-master-tab-contract" class="tab-pane">
-    <div class="info-box">{{병원명}} 같은 플레이스홀더가 들어간 .docx 양식을 업로드한 뒤, 정보를 입력해 계약서를 생성·다운로드합니다. (브라우저에 저장되며 서버 불필요)</div>
 
     <!-- 양식 관리 -->
     <div class="card">
@@ -1289,7 +1348,19 @@ tr:hover td{background:rgba(120,170,255,0.06)}
           <input type="number" class="form-control" id="cont-price" placeholder="0" step="1000000">
         </div>
       </div>
-      <button class="btn btn-primary btn-full" onclick="generateContract()">계약서 생성 → 다운로드</button>
+      <div class="btn-group">
+        <button class="btn btn-secondary" style="flex:1" onclick="previewContract()">미리보기</button>
+        <button class="btn btn-primary" style="flex:1" onclick="generateContract()">계약서 생성 → 다운로드</button>
+      </div>
+    </div>
+
+    <!-- 계약서 미리보기 -->
+    <div class="card" id="cont-preview-wrap" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+        <div class="card-title" style="margin-bottom:0">계약서 미리보기</div>
+        <button class="btn btn-secondary" style="padding:6px 12px;font-size:12px" onclick="document.getElementById('cont-preview-wrap').style.display='none'">닫기</button>
+      </div>
+      <div id="cont-preview"></div>
     </div>
   </div>
 
@@ -1447,12 +1518,33 @@ function onClientChange() {
 }
 function onPayClientChange(sel) {}
 
+// ── 입고 품목 선택 시 입고가 자동 입력 ───────────
+function onInProdChange() {
+  const opt = document.getElementById('in-prod')?.selectedOptions[0];
+  const el = document.getElementById('in-price');
+  if(opt?.value && el) el.value = parseInt(opt.dataset.price)||0;
+}
+
+// ── Lot No. 자동 생성 (YYYYMMDD-제품ID-순번) ──────
+async function genLot(productId, dateStr, offset) {
+  const ymd = (dateStr||fmt(TODAY)).replace(/-/g,'');
+  const prefix = `${ymd}-${productId}-`;
+  let existing = [];
+  try { existing = await dbQuery('stock_in', `?product_id=eq.${productId}&lot_number=like.${prefix}*&select=lot_number`); } catch(e){}
+  const seq = (existing?.length||0) + (offset||0) + 1;
+  return prefix + String(seq).padStart(2,'0');
+}
+
 // ── 입고 카트 ────────────────────────────────────
 function addToCart() {
-  const prod  = document.getElementById('in-prod').value;
+  const sel = document.getElementById('in-prod');
+  const pid = sel?.value;
+  if(!pid){ showToast('품목을 선택하세요'); return; }
+  const name = sel.selectedOptions[0].text;
   const qty   = parseInt(document.getElementById('in-qty').value)||1;
   const price = parseInt(document.getElementById('in-price').value)||0;
-  inCart.push({prod, qty, price, sub: qty*price});
+  const expiry = document.getElementById('in-expiry')?.value || '';
+  inCart.push({productId:pid, name, qty, price, expiry, sub: qty*price});
   renderCart();
   showToast('목록에 추가됐습니다.');
 }
@@ -1463,8 +1555,8 @@ function renderCart() {
   inCart.forEach((item,i) => {
     total += item.sub;
     tbody.innerHTML += `<tr>
-      <td>${i+1}</td><td>${item.prod}</td><td>${item.qty}</td>
-      <td>₩${item.price.toLocaleString()}</td><td>₩${item.sub.toLocaleString()}</td>
+      <td>${i+1}</td><td>${item.name}</td><td>${item.qty}</td>
+      <td>₩${item.price.toLocaleString()}</td><td>${item.expiry||'—'}</td><td>₩${item.sub.toLocaleString()}</td>
       <td><button class="btn btn-danger" style="padding:3px 8px;font-size:11px" onclick="removeCart(${i})">삭제</button></td>
     </tr>`;
   });
@@ -1473,7 +1565,31 @@ function renderCart() {
 }
 function removeCart(i) { inCart.splice(i,1); renderCart(); }
 function clearCart()   { inCart=[]; renderCart(); }
-function submitCart()  { inCart=[]; renderCart(); showToast('입고 등록 완료!'); }
+
+async function submitCart() {
+  if(!inCart.length){ showToast('입고할 품목이 없습니다'); return; }
+  const date = document.getElementById('in-date')?.value || fmt(TODAY);
+  const note = document.getElementById('in-note')?.value || null;
+  const perProdOffset = {};
+  let ok=0, fail=0;
+  for(const item of inCart){
+    const off = perProdOffset[item.productId]||0;
+    const lot = await genLot(item.productId, date, off);
+    perProdOffset[item.productId] = off+1;
+    const body = {
+      date, product_id: parseInt(item.productId), quantity: item.qty,
+      purchase_price: item.price, lot_number: lot,
+      expiry_date: item.expiry||null, remaining_qty: item.qty, note
+    };
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in`,{method:'POST',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify(body)});
+    if(res.ok||res.status===201) ok++; else fail++;
+  }
+  inCart=[]; renderCart();
+  showToast(fail ? `입고 ${ok}건 등록, ${fail}건 실패` : `입고 ${ok}건 등록 완료`);
+  await loadMasterData(); initStockPage();
+}
 
 // ── 의료장비 행 추가 ─────────────────────────────
 function addMedRow() {
@@ -2072,7 +2188,7 @@ async function loadMasterData() {
 
   // 모든 제품 select 채우기
   const prodOpts = G.products.map(p =>
-    `<option value="${p.id}" data-price="${p.purchase_price}">${p.name}</option>`).join('');
+    `<option value="${p.id}" data-price="${p.purchase_price}" data-sale="${p.sale_price||p.settlement_price||0}">${p.name}</option>`).join('');
   ['in-prod','out-prod'].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.innerHTML = '<option value="">선택</option>' + prodOpts;
@@ -2093,19 +2209,21 @@ async function loadMasterData() {
 async function initStockPage() {
   // 입고 내역
   const sins = await dbQuery('stock_in',
-    '?order=date.desc&limit=50&select=date,product_id,quantity,purchase_price,remaining_qty');
+    '?order=date.desc&limit=50&select=id,date,product_id,quantity,purchase_price,remaining_qty,lot_number,expiry_date');
   const prodMap = Object.fromEntries(G.products.map(p=>[p.id,p.name]));
   const inTbody = document.getElementById('stock-in-tbody');
   if(inTbody) {
-    if(!sins.length) { inTbody.innerHTML = emptyRow(7); return; }
-    inTbody.innerHTML = sins.map(r => `<tr>
+    if(!sins.length) { inTbody.innerHTML = emptyRow(9); }
+    else inTbody.innerHTML = sins.map(r => `<tr>
       <td><input type="checkbox" data-id="${r.id}"></td>
       <td>${r.date||''}</td>
       <td>${prodMap[r.product_id]||r.product_id}</td>
+      <td><span class="badge badge-blue">${r.lot_number||'—'}</span></td>
       <td>${r.quantity||0}</td>
       <td>${W(r.purchase_price)}</td>
       <td>${W((r.quantity||0)*(r.purchase_price||0))}</td>
       <td>${r.remaining_qty??'—'}</td>
+      <td>${r.expiry_date||'—'}</td>
     </tr>`).join('');
   }
 
@@ -2189,30 +2307,84 @@ async function initRecvPage() {
 }
 
 // ── 거래처 원장 로드 ─────────────────────────────
+let _ledgerClient = '';
 async function loadLedger(clientId) {
+  _ledgerClient = clientId;
   const tbody = document.getElementById('ledger-tbody');
-  if(!tbody || !clientId) { if(tbody) tbody.innerHTML = emptyRow(4,'거래처를 선택하세요'); return; }
+  if(!tbody || !clientId) { if(tbody) tbody.innerHTML = emptyRow(5,'거래처를 선택하세요'); return; }
 
   const [outs, pays] = await Promise.all([
     dbQuery('stock_out', `?client_id=eq.${clientId}&order=date&select=date,total_amount`),
-    dbQuery('payments',  `?client_id=eq.${clientId}&order=date&select=date,amount`),
+    dbQuery('payments',  `?client_id=eq.${clientId}&order=date&select=id,date,amount,note`),
   ]);
 
   // 날짜 기준 합치기
   const rows = [
     ...outs.map(r=>({date:r.date, type:'out', amount:r.total_amount})),
-    ...pays.map(r=>({date:r.date, type:'pay', amount:r.amount})),
-  ].sort((a,b)=>a.date.localeCompare(b.date));
+    ...pays.map(r=>({date:r.date, type:'pay', amount:r.amount, id:r.id})),
+  ].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 
-  tbody.innerHTML = rows.length ? rows.map(r => r.type==='out' ? `<tr>
-    <td>${r.date}</td>
+  if(!rows.length){ tbody.innerHTML = emptyRow(5,'거래내역이 없습니다'); return; }
+  tbody.innerHTML = rows.map(r => r.type==='out' ? `<tr>
+    <td>${r.date||''}</td>
     <td><span class="badge badge-blue">출고</span></td>
     <td>${W(r.amount)}</td><td>—</td>
+    <td style="color:rgba(255,255,255,.3);font-size:12px">출고수정 탭</td>
   </tr>` : `<tr>
-    <td>${r.date}</td>
+    <td><input type="date" class="form-control" style="width:150px" value="${r.date||''}" id="pay-date-${r.id}"></td>
     <td><span class="badge badge-green">수금</span></td>
-    <td>—</td><td>${W(r.amount)}</td>
-  </tr>`).join('') : emptyRow(4,'거래내역이 없습니다');
+    <td>—</td>
+    <td><input type="number" class="form-control" style="width:120px" step="10000" value="${r.amount||0}" id="pay-amt-${r.id}"></td>
+    <td><div style="display:flex;gap:6px">
+      <button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="savePayment(${r.id})">저장</button>
+      <button class="btn btn-danger" style="padding:5px 10px;font-size:12px" onclick="deletePayment(${r.id})">삭제</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+// 수금 내역 수정
+async function savePayment(id) {
+  const date = document.getElementById('pay-date-'+id)?.value;
+  const amount = parseInt(document.getElementById('pay-amt-'+id)?.value)||0;
+  if(!date){ showToast('수금일을 입력하세요'); return; }
+  if(!amount){ showToast('수금액을 입력하세요'); return; }
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?id=eq.${id}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify({date, amount})});
+  if(res.ok || res.status===204 || res.status===200){ showToast('수금 내역 수정 완료'); loadLedger(_ledgerClient); initRecvPage(); }
+  else showToast('수정 실패');
+}
+
+// 수금 내역 삭제
+async function deletePayment(id) {
+  if(!confirm('이 수금 내역을 삭제할까요?\n삭제하면 되돌릴 수 없으며 미수금이 다시 늘어납니다.')) return;
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?id=eq.${id}`,{method:'DELETE',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+  if(res.ok || res.status===204 || res.status===200){ showToast('수금 내역이 삭제되었습니다'); loadLedger(_ledgerClient); initRecvPage(); }
+  else showToast('삭제 실패');
+}
+
+// ── 수금 등록 (실제 저장) ────────────────────────
+async function submitPayment() {
+  const cid = document.getElementById('pay-client')?.value;
+  const date = document.getElementById('pay-date')?.value || fmt(TODAY);
+  const amount = parseInt(document.getElementById('pay-amount')?.value)||0;
+  const note = document.getElementById('pay-note')?.value || null;
+  if(!cid){ showToast('거래처를 선택하세요'); return; }
+  if(!amount){ showToast('수금액을 입력하세요'); return; }
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/payments`,{method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify({date, client_id:parseInt(cid), amount, note})});
+  if(res.ok || res.status===201){
+    showToast(`수금 등록 완료 — ${W(amount)}`);
+    // 입력 초기화 + 화면 갱신
+    document.getElementById('pay-amount').value='';
+    document.getElementById('pay-note').value='';
+    onPayClientChange(document.getElementById('pay-client')); // 미수금 갱신
+    initRecvPage();
+    // 같은 거래처가 원장에 열려있으면 갱신
+    if(_ledgerClient===cid) loadLedger(cid);
+  } else showToast('수금 등록 실패');
 }
 
 // ── 수금 등록 거래처 변경 시 미수금 표시 ─────────
@@ -2232,6 +2404,11 @@ async function onPayClientChange(sel) {
 
 // ── 기초관리 페이지 초기화 ───────────────────────
 async function initMasterPage() {
+  // 제품군 목록 (드롭다운 + 직접입력 겸용 datalist)
+  const groups = [...new Set(G.products.map(p=>p.product_group).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const dl = document.getElementById('prod-group-list');
+  if(dl) dl.innerHTML = groups.map(g=>`<option value="${g}"></option>`).join('');
+
   // 제품 테이블
   const prodTbody = document.getElementById('master-prod-tbody');
   if(prodTbody) {
@@ -2264,19 +2441,257 @@ async function initMasterPage() {
   }
 }
 
-// ── 거래처 변경 시 할인율 표시 ───────────────────
+// ── 거래처 변경 시 할인율 표시 + 출고가 재계산 ────
 function onClientChange() {
   const sel = document.getElementById('out-client');
   const opt = sel?.selectedOptions[0];
   const info = document.getElementById('client-info');
-  if(!info) return;
-  if(opt?.value) {
-    const cat = opt.dataset.cat||'';
-    const disc = Math.round((parseFloat(opt.dataset.disc)||0)*100);
-    info.innerHTML = `[${cat||opt.text}] 할인율: <b>${disc}%</b>`;
-  } else {
-    info.innerHTML = '거래처를 선택하세요';
+  if(info) {
+    if(opt?.value) {
+      const cat = opt.dataset.cat||'';
+      const disc = Math.round((parseFloat(opt.dataset.disc)||0)*100);
+      info.innerHTML = `[${cat||opt.text}] 할인율: <b>${disc}%</b>`;
+    } else {
+      info.innerHTML = '거래처를 선택하세요';
+    }
   }
+  recalcOutPrice();
+}
+
+// ── 출고 품목 변경 → Lot 목록 로드 + 출고가 재계산 ─
+async function onOutProdChange() {
+  await loadOutLots();
+  recalcOutPrice();
+}
+async function loadOutLots() {
+  const pid = document.getElementById('out-prod')?.value;
+  const sel = document.getElementById('out-lot');
+  if(!sel) return;
+  if(!pid){ sel.innerHTML = '<option value="auto">자동 (FIFO · 선입선출)</option>'; return; }
+  const lots = await dbQuery('stock_in',
+    `?product_id=eq.${pid}&remaining_qty=gt.0&order=date&select=id,lot_number,remaining_qty,purchase_price,expiry_date`);
+  const totalRem = (lots||[]).reduce((s,l)=>s+(l.remaining_qty||0),0);
+  let html = `<option value="auto">자동 (FIFO · 잔여 ${totalRem})</option>`;
+  html += (lots||[]).map(l=>
+    `<option value="${l.id}" data-cost="${l.purchase_price}" data-rem="${l.remaining_qty}">${l.lot_number||('#'+l.id)} · 잔여 ${l.remaining_qty} · 입고가 ${W(l.purchase_price)}${l.expiry_date?(' · ~'+l.expiry_date):''}</option>`
+  ).join('');
+  sel.innerHTML = html;
+}
+
+// ── 출고가(단가) 자동 계산: 납품가×(1-할인율) ─────
+function recalcOutPrice() {
+  const popt = document.getElementById('out-prod')?.selectedOptions[0];
+  const copt = document.getElementById('out-client')?.selectedOptions[0];
+  const priceEl = document.getElementById('out-price');
+  if(!priceEl || !popt?.value) return;
+  const sale = parseFloat(popt.dataset.sale)||0;
+  const disc = parseFloat(copt?.dataset.disc)||0;
+  priceEl.value = Math.round(sale*(1-disc));
+  const info = document.getElementById('out-price-info');
+  if(info) info.innerHTML = `자동 계산: 납품가 ${W(sale)} × (1−${Math.round(disc*100)}%) = <b>${W(Math.round(sale*(1-disc)))}</b> · 프로모션 시 직접 수정`;
+}
+
+// ── 출고 카트 (복수 품목) ─────────────────────────
+let outCart = [];
+function addOutItem() {
+  const cid = document.getElementById('out-client')?.value;
+  const pSel = document.getElementById('out-prod');
+  const pid = pSel?.value;
+  const qty = parseInt(document.getElementById('out-qty')?.value)||0;
+  const unit = parseInt(document.getElementById('out-price')?.value)||0;
+  const lotSel = document.getElementById('out-lot');
+  const lotVal = lotSel?.value || 'auto';
+  if(!cid){ showToast('거래처를 먼저 선택하세요'); return; }
+  if(!pid){ showToast('품목을 선택하세요'); return; }
+  if(!qty){ showToast('수량을 입력하세요'); return; }
+  if(!unit){ showToast('출고가를 입력하세요'); return; }
+  const lotLabel = lotVal==='auto' ? '자동(FIFO)' : (lotSel.selectedOptions[0]?.text.split(' · ')[0] || lotVal);
+  outCart.push({productId:pid, name:pSel.selectedOptions[0].text, qty, unit, lotVal, lotLabel, sub:unit*qty});
+  renderOutCart();
+  showToast('목록에 추가됐습니다');
+}
+function renderOutCart() {
+  const tbody = document.getElementById('out-cart-body');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  let total = 0;
+  outCart.forEach((it,i)=>{
+    total += it.sub;
+    tbody.innerHTML += `<tr>
+      <td>${i+1}</td><td>${it.name}</td>
+      <td><span class="badge badge-blue">${it.lotLabel}</span></td>
+      <td>${it.qty}</td><td>₩${it.unit.toLocaleString()}</td><td>₩${it.sub.toLocaleString()}</td>
+      <td><button class="btn btn-danger" style="padding:3px 8px;font-size:11px" onclick="removeOutItem(${i})">삭제</button></td>
+    </tr>`;
+  });
+  document.getElementById('out-cart-section').style.display = outCart.length?'block':'none';
+  document.getElementById('out-cart-total').textContent = '합계 출고금액: ₩'+total.toLocaleString();
+}
+function removeOutItem(i){ outCart.splice(i,1); renderOutCart(); }
+function clearOutCart(){ outCart=[]; renderOutCart(); }
+
+// 단일 출고 품목 처리 (재고 fetch→차감→stock_out insert)
+async function _processOutItem(cid, date, type, disc, item) {
+  const pid = item.productId, qty = item.qty, unit = item.unit, lotVal = item.lotVal;
+  const lots = await dbQuery('stock_in',
+    `?product_id=eq.${pid}&remaining_qty=gt.0&order=date&select=id,lot_number,remaining_qty,purchase_price`);
+  let plan = [];
+  if(lotVal==='auto'){
+    let need = qty;
+    for(const l of (lots||[])){ if(need<=0)break; const take=Math.min(need,l.remaining_qty); plan.push({id:l.id,take,cost:l.purchase_price,lot:l.lot_number}); need-=take; }
+    if(need>0) return {ok:false, msg:`${item.name} 재고부족`};
+  } else {
+    const l = (lots||[]).find(x=>String(x.id)===String(lotVal));
+    if(!l) return {ok:false, msg:`${item.name} Lot없음`};
+    if((l.remaining_qty||0) < qty) return {ok:false, msg:`${item.name} Lot잔여부족`};
+    plan.push({id:l.id, take:qty, cost:l.purchase_price, lot:l.lot_number});
+  }
+  const costSum = plan.reduce((s,p)=>s+p.cost*p.take,0);
+  const unitCost = Math.round(costSum/qty);
+  const total = unit*qty, supply = Math.round(total/1.1), vat = total - supply;
+  const margin = total - costSum, marginRate = total>0 ? Math.round(margin/total*10000)/100 : 0;
+  const lotLabel = plan.map(p=>p.lot||('#'+p.id)).join(',');
+  const fullNote = 'Lot: ' + lotLabel + (item.note?(' / '+item.note):'');
+  const body = { date, client_id:parseInt(cid), product_id:parseInt(pid), type, quantity:qty, discount_rate:disc,
+    supply_amount:supply, vat_amount:vat, total_amount:total, fifo_purchase_price:unitCost,
+    margin_amount:margin, margin_rate:marginRate, note:fullNote };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_out`,{method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify(body)});
+  if(!(res.ok||res.status===201)) return {ok:false, msg:`${item.name} 저장실패`};
+  if(type==='출고'){
+    for(const p of plan){
+      const l = lots.find(x=>x.id===p.id);
+      await fetch(`${SUPABASE_URL}/rest/v1/stock_in?id=eq.${p.id}`,{method:'PATCH',
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body: JSON.stringify({remaining_qty:(l.remaining_qty||0)-p.take})});
+    }
+  }
+  return {ok:true};
+}
+
+async function submitOutCart() {
+  if(!outCart.length){ showToast('출고할 품목이 없습니다'); return; }
+  const cid = document.getElementById('out-client')?.value;
+  if(!cid){ showToast('거래처를 선택하세요'); return; }
+  const date = document.getElementById('out-date')?.value || fmt(TODAY);
+  const type = document.querySelector('#stock-tab-out .radio-btn.active')?.textContent?.trim() || '출고';
+  const disc = parseFloat(document.getElementById('out-client').selectedOptions[0]?.dataset.disc)||0;
+  const sharedNote = document.getElementById('out-note')?.value || '';
+  let ok=0; const errs=[];
+  // 같은 카트 내 재고 중복 차감 방지를 위해 순차 처리 (각 항목이 직전 차감 반영된 재고를 다시 조회)
+  for(const item of outCart){ item.note = sharedNote; const r = await _processOutItem(cid, date, type, disc, item); if(r.ok) ok++; else errs.push(r.msg); }
+  outCart=[]; renderOutCart();
+  showToast(errs.length ? `출고 ${ok}건 등록, 실패: ${errs.join(', ')}` : `출고 ${ok}건 등록 완료`);
+  document.getElementById('out-note').value = '';
+  await loadMasterData(); initStockPage(); loadOutLots();
+}
+
+// ── 출고 수정 (Lot 선택 + 출고가·수량 인라인 수정) ─────
+const editRowData = {};
+function _parseLot(note){ const m=(note||'').match(/Lot:\s*([^/]+)/); return m ? m[1].trim() : ''; }
+function _noteMemo(note){ return (note||'').includes('/') ? (note.split('/').slice(1).join('/').trim()) : ''; }
+
+async function loadEditList() {
+  const from = document.getElementById('edit-from')?.value;
+  const to   = document.getElementById('edit-to')?.value;
+  const cf   = document.getElementById('edit-client-filter')?.value;
+  let q = '?order=date.desc&limit=200&select=id,date,client_id,product_id,quantity,total_amount,fifo_purchase_price,note';
+  if(from) q += `&date=gte.${from}`;
+  if(to)   q += `&date=lte.${to}`;
+  if(cf)   q += `&client_id=eq.${cf}`;
+  const [rows, allLots] = await Promise.all([
+    dbQuery('stock_out', q),
+    dbQuery('stock_in', '?order=date&select=id,product_id,lot_number,remaining_qty,purchase_price'),
+  ]);
+  const cMap = Object.fromEntries(G.clients.map(c=>[c.id,c.name]));
+  const pMap = Object.fromEntries(G.products.map(p=>[p.id,p.name]));
+  const lotsByProd = {};
+  (allLots||[]).forEach(l=>{ (lotsByProd[l.product_id]=lotsByProd[l.product_id]||[]).push(l); });
+  const tb = document.getElementById('stock-edit-tbody');
+  if(!tb) return;
+  if(!rows.length){ tb.innerHTML = emptyRow(7,'해당 조건의 출고 내역이 없습니다'); return; }
+  tb.innerHTML = rows.map(r=>{
+    const curLot = _parseLot(r.note);
+    const unit = r.quantity ? Math.round((r.total_amount||0)/r.quantity) : 0;
+    const hadLot = !!curLot;
+    editRowData[r.id] = { product_id:r.product_id, oldQty:r.quantity||0, unitCost:r.fifo_purchase_price||0, note:r.note||'', hadLot };
+    const prodLots = (lotsByProd[r.product_id]||[]).filter(l=>(l.remaining_qty||0)>0);
+    let lotOpts = `<option value="auto">자동(FIFO)</option>`;
+    if(curLot) lotOpts += `<option value="keep" selected>현재: ${curLot}</option>`;
+    lotOpts += prodLots.map(l=>`<option value="${l.id}">${l.lot_number||('#'+l.id)} · 잔여 ${l.remaining_qty} · ${W(l.purchase_price)}</option>`).join('');
+    return `<tr>
+      <td>${r.date||''}</td><td>${cMap[r.client_id]||'—'}</td><td>${pMap[r.product_id]||'—'}</td>
+      <td><select class="form-control" style="min-width:150px;font-size:12px" id="edit-lot-${r.id}">${lotOpts}</select></td>
+      <td><input type="number" class="form-control" style="width:75px" value="${r.quantity||0}" min="1" id="edit-qty-${r.id}"></td>
+      <td><input type="number" class="form-control" style="width:115px" value="${unit}" step="1000" id="edit-price-${r.id}"></td>
+      <td><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveEditRow(${r.id})">저장</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function _patchRem(id, rem){
+  return fetch(`${SUPABASE_URL}/rest/v1/stock_in?id=eq.${id}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify({remaining_qty:rem})});
+}
+
+async function saveEditRow(id) {
+  const d = editRowData[id];
+  if(!d){ showToast('행 정보를 찾을 수 없습니다'); return; }
+  const unit = parseInt(document.getElementById('edit-price-'+id)?.value)||0;
+  const newQty = parseInt(document.getElementById('edit-qty-'+id)?.value)||0;
+  const lotVal = document.getElementById('edit-lot-'+id)?.value || 'auto';
+  if(!unit){ showToast('출고가를 입력하세요'); return; }
+  if(!newQty){ showToast('수량을 입력하세요'); return; }
+
+  const lots = await dbQuery('stock_in',
+    `?product_id=eq.${d.product_id}&order=date&select=id,lot_number,remaining_qty,purchase_price,quantity`);
+  const rem = {}, cap = {}, byName = {};
+  (lots||[]).forEach(l=>{ rem[l.id]=l.remaining_qty||0; cap[l.id]=l.quantity||l.remaining_qty||0; if(l.lot_number) byName[l.lot_number]=l; });
+
+  // 신규 추적 출고건만 재고를 되돌렸다가 다시 적용 (과거 데이터는 재고 미변경)
+  if(d.hadLot){
+    const oldName = _parseLot(d.note).split(',')[0].trim();
+    const ol = byName[oldName];
+    if(ol) rem[ol.id] = Math.min((rem[ol.id]||0)+d.oldQty, cap[ol.id]);
+  }
+
+  let newCost = d.unitCost, label = _parseLot(d.note) || '자동';
+  if(lotVal !== 'auto' && lotVal !== 'keep'){
+    // 특정 lot 지정
+    const tl = (lots||[]).find(l=>String(l.id)===String(lotVal));
+    if(!tl){ showToast('선택한 Lot을 찾을 수 없습니다'); return; }
+    newCost = tl.purchase_price; label = tl.lot_number || ('#'+tl.id);
+    if(d.hadLot){
+      if((rem[tl.id]||0) < newQty){ showToast(`Lot 잔여수량 부족 (잔여 ${rem[tl.id]||0})`); return; }
+      rem[tl.id] -= newQty;
+    }
+  } else if(d.hadLot){
+    // 자동/현재 → FIFO로 재소비
+    let need = newQty, costSum = 0; const used = [];
+    for(const l of (lots||[])){ if(need<=0)break; const a=rem[l.id]||0; if(a<=0)continue; const take=Math.min(need,a); rem[l.id]-=take; costSum+=take*l.purchase_price; used.push(l.lot_number||('#'+l.id)); need-=take; }
+    if(need>0){ showToast(`재고 부족 (가용 ${newQty-need}/${newQty})`); return; }
+    newCost = Math.round(costSum/newQty); label = used.join(',');
+  }
+  // (과거 데이터 + 자동/현재: 원가·라벨 유지)
+
+  // 재고 반영 (신규 추적건만)
+  if(d.hadLot){
+    for(const l of (lots||[])){ if(rem[l.id] !== l.remaining_qty) await _patchRem(l.id, rem[l.id]); }
+  }
+
+  const total = unit*newQty, supply = Math.round(total/1.1), vat = total - supply;
+  const margin = total - (newCost*newQty), marginRate = total>0 ? Math.round(margin/total*10000)/100 : 0;
+  const memo = _noteMemo(d.note);
+  const note = 'Lot: ' + label + (memo ? ' / '+memo : '');
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_out?id=eq.${id}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify({quantity:newQty, total_amount:total, supply_amount:supply, vat_amount:vat, fifo_purchase_price:newCost, margin_amount:margin, margin_rate:marginRate, note})});
+  if(res.ok || res.status===204 || res.status===200){
+    showToast(`수정 완료 — Lot ${label}, 수량 ${newQty}, 마진율 ${marginRate}%`);
+    await loadMasterData(); loadEditList(); initStockPage();
+  } else showToast('수정 실패');
 }
 
 // ══ 리포트 엑셀 다운로드 ═════════════════════════
@@ -2284,7 +2699,8 @@ function initReportRange() {
   // 기본값: 이번 달 1일 ~ 오늘
   const y = TODAY.getFullYear(), m = String(TODAY.getMonth()+1).padStart(2,'0');
   const first = `${y}-${m}-01`, today = fmt(TODAY);
-  [['rpt-from',first],['rpt-to',today],['med-rpt-from',first],['med-rpt-to',today]].forEach(([id,v])=>{
+  [['rpt-from',first],['rpt-to',today],['med-rpt-from',first],['med-rpt-to',today],
+   ['edit-from',first],['edit-to',today]].forEach(([id,v])=>{
     const el = document.getElementById(id);
     if(el) el.value = v;
   });
@@ -2535,17 +2951,17 @@ function deleteTemplate() {
   showToast('양식이 삭제되었습니다');
 }
 
-function generateContract() {
+// 입력값으로 양식을 채워 .docx Blob 생성 — 미리보기/다운로드 공용
+function _buildContractBlob() {
   const b64 = localStorage.getItem(TMPL_KEY);
-  if (!b64) { showToast('먼저 계약서 양식(.docx)을 업로드하세요'); return; }
+  if (!b64) { showToast('먼저 계약서 양식(.docx)을 업로드하세요'); return null; }
   if (typeof PizZip === 'undefined' || typeof docxtemplater === 'undefined') {
-    showToast('문서 라이브러리 로딩 중입니다. 잠시 후 다시 시도하세요'); return;
+    showToast('문서 라이브러리 로딩 중입니다. 잠시 후 다시 시도하세요'); return null;
   }
   const hosp = document.getElementById('cont-hosp')?.value?.trim();
   const price = parseInt(document.getElementById('cont-price')?.value || 0);
-  if (!hosp) { showToast('병원명을 입력하세요'); return; }
-  if (!price) { showToast('공급가격을 입력하세요'); return; }
-
+  if (!hosp) { showToast('병원명을 입력하세요'); return null; }
+  if (!price) { showToast('공급가격을 입력하세요'); return null; }
   const data = {
     병원명: hosp,
     대표자명: document.getElementById('cont-ceo')?.value?.trim() || '',
@@ -2558,20 +2974,44 @@ function generateContract() {
     const zip = new PizZip(b64, { base64: true });
     const doc = new docxtemplater(zip, {
       delimiters: { start: '{{', end: '}}' },
-      paragraphLoop: true, linebreaks: true,
-      nullGetter: () => '',
+      paragraphLoop: true, linebreaks: true, nullGetter: () => '',
     });
     doc.render(data);
     const blob = doc.getZip().generate({
       type: 'blob',
       mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     });
-    _downloadBlob(blob, `계약서_${hosp}_${fmt(TODAY)}.docx`);
-    showToast('계약서가 생성되었습니다');
+    return { blob, hosp };
   } catch (e) {
     const msg = e?.properties?.errors?.[0]?.properties?.explanation || e?.message || '';
     showToast('계약서 생성 오류' + (msg ? ' — ' + msg : ''));
+    return null;
   }
+}
+
+async function previewContract() {
+  const r = _buildContractBlob();
+  if (!r) return;
+  if (typeof docx === 'undefined' || !docx.renderAsync) { showToast('미리보기 라이브러리 로딩 중입니다. 잠시 후 다시 시도하세요'); return; }
+  const wrap = document.getElementById('cont-preview-wrap');
+  const cont = document.getElementById('cont-preview');
+  cont.innerHTML = '';
+  wrap.style.display = 'block';
+  try {
+    await docx.renderAsync(r.blob, cont, null, { inWrapper: true, className: 'docx', ignoreLastRenderedPageBreak: true });
+    showToast('미리보기를 생성했습니다');
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (e) {
+    cont.innerHTML = '<div style="color:#fca5a5;padding:20px;text-align:center">미리보기를 표시할 수 없습니다. 양식 파일을 확인해주세요.</div>';
+    showToast('미리보기 렌더 실패');
+  }
+}
+
+function generateContract() {
+  const r = _buildContractBlob();
+  if (!r) return;
+  _downloadBlob(r.blob, `계약서_${r.hosp}_${fmt(TODAY)}.docx`);
+  showToast('계약서가 생성되었습니다');
 }
 
 // ══ 설정 패널 ════════════════════════════════════
