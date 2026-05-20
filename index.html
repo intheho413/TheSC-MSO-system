@@ -867,7 +867,7 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
         <div class="form-row cols-3" style="margin-bottom:12px">
           <div class="form-group">
             <label class="form-label">제품명 *</label>
-            <input type="text" class="form-control" placeholder="제품명 입력">
+            <input type="text" class="form-control" id="prod-name" placeholder="제품명 입력">
           </div>
           <div class="form-group">
             <label class="form-label">제품군 (선택 또는 직접 입력)</label>
@@ -876,34 +876,35 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
           </div>
           <div class="form-group">
             <label class="form-label">규격</label>
-            <input type="text" class="form-control" placeholder="예: 50ml">
+            <input type="text" class="form-control" id="prod-spec" placeholder="예: 50ml">
           </div>
         </div>
         <div class="form-row cols-3">
           <div class="form-group">
             <label class="form-label">공급가</label>
-            <input type="number" class="form-control" placeholder="0" step="100">
+            <input type="number" class="form-control" id="prod-purchase" placeholder="0" step="100">
           </div>
           <div class="form-group">
             <label class="form-label">납품가</label>
-            <input type="number" class="form-control" placeholder="0" step="100">
+            <input type="number" class="form-control" id="prod-sale" placeholder="0" step="100">
           </div>
           <div class="form-group">
             <label class="form-label">최소 재고 알림</label>
-            <input type="number" class="form-control" value="10" min="0">
+            <input type="number" class="form-control" id="prod-min" value="10" min="0">
           </div>
         </div>
-        <button class="btn btn-primary btn-full" onclick="showToast('제품이 등록되었습니다.')">등록</button>
+        <button class="btn btn-primary btn-full" onclick="submitProduct()">등록</button>
       </div>
     </div>
 
+    <div style="font-size:15px;font-weight:600;color:#fff;margin:16px 0 12px">등록된 제품 수정</div>
+    <div class="info-box">제품명·제품군·규격·공급가·납품가·최소재고를 직접 고치고 행의 저장을 누르면 반영됩니다.</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>제품명</th><th>제품군</th><th>규격</th><th>공급가</th><th>납품가</th><th>최소재고</th><th>현재고</th><th>세트연동</th></tr></thead>
+        <thead><tr><th>제품명</th><th>제품군</th><th>규격</th><th>공급가</th><th>납품가</th><th>최소재고</th><th>현재고</th><th>저장</th></tr></thead>
         <tbody id="master-prod-tbody"></tbody>
       </table>
     </div>
-    <button class="btn btn-primary" style="margin-top:10px" onclick="showToast('저장 완료!')">저장</button>
   </div>
 
   <!-- 거래처 관리 -->
@@ -916,20 +917,16 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
         <div class="form-row cols-3" style="margin-bottom:12px">
           <div class="form-group">
             <label class="form-label">거래처명 *</label>
-            <input type="text" class="form-control" placeholder="의원명 입력">
+            <input type="text" class="form-control" id="cli-name" placeholder="의원명 입력">
           </div>
           <div class="form-group">
-            <label class="form-label">대분류</label>
-            <select class="form-control" id="cat-sel" onchange="onCatChange()">
-              <option value="">선택</option>
-              <option value="더데이랩스">더데이랩스</option>
-              <option value="루트스퀘어">루트스퀘어</option>
-              <option value="비네트워크">비네트워크</option>
-            </select>
+            <label class="form-label">대분류 (선택 또는 직접 입력)</label>
+            <input class="form-control" id="cat-sel" list="cat-list" placeholder="기존 대분류 선택 또는 새로 입력" autocomplete="off" oninput="onCatChange()">
+            <datalist id="cat-list"></datalist>
           </div>
           <div class="form-group">
             <label class="form-label">담당자</label>
-            <input type="text" class="form-control" placeholder="담당자명">
+            <input type="text" class="form-control" id="cli-contact" placeholder="담당자명">
           </div>
         </div>
         <div id="cat-info" class="info-box" style="display:none"></div>
@@ -940,20 +937,17 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
             <div class="slider-val" id="disc-val">17%</div>
           </div>
         </div>
-        <button class="btn btn-primary btn-full" onclick="showToast('거래처가 등록되었습니다.')">등록</button>
+        <button class="btn btn-primary btn-full" onclick="submitClient()">등록</button>
       </div>
     </div>
 
     <div style="font-size:15px;font-weight:600;color:#fff;margin:16px 0 12px">등록된 거래처 수정</div>
+    <div class="info-box">거래처명·대분류·담당자·할인율을 직접 고치고 행의 저장을 누르면 반영됩니다.</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>ID</th><th>거래처명</th><th>대분류</th><th>담당자</th><th>할인율(%)</th></tr></thead>
+        <thead><tr><th>거래처명</th><th>대분류</th><th>담당자</th><th>할인율(%)</th><th>저장</th></tr></thead>
         <tbody id="master-client-tbody"></tbody>
       </table>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn btn-secondary">대분류 기본 할인율 일괄 적용</button>
-      <button class="btn btn-primary" onclick="showToast('변경사항이 저장되었습니다.')">변경사항 저장</button>
     </div>
   </div>
 </div>
@@ -2403,42 +2397,123 @@ async function onPayClientChange(sel) {
 }
 
 // ── 기초관리 페이지 초기화 ───────────────────────
+const _esc = s => String(s==null?'':s).replace(/"/g,'&quot;');
+const _eipt = 'class="form-control" style="padding:5px 8px;font-size:12px"';
 async function initMasterPage() {
   // 제품군 목록 (드롭다운 + 직접입력 겸용 datalist)
   const groups = [...new Set(G.products.map(p=>p.product_group).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   const dl = document.getElementById('prod-group-list');
-  if(dl) dl.innerHTML = groups.map(g=>`<option value="${g}"></option>`).join('');
+  if(dl) dl.innerHTML = groups.map(g=>`<option value="${_esc(g)}"></option>`).join('');
+  // 대분류 목록 datalist
+  const cats = [...new Set(G.clients.map(c=>c.category).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  const cdl = document.getElementById('cat-list');
+  if(cdl) cdl.innerHTML = cats.map(c=>`<option value="${_esc(c)}"></option>`).join('');
 
-  // 제품 테이블
+  // 제품 테이블 (인라인 수정)
   const prodTbody = document.getElementById('master-prod-tbody');
   if(prodTbody) {
     prodTbody.innerHTML = G.products.length ? G.products.map(p => {
       const stock = G.stockMap[p.id]||0;
       const badge = stock<=0?'badge-red':stock<=(p.min_stock||0)?'badge-amber':'badge-green';
       return `<tr>
-        <td>${p.name}</td>
-        <td>${p.product_group||'—'}</td>
-        <td>${p.spec||'—'}</td>
-        <td>${W(p.purchase_price)}</td>
-        <td>${W(p.sale_price)}</td>
-        <td>${p.min_stock||0}</td>
+        <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:140px" id="ep-name-${p.id}" value="${_esc(p.name)}"></td>
+        <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="ep-group-${p.id}" value="${_esc(p.product_group)}"></td>
+        <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:90px" id="ep-spec-${p.id}" value="${_esc(p.spec)}"></td>
+        <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:100px" id="ep-purchase-${p.id}" value="${p.purchase_price||0}"></td>
+        <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:100px" id="ep-sale-${p.id}" value="${p.sale_price||0}"></td>
+        <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:70px" id="ep-min-${p.id}" value="${p.min_stock||0}"></td>
         <td><span class="badge ${badge}">${stock}</span></td>
-        <td>${p.bundle_with_id?'연동':'—'}</td>
+        <td><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveProductRow(${p.id})">저장</button></td>
       </tr>`;
     }).join('') : emptyRow(8);
   }
 
-  // 거래처 테이블
+  // 거래처 테이블 (인라인 수정)
   const clientTbody = document.getElementById('master-client-tbody');
   if(clientTbody) {
     clientTbody.innerHTML = G.clients.length ? G.clients.map(c => `<tr>
-      <td>${c.id}</td>
-      <td>${c.name}</td>
-      <td>${c.category||'—'}</td>
-      <td>${c.contact||'—'}</td>
-      <td>${Math.round((c.discount_rate||0)*100)}%</td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:140px" id="ec-name-${c.id}" value="${_esc(c.name)}"></td>
+      <td><input ${_eipt} list="cat-list" style="padding:5px 8px;font-size:12px;width:120px" id="ec-cat-${c.id}" value="${_esc(c.category)}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="ec-contact-${c.id}" value="${_esc(c.contact)}"></td>
+      <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:80px" id="ec-disc-${c.id}" value="${Math.round((c.discount_rate||0)*100)}"></td>
+      <td><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveClientRow(${c.id})">저장</button></td>
     </tr>`).join('') : emptyRow(5);
   }
+}
+
+// ── 제품 등록 / 수정 ─────────────────────────────
+async function submitProduct() {
+  const name = document.getElementById('prod-name')?.value?.trim();
+  if(!name){ showToast('제품명을 입력하세요'); return; }
+  const body = {
+    name,
+    product_group: document.getElementById('prod-group-sel')?.value?.trim() || null,
+    spec: document.getElementById('prod-spec')?.value?.trim() || null,
+    purchase_price: parseInt(document.getElementById('prod-purchase')?.value)||0,
+    sale_price: parseInt(document.getElementById('prod-sale')?.value)||0,
+    settlement_price: parseInt(document.getElementById('prod-sale')?.value)||0,
+    min_stock: parseInt(document.getElementById('prod-min')?.value)||0,
+  };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/products`,{method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify(body)});
+  if(res.ok || res.status===201){
+    showToast(`제품 등록 완료 — ${name}`);
+    ['prod-name','prod-group-sel','prod-spec','prod-purchase','prod-sale'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    await loadMasterData(); initMasterPage();
+  } else showToast('제품 등록 실패');
+}
+async function saveProductRow(id) {
+  const body = {
+    name: document.getElementById('ep-name-'+id)?.value?.trim(),
+    product_group: document.getElementById('ep-group-'+id)?.value?.trim() || null,
+    spec: document.getElementById('ep-spec-'+id)?.value?.trim() || null,
+    purchase_price: parseInt(document.getElementById('ep-purchase-'+id)?.value)||0,
+    sale_price: parseInt(document.getElementById('ep-sale-'+id)?.value)||0,
+    settlement_price: parseInt(document.getElementById('ep-sale-'+id)?.value)||0,
+    min_stock: parseInt(document.getElementById('ep-min-'+id)?.value)||0,
+  };
+  if(!body.name){ showToast('제품명을 입력하세요'); return; }
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify(body)});
+  if(res.ok || res.status===204 || res.status===200){ showToast('제품 수정 완료'); await loadMasterData(); initMasterPage(); }
+  else showToast('수정 실패');
+}
+
+// ── 거래처 등록 / 수정 ───────────────────────────
+async function submitClient() {
+  const name = document.getElementById('cli-name')?.value?.trim();
+  if(!name){ showToast('거래처명을 입력하세요'); return; }
+  const body = {
+    name,
+    category: document.getElementById('cat-sel')?.value?.trim() || null,
+    contact: document.getElementById('cli-contact')?.value?.trim() || null,
+    discount_rate: (parseInt(document.getElementById('disc-slider')?.value)||0)/100,
+  };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/clients`,{method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify(body)});
+  if(res.ok || res.status===201){
+    showToast(`거래처 등록 완료 — ${name}`);
+    ['cli-name','cat-sel','cli-contact'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    await loadMasterData(); initMasterPage();
+  } else showToast('거래처 등록 실패');
+}
+async function saveClientRow(id) {
+  const name = document.getElementById('ec-name-'+id)?.value?.trim();
+  if(!name){ showToast('거래처명을 입력하세요'); return; }
+  const body = {
+    name,
+    category: document.getElementById('ec-cat-'+id)?.value?.trim() || null,
+    contact: document.getElementById('ec-contact-'+id)?.value?.trim() || null,
+    discount_rate: (parseFloat(document.getElementById('ec-disc-'+id)?.value)||0)/100,
+  };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${id}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify(body)});
+  if(res.ok || res.status===204 || res.status===200){ showToast('거래처 수정 완료'); await loadMasterData(); initMasterPage(); }
+  else showToast('수정 실패');
 }
 
 // ── 거래처 변경 시 할인율 표시 + 출고가 재계산 ────
@@ -2930,7 +3005,8 @@ function uploadTemplate() {
       localStorage.setItem(TMPL_NAME_KEY, file.name);
       inp.value = '';
       refreshTemplateStatus();
-      showToast('양식이 저장되었습니다 (브라우저에 보관)');
+      dbSaveConfig({template_b64:b64, template_name:file.name});
+      showToast('양식이 저장되었습니다');
     } catch (e) {
       showToast('저장 실패 — 파일이 너무 크거나 저장공간이 부족합니다');
     }
@@ -2948,6 +3024,7 @@ function downloadTemplate() {
 function deleteTemplate() {
   localStorage.removeItem(TMPL_KEY); localStorage.removeItem(TMPL_NAME_KEY);
   refreshTemplateStatus();
+  dbSaveConfig({template_b64:null, template_name:null});
   showToast('양식이 삭제되었습니다');
 }
 
@@ -3048,7 +3125,7 @@ function closeSettings() {
 const SVG_MOON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 const SVG_SUN = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
 
-function applyTheme(mode) {
+function applyTheme(mode, persist) {
   if(mode==='light') {
     document.documentElement.classList.add('light');
     document.getElementById('theme-toggle-btn').innerHTML = SVG_SUN;
@@ -3059,11 +3136,31 @@ function applyTheme(mode) {
   document.getElementById('theme-dark-btn').classList.toggle('active', mode==='dark');
   document.getElementById('theme-light-btn').classList.toggle('active', mode==='light');
   localStorage.setItem('thesc-theme', mode);
+  if(persist) dbSaveConfig({settings:_currentConfig()});
 }
 
 function toggleTheme() {
   const isLight = document.documentElement.classList.contains('light');
-  applyTheme(isLight ? 'dark' : 'light');
+  applyTheme(isLight ? 'dark' : 'light', true);
+}
+
+// ── 설정·양식 DB 동기화 (app_config 테이블, 없으면 localStorage만 사용) ──
+function _currentConfig() {
+  const s = loadSettingsData();
+  return { appname:s.appname, catCosm:s.catCosm, catMed:s.catMed, cosm:s.cosm, med:s.med,
+           theme: localStorage.getItem('thesc-theme') || 'dark' };
+}
+async function dbGetConfig() {
+  try { const r = await dbQuery('app_config','?id=eq.main&select=settings,template_b64,template_name'); return (r&&r[0])?r[0]:null; }
+  catch(e) { return null; }
+}
+async function dbSaveConfig(patch) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/app_config?id=eq.main`,{method:'PATCH',
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify(patch)});
+    return res.ok || res.status===204;
+  } catch(e) { return false; }
 }
 
 function loadSettingsData() {
@@ -3094,6 +3191,7 @@ function applySettings() {
   };
   localStorage.setItem('thesc-settings', JSON.stringify(s));
   applyLabels(s);
+  dbSaveConfig({settings:_currentConfig()});
   closeSettings();
   showToast('설정이 저장되었습니다');
 }
@@ -3101,16 +3199,28 @@ function applySettings() {
 function resetSettings() {
   localStorage.removeItem('thesc-settings');
   applyLabels({});
+  dbSaveConfig({settings:_currentConfig()});
   closeSettings();
   showToast('설정을 초기화했습니다');
 }
 
-function loadSettings() {
-  // 테마
-  const theme = localStorage.getItem('thesc-theme') || 'dark';
-  applyTheme(theme);
-  // 레이블
+async function loadSettings() {
+  // 1) localStorage로 즉시 적용 (빠른 표시)
+  applyTheme(localStorage.getItem('thesc-theme') || 'dark');
   applyLabels(loadSettingsData());
+  // 2) DB 동기화 (app_config 있으면 덮어쓰기 → 기기 공유)
+  const cfg = await dbGetConfig();
+  if(cfg){
+    if(cfg.settings){
+      const s = cfg.settings;
+      localStorage.setItem('thesc-settings', JSON.stringify({appname:s.appname,catCosm:s.catCosm,catMed:s.catMed,cosm:s.cosm,med:s.med}));
+      if(s.theme) localStorage.setItem('thesc-theme', s.theme);
+    }
+    if(cfg.template_b64){ localStorage.setItem(TMPL_KEY, cfg.template_b64); localStorage.setItem(TMPL_NAME_KEY, cfg.template_name||'계약서양식.docx'); }
+    applyTheme(localStorage.getItem('thesc-theme') || 'dark');
+    applyLabels(loadSettingsData());
+    refreshTemplateStatus();
+  }
 }
 
 // ── 초기 실행 ────────────────────────────────────
@@ -3120,6 +3230,9 @@ window.addEventListener('load', async () => {
   await loadMasterData();
   initDashboard();
 });
+// app_config 테이블 생성 SQL (Supabase SQL Editor에서 1회 실행 → 설정·계약서양식 기기 공유):
+// create table if not exists app_config (id text primary key, settings jsonb, template_b64 text, template_name text, updated_at timestamptz default now());
+// insert into app_config (id) values ('main') on conflict do nothing;
 </script>
 </body>
 </html>
