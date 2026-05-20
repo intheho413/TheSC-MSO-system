@@ -292,10 +292,17 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 .tbl-wrap td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);color:#cbd5e1;line-height:1.4}
 .tbl-wrap tr:last-child td{border-bottom:none}
 .tbl-wrap tr:hover td{background:rgba(120,170,255,0.06)}
-/* 출고 수정 표: 줄바꿈 방지 + 거래처/품목 말줄임으로 칸 어긋남 방지 */
-#stock-tab-edit .tbl-wrap td,#stock-tab-edit .tbl-wrap th{white-space:nowrap;vertical-align:middle;padding:10px 12px}
-#stock-tab-edit .tbl-wrap td:nth-child(2),#stock-tab-edit .tbl-wrap td:nth-child(3){max-width:150px;overflow:hidden;text-overflow:ellipsis}
-#stock-tab-edit .tbl-wrap .form-control{display:inline-block;vertical-align:middle}
+/* 출고 수정 표: 고정 레이아웃으로 컬럼 정렬 고정 (날짜·거래처·품목·Lot·수량·출고가·저장) */
+#stock-tab-edit .tbl-wrap table{table-layout:fixed;width:100%;min-width:840px}
+#stock-tab-edit .tbl-wrap th,#stock-tab-edit .tbl-wrap td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;padding:10px 10px}
+#stock-tab-edit .tbl-wrap th:nth-child(1),#stock-tab-edit .tbl-wrap td:nth-child(1){width:104px}
+#stock-tab-edit .tbl-wrap th:nth-child(2),#stock-tab-edit .tbl-wrap td:nth-child(2){width:130px}
+#stock-tab-edit .tbl-wrap th:nth-child(3),#stock-tab-edit .tbl-wrap td:nth-child(3){width:160px}
+#stock-tab-edit .tbl-wrap th:nth-child(4),#stock-tab-edit .tbl-wrap td:nth-child(4){width:178px}
+#stock-tab-edit .tbl-wrap th:nth-child(5),#stock-tab-edit .tbl-wrap td:nth-child(5){width:74px}
+#stock-tab-edit .tbl-wrap th:nth-child(6),#stock-tab-edit .tbl-wrap td:nth-child(6){width:122px}
+#stock-tab-edit .tbl-wrap th:nth-child(7),#stock-tab-edit .tbl-wrap td:nth-child(7){width:72px;overflow:visible}
+#stock-tab-edit .tbl-wrap td .form-control{width:100%;display:block}
 .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
 .badge-blue{background:rgba(58,130,255,0.15);color:#60a5fa}
 .badge-green{background:rgba(34,197,94,0.15);color:#4ade80}
@@ -2697,10 +2704,10 @@ async function loadEditList() {
     lotOpts += prodLots.map(l=>`<option value="${l.id}">${l.lot_number||('#'+l.id)} · 잔여 ${l.remaining_qty} · ${W(l.purchase_price)}</option>`).join('');
     return `<tr>
       <td>${r.date||''}</td><td>${cMap[r.client_id]||'—'}</td><td>${pMap[r.product_id]||'—'}</td>
-      <td><select class="form-control" style="min-width:150px;font-size:12px" id="edit-lot-${r.id}">${lotOpts}</select></td>
-      <td><input type="number" class="form-control" style="width:75px" value="${r.quantity||0}" min="1" id="edit-qty-${r.id}"></td>
-      <td><input type="number" class="form-control" style="width:115px" value="${unit}" step="1000" id="edit-price-${r.id}"></td>
-      <td><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveEditRow(${r.id})">저장</button></td>
+      <td><select class="form-control" style="font-size:12px;padding:6px 8px" id="edit-lot-${r.id}">${lotOpts}</select></td>
+      <td><input type="number" class="form-control" style="padding:6px 8px" value="${r.quantity||0}" min="1" id="edit-qty-${r.id}"></td>
+      <td><input type="number" class="form-control" style="padding:6px 8px" value="${unit}" step="1000" id="edit-price-${r.id}"></td>
+      <td><button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="saveEditRow(${r.id})">저장</button></td>
     </tr>`;
   }).join('');
 }
@@ -2725,36 +2732,30 @@ async function saveEditRow(id) {
   const rem = {}, cap = {}, byName = {};
   (lots||[]).forEach(l=>{ rem[l.id]=l.remaining_qty||0; cap[l.id]=l.quantity||l.remaining_qty||0; if(l.lot_number) byName[l.lot_number]=l; });
 
-  // 신규 추적 출고건만 재고를 되돌렸다가 다시 적용 (과거 데이터는 재고 미변경)
-  if(d.hadLot){
-    const oldName = _parseLot(d.note).split(',')[0].trim();
-    const ol = byName[oldName];
-    if(ol) rem[ol.id] = Math.min((rem[ol.id]||0)+d.oldQty, cap[ol.id]);
-  }
+  // 1) 기존 소비 되돌리기 — 이전에 기록된 lot이 있으면 그 lot에 수량 복원
+  const oldName = (_parseLot(d.note).split(',')[0]||'').trim();
+  const ol = byName[oldName];
+  if(ol) rem[ol.id] = Math.min((rem[ol.id]||0)+d.oldQty, cap[ol.id]);
 
+  // 2) 새 lot/수량으로 다시 소비 (Lot 변경 시 재고 자동 보정)
   let newCost = d.unitCost, label = _parseLot(d.note) || '자동';
   if(lotVal !== 'auto' && lotVal !== 'keep'){
     // 특정 lot 지정
     const tl = (lots||[]).find(l=>String(l.id)===String(lotVal));
     if(!tl){ showToast('선택한 Lot을 찾을 수 없습니다'); return; }
+    if((rem[tl.id]||0) < newQty){ showToast(`Lot 잔여수량 부족 (잔여 ${rem[tl.id]||0})`); return; }
+    rem[tl.id] -= newQty;
     newCost = tl.purchase_price; label = tl.lot_number || ('#'+tl.id);
-    if(d.hadLot){
-      if((rem[tl.id]||0) < newQty){ showToast(`Lot 잔여수량 부족 (잔여 ${rem[tl.id]||0})`); return; }
-      rem[tl.id] -= newQty;
-    }
-  } else if(d.hadLot){
-    // 자동/현재 → FIFO로 재소비
+  } else {
+    // 자동(FIFO) 또는 현재 유지 → FIFO로 재소비
     let need = newQty, costSum = 0; const used = [];
     for(const l of (lots||[])){ if(need<=0)break; const a=rem[l.id]||0; if(a<=0)continue; const take=Math.min(need,a); rem[l.id]-=take; costSum+=take*l.purchase_price; used.push(l.lot_number||('#'+l.id)); need-=take; }
     if(need>0){ showToast(`재고 부족 (가용 ${newQty-need}/${newQty})`); return; }
     newCost = Math.round(costSum/newQty); label = used.join(',');
   }
-  // (과거 데이터 + 자동/현재: 원가·라벨 유지)
 
-  // 재고 반영 (신규 추적건만)
-  if(d.hadLot){
-    for(const l of (lots||[])){ if(rem[l.id] !== l.remaining_qty) await _patchRem(l.id, rem[l.id]); }
-  }
+  // 3) 변경된 lot 재고 반영 (PATCH)
+  for(const l of (lots||[])){ if(rem[l.id] !== l.remaining_qty) await _patchRem(l.id, rem[l.id]); }
 
   const total = unit*newQty, supply = Math.round(total/1.1), vat = total - supply;
   const margin = total - (newCost*newQty), marginRate = total>0 ? Math.round(margin/total*10000)/100 : 0;
