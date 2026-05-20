@@ -1572,27 +1572,32 @@ function renderCart() {
 function removeCart(i) { inCart.splice(i,1); renderCart(); }
 function clearCart()   { inCart=[]; renderCart(); }
 
+let _inSubmitting = false;
 async function submitCart() {
+  if(_inSubmitting){ showToast('등록 처리 중입니다...'); return; }   // 버튼 연타 방지
   if(!inCart.length){ showToast('입고할 품목이 없습니다'); return; }
   const date = document.getElementById('in-date')?.value || fmt(TODAY);
   const note = document.getElementById('in-note')?.value || null;
+  _inSubmitting = true;
+  const items = inCart.slice(); inCart = []; renderCart();   // 처리 전 카트 비워 재제출 방지
   const perProdOffset = {};
   let ok=0, fail=0;
-  for(const item of inCart){
-    const off = perProdOffset[item.productId]||0;
-    const lot = await genLot(item.productId, date, off);
-    perProdOffset[item.productId] = off+1;
-    const body = {
-      date, product_id: parseInt(item.productId), quantity: item.qty,
-      purchase_price: item.price, lot_number: lot,
-      expiry_date: item.expiry||null, remaining_qty: item.qty, note
-    };
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in`,{method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
-      body: JSON.stringify(body)});
-    if(res.ok||res.status===201) ok++; else fail++;
-  }
-  inCart=[]; renderCart();
+  try {
+    for(const item of items){
+      const off = perProdOffset[item.productId]||0;
+      const lot = await genLot(item.productId, date, off);
+      perProdOffset[item.productId] = off+1;
+      const body = {
+        date, product_id: parseInt(item.productId), quantity: item.qty,
+        purchase_price: item.price, lot_number: lot,
+        expiry_date: item.expiry||null, remaining_qty: item.qty, note
+      };
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in`,{method:'POST',
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body: JSON.stringify(body)});
+      if(res.ok||res.status===201) ok++; else fail++;
+    }
+  } finally { _inSubmitting = false; }
   showToast(fail ? `입고 ${ok}건 등록, ${fail}건 실패` : `입고 ${ok}건 등록 완료`);
   await loadMasterData(); initStockPage();
 }
@@ -2646,7 +2651,9 @@ async function _processOutItem(cid, date, type, disc, item) {
   return {ok:true};
 }
 
+let _outSubmitting = false;
 async function submitOutCart() {
+  if(_outSubmitting){ showToast('등록 처리 중입니다...'); return; }   // 버튼 연타 방지
   if(!outCart.length){ showToast('출고할 품목이 없습니다'); return; }
   const cid = document.getElementById('out-client')?.value;
   if(!cid){ showToast('거래처를 선택하세요'); return; }
@@ -2654,10 +2661,13 @@ async function submitOutCart() {
   const type = document.querySelector('#stock-tab-out .radio-btn.active')?.textContent?.trim() || '출고';
   const disc = parseFloat(document.getElementById('out-client').selectedOptions[0]?.dataset.disc)||0;
   const sharedNote = document.getElementById('out-note')?.value || '';
+  _outSubmitting = true;
+  const items = outCart.slice(); outCart = []; renderOutCart();   // 처리 전 카트 비워 재제출 방지
   let ok=0; const errs=[];
-  // 같은 카트 내 재고 중복 차감 방지를 위해 순차 처리 (각 항목이 직전 차감 반영된 재고를 다시 조회)
-  for(const item of outCart){ item.note = sharedNote; const r = await _processOutItem(cid, date, type, disc, item); if(r.ok) ok++; else errs.push(r.msg); }
-  outCart=[]; renderOutCart();
+  try {
+    // 같은 카트 내 재고 중복 차감 방지를 위해 순차 처리 (각 항목이 직전 차감 반영된 재고를 다시 조회)
+    for(const item of items){ item.note = sharedNote; const r = await _processOutItem(cid, date, type, disc, item); if(r.ok) ok++; else errs.push(r.msg); }
+  } finally { _outSubmitting = false; }
   showToast(errs.length ? `출고 ${ok}건 등록, 실패: ${errs.join(', ')}` : `출고 ${ok}건 등록 완료`);
   document.getElementById('out-note').value = '';
   await loadMasterData(); initStockPage(); loadOutLots();
