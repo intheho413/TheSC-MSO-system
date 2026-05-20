@@ -1,0 +1,5 @@
+# 개발/미리보기 전용 파일 (공유 배포 제외)
+.claude/
+design_refs.html
+preview_topnav.html
+debug.txt
