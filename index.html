@@ -201,6 +201,7 @@ html.light .tog-btn.active{background:rgba(37,99,235,0.1);border-color:#2563eb;c
 /* ── KPI (글래스 카드) ── */
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
 .kpi-row.three{grid-template-columns:repeat(3,1fr)}
+.kpi-row.two{grid-template-columns:repeat(2,1fr)}
 .kpi{background:linear-gradient(160deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03));
      border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:18px 22px;
      position:relative;overflow:hidden;
@@ -1154,7 +1155,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     <button class="btn btn-primary" onclick="downloadReport('med')">엑셀 다운로드</button>
   </div>
 
-  <div class="kpi-row">
+  <div class="kpi-row three">
     <div class="kpi kpi-clickable" onclick="openMedSalesDetail('today')"><span class="kpi-go">›</span><div class="kpi-label">오늘 납품액</div>
       <div class="kpi-value" id="med-kpi-today">₩0</div>
       <div class="kpi-sub" id="med-kpi-today-sub"></div></div>
@@ -1164,9 +1165,14 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     <div class="kpi kpi-clickable" onclick="openMedSalesDetail('year')"><span class="kpi-go">›</span><div class="kpi-label">연간 납품액</div>
       <div class="kpi-value" id="med-kpi-year">₩0</div>
       <div class="kpi-sub" id="med-kpi-year-sub"></div></div>
+  </div>
+  <div class="kpi-row two">
     <div class="kpi kpi-clickable" onclick="openMedRecvDetail()"><span class="kpi-go">›</span><div class="kpi-label">전체 미수금</div>
       <div class="kpi-value accent" id="med-kpi-recv">₩0</div>
       <div class="kpi-sub">누적</div></div>
+    <div class="kpi kpi-clickable" onclick="openMedSalesDetail('year')"><span class="kpi-go">›</span><div class="kpi-label">수수료 현황</div>
+      <div class="kpi-value" id="med-kpi-comm">₩0</div>
+      <div class="kpi-sub" id="med-kpi-comm-sub">올해 누적 수수료</div></div>
   </div>
 
   <div class="two-col">
@@ -2341,7 +2347,7 @@ async function initRecvPie() {
 
 // ── 의료장비 리포트 차트 ────────────────────────────
 async function initMedReport() {
-  let todayV=0, monthV=0, yearV=0, recvV=0;
+  let todayV=0, monthV=0, yearV=0, recvV=0, commV=0;
   let months=[], vals=[];
   let payLabels=[], payVals=[];
 
@@ -2349,7 +2355,7 @@ async function initMedReport() {
     const year = TODAY.getFullYear();
     const monthPad = String(TODAY.getMonth()+1).padStart(2,'0');
     const [mrows, mpays] = await Promise.all([
-      dbQuery('med_stock_out', `?date=gte.${year}-01-01&select=date,total_amount,payment_method`),
+      dbQuery('med_stock_out', `?date=gte.${year}-01-01&select=date,total_amount,commission,payment_method`),
       dbQuery('med_payments',  `?select=amount`),
     ]);
     if(mrows && mrows.length > 0) {
@@ -2357,6 +2363,7 @@ async function initMedReport() {
       todayV = sum(mrows.filter(r=>r.date===fmt(TODAY)), 'total_amount');
       monthV = sum(mrows.filter(r=>r.date?.startsWith(`${year}-${monthPad}`)), 'total_amount');
       yearV  = sum(mrows, 'total_amount');
+      commV  = sum(mrows, 'commission');
       recvV  = Math.max(0, yearV - sum(mpays||[], 'amount'));
       // 월별
       const mMap = {};
@@ -2394,6 +2401,7 @@ async function initMedReport() {
   countUp(document.getElementById('med-kpi-month'), monthV, '₩');
   countUp(document.getElementById('med-kpi-year'),  yearV,  '₩');
   countUp(document.getElementById('med-kpi-recv'),  recvV,  '₩');
+  countUp(document.getElementById('med-kpi-comm'),  commV,  '₩');
 
   if(months.length) {
     Plotly.newPlot('med-chart-monthly',[
