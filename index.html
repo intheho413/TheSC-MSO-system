@@ -311,20 +311,20 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 .tbl-wrap tr:last-child td{border-bottom:none}
 .tbl-wrap tr:hover td{background:rgba(120,170,255,0.06)}
 /* 미수금 상세 표: 행바뀜 없이 숫자 우측정렬 + 컬럼 폭 고정 */
-#page-recv-detail .tbl-wrap table{table-layout:fixed;width:100%}
-#page-recv-detail .tbl-wrap th,#page-recv-detail .tbl-wrap td{padding:11px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
-#page-recv-detail .tbl-wrap th.num,#page-recv-detail .tbl-wrap td.num{text-align:right;font-variant-numeric:tabular-nums;overflow:visible;text-overflow:clip}
-#page-recv-detail .tbl-wrap td:first-child{overflow:visible}
+#page-recv-detail .tbl-wrap table,#page-med-recv-detail .tbl-wrap table{table-layout:fixed;width:100%}
+#page-recv-detail .tbl-wrap th,#page-recv-detail .tbl-wrap td,#page-med-recv-detail .tbl-wrap th,#page-med-recv-detail .tbl-wrap td{padding:11px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+#page-recv-detail .tbl-wrap th.num,#page-recv-detail .tbl-wrap td.num,#page-med-recv-detail .tbl-wrap th.num,#page-med-recv-detail .tbl-wrap td.num{text-align:right;font-variant-numeric:tabular-nums;overflow:visible;text-overflow:clip}
+#page-recv-detail .tbl-wrap td:first-child,#page-med-recv-detail .tbl-wrap td:first-child{overflow:visible}
 /* ① 오래된 순: 거래처/발생일/경과/미수금 */
-#rd-old-tbody tr td:nth-child(1),#page-recv-detail .card:first-child th:nth-child(1){width:34%}
-#page-recv-detail .card:first-child th:nth-child(2){width:23%}
-#page-recv-detail .card:first-child th:nth-child(3){width:18%}
-#page-recv-detail .card:first-child th:nth-child(4){width:25%}
+#page-recv-detail .card:first-child th:nth-child(1),#page-med-recv-detail .card:first-child th:nth-child(1){width:34%}
+#page-recv-detail .card:first-child th:nth-child(2),#page-med-recv-detail .card:first-child th:nth-child(2){width:23%}
+#page-recv-detail .card:first-child th:nth-child(3),#page-med-recv-detail .card:first-child th:nth-child(3){width:18%}
+#page-recv-detail .card:first-child th:nth-child(4),#page-med-recv-detail .card:first-child th:nth-child(4){width:25%}
 /* ② 금액 큰 순: 거래처/미수금/총매출/수금률 */
-#page-recv-detail .card:last-child th:nth-child(1){width:31%}
-#page-recv-detail .card:last-child th:nth-child(2){width:25%}
-#page-recv-detail .card:last-child th:nth-child(3){width:25%}
-#page-recv-detail .card:last-child th:nth-child(4){width:19%}
+#page-recv-detail .card:last-child th:nth-child(1),#page-med-recv-detail .card:last-child th:nth-child(1){width:31%}
+#page-recv-detail .card:last-child th:nth-child(2),#page-med-recv-detail .card:last-child th:nth-child(2){width:25%}
+#page-recv-detail .card:last-child th:nth-child(3),#page-med-recv-detail .card:last-child th:nth-child(3){width:25%}
+#page-recv-detail .card:last-child th:nth-child(4),#page-med-recv-detail .card:last-child th:nth-child(4){width:19%}
 /* 출고 수정 표: 퍼센트 고정 레이아웃 → 화면 폭에 항상 꽉 맞게 정렬 (날짜·거래처·품목·Lot·수량·출고가·저장) */
 #stock-tab-edit .tbl-wrap table{table-layout:fixed;width:100%;min-width:720px}
 #stock-tab-edit .tbl-wrap th,#stock-tab-edit .tbl-wrap td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;padding:10px 8px}
@@ -1155,16 +1155,16 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
   </div>
 
   <div class="kpi-row">
-    <div class="kpi"><div class="kpi-label">오늘 납품액</div>
+    <div class="kpi kpi-clickable" onclick="openMedSalesDetail('today')"><span class="kpi-go">›</span><div class="kpi-label">오늘 납품액</div>
       <div class="kpi-value" id="med-kpi-today">₩0</div>
       <div class="kpi-sub" id="med-kpi-today-sub"></div></div>
-    <div class="kpi"><div class="kpi-label">이번달 납품액</div>
+    <div class="kpi kpi-clickable" onclick="openMedSalesDetail('month')"><span class="kpi-go">›</span><div class="kpi-label">이번달 납품액</div>
       <div class="kpi-value" id="med-kpi-month">₩0</div>
       <div class="kpi-sub" id="med-kpi-month-sub"></div></div>
-    <div class="kpi"><div class="kpi-label">연간 납품액</div>
+    <div class="kpi kpi-clickable" onclick="openMedSalesDetail('year')"><span class="kpi-go">›</span><div class="kpi-label">연간 납품액</div>
       <div class="kpi-value" id="med-kpi-year">₩0</div>
       <div class="kpi-sub" id="med-kpi-year-sub"></div></div>
-    <div class="kpi"><div class="kpi-label">전체 미수금</div>
+    <div class="kpi kpi-clickable" onclick="openMedRecvDetail()"><span class="kpi-go">›</span><div class="kpi-label">전체 미수금</div>
       <div class="kpi-value accent" id="med-kpi-recv">₩0</div>
       <div class="kpi-sub">누적</div></div>
   </div>
@@ -1186,6 +1186,61 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
       <thead><tr><th>병원명</th><th>납품건수</th><th>납품액합계</th><th>수금액</th><th>미수금</th></tr></thead>
       <tbody id="med-report-tbody"></tbody>
     </table>
+  </div>
+</div>
+
+<!-- ════ 의료장비 납품 상세 (KPI 박스 드릴다운) ════ -->
+<div id="page-med-sales-detail" class="page" style="display:none">
+  <div class="detail-back" onclick="backToMedReport()">← 리포트로</div>
+  <div class="page-title" id="msd-title">납품 상세</div>
+  <div class="page-sub" id="msd-sub">납품 기준</div>
+  <div class="kpi-row three">
+    <div class="kpi"><div class="kpi-label">총 납품액</div><div class="kpi-value accent" id="msd-total">₩0</div></div>
+    <div class="kpi"><div class="kpi-label">총 수수료</div><div class="kpi-value" id="msd-comm">₩0</div></div>
+    <div class="kpi"><div class="kpi-label">수수료율</div><div class="kpi-value" id="msd-rate">0%</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">병원별 납품 현황</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>병원</th><th class="num">납품건수</th><th class="num">납품액</th><th class="num">수수료</th><th class="num">수수료율</th></tr></thead>
+        <tbody id="msd-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 의료장비 미수금 상세 (KPI 박스 드릴다운) ════ -->
+<div id="page-med-recv-detail" class="page" style="display:none">
+  <div class="detail-back" onclick="backToMedReport()">← 리포트로</div>
+  <div class="page-title">미수금 상세</div>
+  <div class="page-sub" id="mrd-sub">납품일 기준 · 납품−수금</div>
+  <div class="kpi-row three">
+    <div class="kpi"><div class="kpi-label">전체 미수금</div><div class="kpi-value accent" id="mrd-total">₩0</div></div>
+    <div class="kpi"><div class="kpi-label">미수 병원</div><div class="kpi-value" id="mrd-count">0곳</div></div>
+    <div class="kpi"><div class="kpi-label">최장 경과</div><div class="kpi-value" id="mrd-max">0일</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">미수 오래된 순 (장기 미수)</div>
+      <div class="card-sub">아직 안 받은 가장 오래된 납품일 기준</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>병원</th><th>미수 발생일</th><th class="num">경과</th><th class="num">미수금</th></tr></thead>
+          <tbody id="mrd-old-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">미수금 큰 순</div>
+      <div class="card-sub">미수금액 내림차순</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>병원</th><th class="num">미수금</th><th class="num">총납품</th><th class="num">수금률</th></tr></thead>
+          <tbody id="mrd-big-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2118,6 +2173,119 @@ async function openRecvDetail() {
 
 function backToReport() {
   navigate('dashboard', document.querySelector('#nav-menu-cosm .nav-item'));
+}
+function backToMedReport() {
+  navigate('med-report', document.querySelector('#nav-menu-med .nav-item'));
+}
+
+// ── 의료장비 KPI 드릴다운: 납품 상세 (병원별) ──────────
+async function openMedSalesDetail(period) {
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const pg = document.getElementById('page-med-sales-detail');
+  pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
+  const now = new Date();
+  const y = now.getFullYear(), mp = String(now.getMonth()+1).padStart(2,'0');
+  const to = fmt(now); let from, label;
+  if(period==='today'){ from = to; label = `오늘 (${to})`; }
+  else if(period==='month'){ from=`${y}-${mp}-01`; label=`${y}년 ${mp}월`; }
+  else { from=`${y}-01-01`; label=`${y}년`; }
+  const titles = {today:'오늘',month:'이번달',year:'연간'};
+  document.getElementById('msd-title').textContent = (titles[period]||'')+' 납품 상세';
+  document.getElementById('msd-sub').textContent = label+' · 납품 기준';
+  document.getElementById('msd-tbody').innerHTML = emptyRow(5,'불러오는 중...');
+
+  let outs = [], hosp = [];
+  try {
+    [outs, hosp] = await Promise.all([
+      dbQuery('med_stock_out', `?date=gte.${from}&date=lte.${to}&select=client_id,total_amount,commission`),
+      dbQuery('med_clients',   '?select=id,hospital_name'),
+    ]);
+  } catch(e) {}
+  const hmap = Object.fromEntries((hosp||[]).map(h=>[h.id,h.hospital_name]));
+  const agg = {};
+  (outs||[]).forEach(r=>{ const k=r.client_id; (agg[k]=agg[k]||{t:0,m:0,c:0}); agg[k].t+=r.total_amount||0; agg[k].m+=r.commission||0; agg[k].c++; });
+  const rows = Object.entries(agg).map(([id,v])=>({name:hmap[id]||('병원'+id), ...v})).sort((a,b)=>b.t-a.t);
+  const totT = rows.reduce((s,r)=>s+r.t,0), totM = rows.reduce((s,r)=>s+r.m,0), totC = rows.reduce((s,r)=>s+r.c,0);
+  const rate = totT>0 ? (totM/totT*100).toFixed(1) : '0.0';
+  document.getElementById('msd-total').textContent = W(totT);
+  document.getElementById('msd-comm').textContent = W(totM);
+  document.getElementById('msd-rate').textContent = rate+'%';
+  const tb = document.getElementById('msd-tbody');
+  if(!rows.length){ tb.innerHTML = emptyRow(5,'해당 기간 납품이 없습니다'); window.scrollTo(0,0); return; }
+  tb.innerHTML = rows.map(r=>{ const mr=r.t>0?(r.m/r.t*100):0;
+    return `<tr><td>${r.name}</td><td class="num">${r.c}</td><td class="num">${W(r.t)}</td><td class="num">${W(r.m)}</td><td class="num">${mr.toFixed(1)}%</td></tr>`;
+  }).join('') + `<tr class="row-total"><td>합계</td><td class="num">${totC}</td><td class="num">${W(totT)}</td><td class="num">${W(totM)}</td><td class="num">${rate}%</td></tr>`;
+  window.scrollTo(0,0);
+}
+
+// ── 의료장비 KPI 드릴다운: 미수금 상세 ──────────────
+async function openMedRecvDetail() {
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const pg = document.getElementById('page-med-recv-detail');
+  pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
+  const oldTb = document.getElementById('mrd-old-tbody'), bigTb = document.getElementById('mrd-big-tbody');
+  oldTb.innerHTML = emptyRow(4,'불러오는 중...'); bigTb.innerHTML = emptyRow(4,'불러오는 중...');
+
+  let outs = [], pays = [], clients = [];
+  try {
+    [outs, pays, clients] = await Promise.all([
+      dbQuery('med_stock_out','?select=client_id,total_amount,date'),
+      dbQuery('med_payments', '?select=client_id,amount'),
+      dbQuery('med_clients',  '?select=id,hospital_name'),
+    ]);
+  } catch(e) {}
+  const cmap = {}; (clients||[]).forEach(c=>cmap[c.id]=c.hospital_name);
+
+  const byClient = {};
+  (outs||[]).forEach(r=>{ (byClient[r.client_id] ||= []).push(r); });
+  const paid = {}; (pays||[]).forEach(r=>{ paid[r.client_id]=(paid[r.client_id]||0)+(r.amount||0); });
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const rows = [];
+  Object.keys(byClient).forEach(cid=>{
+    const list = byClient[cid].slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    const totalOut = list.reduce((s,r)=>s+(r.total_amount||0),0);
+    const totalPaid = paid[cid]||0;
+    const bal = totalOut - totalPaid;
+    if(bal <= 0) return;
+    let remain = totalPaid, originDate = null;
+    for(const r of list){
+      const amt = r.total_amount||0;
+      if(remain >= amt){ remain -= amt; continue; }
+      originDate = r.date; break;
+    }
+    if(!originDate) originDate = list[0]?.date || null;
+    let days = 0;
+    if(originDate){ const d=new Date(originDate); d.setHours(0,0,0,0); days = Math.round((today-d)/86400000); }
+    const rate = totalOut>0 ? Math.round(totalPaid/totalOut*100) : 0;
+    rows.push({ name: cmap[cid]||('병원'+cid), originDate, days, bal, totalOut, rate });
+  });
+
+  const totalRecv = rows.reduce((s,r)=>s+r.bal,0);
+  const maxDays = rows.reduce((m,r)=>Math.max(m,r.days),0);
+  document.getElementById('mrd-total').textContent = W(totalRecv);
+  document.getElementById('mrd-count').textContent = rows.length + '곳';
+  document.getElementById('mrd-max').textContent   = maxDays + '일';
+  document.getElementById('mrd-sub').textContent   = `${fmt(today)} 기준 · 납품일 기준 · 납품−수금`;
+
+  if(!rows.length){
+    oldTb.innerHTML = emptyRow(4,'미수금이 없습니다');
+    bigTb.innerHTML = emptyRow(4,'미수금이 없습니다');
+    window.scrollTo(0,0); return;
+  }
+  const dcls = d => d>=120?'badge-red':d>=60?'badge-amber':'badge-green';
+  const oldSorted = rows.slice().sort((a,b)=>b.days-a.days);
+  oldTb.innerHTML = oldSorted.map((r,i)=>
+    `<tr><td><span class="rd-rank">${i+1}</span>${r.name}</td><td>${r.originDate||'—'}</td>`+
+    `<td class="num"><span class="badge ${dcls(r.days)}">${r.days}일</span></td><td class="num">${W(r.bal)}</td></tr>`
+  ).join('');
+  const bigSorted = rows.slice().sort((a,b)=>b.bal-a.bal);
+  bigTb.innerHTML = bigSorted.map((r,i)=>{
+    const rcls = r.rate===0?'badge-red':r.rate>=50?'badge-green':'badge-amber';
+    return `<tr><td><span class="rd-rank">${i+1}</span>${r.name}</td><td class="num">${W(r.bal)}</td>`+
+      `<td class="num">${W(r.totalOut)}</td><td class="num"><span class="badge ${rcls}">${r.rate}%</span></td></tr>`;
+  }).join('');
+  window.scrollTo(0,0);
 }
 
 // ── 수금 미수금 Donut (Supabase 실데이터) ─────────
