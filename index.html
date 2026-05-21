@@ -217,6 +217,16 @@ html.light .tog-btn.active{background:rgba(37,99,235,0.1);border-color:#2563eb;c
 .kpi-value.accent{background:linear-gradient(90deg,#60a5fa,#a78bfa);
            -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .kpi-sub{font-size:11px;margin-top:6px;color:rgba(255,255,255,0.38)}
+.kpi-clickable{cursor:pointer}
+.kpi-clickable .kpi-go{position:absolute;top:14px;right:16px;font-size:18px;font-weight:700;color:rgba(147,197,253,0.55);transition:transform .18s,color .18s}
+.kpi-clickable:hover .kpi-go{color:#93c5fd;transform:translateX(3px)}
+.detail-back{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#93c5fd;cursor:pointer;margin-bottom:10px;transition:opacity .15s}
+.detail-back:hover{opacity:.7}
+#sd-tbody tr.row-total td{font-weight:700;color:#fff;background:rgba(96,165,250,0.1)}
+html.light #sd-tbody tr.row-total td{color:#1e293b;background:rgba(37,99,235,0.08)}
+html.light .kpi-clickable .kpi-go{color:rgba(37,99,235,0.5)}
+html.light .kpi-clickable:hover .kpi-go{color:#2563eb}
+html.light .detail-back{color:#2563eb}
 
 /* ── Card (글래스) ── */
 .card{background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(255,255,255,0.025));
@@ -548,16 +558,16 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 
   <!-- KPI Row 1 -->
   <div class="kpi-row">
-    <div class="kpi"><div class="kpi-label">오늘 매출</div>
+    <div class="kpi kpi-clickable" onclick="openSalesDetail('today')"><span class="kpi-go">›</span><div class="kpi-label">오늘 매출</div>
       <div class="kpi-value" id="kpi-today">0</div>
       <div class="kpi-sub" id="kpi-today-sub"></div></div>
-    <div class="kpi"><div class="kpi-label">주간 매출</div>
+    <div class="kpi kpi-clickable" onclick="openSalesDetail('week')"><span class="kpi-go">›</span><div class="kpi-label">주간 매출</div>
       <div class="kpi-value" id="kpi-week">0</div>
       <div class="kpi-sub">이번 주 누계</div></div>
-    <div class="kpi"><div class="kpi-label">월간 매출</div>
+    <div class="kpi kpi-clickable" onclick="openSalesDetail('month')"><span class="kpi-go">›</span><div class="kpi-label">월간 매출</div>
       <div class="kpi-value" id="kpi-month">0</div>
       <div class="kpi-sub" id="kpi-month-sub"></div></div>
-    <div class="kpi"><div class="kpi-label">연간 매출</div>
+    <div class="kpi kpi-clickable" onclick="openSalesDetail('year')"><span class="kpi-go">›</span><div class="kpi-label">연간 매출</div>
       <div class="kpi-value" id="kpi-year">0</div>
       <div class="kpi-sub" id="kpi-year-sub"></div></div>
   </div>
@@ -569,26 +579,11 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
     <div class="kpi"><div class="kpi-label">이번달 평균 마진율</div>
       <div class="kpi-value" id="kpi-margin">0%</div>
       <div class="kpi-sub" id="kpi-margin-sub"></div></div>
-    <div class="kpi"><div class="kpi-label">재고 부족 품목</div>
+    <div class="kpi kpi-clickable" onclick="openLowDetail()"><span class="kpi-go">›</span><div class="kpi-label">재고 부족 품목</div>
       <div class="kpi-value" id="kpi-low">0개</div>
       <div class="kpi-sub">최소 재고 미달</div></div>
   </div>
 
-  <!-- 재고 부족 품목 -->
-  <div class="expander">
-    <div class="expander-header" onclick="toggleExpander(this)">
-      재고 부족 품목 2개 — 상세 보기
-      <span class="expander-arrow">▼</span>
-    </div>
-    <div class="expander-body">
-      <div class="tbl-wrap">
-        <table>
-          <thead><tr><th>제품명</th><th>현재고</th><th>최소재고</th></tr></thead>
-          <tbody id="dash-low-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
 
   <!-- 차트 2열 -->
   <div class="two-col" style="margin-top:8px">
@@ -602,6 +597,40 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
       <div class="card-sub">출고 기준</div>
       <div id="chart-yearly" style="height:240px"></div>
     </div>
+  </div>
+</div>
+
+<!-- ════ 매출 상세 (KPI 박스 드릴다운) ════ -->
+<div id="page-sales-detail" class="page" style="display:none">
+  <div class="detail-back" onclick="backToReport()">← 리포트로</div>
+  <div class="page-title" id="sd-title">매출 상세</div>
+  <div class="page-sub" id="sd-sub">출고 기준</div>
+  <div class="kpi-row three">
+    <div class="kpi"><div class="kpi-label">총 매출</div><div class="kpi-value accent" id="sd-total">₩0</div></div>
+    <div class="kpi"><div class="kpi-label">총 마진</div><div class="kpi-value" id="sd-margin">₩0</div></div>
+    <div class="kpi"><div class="kpi-label">전체 마진율</div><div class="kpi-value" id="sd-rate">0%</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">병원(거래처)별 판매금액</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>거래처</th><th>건수</th><th>판매금액</th><th>마진</th><th>마진율</th></tr></thead>
+        <tbody id="sd-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 재고 부족 상세 (KPI 박스 드릴다운) ════ -->
+<div id="page-low-detail" class="page" style="display:none">
+  <div class="detail-back" onclick="backToReport()">← 리포트로</div>
+  <div class="page-title">재고 부족 품목</div>
+  <div class="page-sub" id="ld-sub">현재고가 최소재고에 미달한 품목</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>제품명</th><th>제품군</th><th>현재고</th><th>최소재고</th><th>부족수량</th><th>상태</th></tr></thead>
+      <tbody id="ld-tbody"></tbody>
+    </table>
   </div>
 </div>
 
@@ -1796,12 +1825,23 @@ async function initDashboard() {
 
   // 재고 부족 카운트
   const [prods, sins] = await Promise.all([
-    dbQuery('products', '?select=id,min_stock'),
+    dbQuery('products', '?select=id,name,min_stock'),
     dbQuery('stock_in', '?select=product_id,remaining_qty'),
   ]);
   const stockMap = {};
   sins.forEach(r => { stockMap[r.product_id] = (stockMap[r.product_id]||0) + (r.remaining_qty||0); });
-  const lowCount = prods.filter(p => (stockMap[p.id]||0) < (p.min_stock||0)).length;
+  const lowList = prods.filter(p => (stockMap[p.id]||0) < (p.min_stock||0))
+                       .sort((a,b)=>(stockMap[a.id]||0)-(stockMap[b.id]||0));
+  const lowCount = lowList.length;
+  // 재고 부족 상세 목록 + 헤더 개수 채우기
+  const lowTitle = document.getElementById('dash-low-title');
+  if(lowTitle) lowTitle.textContent = `재고 부족 품목 ${lowCount}개 — 상세 보기`;
+  const lowTb = document.getElementById('dash-low-tbody');
+  if(lowTb) lowTb.innerHTML = lowCount ? lowList.map(p=>{
+    const cur = stockMap[p.id]||0;
+    const cls = cur<=0 ? 'badge-red' : 'badge-amber';
+    return `<tr><td>${p.name||p.id}</td><td><span class="badge ${cls}">${cur}</span></td><td>${p.min_stock||0}</td></tr>`;
+  }).join('') : emptyRow(3,'재고 부족 품목이 없습니다');
 
   // KPI 표시
   countUp(document.getElementById('kpi-today'),  todaySales, '₩');
@@ -1877,6 +1917,66 @@ async function initDashboard() {
     {name:'1', data:[{y:salesY},{y:marginY},{y:marginY}]},
   ]);
   autoPlay('chart-yearly', 900);
+}
+
+// ── KPI 박스 드릴다운: 매출 상세 (거래처별 + 마진율) ──
+async function openSalesDetail(period) {
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const pg = document.getElementById('page-sales-detail');
+  pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
+  const now = new Date();
+  const y = now.getFullYear(), mp = String(now.getMonth()+1).padStart(2,'0');
+  const to = fmt(now); let from, label;
+  if(period==='today'){ from = to; label = `오늘 (${to})`; }
+  else if(period==='week'){ const d=new Date(now); const dow=d.getDay()||7; d.setDate(d.getDate()-dow+1); from=fmt(d); label=`이번 주 (${from} ~ ${to})`; }
+  else if(period==='month'){ from=`${y}-${mp}-01`; label=`${y}년 ${mp}월`; }
+  else { from=`${y}-01-01`; label=`${y}년`; }
+  const titles = {today:'오늘',week:'주간',month:'월간',year:'연간'};
+  document.getElementById('sd-title').textContent = (titles[period]||'')+' 매출 상세';
+  document.getElementById('sd-sub').textContent = label+' · 출고 기준';
+  document.getElementById('sd-tbody').innerHTML = emptyRow(5,'불러오는 중...');
+
+  const outs = await dbQuery('stock_out', `?date=gte.${from}&date=lte.${to}&select=client_id,total_amount,margin_amount`);
+  const cmap = Object.fromEntries((G.clients||[]).map(c=>[c.id,c.name]));
+  const agg = {};
+  (outs||[]).forEach(r=>{ const k=r.client_id; (agg[k]=agg[k]||{t:0,m:0,c:0}); agg[k].t+=r.total_amount||0; agg[k].m+=r.margin_amount||0; agg[k].c++; });
+  const rows = Object.entries(agg).map(([id,v])=>({name:cmap[id]||('거래처'+id), ...v})).sort((a,b)=>b.t-a.t);
+  const totT = rows.reduce((s,r)=>s+r.t,0), totM = rows.reduce((s,r)=>s+r.m,0), totC = rows.reduce((s,r)=>s+r.c,0);
+  const rate = totT>0 ? (totM/totT*100).toFixed(1) : '0.0';
+  document.getElementById('sd-total').textContent = W(totT);
+  document.getElementById('sd-margin').textContent = W(totM);
+  document.getElementById('sd-rate').textContent = rate+'%';
+  const tb = document.getElementById('sd-tbody');
+  if(!rows.length){ tb.innerHTML = emptyRow(5,'해당 기간 매출이 없습니다'); window.scrollTo(0,0); return; }
+  tb.innerHTML = rows.map(r=>{ const mr=r.t>0?(r.m/r.t*100):0; const cls=mr>=20?'badge-green':mr>=10?'badge-amber':'badge-red';
+    return `<tr><td>${r.name}</td><td>${r.c}</td><td>${W(r.t)}</td><td>${W(r.m)}</td><td><span class="badge ${cls}">${mr.toFixed(1)}%</span></td></tr>`;
+  }).join('') + `<tr class="row-total"><td>합계</td><td>${totC}</td><td>${W(totT)}</td><td>${W(totM)}</td><td>${rate}%</td></tr>`;
+  window.scrollTo(0,0);
+}
+
+// ── KPI 박스 드릴다운: 재고 부족 품목 ──────────────
+async function openLowDetail() {
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const pg = document.getElementById('page-low-detail');
+  pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
+  document.getElementById('ld-tbody').innerHTML = emptyRow(6,'불러오는 중...');
+  const [prods, sins] = await Promise.all([
+    dbQuery('products','?select=id,name,product_group,min_stock'),
+    dbQuery('stock_in','?select=product_id,remaining_qty'),
+  ]);
+  const sm={}; (sins||[]).forEach(r=>sm[r.product_id]=(sm[r.product_id]||0)+(r.remaining_qty||0));
+  const low=(prods||[]).filter(p=>(sm[p.id]||0)<(p.min_stock||0)).sort((a,b)=>(sm[a.id]||0)-(sm[b.id]||0));
+  document.getElementById('ld-sub').textContent = `현재고가 최소재고에 미달한 품목 · ${low.length}건`;
+  const tb=document.getElementById('ld-tbody');
+  if(!low.length){ tb.innerHTML = emptyRow(6,'재고 부족 품목이 없습니다'); window.scrollTo(0,0); return; }
+  tb.innerHTML = low.map(p=>{ const cur=sm[p.id]||0, short=(p.min_stock||0)-cur; const cls=cur<=0?'badge-red':'badge-amber';
+    return `<tr><td>${p.name||p.id}</td><td>${p.product_group||'—'}</td><td>${cur}</td><td>${p.min_stock||0}</td><td>${short}</td><td><span class="badge ${cls}">${cur<=0?'품절':'부족'}</span></td></tr>`;
+  }).join('');
+  window.scrollTo(0,0);
+}
+
+function backToReport() {
+  navigate('dashboard', document.querySelector('#nav-menu-cosm .nav-item'));
 }
 
 // ── 수금 미수금 Donut (Supabase 실데이터) ─────────
