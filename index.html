@@ -283,7 +283,7 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
           border-radius:8px;padding:8px 12px;font-size:12px;color:#fcd34d;margin-bottom:10px}
 
 /* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;
      padding:9px 18px;border-radius:9px;border:none;font-size:13px;font-weight:600;
      cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
 .btn-primary{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;
@@ -1007,10 +1007,13 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
         <option value="">거래처 선택</option>
       </select>
     </div>
-    <div class="info-box" style="margin-top:12px">수금 내역은 날짜·금액을 직접 수정하거나 삭제할 수 있습니다. (출고 내역은 출고수정 탭에서 관리)</div>
-    <div class="tbl-wrap" style="margin-top:12px">
+    <div class="btn-group" style="margin-top:12px;margin-bottom:12px">
+      <button class="btn btn-primary" onclick="saveSelectedPayments()">선택 저장</button>
+      <button class="btn btn-danger" onclick="deleteSelectedPayments()">선택 삭제</button>
+    </div>
+    <div class="tbl-wrap">
       <table>
-        <thead><tr><th>날짜</th><th>구분</th><th>출고액</th><th>수금액</th><th>작업</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllPay(this)" title="수금 전체 선택"></th><th>날짜</th><th>구분</th><th>출고액</th><th>수금액</th><th>작업</th></tr></thead>
         <tbody id="ledger-tbody"></tbody>
       </table>
     </div>
@@ -1071,10 +1074,13 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     </div>
 
     <div style="font-size:15px;font-weight:600;color:#fff;margin:16px 0 12px">등록된 제품 수정</div>
-    <div class="info-box">제품명·제품군·규격·공급가·납품가·최소재고를 직접 고치고 행의 저장을 누르면 반영됩니다.</div>
+    <div class="btn-group" style="margin-top:0;margin-bottom:12px">
+      <button class="btn btn-primary" onclick="saveSelectedProducts()">선택 저장</button>
+      <button class="btn btn-danger" onclick="deleteSelectedProducts()">선택 삭제</button>
+    </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>제품명</th><th>제품군</th><th>규격</th><th>공급가</th><th>납품가</th><th>최소재고</th><th>현재고</th><th>저장</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllProd(this)" title="전체 선택"></th><th>제품명</th><th>제품군</th><th>규격</th><th>공급가</th><th>납품가</th><th>최소재고</th><th>현재고</th><th>작업</th></tr></thead>
         <tbody id="master-prod-tbody"></tbody>
       </table>
     </div>
@@ -1115,10 +1121,13 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     </div>
 
     <div style="font-size:15px;font-weight:600;color:#fff;margin:16px 0 12px">등록된 거래처 수정</div>
-    <div class="info-box">거래처명·대분류·담당자·할인율을 직접 고치고 행의 저장을 누르면 반영됩니다.</div>
+    <div class="btn-group" style="margin-top:0;margin-bottom:12px">
+      <button class="btn btn-primary" onclick="saveSelectedClients()">선택 저장</button>
+      <button class="btn btn-danger" onclick="deleteSelectedClients()">선택 삭제</button>
+    </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>거래처명</th><th>대분류</th><th>담당자</th><th>할인율(%)</th><th>저장</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllClient(this)" title="전체 선택"></th><th>거래처명</th><th>대분류</th><th>담당자</th><th>할인율(%)</th><th>작업</th></tr></thead>
         <tbody id="master-client-tbody"></tbody>
       </table>
     </div>
@@ -1408,9 +1417,13 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
         <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="submitMedProd()">등록</button>
       </div>
     </div>
-    <div class="tbl-wrap" style="margin-top:12px">
+    <div class="btn-group" style="margin-top:12px;margin-bottom:12px">
+      <button class="btn btn-primary" onclick="saveSelectedMedProd()">선택 저장</button>
+      <button class="btn btn-danger" onclick="deleteSelectedMedProd()">선택 삭제</button>
+    </div>
+    <div class="tbl-wrap">
       <table>
-        <thead><tr><th>ID</th><th>장비명</th><th>장비사</th><th>규격</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllMedProd(this)" title="전체 선택"></th><th>장비명</th><th>장비사</th><th>규격</th><th>작업</th></tr></thead>
         <tbody id="med-prod-tbody"></tbody>
       </table>
     </div>
@@ -1456,9 +1469,13 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
         <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="submitMedClient()">등록</button>
       </div>
     </div>
-    <div class="tbl-wrap" style="margin-top:12px">
+    <div class="btn-group" style="margin-top:12px;margin-bottom:12px">
+      <button class="btn btn-primary" onclick="saveSelectedMedClient()">선택 저장</button>
+      <button class="btn btn-danger" onclick="deleteSelectedMedClient()">선택 삭제</button>
+    </div>
+    <div class="tbl-wrap">
       <table>
-        <thead><tr><th>ID</th><th>병원명</th><th>대표자</th><th>담당자</th><th>연락처</th><th>주소</th><th>여신한도</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllMedClient(this)" title="전체 선택"></th><th>병원명</th><th>대표자</th><th>담당자</th><th>연락처</th><th>주소</th><th>여신한도</th><th>작업</th></tr></thead>
         <tbody id="med-client-tbody"></tbody>
       </table>
     </div>
@@ -2356,6 +2373,100 @@ async function submitMedClient(){
   else showToast('등록 실패 (med_clients 테이블 확인 필요)');
 }
 
+// ── 의료장비 장비 수정/삭제 + 복수 선택 ──────────────
+async function _saveMedProdCore(id){
+  const name=document.getElementById('emp-name-'+id)?.value?.trim();
+  const mfr=document.getElementById('emp-mfr-'+id)?.value?.trim();
+  if(!name) return {ok:false, msg:'장비명 누락'};
+  const body={name, manufacturer:mfr||null, spec:document.getElementById('emp-spec-'+id)?.value?.trim()||null};
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/med_products?id=eq.${id}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify(body)});
+  return (res.ok||res.status===204||res.status===200)?{ok:true}:{ok:false,msg:'저장실패'};
+}
+async function _deleteMedProdCore(id){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/med_products?id=eq.${id}`,{method:'DELETE',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+  if(res.ok||res.status===204) return {ok:true};
+  if(res.status===409) return {ok:false, msg:'매입/납품 이력 있음'};
+  return {ok:false, msg:'삭제실패'};
+}
+async function saveMedProdRow(id){ const r=await _saveMedProdCore(id); showToast(r.ok?'장비 수정 완료':`수정 실패 — ${r.msg}`); if(r.ok) initMedMaster(); }
+async function deleteMedProdRow(id){
+  if(!confirm('이 장비를 삭제할까요?\n되돌릴 수 없습니다. (매입/납품 이력이 있으면 삭제되지 않습니다)')) return;
+  const r=await _deleteMedProdCore(id); showToast(r.ok?'장비 삭제 완료':`삭제 실패 — ${r.msg}`); if(r.ok) initMedMaster();
+}
+function _checkedMedProdIds(){ return [...document.querySelectorAll('#med-prod-tbody input.medprod-chk:checked')].map(c=>c.dataset.id); }
+function toggleAllMedProd(cb){ document.querySelectorAll('#med-prod-tbody input.medprod-chk').forEach(c=>c.checked=cb.checked); }
+async function saveSelectedMedProd(){
+  if(_bulkBusy) return;
+  const ids=_checkedMedProdIds();
+  if(!ids.length){ showToast('저장할 장비를 선택하세요'); return; }
+  _bulkBusy=true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r=await _saveMedProdCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy=false; }
+  showToast(errs.length?`${ok}건 저장, ${errs.length}건 실패`:`${ok}건 일괄 저장 완료`); initMedMaster();
+}
+async function deleteSelectedMedProd(){
+  if(_bulkBusy) return;
+  const ids=_checkedMedProdIds();
+  if(!ids.length){ showToast('삭제할 장비를 선택하세요'); return; }
+  if(!confirm(`선택한 ${ids.length}건을 삭제할까요?\n되돌릴 수 없습니다. (매입/납품 이력이 있는 장비는 건너뜁니다)`)) return;
+  _bulkBusy=true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r=await _deleteMedProdCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy=false; }
+  showToast(errs.length?`${ok}건 삭제, ${errs.length}건 실패(이력 있음)`:`${ok}건 일괄 삭제 완료`); initMedMaster();
+}
+
+// ── 의료장비 거래처 수정/삭제 + 복수 선택 ────────────
+async function _saveMedClientCore(id){
+  const name=document.getElementById('emc-name-'+id)?.value?.trim();
+  if(!name) return {ok:false, msg:'병원명 누락'};
+  const body={hospital_name:name,
+    ceo_name:document.getElementById('emc-ceo-'+id)?.value?.trim()||null,
+    contact_person:document.getElementById('emc-contact-'+id)?.value?.trim()||null,
+    phone:document.getElementById('emc-phone-'+id)?.value?.trim()||null,
+    address:document.getElementById('emc-addr-'+id)?.value?.trim()||null,
+    credit_limit:parseInt(document.getElementById('emc-credit-'+id)?.value)||0};
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/med_clients?id=eq.${id}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body:JSON.stringify(body)});
+  return (res.ok||res.status===204||res.status===200)?{ok:true}:{ok:false,msg:'저장실패'};
+}
+async function _deleteMedClientCore(id){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/med_clients?id=eq.${id}`,{method:'DELETE',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+  if(res.ok||res.status===204) return {ok:true};
+  if(res.status===409) return {ok:false, msg:'납품/수금 이력 있음'};
+  return {ok:false, msg:'삭제실패'};
+}
+async function saveMedClientRow(id){ const r=await _saveMedClientCore(id); showToast(r.ok?'거래처 수정 완료':`수정 실패 — ${r.msg}`); if(r.ok) initMedMaster(); }
+async function deleteMedClientRow(id){
+  if(!confirm('이 거래처를 삭제할까요?\n되돌릴 수 없습니다. (납품/수금 이력이 있으면 삭제되지 않습니다)')) return;
+  const r=await _deleteMedClientCore(id); showToast(r.ok?'거래처 삭제 완료':`삭제 실패 — ${r.msg}`); if(r.ok) initMedMaster();
+}
+function _checkedMedClientIds(){ return [...document.querySelectorAll('#med-client-tbody input.medclient-chk:checked')].map(c=>c.dataset.id); }
+function toggleAllMedClient(cb){ document.querySelectorAll('#med-client-tbody input.medclient-chk').forEach(c=>c.checked=cb.checked); }
+async function saveSelectedMedClient(){
+  if(_bulkBusy) return;
+  const ids=_checkedMedClientIds();
+  if(!ids.length){ showToast('저장할 거래처를 선택하세요'); return; }
+  _bulkBusy=true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r=await _saveMedClientCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy=false; }
+  showToast(errs.length?`${ok}건 저장, ${errs.length}건 실패`:`${ok}건 일괄 저장 완료`); initMedMaster();
+}
+async function deleteSelectedMedClient(){
+  if(_bulkBusy) return;
+  const ids=_checkedMedClientIds();
+  if(!ids.length){ showToast('삭제할 거래처를 선택하세요'); return; }
+  if(!confirm(`선택한 ${ids.length}건을 삭제할까요?\n되돌릴 수 없습니다. (납품/수금 이력이 있는 거래처는 건너뜁니다)`)) return;
+  _bulkBusy=true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r=await _deleteMedClientCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy=false; }
+  showToast(errs.length?`${ok}건 삭제, ${errs.length}건 실패(이력 있음)`:`${ok}건 일괄 삭제 완료`); initMedMaster();
+}
+
 // ── 의료장비 수금현황 초기화 ──────────────────────
 async function initMedRecv() {
   document.querySelectorAll('#page-med-recv input[type=date]').forEach(el => el.value = fmt(TODAY));
@@ -2455,17 +2566,32 @@ async function initMedMaster() {
     dbQuery('med_clients', '?order=hospital_name&select=id,hospital_name,ceo_name,contact_person,phone,address,credit_limit'),
   ]);
 
-  // 장비 테이블
+  // 장비 테이블 (인라인 수정 + 복수 선택)
   const prodTb = document.getElementById('med-prod-tbody');
   if(prodTb) prodTb.innerHTML = (prods||[]).length ?
-    (prods||[]).map(p=>`<tr><td>${p.id||'—'}</td><td>${p.name}</td><td>${p.manufacturer||'—'}</td><td>${p.spec||'—'}</td></tr>`).join('') :
-    emptyRow(4,'등록된 장비 없음');
+    (prods||[]).map(p=>`<tr>
+      <td style="text-align:center"><input type="checkbox" class="medprod-chk" data-id="${p.id}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:140px" id="emp-name-${p.id}" value="${_esc(p.name)}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:120px" id="emp-mfr-${p.id}" value="${_esc(p.manufacturer)}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="emp-spec-${p.id}" value="${_esc(p.spec)}"></td>
+      <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveMedProdRow(${p.id})">저장</button><button class="btn btn-danger" style="padding:5px 12px;font-size:12px" onclick="deleteMedProdRow(${p.id})">삭제</button></div></td>
+    </tr>`).join('') :
+    emptyRow(5,'등록된 장비 없음');
 
-  // 거래처 테이블
+  // 거래처 테이블 (인라인 수정 + 복수 선택)
   const cliTb = document.getElementById('med-client-tbody');
   if(cliTb) cliTb.innerHTML = (clients||[]).length ?
-    (clients||[]).map(c=>`<tr><td>${c.id||'—'}</td><td>${c.hospital_name}</td><td>${c.ceo_name||'—'}</td><td>${c.contact_person||'—'}</td><td>${c.phone||'—'}</td><td>${c.address||'—'}</td><td>${W(c.credit_limit)}</td></tr>`).join('') :
-    emptyRow(7,'등록된 거래처 없음');
+    (clients||[]).map(c=>`<tr>
+      <td style="text-align:center"><input type="checkbox" class="medclient-chk" data-id="${c.id}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:130px" id="emc-name-${c.id}" value="${_esc(c.hospital_name)}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:90px" id="emc-ceo-${c.id}" value="${_esc(c.ceo_name)}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:90px" id="emc-contact-${c.id}" value="${_esc(c.contact_person)}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="emc-phone-${c.id}" value="${_esc(c.phone)}"></td>
+      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:120px" id="emc-addr-${c.id}" value="${_esc(c.address)}"></td>
+      <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="emc-credit-${c.id}" value="${c.credit_limit||0}"></td>
+      <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveMedClientRow(${c.id})">저장</button><button class="btn btn-danger" style="padding:5px 12px;font-size:12px" onclick="deleteMedClientRow(${c.id})">삭제</button></div></td>
+    </tr>`).join('') :
+    emptyRow(8,'등록된 거래처 없음');
 
   // 문서함 병원 select
   const docSel = document.getElementById('doc-hosp-sel');
@@ -2714,7 +2840,7 @@ let _ledgerClient = '';
 async function loadLedger(clientId) {
   _ledgerClient = clientId;
   const tbody = document.getElementById('ledger-tbody');
-  if(!tbody || !clientId) { if(tbody) tbody.innerHTML = emptyRow(5,'거래처를 선택하세요'); return; }
+  if(!tbody || !clientId) { if(tbody) tbody.innerHTML = emptyRow(6,'거래처를 선택하세요'); return; }
 
   const [outs, pays] = await Promise.all([
     dbQuery('stock_out', `?client_id=eq.${clientId}&order=date&select=date,total_amount`),
@@ -2727,13 +2853,15 @@ async function loadLedger(clientId) {
     ...pays.map(r=>({date:r.date, type:'pay', amount:r.amount, id:r.id})),
   ].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 
-  if(!rows.length){ tbody.innerHTML = emptyRow(5,'거래내역이 없습니다'); return; }
+  if(!rows.length){ tbody.innerHTML = emptyRow(6,'거래내역이 없습니다'); return; }
   tbody.innerHTML = rows.map(r => r.type==='out' ? `<tr>
+    <td></td>
     <td>${r.date||''}</td>
     <td><span class="badge badge-blue">출고</span></td>
     <td>${W(r.amount)}</td><td>—</td>
     <td style="color:rgba(255,255,255,.3);font-size:12px">출고수정 탭</td>
   </tr>` : `<tr>
+    <td style="text-align:center"><input type="checkbox" class="pay-chk" data-id="${r.id}"></td>
     <td><input type="date" class="form-control" style="width:150px" value="${r.date||''}" id="pay-date-${r.id}"></td>
     <td><span class="badge badge-green">수금</span></td>
     <td>—</td>
@@ -2745,26 +2873,55 @@ async function loadLedger(clientId) {
   </tr>`).join('');
 }
 
-// 수금 내역 수정
-async function savePayment(id) {
+// 수금 내역 수정 핵심 — {ok,msg} 반환
+async function _savePaymentCore(id) {
   const date = document.getElementById('pay-date-'+id)?.value;
   const amount = parseInt(document.getElementById('pay-amt-'+id)?.value)||0;
-  if(!date){ showToast('수금일을 입력하세요'); return; }
-  if(!amount){ showToast('수금액을 입력하세요'); return; }
+  if(!date) return {ok:false, msg:'수금일 누락'};
+  if(!amount) return {ok:false, msg:'수금액 누락'};
   const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?id=eq.${id}`,{method:'PATCH',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify({date, amount})});
-  if(res.ok || res.status===204 || res.status===200){ showToast('수금 내역 수정 완료'); loadLedger(_ledgerClient); initRecvPage(); }
-  else showToast('수정 실패');
+  return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'저장실패'};
 }
-
-// 수금 내역 삭제
-async function deletePayment(id) {
-  if(!confirm('이 수금 내역을 삭제할까요?\n삭제하면 되돌릴 수 없으며 미수금이 다시 늘어납니다.')) return;
+async function _deletePaymentCore(id) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?id=eq.${id}`,{method:'DELETE',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
-  if(res.ok || res.status===204 || res.status===200){ showToast('수금 내역이 삭제되었습니다'); loadLedger(_ledgerClient); initRecvPage(); }
-  else showToast('삭제 실패');
+  return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'삭제실패'};
+}
+async function savePayment(id) {
+  const r = await _savePaymentCore(id);
+  showToast(r.ok ? '수금 내역 수정 완료' : `수정 실패 — ${r.msg}`);
+  if(r.ok){ loadLedger(_ledgerClient); initRecvPage(); }
+}
+async function deletePayment(id) {
+  if(!confirm('이 수금 내역을 삭제할까요?\n삭제하면 되돌릴 수 없으며 미수금이 다시 늘어납니다.')) return;
+  const r = await _deletePaymentCore(id);
+  showToast(r.ok ? '수금 내역이 삭제되었습니다' : `삭제 실패 — ${r.msg}`);
+  if(r.ok){ loadLedger(_ledgerClient); initRecvPage(); }
+}
+function _checkedPayIds(){ return [...document.querySelectorAll('#ledger-tbody input.pay-chk:checked')].map(c=>c.dataset.id); }
+function toggleAllPay(cb){ document.querySelectorAll('#ledger-tbody input.pay-chk').forEach(c=>c.checked=cb.checked); }
+async function saveSelectedPayments() {
+  if(_bulkBusy) return;
+  const ids = _checkedPayIds();
+  if(!ids.length){ showToast('저장할 수금 내역을 선택하세요'); return; }
+  _bulkBusy = true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r = await _savePaymentCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy = false; }
+  showToast(errs.length ? `${ok}건 저장, ${errs.length}건 실패` : `${ok}건 일괄 저장 완료`);
+  loadLedger(_ledgerClient); initRecvPage();
+}
+async function deleteSelectedPayments() {
+  if(_bulkBusy) return;
+  const ids = _checkedPayIds();
+  if(!ids.length){ showToast('삭제할 수금 내역을 선택하세요'); return; }
+  if(!confirm(`선택한 ${ids.length}건의 수금 내역을 삭제할까요?\n되돌릴 수 없으며 미수금이 다시 늘어납니다.`)) return;
+  _bulkBusy = true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r = await _deletePaymentCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy = false; }
+  showToast(errs.length ? `${ok}건 삭제, ${errs.length}건 실패` : `${ok}건 일괄 삭제 완료`);
+  loadLedger(_ledgerClient); initRecvPage();
 }
 
 // ── 수금 등록 (실제 저장) ────────────────────────
@@ -2825,6 +2982,7 @@ async function initMasterPage() {
       const stock = G.stockMap[p.id]||0;
       const badge = stock<=0?'badge-red':stock<=(p.min_stock||0)?'badge-amber':'badge-green';
       return `<tr>
+        <td style="text-align:center"><input type="checkbox" class="prod-chk" data-id="${p.id}"></td>
         <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:140px" id="ep-name-${p.id}" value="${_esc(p.name)}"></td>
         <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="ep-group-${p.id}" value="${_esc(p.product_group)}"></td>
         <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:90px" id="ep-spec-${p.id}" value="${_esc(p.spec)}"></td>
@@ -2832,21 +2990,22 @@ async function initMasterPage() {
         <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:100px" id="ep-sale-${p.id}" value="${p.sale_price||0}"></td>
         <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:70px" id="ep-min-${p.id}" value="${p.min_stock||0}"></td>
         <td><span class="badge ${badge}">${stock}</span></td>
-        <td><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveProductRow(${p.id})">저장</button></td>
+        <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveProductRow(${p.id})">저장</button><button class="btn btn-danger" style="padding:5px 12px;font-size:12px" onclick="deleteProductRow(${p.id})">삭제</button></div></td>
       </tr>`;
-    }).join('') : emptyRow(8);
+    }).join('') : emptyRow(9);
   }
 
   // 거래처 테이블 (인라인 수정)
   const clientTbody = document.getElementById('master-client-tbody');
   if(clientTbody) {
     clientTbody.innerHTML = G.clients.length ? G.clients.map(c => `<tr>
+      <td style="text-align:center"><input type="checkbox" class="client-chk" data-id="${c.id}"></td>
       <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:140px" id="ec-name-${c.id}" value="${_esc(c.name)}"></td>
       <td><input ${_eipt} list="cat-list" style="padding:5px 8px;font-size:12px;width:120px" id="ec-cat-${c.id}" value="${_esc(c.category)}"></td>
       <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="ec-contact-${c.id}" value="${_esc(c.contact)}"></td>
       <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:80px" id="ec-disc-${c.id}" value="${Math.round((c.discount_rate||0)*100)}"></td>
-      <td><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveClientRow(${c.id})">저장</button></td>
-    </tr>`).join('') : emptyRow(5);
+      <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveClientRow(${c.id})">저장</button><button class="btn btn-danger" style="padding:5px 12px;font-size:12px" onclick="deleteClientRow(${c.id})">삭제</button></div></td>
+    </tr>`).join('') : emptyRow(6);
   }
 }
 
@@ -2872,7 +3031,8 @@ async function submitProduct() {
     await loadMasterData(); initMasterPage();
   } else showToast('제품 등록 실패');
 }
-async function saveProductRow(id) {
+// 단일 제품 저장 핵심 (새로고침 없음) — {ok,msg} 반환
+async function _saveProductCore(id) {
   const body = {
     name: document.getElementById('ep-name-'+id)?.value?.trim(),
     product_group: document.getElementById('ep-group-'+id)?.value?.trim() || null,
@@ -2882,12 +3042,53 @@ async function saveProductRow(id) {
     settlement_price: parseInt(document.getElementById('ep-sale-'+id)?.value)||0,
     min_stock: parseInt(document.getElementById('ep-min-'+id)?.value)||0,
   };
-  if(!body.name){ showToast('제품명을 입력하세요'); return; }
+  if(!body.name) return {ok:false, msg:'제품명 누락'};
   const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`,{method:'PATCH',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
-  if(res.ok || res.status===204 || res.status===200){ showToast('제품 수정 완료'); await loadMasterData(); initMasterPage(); }
-  else showToast('수정 실패');
+  return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'저장실패'};
+}
+// 단일 제품 삭제 핵심 — {ok,msg} 반환 (입출고 이력 있으면 FK로 실패)
+async function _deleteProductCore(id) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`,{method:'DELETE',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+  if(res.ok||res.status===204) return {ok:true};
+  if(res.status===409) return {ok:false, msg:'입출고 이력 있음'};
+  return {ok:false, msg:'삭제실패'};
+}
+async function saveProductRow(id) {
+  const r = await _saveProductCore(id);
+  showToast(r.ok ? '제품 수정 완료' : `수정 실패 — ${r.msg}`);
+  if(r.ok){ await loadMasterData(); initMasterPage(); }
+}
+async function deleteProductRow(id) {
+  if(!confirm('이 제품을 삭제할까요?\n되돌릴 수 없습니다. (입출고 이력이 있으면 삭제되지 않습니다)')) return;
+  const r = await _deleteProductCore(id);
+  showToast(r.ok ? '제품 삭제 완료' : `삭제 실패 — ${r.msg}`);
+  if(r.ok){ await loadMasterData(); initMasterPage(); }
+}
+function _checkedProdIds(){ return [...document.querySelectorAll('#master-prod-tbody input.prod-chk:checked')].map(c=>c.dataset.id); }
+function toggleAllProd(cb){ document.querySelectorAll('#master-prod-tbody input.prod-chk').forEach(c=>c.checked=cb.checked); }
+async function saveSelectedProducts() {
+  if(_bulkBusy) return;
+  const ids = _checkedProdIds();
+  if(!ids.length){ showToast('저장할 제품을 선택하세요'); return; }
+  _bulkBusy = true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r = await _saveProductCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy = false; }
+  showToast(errs.length ? `${ok}건 저장, ${errs.length}건 실패` : `${ok}건 일괄 저장 완료`);
+  await loadMasterData(); initMasterPage();
+}
+async function deleteSelectedProducts() {
+  if(_bulkBusy) return;
+  const ids = _checkedProdIds();
+  if(!ids.length){ showToast('삭제할 제품을 선택하세요'); return; }
+  if(!confirm(`선택한 ${ids.length}건을 삭제할까요?\n되돌릴 수 없습니다. (입출고 이력이 있는 제품은 건너뜁니다)`)) return;
+  _bulkBusy = true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r = await _deleteProductCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy = false; }
+  showToast(errs.length ? `${ok}건 삭제, ${errs.length}건 실패(이력 있음)` : `${ok}건 일괄 삭제 완료`);
+  await loadMasterData(); initMasterPage();
 }
 
 // ── 거래처 등록 / 수정 ───────────────────────────
@@ -2909,9 +3110,10 @@ async function submitClient() {
     await loadMasterData(); initMasterPage();
   } else showToast('거래처 등록 실패');
 }
-async function saveClientRow(id) {
+// 단일 거래처 저장 핵심 — {ok,msg} 반환
+async function _saveClientCore(id) {
   const name = document.getElementById('ec-name-'+id)?.value?.trim();
-  if(!name){ showToast('거래처명을 입력하세요'); return; }
+  if(!name) return {ok:false, msg:'거래처명 누락'};
   const body = {
     name,
     category: document.getElementById('ec-cat-'+id)?.value?.trim() || null,
@@ -2921,8 +3123,49 @@ async function saveClientRow(id) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${id}`,{method:'PATCH',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
-  if(res.ok || res.status===204 || res.status===200){ showToast('거래처 수정 완료'); await loadMasterData(); initMasterPage(); }
-  else showToast('수정 실패');
+  return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'저장실패'};
+}
+// 단일 거래처 삭제 핵심 — {ok,msg} 반환 (출고/수금 이력 있으면 FK로 실패)
+async function _deleteClientCore(id) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${id}`,{method:'DELETE',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+  if(res.ok||res.status===204) return {ok:true};
+  if(res.status===409) return {ok:false, msg:'출고/수금 이력 있음'};
+  return {ok:false, msg:'삭제실패'};
+}
+async function saveClientRow(id) {
+  const r = await _saveClientCore(id);
+  showToast(r.ok ? '거래처 수정 완료' : `수정 실패 — ${r.msg}`);
+  if(r.ok){ await loadMasterData(); initMasterPage(); }
+}
+async function deleteClientRow(id) {
+  if(!confirm('이 거래처를 삭제할까요?\n되돌릴 수 없습니다. (출고/수금 이력이 있으면 삭제되지 않습니다)')) return;
+  const r = await _deleteClientCore(id);
+  showToast(r.ok ? '거래처 삭제 완료' : `삭제 실패 — ${r.msg}`);
+  if(r.ok){ await loadMasterData(); initMasterPage(); }
+}
+function _checkedClientIds(){ return [...document.querySelectorAll('#master-client-tbody input.client-chk:checked')].map(c=>c.dataset.id); }
+function toggleAllClient(cb){ document.querySelectorAll('#master-client-tbody input.client-chk').forEach(c=>c.checked=cb.checked); }
+async function saveSelectedClients() {
+  if(_bulkBusy) return;
+  const ids = _checkedClientIds();
+  if(!ids.length){ showToast('저장할 거래처를 선택하세요'); return; }
+  _bulkBusy = true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r = await _saveClientCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy = false; }
+  showToast(errs.length ? `${ok}건 저장, ${errs.length}건 실패` : `${ok}건 일괄 저장 완료`);
+  await loadMasterData(); initMasterPage();
+}
+async function deleteSelectedClients() {
+  if(_bulkBusy) return;
+  const ids = _checkedClientIds();
+  if(!ids.length){ showToast('삭제할 거래처를 선택하세요'); return; }
+  if(!confirm(`선택한 ${ids.length}건을 삭제할까요?\n되돌릴 수 없습니다. (출고/수금 이력이 있는 거래처는 건너뜁니다)`)) return;
+  _bulkBusy = true; let ok=0; const errs=[];
+  try { for(const id of ids){ const r = await _deleteClientCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
+  finally { _bulkBusy = false; }
+  showToast(errs.length ? `${ok}건 삭제, ${errs.length}건 실패(이력 있음)` : `${ok}건 일괄 삭제 완료`);
+  await loadMasterData(); initMasterPage();
 }
 
 // ── 거래처 변경 시 할인율 표시 + 출고가 재계산 ────
