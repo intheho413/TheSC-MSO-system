@@ -61,7 +61,12 @@ body{
 .nav-item:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.05)}
 .nav-item.active{color:#93c5fd;border-bottom-color:#60a5fa;font-weight:600;
                  text-shadow:0 0 16px rgba(96,165,250,0.45)}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-clock{font-size:12px;font-weight:600;color:rgba(255,255,255,0.62);
+           letter-spacing:.2px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.nav-clock b{color:#93c5fd;font-weight:700}
+html.light .nav-clock{color:rgba(0,0,0,0.55)}
+html.light .nav-clock b{color:#2563eb}
 .nav-icon-btn{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);
               background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.55);font-size:16px;
               cursor:pointer;display:flex;align-items:center;justify-content:center;
@@ -376,7 +381,7 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
   .content{padding:20px 24px}
 }
 @media(max-width:768px){
-  .nav-caption,.nav-sep,.nav-cats{display:none}
+  .nav-caption,.nav-sep,.nav-cats,.nav-clock{display:none}
   .nav-item{padding:0 10px;font-size:12px}
   .kpi-row{grid-template-columns:repeat(2,1fr)}
   .kpi-row.three{grid-template-columns:repeat(2,1fr)}
@@ -444,6 +449,7 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 
   <!-- 우측 아이콘 영역 -->
   <div class="nav-right">
+    <span id="nav-clock" class="nav-clock"></span>
     <button class="nav-icon-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="테마 전환"></button>
     <button class="nav-icon-btn" onclick="openSettings()" title="설정">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1503,7 +1509,8 @@ async function dbQuery(table, params='') {
 
 // ── 날짜 초기화 ──────────────────────────────────
 const TODAY = new Date();
-const fmt = d => d.toISOString().slice(0,10);
+// 로컬(한국) 날짜 기준 YYYY-MM-DD (toISOString은 UTC라 새벽/오전에 전날로 계산되는 문제 방지)
+const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 document.querySelectorAll('input[type=date]').forEach(el => el.value = fmt(TODAY));
 document.getElementById('kpi-today-sub').textContent = fmt(TODAY);
 document.getElementById('kpi-month-sub').textContent = TODAY.getFullYear()+'년 '+String(TODAY.getMonth()+1).padStart(2,'0')+'월';
@@ -1753,12 +1760,15 @@ function autoPlay(divId, dur=DUR, ease=EASE) {
 
 // ── 화장품 대시보드 차트 (Supabase 실데이터) ──────
 async function initDashboard() {
+  const TODAY = new Date();   // 항상 현재 날짜 재계산 (페이지 장시간 열림·자정 넘김 대응)
   const year    = TODAY.getFullYear();
   const monthPad = String(TODAY.getMonth()+1).padStart(2,'0');
   const todayStr = fmt(TODAY);
   const dow = TODAY.getDay() || 7;
   const weekStart = new Date(TODAY);
   weekStart.setDate(TODAY.getDate() - dow + 1);
+  // 오늘 날짜 표시도 갱신
+  const tsub=document.getElementById('kpi-today-sub'); if(tsub) tsub.textContent = todayStr;
 
   // stock_out 당해년도 전체 fetch
   const rows = await dbQuery('stock_out',
@@ -3462,8 +3472,22 @@ async function loadSettings() {
   }
 }
 
+// ── 실시간 날짜·시간 ─────────────────────────────
+function startClock() {
+  const el = document.getElementById('nav-clock');
+  if(!el) return;
+  const days = ['일','월','화','수','목','금','토'];
+  const p = n => String(n).padStart(2,'0');
+  const upd = () => {
+    const d = new Date();
+    el.innerHTML = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} (${days[d.getDay()]}) <b>${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}</b>`;
+  };
+  upd(); setInterval(upd, 1000);
+}
+
 // ── 초기 실행 ────────────────────────────────────
 window.addEventListener('load', async () => {
+  startClock();
   loadSettings();
   initReportRange();
   await loadMasterData();
