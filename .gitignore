@@ -2,5 +2,7 @@
 .claude/
 design_refs.html
 preview_topnav.html
+preview_recv.html
+preview_detail.html
 debug.txt
 supabase_setup.sql

@@ -310,6 +310,21 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 .tbl-wrap td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.05);color:#cbd5e1;line-height:1.4}
 .tbl-wrap tr:last-child td{border-bottom:none}
 .tbl-wrap tr:hover td{background:rgba(120,170,255,0.06)}
+/* 미수금 상세 표: 행바뀜 없이 숫자 우측정렬 + 컬럼 폭 고정 */
+#page-recv-detail .tbl-wrap table{table-layout:fixed;width:100%}
+#page-recv-detail .tbl-wrap th,#page-recv-detail .tbl-wrap td{padding:11px 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+#page-recv-detail .tbl-wrap th.num,#page-recv-detail .tbl-wrap td.num{text-align:right;font-variant-numeric:tabular-nums;overflow:visible;text-overflow:clip}
+#page-recv-detail .tbl-wrap td:first-child{overflow:visible}
+/* ① 오래된 순: 거래처/발생일/경과/미수금 */
+#rd-old-tbody tr td:nth-child(1),#page-recv-detail .card:first-child th:nth-child(1){width:34%}
+#page-recv-detail .card:first-child th:nth-child(2){width:23%}
+#page-recv-detail .card:first-child th:nth-child(3){width:18%}
+#page-recv-detail .card:first-child th:nth-child(4){width:25%}
+/* ② 금액 큰 순: 거래처/미수금/총매출/수금률 */
+#page-recv-detail .card:last-child th:nth-child(1){width:31%}
+#page-recv-detail .card:last-child th:nth-child(2){width:25%}
+#page-recv-detail .card:last-child th:nth-child(3){width:25%}
+#page-recv-detail .card:last-child th:nth-child(4){width:19%}
 /* 출고 수정 표: 퍼센트 고정 레이아웃 → 화면 폭에 항상 꽉 맞게 정렬 (날짜·거래처·품목·Lot·수량·출고가·저장) */
 #stock-tab-edit .tbl-wrap table{table-layout:fixed;width:100%;min-width:720px}
 #stock-tab-edit .tbl-wrap th,#stock-tab-edit .tbl-wrap td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;padding:10px 8px}
@@ -337,6 +352,8 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 #stock-tab-in .tbl-wrap td:nth-child(9) .btn{padding:5px 9px;font-size:12px}
 #stock-tab-edit .tbl-wrap td .form-control{width:100%;display:block}
 .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.rd-rank{display:inline-block;width:18px;color:rgba(255,255,255,.4);font-weight:700;font-size:12px}
+html.light .rd-rank{color:rgba(0,0,0,.35)}
 .badge-blue{background:rgba(58,130,255,0.15);color:#60a5fa}
 .badge-green{background:rgba(34,197,94,0.15);color:#4ade80}
 .badge-red{background:rgba(239,68,68,0.15);color:#f87171}
@@ -573,7 +590,7 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
   </div>
   <!-- KPI Row 2 -->
   <div class="kpi-row three">
-    <div class="kpi"><div class="kpi-label">미수금 합계</div>
+    <div class="kpi kpi-clickable" onclick="openRecvDetail()"><span class="kpi-go">›</span><div class="kpi-label">미수금 합계</div>
       <div class="kpi-value accent" id="kpi-recv">0</div>
       <div class="kpi-sub">전체 누적</div></div>
     <div class="kpi"><div class="kpi-label">이번달 평균 마진율</div>
@@ -631,6 +648,40 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
       <thead><tr><th>제품명</th><th>제품군</th><th>현재고</th><th>최소재고</th><th>부족수량</th><th>상태</th></tr></thead>
       <tbody id="ld-tbody"></tbody>
     </table>
+  </div>
+</div>
+
+<!-- ════ 미수금 상세 (KPI 박스 드릴다운) ════ -->
+<div id="page-recv-detail" class="page" style="display:none">
+  <div class="detail-back" onclick="backToReport()">← 리포트로</div>
+  <div class="page-title">미수금 상세</div>
+  <div class="page-sub" id="rd-sub">출고 등록일 기준 · 출고−수금</div>
+  <div class="kpi-row three">
+    <div class="kpi"><div class="kpi-label">전체 미수금</div><div class="kpi-value accent" id="rd-total">₩0</div></div>
+    <div class="kpi"><div class="kpi-label">미수 거래처</div><div class="kpi-value" id="rd-count">0곳</div></div>
+    <div class="kpi"><div class="kpi-label">최장 경과</div><div class="kpi-value" id="rd-max">0일</div></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">미수 오래된 순 (장기 미수)</div>
+      <div class="card-sub">아직 안 받은 가장 오래된 출고 등록일 기준</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>거래처</th><th>미수 발생일</th><th class="num">경과</th><th class="num">미수금</th></tr></thead>
+          <tbody id="rd-old-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">미수금 큰 순</div>
+      <div class="card-sub">미수금액 내림차순</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>거래처</th><th class="num">미수금</th><th class="num">총매출</th><th class="num">수금률</th></tr></thead>
+          <tbody id="rd-big-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1971,6 +2022,79 @@ async function openLowDetail() {
   if(!low.length){ tb.innerHTML = emptyRow(6,'재고 부족 품목이 없습니다'); window.scrollTo(0,0); return; }
   tb.innerHTML = low.map(p=>{ const cur=sm[p.id]||0, short=(p.min_stock||0)-cur; const cls=cur<=0?'badge-red':'badge-amber';
     return `<tr><td>${p.name||p.id}</td><td>${p.product_group||'—'}</td><td>${cur}</td><td>${p.min_stock||0}</td><td>${short}</td><td><span class="badge ${cls}">${cur<=0?'품절':'부족'}</span></td></tr>`;
+  }).join('');
+  window.scrollTo(0,0);
+}
+
+// ── KPI 박스 드릴다운: 미수금 상세 ──────────────
+async function openRecvDetail() {
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const pg = document.getElementById('page-recv-detail');
+  pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
+  const oldTb = document.getElementById('rd-old-tbody'), bigTb = document.getElementById('rd-big-tbody');
+  oldTb.innerHTML = emptyRow(4,'불러오는 중...'); bigTb.innerHTML = emptyRow(4,'불러오는 중...');
+
+  const [outs, pays, clients] = await Promise.all([
+    dbQuery('stock_out','?select=client_id,total_amount,date'),
+    dbQuery('payments', '?select=client_id,amount'),
+    dbQuery('clients',  '?select=id,name'),
+  ]);
+  const cmap = {}; (clients||[]).forEach(c=>cmap[c.id]=c.name);
+
+  // 거래처별 출고 묶기 (출고 등록일 오름차순)
+  const byClient = {};
+  (outs||[]).forEach(r=>{ (byClient[r.client_id] ||= []).push(r); });
+  const paid = {}; (pays||[]).forEach(r=>{ paid[r.client_id]=(paid[r.client_id]||0)+(r.amount||0); });
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const rows = [];
+  Object.keys(byClient).forEach(cid=>{
+    const list = byClient[cid].slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+    const totalOut = list.reduce((s,r)=>s+(r.total_amount||0),0);
+    const totalPaid = paid[cid]||0;
+    const bal = totalOut - totalPaid;
+    if(bal <= 0) return;
+    // FIFO: 오래된 출고부터 수금액 차감 → 처음으로 완전 충당되지 않은 출고의 날짜 = 미수 발생일
+    let remain = totalPaid, originDate = null;
+    for(const r of list){
+      const amt = r.total_amount||0;
+      if(remain >= amt){ remain -= amt; continue; }
+      originDate = r.date; break;
+    }
+    if(!originDate) originDate = list[0]?.date || null;
+    let days = 0;
+    if(originDate){ const d=new Date(originDate); d.setHours(0,0,0,0); days = Math.round((today-d)/86400000); }
+    const rate = totalOut>0 ? Math.round(totalPaid/totalOut*100) : 0;
+    rows.push({ name: cmap[cid]||('거래처'+cid), originDate, days, bal, totalOut, rate });
+  });
+
+  // 요약
+  const totalRecv = rows.reduce((s,r)=>s+r.bal,0);
+  const maxDays = rows.reduce((m,r)=>Math.max(m,r.days),0);
+  document.getElementById('rd-total').textContent = W(totalRecv);
+  document.getElementById('rd-count').textContent = rows.length + '곳';
+  document.getElementById('rd-max').textContent   = maxDays + '일';
+  document.getElementById('rd-sub').textContent   = `${fmt(today)} 기준 · 출고 등록일 기준 · 출고−수금`;
+
+  if(!rows.length){
+    oldTb.innerHTML = emptyRow(4,'미수금이 없습니다');
+    bigTb.innerHTML = emptyRow(4,'미수금이 없습니다');
+    window.scrollTo(0,0); return;
+  }
+
+  const dcls = d => d>=120?'badge-red':d>=60?'badge-amber':'badge-green';
+  // ① 오래된 순 (미수 발생일 오름차순 = 경과 큰 순)
+  const oldSorted = rows.slice().sort((a,b)=>b.days-a.days);
+  oldTb.innerHTML = oldSorted.map((r,i)=>
+    `<tr><td><span class="rd-rank">${i+1}</span>${r.name}</td><td>${r.originDate||'—'}</td>`+
+    `<td class="num"><span class="badge ${dcls(r.days)}">${r.days}일</span></td><td class="num">${W(r.bal)}</td></tr>`
+  ).join('');
+  // ② 금액 큰 순
+  const bigSorted = rows.slice().sort((a,b)=>b.bal-a.bal);
+  bigTb.innerHTML = bigSorted.map((r,i)=>{
+    const rcls = r.rate===0?'badge-red':r.rate>=50?'badge-green':'badge-amber';
+    return `<tr><td><span class="rd-rank">${i+1}</span>${r.name}</td><td class="num">${W(r.bal)}</td>`+
+      `<td class="num">${W(r.totalOut)}</td><td class="num"><span class="badge ${rcls}">${r.rate}%</span></td></tr>`;
   }).join('');
   window.scrollTo(0,0);
 }
