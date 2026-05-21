@@ -221,10 +221,16 @@ html.light .tog-btn.active{background:rgba(37,99,235,0.1);border-color:#2563eb;c
 .kpi-clickable{cursor:pointer}
 .kpi-clickable .kpi-go{position:absolute;top:14px;right:16px;font-size:18px;font-weight:700;color:rgba(147,197,253,0.55);transition:transform .18s,color .18s}
 .kpi-clickable:hover .kpi-go{color:#93c5fd;transform:translateX(3px)}
+.chart-card{cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}
+.chart-card:hover{border-color:rgba(120,170,255,.4);box-shadow:0 12px 32px rgba(0,0,0,.34)}
+.chart-expand{float:right;font-size:11px;font-weight:600;color:rgba(147,197,253,0.7);transition:color .18s,transform .18s}
+.chart-card:hover .chart-expand{color:#93c5fd}
+html.light .chart-expand{color:rgba(37,99,235,0.6)}
 .detail-back{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;color:#93c5fd;cursor:pointer;margin-bottom:10px;transition:opacity .15s}
 .detail-back:hover{opacity:.7}
-#sd-tbody tr.row-total td{font-weight:700;color:#fff;background:rgba(96,165,250,0.1)}
-html.light #sd-tbody tr.row-total td{color:#1e293b;background:rgba(37,99,235,0.08)}
+#page-chart-detail .tbl-wrap th.num,#page-chart-detail .tbl-wrap td.num{text-align:right;font-variant-numeric:tabular-nums}
+#sd-tbody tr.row-total td,#msd-tbody tr.row-total td,#cd-tbody tr.row-total td{font-weight:700;color:#fff;background:rgba(96,165,250,0.1)}
+html.light #sd-tbody tr.row-total td,html.light #msd-tbody tr.row-total td,html.light #cd-tbody tr.row-total td{color:#1e293b;background:rgba(37,99,235,0.08)}
 html.light .kpi-clickable .kpi-go{color:rgba(37,99,235,0.5)}
 html.light .kpi-clickable:hover .kpi-go{color:#2563eb}
 html.light .detail-back{color:#2563eb}
@@ -326,18 +332,19 @@ input[type=range]{width:100%;accent-color:#3A82FF;height:4px}
 #page-recv-detail .card:last-child th:nth-child(2),#page-med-recv-detail .card:last-child th:nth-child(2){width:25%}
 #page-recv-detail .card:last-child th:nth-child(3),#page-med-recv-detail .card:last-child th:nth-child(3){width:25%}
 #page-recv-detail .card:last-child th:nth-child(4),#page-med-recv-detail .card:last-child th:nth-child(4){width:19%}
-/* 출고 수정 표: 퍼센트 고정 레이아웃 → 화면 폭에 항상 꽉 맞게 정렬 (날짜·거래처·품목·Lot·수량·출고가·저장) */
-#stock-tab-edit .tbl-wrap table{table-layout:fixed;width:100%;min-width:720px}
+/* 출고 수정 표: 퍼센트 고정 레이아웃 → 화면 폭에 항상 꽉 맞게 정렬 (날짜·거래처·품목·Lot·수량·출고가·비고·작업) */
+#stock-tab-edit .tbl-wrap table{table-layout:fixed;width:100%;min-width:840px}
 #stock-tab-edit .tbl-wrap th,#stock-tab-edit .tbl-wrap td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;padding:10px 8px}
 #stock-tab-edit .tbl-wrap th:nth-child(1),#stock-tab-edit .tbl-wrap td:nth-child(1){width:4%;overflow:visible}
-#stock-tab-edit .tbl-wrap th:nth-child(2),#stock-tab-edit .tbl-wrap td:nth-child(2){width:10%}
-#stock-tab-edit .tbl-wrap th:nth-child(3),#stock-tab-edit .tbl-wrap td:nth-child(3){width:13%}
-#stock-tab-edit .tbl-wrap th:nth-child(4),#stock-tab-edit .tbl-wrap td:nth-child(4){width:17%}
-#stock-tab-edit .tbl-wrap th:nth-child(5),#stock-tab-edit .tbl-wrap td:nth-child(5){width:21%}
-#stock-tab-edit .tbl-wrap th:nth-child(6),#stock-tab-edit .tbl-wrap td:nth-child(6){width:8%}
-#stock-tab-edit .tbl-wrap th:nth-child(7),#stock-tab-edit .tbl-wrap td:nth-child(7){width:12%}
-#stock-tab-edit .tbl-wrap th:nth-child(8),#stock-tab-edit .tbl-wrap td:nth-child(8){width:15%;overflow:visible}
-#stock-tab-edit .tbl-wrap td:nth-child(8) .btn{padding:5px 9px;font-size:12px}
+#stock-tab-edit .tbl-wrap th:nth-child(2),#stock-tab-edit .tbl-wrap td:nth-child(2){width:9%}
+#stock-tab-edit .tbl-wrap th:nth-child(3),#stock-tab-edit .tbl-wrap td:nth-child(3){width:11%}
+#stock-tab-edit .tbl-wrap th:nth-child(4),#stock-tab-edit .tbl-wrap td:nth-child(4){width:14%}
+#stock-tab-edit .tbl-wrap th:nth-child(5),#stock-tab-edit .tbl-wrap td:nth-child(5){width:17%}
+#stock-tab-edit .tbl-wrap th:nth-child(6),#stock-tab-edit .tbl-wrap td:nth-child(6){width:7%}
+#stock-tab-edit .tbl-wrap th:nth-child(7),#stock-tab-edit .tbl-wrap td:nth-child(7){width:11%}
+#stock-tab-edit .tbl-wrap th:nth-child(8),#stock-tab-edit .tbl-wrap td:nth-child(8){width:13%}
+#stock-tab-edit .tbl-wrap th:nth-child(9),#stock-tab-edit .tbl-wrap td:nth-child(9){width:14%;overflow:visible}
+#stock-tab-edit .tbl-wrap td:nth-child(9) .btn{padding:5px 9px;font-size:12px}
 /* 입고 내역 표: 고정 컬럼 정렬 (체크·날짜·품목·Lot·수량·입고가·잔여·유통기한·작업) */
 #stock-tab-in .tbl-wrap table{table-layout:fixed;width:100%;min-width:760px}
 #stock-tab-in .tbl-wrap th,#stock-tab-in .tbl-wrap td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;padding:10px 8px}
@@ -605,13 +612,13 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
 
   <!-- 차트 2열 -->
   <div class="two-col" style="margin-top:8px">
-    <div class="card">
-      <div class="card-title">월별 매출 추이</div>
+    <div class="card chart-card" onclick="openChartDetail('monthly')">
+      <div class="card-title">월별 매출 추이 <span class="chart-expand">전체 보기 ›</span></div>
       <div class="card-sub">출고 기준</div>
       <div id="chart-monthly" style="height:240px"></div>
     </div>
-    <div class="card">
-      <div class="card-title">연도별 매출 추이</div>
+    <div class="card chart-card" onclick="openChartDetail('yearly')">
+      <div class="card-title">연도별 매출 추이 <span class="chart-expand">전체 보기 ›</span></div>
       <div class="card-sub">출고 기준</div>
       <div id="chart-yearly" style="height:240px"></div>
     </div>
@@ -682,6 +689,20 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
           <tbody id="rd-big-tbody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ 차트 전체 보기 (그래프 드릴다운) ════ -->
+<div id="page-chart-detail" class="page" style="display:none">
+  <div class="detail-back" onclick="backFromChart()">← 리포트로</div>
+  <div class="page-title" id="cd-title">전체 보기</div>
+  <div class="page-sub" id="cd-sub"></div>
+  <div class="card"><div id="cd-chart" style="height:460px"></div></div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">데이터</div>
+    <div class="tbl-wrap" style="margin-top:10px">
+      <table><thead id="cd-thead"></thead><tbody id="cd-tbody"></tbody></table>
     </div>
   </div>
 </div>
@@ -848,7 +869,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
       <div class="info-box" id="out-price-info" style="margin-bottom:12px">거래처·품목 선택 시 <b>납품가×(1−할인율)</b>로 자동 계산됩니다. 프로모션·특별가는 출고가를 직접 수정하세요.</div>
       <div class="form-group">
         <label class="form-label">메모 (선택)</label>
-        <input type="text" class="form-control" id="out-note" placeholder="프로모션/특별가 사유 등 (전체 공통)">
+        <input type="text" class="form-control" id="out-note" placeholder="지점명 / 프로모션·특별가 사유 등 (전체 공통)">
       </div>
       <button class="btn btn-secondary btn-full" onclick="addOutItem()">목록에 추가</button>
     </div>
@@ -939,7 +960,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     </div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleAllEdit(this)" title="전체 선택"></th><th>날짜</th><th>거래처</th><th>품목</th><th>Lot No.</th><th>수량</th><th>출고가(단가)</th><th>작업</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllEdit(this)" title="전체 선택"></th><th>날짜</th><th>거래처</th><th>품목</th><th>Lot No.</th><th>수량</th><th>출고가(단가)</th><th>비고</th><th>작업</th></tr></thead>
         <tbody id="stock-edit-tbody"><tr><td colspan="8" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">조회 버튼을 눌러 출고 내역을 불러오세요</td></tr></tbody>
       </table>
     </div>
@@ -1176,12 +1197,12 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
   </div>
 
   <div class="two-col">
-    <div class="card">
-      <div class="card-title">월별 납품액 추이</div>
+    <div class="card chart-card" onclick="openChartDetail('medMonthly')">
+      <div class="card-title">월별 납품액 추이 <span class="chart-expand">전체 보기 ›</span></div>
       <div id="med-chart-monthly" style="height:260px"></div>
     </div>
-    <div class="card">
-      <div class="card-title">결제방식별 비중</div>
+    <div class="card chart-card" onclick="openChartDetail('medPay')">
+      <div class="card-title">결제방식별 비중 <span class="chart-expand">전체 보기 ›</span></div>
       <div id="med-chart-pay" style="height:260px"></div>
     </div>
   </div>
@@ -1916,6 +1937,10 @@ function autoPlay(divId, dur=DUR, ease=EASE) {
   }, 400);
 }
 
+// 차트 드릴다운용 데이터 저장소
+const chartData = {};
+let _chartDetailCat = 'cosm';
+
 // ── E4 추이 차트: 글로우 라인 + 세로 페이드 영역 + 마커 (선택적 마진 라인) ──
 function trendChart(divId, xs, salesArr, marginArr, opt={}) {
   const el = document.getElementById(divId);
@@ -2044,18 +2069,18 @@ async function initDashboard() {
   });
 
   // 월별 차트 (E4: 글로우 라인 + 세로 페이드 영역 + 마진 라인)
-  trendChart('chart-monthly', months, salesM, marginM, {
-    salesColor:'#60A5FA', glow:'rgba(96,165,250,0.22)',
-    fill0:'rgba(96,165,250,0)', fill1:'rgba(96,165,250,0.5)',
-    marginColor:'#FBBF24', dec:1,
-  });
+  const monthlyOpt = {salesColor:'#60A5FA', glow:'rgba(96,165,250,0.22)',
+    fill0:'rgba(96,165,250,0)', fill1:'rgba(96,165,250,0.5)', marginColor:'#FBBF24', dec:1};
+  chartData.monthly = {x:months, sales:salesM, margin:marginM, opt:monthlyOpt,
+    title:'월별 매출 추이', sub:'출고 기준 · 단위 백만원', cat:'cosm', kind:'trend'};
+  trendChart('chart-monthly', months, salesM, marginM, monthlyOpt);
 
   // 연도별 차트 (E4: 글로우 라인 + 세로 페이드 영역 + 마진 라인 / 퍼플 톤)
-  trendChart('chart-yearly', years, salesY, marginY, {
-    salesColor:'#A78BFA', glow:'rgba(167,139,250,0.22)',
-    fill0:'rgba(167,139,250,0)', fill1:'rgba(167,139,250,0.5)',
-    marginColor:'#FBBF24', dec:0,
-  });
+  const yearlyOpt = {salesColor:'#A78BFA', glow:'rgba(167,139,250,0.22)',
+    fill0:'rgba(167,139,250,0)', fill1:'rgba(167,139,250,0.5)', marginColor:'#FBBF24', dec:0};
+  chartData.yearly = {x:years, sales:salesY, margin:marginY, opt:yearlyOpt,
+    title:'연도별 매출 추이', sub:'출고 기준 · 단위 백만원', cat:'cosm', kind:'trend'};
+  trendChart('chart-yearly', years, salesY, marginY, yearlyOpt);
 }
 
 // ── KPI 박스 드릴다운: 매출 상세 (거래처별 + 마진율) ──
@@ -2192,6 +2217,67 @@ function backToReport() {
 }
 function backToMedReport() {
   navigate('med-report', document.querySelector('#nav-menu-med .nav-item'));
+}
+function backFromChart() {
+  if(_chartDetailCat==='med') backToMedReport(); else backToReport();
+}
+
+// ── 그래프 클릭 → 전체 보기 드릴다운 (큰 차트 + 데이터 표) ──
+function openChartDetail(type) {
+  const d = chartData[type];
+  if(!d){ showToast('데이터를 먼저 불러오세요'); return; }
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const pg = document.getElementById('page-chart-detail');
+  pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
+  _chartDetailCat = d.cat;
+  document.getElementById('cd-title').textContent = d.title + ' — 전체 보기';
+  document.getElementById('cd-sub').textContent = d.sub || '';
+  const thead = document.getElementById('cd-thead'), tbody = document.getElementById('cd-tbody');
+
+  if(d.kind==='trend'){
+    trendChart('cd-chart', d.x, d.sales, d.margin, d.opt);
+    const won = !!d.opt.won, hasM = Array.isArray(d.margin);
+    const sLbl = d.opt.salesLabel || '매출';
+    const fmtV = v => won ? W(Math.round(v)) : (Number(v||0).toFixed(d.opt.dec ?? 1)+'백만');
+    thead.innerHTML = hasM
+      ? `<tr><th>기간</th><th class="num">${sLbl}</th><th class="num">마진</th><th class="num">마진율</th></tr>`
+      : `<tr><th>기간</th><th class="num">${sLbl}</th></tr>`;
+    let html = d.x.map((x,i)=>{
+      const s = d.sales[i]||0;
+      if(hasM){ const m=d.margin[i]||0, rate=s>0?(m/s*100).toFixed(1):'0.0';
+        return `<tr><td>${x}</td><td class="num">${fmtV(s)}</td><td class="num">${fmtV(m)}</td><td class="num">${rate}%</td></tr>`; }
+      return `<tr><td>${x}</td><td class="num">${fmtV(s)}</td></tr>`;
+    }).join('');
+    const st = d.sales.reduce((a,b)=>a+(b||0),0);
+    if(hasM){ const mt=d.margin.reduce((a,b)=>a+(b||0),0), rt=st>0?(mt/st*100).toFixed(1):'0.0';
+      html += `<tr class="row-total"><td>합계</td><td class="num">${fmtV(st)}</td><td class="num">${fmtV(mt)}</td><td class="num">${rt}%</td></tr>`; }
+    else html += `<tr class="row-total"><td>합계</td><td class="num">${fmtV(st)}</td></tr>`;
+    tbody.innerHTML = html;
+  } else if(d.kind==='pie'){
+    const labels=d.labels||[], values=d.values||[];
+    if(!labels.length){
+      document.getElementById('cd-chart').innerHTML =
+        '<div style="height:460px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3)">데이터 없음</div>';
+      thead.innerHTML=''; tbody.innerHTML=emptyRow(3,'데이터 없음');
+    } else {
+      Plotly.newPlot('cd-chart',[{
+        type:'pie', hole:0.6, labels, values,
+        marker:{colors:AC, line:{color:'rgba(7,11,20,0.6)',width:3}},
+        textinfo:'label+percent', textfont:{size:13,color:TEXT},
+        hovertemplate:'<b>%{label}</b><br>₩%{value:,.0f}<br>%{percent}<extra></extra>', sort:true, direction:'clockwise',
+      }],{paper_bgcolor:BG,font:{family:FF,color:TEXT},showlegend:true,
+        legend:{orientation:'v',x:1,y:0.5,font:{color:DIM}},margin:{l:10,r:10,t:20,b:20},
+      },{displayModeBar:false,responsive:true});
+      const tot = values.reduce((a,b)=>a+(b||0),0);
+      thead.innerHTML = `<tr><th>결제방식</th><th class="num">금액</th><th class="num">비중</th></tr>`;
+      const idx = labels.map((l,i)=>i).sort((a,b)=>values[b]-values[a]);
+      tbody.innerHTML = idx.map(i=>{
+        const pct = tot>0?(values[i]/tot*100).toFixed(1):'0.0';
+        return `<tr><td>${labels[i]}</td><td class="num">${W(values[i])}</td><td class="num">${pct}%</td></tr>`;
+      }).join('') + `<tr class="row-total"><td>합계</td><td class="num">${W(tot)}</td><td class="num">100%</td></tr>`;
+    }
+  }
+  window.scrollTo(0,0);
 }
 
 // ── 의료장비 KPI 드릴다운: 납품 상세 (병원별) ──────────
@@ -2413,12 +2499,14 @@ async function initMedReport() {
   countUp(document.getElementById('med-kpi-recv'),  recvV,  '₩');
   countUp(document.getElementById('med-kpi-comm'),  commV,  '₩');
 
+  const medOpt = {salesColor:'#22D3EE', glow:'rgba(34,211,238,0.22)',
+    fill0:'rgba(34,211,238,0)', fill1:'rgba(34,211,238,0.5)', salesLabel:'납품액', won:true};
+  chartData.medMonthly = {x:months, sales:vals, margin:null, opt:medOpt,
+    title:'월별 납품액 추이', sub:'납품 기준', cat:'med', kind:'trend'};
+  chartData.medPay = {labels:payLabels, values:payVals,
+    title:'결제방식별 비중', sub:'납품액 기준', cat:'med', kind:'pie'};
   if(months.length) {
-    trendChart('med-chart-monthly', months, vals, null, {
-      salesColor:'#22D3EE', glow:'rgba(34,211,238,0.22)',
-      fill0:'rgba(34,211,238,0)', fill1:'rgba(34,211,238,0.5)',
-      salesLabel:'납품액', won:true,
-    });
+    trendChart('med-chart-monthly', months, vals, null, medOpt);
   } else {
     document.getElementById('med-chart-monthly').innerHTML =
       '<div style="height:260px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3)">납품 데이터 없음</div>';
@@ -3527,7 +3615,7 @@ async function loadEditList() {
   (allLots||[]).forEach(l=>{ (lotsByProd[l.product_id]=lotsByProd[l.product_id]||[]).push(l); });
   const tb = document.getElementById('stock-edit-tbody');
   if(!tb) return;
-  if(!rows.length){ tb.innerHTML = emptyRow(7,'해당 조건의 출고 내역이 없습니다'); return; }
+  if(!rows.length){ tb.innerHTML = emptyRow(9,'해당 조건의 출고 내역이 없습니다'); return; }
   tb.innerHTML = rows.map(r=>{
     const curLot = _parseLot(r.note);
     const unit = r.quantity ? Math.round((r.total_amount||0)/r.quantity) : 0;
@@ -3548,6 +3636,7 @@ async function loadEditList() {
       <td><select class="form-control" style="font-size:12px;padding:6px 8px" id="edit-lot-${r.id}">${lotOpts}</select></td>
       <td><input type="number" class="form-control" style="padding:6px 8px" value="${r.quantity||0}" min="1" id="edit-qty-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:6px 8px" value="${unit}" step="1000" id="edit-price-${r.id}"></td>
+      <td><input type="text" class="form-control" style="padding:6px 8px;font-size:12px" value="${(_noteMemo(r.note)||'').replace(/"/g,'&quot;')}" placeholder="지점/메모" id="edit-memo-${r.id}"></td>
       <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" onclick="saveEditRow(${r.id})">저장</button><button class="btn btn-danger" onclick="deleteOutRow(${r.id})">삭제</button></div></td>
     </tr>`;
   }).join('');
@@ -3598,7 +3687,9 @@ async function _saveEditCore(id) {
 
   const total = unit*newQty, supply = Math.round(total/1.1), vat = total - supply;
   const margin = total - (newCost*newQty), marginRate = total>0 ? Math.round(margin/total*10000)/100 : 0;
-  const memo = _noteMemo(d.note);
+  // 비고: 편집칸 값 우선, 없으면 기존 메모 유지
+  const memoInput = document.getElementById('edit-memo-'+id);
+  const memo = (memoInput ? memoInput.value : _noteMemo(d.note) || '').trim();
   const note = 'Lot: ' + label + (memo ? ' / '+memo : '');
   const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_out?id=eq.${id}`,{method:'PATCH',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
