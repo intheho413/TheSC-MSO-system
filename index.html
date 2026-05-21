@@ -1916,6 +1916,48 @@ function autoPlay(divId, dur=DUR, ease=EASE) {
   }, 400);
 }
 
+// ── E4 추이 차트: 글로우 라인 + 세로 페이드 영역 + 마커 (선택적 마진 라인) ──
+function trendChart(divId, xs, salesArr, marginArr, opt={}) {
+  const el = document.getElementById(divId);
+  if(!el) return;
+  const sc    = opt.salesColor || '#60A5FA';
+  const glow  = opt.glow       || 'rgba(96,165,250,0.22)';
+  const fill0 = opt.fill0      || 'rgba(96,165,250,0)';
+  const fill1 = opt.fill1      || 'rgba(96,165,250,0.5)';
+  const mc    = opt.marginColor|| '#FBBF24';
+  const dec   = (opt.dec ?? 1);
+  const sLabel= opt.salesLabel || '매출';
+  const n = xs.length, zeros = Array(n).fill(0);
+  const hasMargin = Array.isArray(marginArr);
+  const sHover = opt.won
+    ? `<b>%{x}</b><br>${sLabel}: ₩%{y:,.0f}<extra></extra>`
+    : `<b>%{x}</b><br>${sLabel}: %{y:.${dec}f}백만원<extra></extra>`;
+  const mHover = opt.won
+    ? `마진: ₩%{y:,.0f}<extra></extra>`
+    : `마진: %{y:.${dec}f}백만원<extra></extra>`;
+  const traces = [
+    {type:'scatter', x:xs, y:zeros, mode:'lines', name:'glow',
+     line:{shape:'spline',color:glow,width:11}, hoverinfo:'skip', showlegend:false},
+    {type:'scatter', x:xs, y:zeros, mode:'lines+markers', name:sLabel,
+     line:{shape:'spline',color:sc,width:3},
+     marker:{size:8,color:'#bfdbfe',line:{color:sc,width:2}},
+     fill:'tozeroy', fillgradient:{type:'vertical',colorscale:[[0,fill0],[1,fill1]]},
+     hovertemplate:sHover},
+  ];
+  if(hasMargin) traces.push(
+    {type:'scatter', x:xs, y:zeros, mode:'lines+markers', name:'마진',
+     line:{shape:'spline',color:mc,width:2.5},
+     marker:{size:6,color:'#fde68a',line:{color:mc,width:1.5}},
+     hovertemplate:mHover});
+  Plotly.newPlot(divId, traces, dsLayout({margin:{l:38,r:16,t:10,b:24},
+    yaxis:{showgrid:true,gridcolor:GRID,zeroline:false,tickfont:{color:DIM},automargin:true}}),
+    {displayModeBar:false, responsive:true});
+  const startData = hasMargin ? [{y:zeros},{y:zeros},{y:zeros}] : [{y:zeros},{y:zeros}];
+  const endData   = hasMargin ? [{y:zeros},{y:salesArr},{y:marginArr}] : [{y:zeros},{y:salesArr}];
+  Plotly.addFrames(divId, [{name:'0',data:startData},{name:'1',data:endData}]);
+  autoPlay(divId);
+}
+
 // ── 화장품 대시보드 차트 (Supabase 실데이터) ──────
 async function initDashboard() {
   const TODAY = new Date();   // 항상 현재 날짜 재계산 (페이지 장시간 열림·자정 넘김 대응)
@@ -2001,51 +2043,19 @@ async function initDashboard() {
     if(yi>=0) { salesY[yi]+=(r.total_amount||0)/1_000_000; marginY[yi]+=(r.margin_amount||0)/1_000_000; }
   });
 
-  // 월별 차트 (그라데이션 막대 + 발광 스플라인)
-  Plotly.newPlot('chart-monthly', [
-    {type:'bar', x:months, y:Array(12).fill(0), name:'매출',
-     marker:{color:salesM,colorscale:BAR_CS,cmin:0,
-       line:{color:'rgba(120,180,255,0.35)',width:1}}, opacity:0.92,
-     hovertemplate:'<b>%{x}</b><br>매출: %{y:.1f}백만원<extra></extra>'},
-    {type:'scatter', x:months, y:Array(12).fill(0), name:'마진 글로우',
-     mode:'lines', line:{shape:'spline',color:'rgba(34,211,238,0.25)',width:8},
-     yaxis:'y2', hoverinfo:'skip', showlegend:false},
-    {type:'scatter', x:months, y:Array(12).fill(0), name:'마진',
-     mode:'lines+markers', line:{shape:'spline',color:AC[1],width:2.5},
-     marker:{size:6,color:'#a5f3fc',line:{color:AC[1],width:1.5}}, yaxis:'y2',
-     hovertemplate:'마진: %{y:.1f}백만원<extra></extra>'},
-  ], dsLayout({
-    yaxis2:{overlaying:'y',side:'right',showgrid:false,tickfont:{color:DIM}},
-    bargap:0.45, margin:{l:0,r:30,t:10,b:10},
-  }), {displayModeBar:false, responsive:true});
-  Plotly.addFrames('chart-monthly', [
-    {name:'0', data:[{y:Array(12).fill(0)},{y:Array(12).fill(0)},{y:Array(12).fill(0)}]},
-    {name:'1', data:[{y:salesM},{y:marginM},{y:marginM}]},
-  ]);
-  autoPlay('chart-monthly');
+  // 월별 차트 (E4: 글로우 라인 + 세로 페이드 영역 + 마진 라인)
+  trendChart('chart-monthly', months, salesM, marginM, {
+    salesColor:'#60A5FA', glow:'rgba(96,165,250,0.22)',
+    fill0:'rgba(96,165,250,0)', fill1:'rgba(96,165,250,0.5)',
+    marginColor:'#FBBF24', dec:1,
+  });
 
-  // 연도별 차트 (그라데이션 막대 + 발광 스플라인)
-  Plotly.newPlot('chart-yearly', [
-    {type:'bar', x:years, y:Array(4).fill(0), name:'매출',
-     marker:{color:salesY,colorscale:BAR_CS2,cmin:0,
-       line:{color:'rgba(150,140,255,0.35)',width:1}}, opacity:0.92,
-     hovertemplate:'<b>%{x}</b><br>매출: %{y:.0f}백만원<extra></extra>'},
-    {type:'scatter', x:years, y:Array(4).fill(0), name:'마진 글로우',
-     mode:'lines', line:{shape:'spline',color:'rgba(251,191,36,0.25)',width:8},
-     yaxis:'y2', hoverinfo:'skip', showlegend:false},
-    {type:'scatter', x:years, y:Array(4).fill(0), name:'마진',
-     mode:'lines+markers', line:{shape:'spline',color:AC[3],width:2.5},
-     marker:{size:7,color:'#fde68a',line:{color:AC[3],width:1.5}}, yaxis:'y2',
-     hovertemplate:'마진: %{y:.0f}백만원<extra></extra>'},
-  ], dsLayout({
-    yaxis2:{overlaying:'y',side:'right',showgrid:false,tickfont:{color:DIM}},
-    bargap:0.5, margin:{l:0,r:30,t:10,b:10},
-  }), {displayModeBar:false, responsive:true});
-  Plotly.addFrames('chart-yearly', [
-    {name:'0', data:[{y:Array(4).fill(0)},{y:Array(4).fill(0)},{y:Array(4).fill(0)}]},
-    {name:'1', data:[{y:salesY},{y:marginY},{y:marginY}]},
-  ]);
-  autoPlay('chart-yearly', 900);
+  // 연도별 차트 (E4: 글로우 라인 + 세로 페이드 영역 + 마진 라인 / 퍼플 톤)
+  trendChart('chart-yearly', years, salesY, marginY, {
+    salesColor:'#A78BFA', glow:'rgba(167,139,250,0.22)',
+    fill0:'rgba(167,139,250,0)', fill1:'rgba(167,139,250,0.5)',
+    marginColor:'#FBBF24', dec:0,
+  });
 }
 
 // ── KPI 박스 드릴다운: 매출 상세 (거래처별 + 마진율) ──
@@ -2404,14 +2414,11 @@ async function initMedReport() {
   countUp(document.getElementById('med-kpi-comm'),  commV,  '₩');
 
   if(months.length) {
-    Plotly.newPlot('med-chart-monthly',[
-      {type:'bar',x:months,y:Array(months.length).fill(0),name:'납품액',
-       marker:{color:vals,colorscale:BAR_CS,cmin:0,
-         line:{color:'rgba(120,180,255,0.35)',width:1}},opacity:0.92,
-       hovertemplate:'<b>%{x}</b><br>₩%{y:,.0f}<extra></extra>'},
-    ],dsLayout({bargap:0.45,margin:{l:0,r:0,t:10,b:10}}),{displayModeBar:false,responsive:true});
-    Plotly.addFrames('med-chart-monthly',[{name:'0',data:[{y:Array(months.length).fill(0)}]},{name:'1',data:[{y:vals}]}]);
-    autoPlay('med-chart-monthly');
+    trendChart('med-chart-monthly', months, vals, null, {
+      salesColor:'#22D3EE', glow:'rgba(34,211,238,0.22)',
+      fill0:'rgba(34,211,238,0)', fill1:'rgba(34,211,238,0.5)',
+      salesLabel:'납품액', won:true,
+    });
   } else {
     document.getElementById('med-chart-monthly').innerHTML =
       '<div style="height:260px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3)">납품 데이터 없음</div>';
