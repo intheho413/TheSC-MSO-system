@@ -1029,13 +1029,15 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
         <option value="">거래처 선택</option>
       </select>
     </div>
-    <div class="btn-group" style="margin-top:12px;margin-bottom:12px">
+    <div class="btn-group" style="margin-top:12px;margin-bottom:12px;align-items:center">
+      <span class="selcount" id="ledger-selcount" style="font-size:12px;color:#93c5fd;font-weight:600;margin-right:4px"></span>
+      <button class="btn btn-primary" onclick="exportLedgerSelected()">엑셀 내보내기</button>
       <button class="btn btn-primary" onclick="saveSelectedPayments()">선택 저장</button>
       <button class="btn btn-danger" onclick="deleteSelectedPayments()">선택 삭제</button>
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleAllPay(this)" title="수금 전체 선택"></th><th>날짜</th><th>구분</th><th>출고액</th><th>수금액</th><th>작업</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllLedger(this)" title="전체 선택"></th><th>날짜</th><th>구분</th><th>출고액</th><th>수금액</th><th>작업</th></tr></thead>
         <tbody id="ledger-tbody"></tbody>
       </table>
     </div>
@@ -3114,25 +3116,27 @@ async function loadLedger(clientId) {
   if(!tbody || !clientId) { if(tbody) tbody.innerHTML = emptyRow(6,'거래처를 선택하세요'); return; }
 
   const [outs, pays] = await Promise.all([
-    dbQuery('stock_out', `?client_id=eq.${clientId}&order=date&select=date,total_amount`),
+    dbQuery('stock_out', `?client_id=eq.${clientId}&order=date&select=date,total_amount,product_id`),
     dbQuery('payments',  `?client_id=eq.${clientId}&order=date&select=id,date,amount,note`),
   ]);
+  const pmap = Object.fromEntries((G.products||[]).map(p=>[p.id,p.name]));
 
   // 날짜 기준 합치기
   const rows = [
-    ...outs.map(r=>({date:r.date, type:'out', amount:r.total_amount})),
+    ...outs.map(r=>({date:r.date, type:'out', amount:r.total_amount, prod:pmap[r.product_id]||''})),
     ...pays.map(r=>({date:r.date, type:'pay', amount:r.amount, id:r.id})),
   ].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 
   if(!rows.length){ tbody.innerHTML = emptyRow(6,'거래내역이 없습니다'); return; }
+  const esc = s => String(s||'').replace(/"/g,'&quot;');
   tbody.innerHTML = rows.map(r => r.type==='out' ? `<tr>
-    <td></td>
+    <td style="text-align:center"><input type="checkbox" class="ledger-chk" onchange="updateLedgerCount()" data-type="out" data-date="${r.date||''}" data-prod="${esc(r.prod)}" data-amount="${r.amount||0}"></td>
     <td>${r.date||''}</td>
     <td><span class="badge badge-blue">출고</span></td>
-    <td>${W(r.amount)}</td><td>—</td>
+    <td>${r.prod?`<span style="color:#cbd5e1">${r.prod}</span> · `:''}<b>${W(r.amount)}</b></td><td>—</td>
     <td style="color:rgba(255,255,255,.3);font-size:12px">출고수정 탭</td>
   </tr>` : `<tr>
-    <td style="text-align:center"><input type="checkbox" class="pay-chk" data-id="${r.id}"></td>
+    <td style="text-align:center"><input type="checkbox" class="ledger-chk pay-chk" onchange="updateLedgerCount()" data-type="pay" data-id="${r.id}" data-date="${r.date||''}" data-amount="${r.amount||0}"></td>
     <td><input type="date" class="form-control" style="width:150px" value="${r.date||''}" id="pay-date-${r.id}"></td>
     <td><span class="badge badge-green">수금</span></td>
     <td>—</td>
@@ -3142,6 +3146,11 @@ async function loadLedger(clientId) {
       <button class="btn btn-danger" style="padding:5px 10px;font-size:12px" onclick="deletePayment(${r.id})">삭제</button>
     </div></td>
   </tr>`).join('');
+  updateLedgerCount();
+}
+function updateLedgerCount(){
+  const el = document.getElementById('ledger-selcount');
+  if(el){ const n=document.querySelectorAll('#ledger-tbody .ledger-chk:checked').length; el.textContent = n?`선택 ${n}건`:''; }
 }
 
 // 수금 내역 수정 핵심 — {ok,msg} 반환
@@ -3172,7 +3181,28 @@ async function deletePayment(id) {
   if(r.ok){ loadLedger(_ledgerClient); initRecvPage(); }
 }
 function _checkedPayIds(){ return [...document.querySelectorAll('#ledger-tbody input.pay-chk:checked')].map(c=>c.dataset.id); }
-function toggleAllPay(cb){ document.querySelectorAll('#ledger-tbody input.pay-chk').forEach(c=>c.checked=cb.checked); }
+function toggleAllLedger(cb){ document.querySelectorAll('#ledger-tbody input.ledger-chk').forEach(c=>c.checked=cb.checked); updateLedgerCount(); }
+// 선택 항목 엑셀 내보내기 (출고+수금 모두)
+function exportLedgerSelected(){
+  if(typeof XLSX === 'undefined'){ showToast('엑셀 라이브러리 로딩 중입니다. 잠시 후 다시 시도하세요'); return; }
+  const checked = [...document.querySelectorAll('#ledger-tbody input.ledger-chk:checked')];
+  if(!checked.length){ showToast('내보낼 항목을 선택하세요'); return; }
+  const header = ['날짜','구분','제품','출고액','수금액'];
+  const rows = checked.map(c=>{
+    const isOut = c.dataset.type==='out';
+    const amt = Number(c.dataset.amount||0);
+    return [c.dataset.date||'', isOut?'출고':'수금', c.dataset.prod||'', isOut?amt:'', isOut?'':amt];
+  });
+  // 합계행
+  const outSum = rows.reduce((s,r)=>s+(typeof r[3]==='number'?r[3]:0),0);
+  const paySum = rows.reduce((s,r)=>s+(typeof r[4]==='number'?r[4]:0),0);
+  rows.push(['합계','','',outSum,paySum]);
+  const ws = buildSheet(header, rows, [12,8,30,14,14], {3:FMT_WON, 4:FMT_WON});
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, '거래처원장');
+  const clientName = document.getElementById('ledger-client')?.selectedOptions[0]?.text || '거래처';
+  XLSX.writeFile(wb, `거래처원장_${clientName}_${fmt(TODAY)}.xlsx`);
+  showToast(`${checked.length}건 엑셀 내보내기 완료`);
+}
 async function saveSelectedPayments() {
   if(_bulkBusy) return;
   const ids = _checkedPayIds();
@@ -3186,8 +3216,10 @@ async function saveSelectedPayments() {
 async function deleteSelectedPayments() {
   if(_bulkBusy) return;
   const ids = _checkedPayIds();
-  if(!ids.length){ showToast('삭제할 수금 내역을 선택하세요'); return; }
-  if(!confirm(`선택한 ${ids.length}건의 수금 내역을 삭제할까요?\n되돌릴 수 없으며 미수금이 다시 늘어납니다.`)) return;
+  const outSel = document.querySelectorAll('#ledger-tbody input.ledger-chk:checked[data-type="out"]').length;
+  if(!ids.length){ showToast(outSel?'출고 행은 여기서 삭제할 수 없습니다 (출고수정 탭에서 관리). 수금 내역을 선택하세요':'삭제할 수금 내역을 선택하세요'); return; }
+  const skipMsg = outSel ? `\n(선택된 출고 ${outSel}건은 제외됩니다 — 출고수정 탭에서 관리)` : '';
+  if(!confirm(`선택한 수금 ${ids.length}건을 삭제할까요?\n되돌릴 수 없으며 미수금이 다시 늘어납니다.${skipMsg}`)) return;
   _bulkBusy = true; let ok=0; const errs=[];
   try { for(const id of ids){ const r = await _deletePaymentCore(id); if(r.ok) ok++; else errs.push(r.msg); } }
   finally { _bulkBusy = false; }
