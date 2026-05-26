@@ -1389,7 +1389,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
   <div class="tabs">
     <button class="tab active" onclick="switchTab('med-recv','list',this)">병원별 미수금</button>
     <button class="tab" onclick="switchTab('med-recv','pay',this)">수금 등록</button>
-    <button class="tab" onclick="switchTab('med-recv','ledger',this)">병원 원장</button>
+    <button class="tab" onclick="switchTab('med-recv','ledger',this)">거래처별 원장</button>
   </div>
 
   <!-- 병원별 미수금 -->
@@ -1456,7 +1456,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     </div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th>날짜</th><th>구분</th><th>납품액</th><th>수금액</th></tr></thead>
+        <thead><tr><th>날짜</th><th>구분</th><th>납품액</th><th>수금액</th><th>비고</th></tr></thead>
         <tbody id="med-ledger-tbody"></tbody>
       </table>
     </div>
@@ -1537,15 +1537,9 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
             <input type="text" class="form-control" id="med-cli-phone" placeholder="02-XXXX-XXXX">
           </div>
         </div>
-        <div class="form-row cols-2">
-          <div class="form-group">
-            <label class="form-label">주소</label>
-            <input type="text" class="form-control" id="med-cli-addr" placeholder="주소 입력">
-          </div>
-          <div class="form-group">
-            <label class="form-label">여신한도</label>
-            <input type="number" class="form-control" id="med-cli-credit" placeholder="0" step="1000000">
-          </div>
+        <div class="form-group">
+          <label class="form-label">주소</label>
+          <input type="text" class="form-control" id="med-cli-addr" placeholder="주소 입력">
         </div>
         <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="submitMedClient()">등록</button>
       </div>
@@ -1556,7 +1550,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleAllMedClient(this)" title="전체 선택"></th><th>병원명</th><th>대표자</th><th>담당자</th><th>연락처</th><th>주소</th><th>여신한도</th><th>작업</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllMedClient(this)" title="전체 선택"></th><th>병원명</th><th>대표자</th><th>담당자</th><th>연락처</th><th>주소</th><th>작업</th></tr></thead>
         <tbody id="med-client-tbody"></tbody>
       </table>
     </div>
@@ -2841,8 +2835,7 @@ async function submitMedClient(){
     ceo_name:document.getElementById('med-cli-ceo')?.value||null,
     contact_person:document.getElementById('med-cli-contact')?.value||null,
     phone:document.getElementById('med-cli-phone')?.value||null,
-    address:document.getElementById('med-cli-addr')?.value||null,
-    credit_limit:parseInt(document.getElementById('med-cli-credit')?.value||0)};
+    address:document.getElementById('med-cli-addr')?.value||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_clients`,{method:'POST',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
   if(res.ok||res.status===201){showToast('거래처 등록 완료');initMedMaster();}
@@ -2902,8 +2895,7 @@ async function _saveMedClientCore(id){
     ceo_name:document.getElementById('emc-ceo-'+id)?.value?.trim()||null,
     contact_person:document.getElementById('emc-contact-'+id)?.value?.trim()||null,
     phone:document.getElementById('emc-phone-'+id)?.value?.trim()||null,
-    address:document.getElementById('emc-addr-'+id)?.value?.trim()||null,
-    credit_limit:parseInt(document.getElementById('emc-credit-'+id)?.value)||0};
+    address:document.getElementById('emc-addr-'+id)?.value?.trim()||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_clients?id=eq.${id}`,{method:'PATCH',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify(body)});
@@ -3017,19 +3009,19 @@ async function onMedPayClientChange(sel) {
 async function loadMedLedger(clientId) {
   const tbody = document.getElementById('med-ledger-tbody');
   const balEl = document.getElementById('med-ledger-balance');
-  if(!tbody||!clientId){ if(tbody) tbody.innerHTML=emptyRow(4,'병원을 선택하세요'); if(balEl) balEl.innerHTML=''; return; }
+  if(!tbody||!clientId){ if(tbody) tbody.innerHTML=emptyRow(5,'병원을 선택하세요'); if(balEl) balEl.innerHTML=''; return; }
   const [outs,pays] = await Promise.all([
-    dbQuery('med_stock_out',`?client_id=eq.${clientId}&order=date&select=date,total_amount`),
-    dbQuery('med_payments', `?client_id=eq.${clientId}&order=date&select=date,amount`),
+    dbQuery('med_stock_out',`?client_id=eq.${clientId}&order=date&select=date,total_amount,note`),
+    dbQuery('med_payments', `?client_id=eq.${clientId}&order=date&select=date,amount,note`),
   ]);
   const rows = [
-    ...(outs||[]).map(r=>({date:r.date,type:'out',amount:r.total_amount})),
-    ...(pays||[]).map(r=>({date:r.date,type:'pay',amount:r.amount})),
+    ...(outs||[]).map(r=>({date:r.date,type:'out',amount:r.total_amount,note:r.note})),
+    ...(pays||[]).map(r=>({date:r.date,type:'pay',amount:r.amount,note:r.note})),
   ].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
   tbody.innerHTML = rows.length ? rows.map(r => r.type==='out'
-    ? `<tr><td>${r.date}</td><td><span class="badge badge-blue">납품</span></td><td>${W(r.amount)}</td><td>—</td></tr>`
-    : `<tr><td>${r.date}</td><td><span class="badge badge-green">수금</span></td><td>—</td><td>${W(r.amount)}</td></tr>`
-  ).join('') : emptyRow(4,'거래내역이 없습니다');
+    ? `<tr><td>${r.date}</td><td><span class="badge badge-blue">납품</span></td><td>${W(r.amount)}</td><td>—</td><td>${r.note?_esc(r.note):'—'}</td></tr>`
+    : `<tr><td>${r.date}</td><td><span class="badge badge-green">수금</span></td><td>—</td><td>${W(r.amount)}</td><td>${r.note?_esc(r.note):'—'}</td></tr>`
+  ).join('') : emptyRow(5,'거래내역이 없습니다');
   let bal=0; rows.forEach(r=>{ bal += r.type==='out'?(r.amount||0):-(r.amount||0); });
   if(balEl) balEl.innerHTML = `잔액(미수금): <b>${W(Math.max(0,bal))}</b>`;
 }
@@ -3039,7 +3031,7 @@ async function initMedMaster() {
   refreshTemplateStatus();
   const [prods, clients] = await Promise.all([
     dbQuery('med_products','?order=name&select=id,name,manufacturer,spec'),
-    dbQuery('med_clients', '?order=hospital_name&select=id,hospital_name,ceo_name,contact_person,phone,address,credit_limit'),
+    dbQuery('med_clients', '?order=hospital_name&select=id,hospital_name,ceo_name,contact_person,phone,address'),
   ]);
 
   // 장비 테이블 (인라인 수정 + 복수 선택)
@@ -3064,10 +3056,9 @@ async function initMedMaster() {
       <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:90px" id="emc-contact-${c.id}" value="${_esc(c.contact_person)}"></td>
       <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="emc-phone-${c.id}" value="${_esc(c.phone)}"></td>
       <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:120px" id="emc-addr-${c.id}" value="${_esc(c.address)}"></td>
-      <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="emc-credit-${c.id}" value="${c.credit_limit||0}"></td>
       <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveMedClientRow(${c.id})">저장</button><button class="btn btn-danger" style="padding:5px 12px;font-size:12px" onclick="deleteMedClientRow(${c.id})">삭제</button></div></td>
     </tr>`).join('') :
-    emptyRow(8,'등록된 거래처 없음');
+    emptyRow(7,'등록된 거래처 없음');
 
   // 문서함 병원 select
   const docSel = document.getElementById('doc-hosp-sel');
