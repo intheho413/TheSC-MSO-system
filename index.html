@@ -1453,9 +1453,8 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
   <div id="med-recv-tab-ledger" class="tab-pane">
     <div class="form-group">
       <label class="form-label">병원 선택</label>
-      <select class="form-control" style="max-width:280px" id="med-ledger-client" onchange="loadMedLedger(this.value)">
-        <option value="">병원 선택</option>
-      </select>
+      <input class="form-control" style="max-width:280px" id="med-ledger-client" list="med-ledger-client-list" placeholder="병원명 입력 또는 검색…" autocomplete="off" oninput="onMedLedgerClientInput(this)">
+      <datalist id="med-ledger-client-list"></datalist>
     </div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
@@ -2988,12 +2987,15 @@ async function initMedRecv() {
   ]);
   const hospMap = Object.fromEntries((hosps||[]).map(h=>[h.id,h.hospital_name]));
 
-  // 병원 select 채우기
+  // 병원 select(수금 등록) 채우기
   const hospOpts = (hosps||[]).map(h=>`<option value="${h.id}">${h.hospital_name}</option>`).join('');
-  ['med-pay-client','med-ledger-client'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.innerHTML = '<option value="">병원 선택</option>' + hospOpts;
-  });
+  const paySel = document.getElementById('med-pay-client');
+  if(paySel) paySel.innerHTML = '<option value="">병원 선택</option>' + hospOpts;
+  // 병원 datalist(거래처별 원장) — 검색 가능한 입력칸용
+  const dl = document.getElementById('med-ledger-client-list');
+  if(dl) dl.innerHTML = (hosps||[]).map(h=>`<option value="${_esc(h.hospital_name)}">`).join('');
+  window._medLedgerHospMap = {};
+  (hosps||[]).forEach(h=>{ window._medLedgerHospMap[h.hospital_name] = h.id; });
 
   // 미수금 집계
   const outMap={}, payMap={};
@@ -3049,6 +3051,13 @@ async function onMedPayClientChange(sel) {
 
 // ── 의료장비 병원 원장 로드 ──────────────────────
 let _medLedgerClient = null;
+// 거래처별 원장 — 병원명 입력 → id 매칭되면 원장 로드 (검색형 드롭다운)
+function onMedLedgerClientInput(el){
+  const name = (el.value||'').trim();
+  const id = (window._medLedgerHospMap||{})[name];
+  if(id){ loadMedLedger(id); }
+  else if(!name){ loadMedLedger(''); }
+}
 async function loadMedLedger(clientId) {
   _medLedgerClient = clientId;
   const tbody = document.getElementById('med-ledger-tbody');
