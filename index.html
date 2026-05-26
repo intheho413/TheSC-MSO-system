@@ -2805,6 +2805,22 @@ async function submitMedOut(){
     body:JSON.stringify({hospital_name:hosp})});
     if(r.ok||r.status===201){const d=await r.json();cid=d?.[0]?.id;}}
   if(!cid){showToast('거래처 등록 실패');return;}
+  // 드롭다운 선택 안 한 행에 대해 장비명+장비사 자동 매칭 (재고 있는 가장 오래된 매입 → FIFO)
+  const needMatch = rows.some(r=>!r._medInId && r.product_name);
+  if(needMatch){
+    const cand = await dbQuery('med_stock_in','?quantity=gt.0&order=date&select=id,product_name,manufacturer,quantity');
+    const byKey = {};
+    (cand||[]).forEach(c=>{ const k=`${(c.product_name||'').trim()}|${(c.manufacturer||'').trim()}`; (byKey[k]=byKey[k]||[]).push(c); });
+    const used = {};
+    for(const r of rows){
+      if(r._medInId || !r.product_name) continue;
+      const k = `${(r.product_name||'').trim()}|${(r.manufacturer||'').trim()}`;
+      for(const c of (byKey[k]||[])){
+        const left = (c.quantity||0) - (used[c.id]||0);
+        if(left >= r.quantity){ r._medInId = c.id; used[c.id] = (used[c.id]||0) + r.quantity; break; }
+      }
+    }
+  }
   const deduct={};
   for(const row of rows){
     const {_medInId, ...rec}=row;
