@@ -2737,7 +2737,8 @@ let medInList = [];   // 매입 내역 (드롭다운 소스)
 function medPickOptionsHtml(){
   let opts = '<option value="">매입 장비 선택…</option>';
   opts += (medInList||[]).map((r,i)=>{
-    const label = `${r.product_name||'?'} · ${r.manufacturer||'-'}${r.serial_number?(' · '+r.serial_number):''} · ${r.quantity?('수량 '+r.quantity+' · '):''}매입 ${W(r.purchase_price)}`;
+    if((r.quantity||0) <= 0) return ''; // 재고 소진된 매입은 숨김
+    const label = `${r.product_name||'?'} · ${r.manufacturer||'-'}${r.serial_number?(' · '+r.serial_number):''} · 수량 ${r.quantity} · 매입 ${W(r.purchase_price)}`;
     return `<option value="${i}">${_esc(label)}</option>`;
   }).join('');
   return opts;
