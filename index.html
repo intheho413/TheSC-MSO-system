@@ -1417,9 +1417,8 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
   <div id="med-recv-tab-pay" class="tab-pane">
     <div class="form-group">
       <label class="form-label">병원 선택</label>
-      <select class="form-control" style="max-width:280px" id="med-pay-client" onchange="onMedPayClientChange(this)">
-        <option value="">병원 선택</option>
-      </select>
+      <input class="form-control" style="max-width:280px" id="med-pay-client" list="med-pay-client-list" placeholder="병원명 입력 또는 검색…" autocomplete="off" oninput="onMedPayClientChange(this)">
+      <datalist id="med-pay-client-list"></datalist>
     </div>
     <div class="info-box" id="med-pay-recv-info">병원을 선택하면 미수금이 표시됩니다.</div>
     <div class="card">
@@ -2843,8 +2842,10 @@ async function submitMedOut(){
 
 // ── 의료장비 수금 등록 제출 ───────────────────────
 async function submitMedPay(){
-  const sel=document.getElementById('med-pay-client');const cid=sel?.value;
-  if(!cid){showToast('병원을 선택하세요');return;}
+  const sel=document.getElementById('med-pay-client');
+  const name=(sel?.value||'').trim();
+  const cid=(window._medLedgerHospMap||{})[name];
+  if(!cid){showToast('등록된 병원명을 정확히 입력하세요');return;}
   const amount=parseInt(document.getElementById('med-pay-amount')?.value||0);
   if(!amount){showToast('수금액을 입력하세요');return;}
   const body={date:document.getElementById('med-pay-date')?.value,client_id:parseInt(cid),amount,
@@ -2987,13 +2988,11 @@ async function initMedRecv() {
   ]);
   const hospMap = Object.fromEntries((hosps||[]).map(h=>[h.id,h.hospital_name]));
 
-  // 병원 select(수금 등록) 채우기
-  const hospOpts = (hosps||[]).map(h=>`<option value="${h.id}">${h.hospital_name}</option>`).join('');
-  const paySel = document.getElementById('med-pay-client');
-  if(paySel) paySel.innerHTML = '<option value="">병원 선택</option>' + hospOpts;
-  // 병원 datalist(거래처별 원장) — 검색 가능한 입력칸용
-  const dl = document.getElementById('med-ledger-client-list');
-  if(dl) dl.innerHTML = (hosps||[]).map(h=>`<option value="${_esc(h.hospital_name)}">`).join('');
+  // 병원 datalist(수금 등록 + 거래처별 원장) — 검색 가능한 입력칸용
+  const dlOpts = (hosps||[]).map(h=>`<option value="${_esc(h.hospital_name)}">`).join('');
+  ['med-ledger-client-list','med-pay-client-list'].forEach(id=>{
+    const dl = document.getElementById(id); if(dl) dl.innerHTML = dlOpts;
+  });
   window._medLedgerHospMap = {};
   (hosps||[]).forEach(h=>{ window._medLedgerHospMap[h.hospital_name] = h.id; });
 
@@ -3036,7 +3035,9 @@ async function initMedRecv() {
 
 // ── 의료장비 수금 등록 — 병원 선택 시 미수금 표시 ──
 async function onMedPayClientChange(sel) {
-  const id = sel.value;
+  // input(검색형) — sel.value 는 병원명 → 매핑 맵에서 id 조회
+  const name = (sel.value||'').trim();
+  const id = (window._medLedgerHospMap||{})[name];
   const el = document.getElementById('med-pay-recv-info');
   if(!el||!id){ if(el) el.innerHTML='병원을 선택하면 미수금이 표시됩니다.'; return; }
   const [outs,pays] = await Promise.all([
