@@ -15,6 +15,7 @@
 <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.50.0/build/docxtemplater.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & Base ── */
@@ -1611,6 +1612,15 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
       <div class="btn-group">
         <button class="btn btn-secondary" style="flex:1" onclick="previewContract()">미리보기</button>
         <button class="btn btn-primary" style="flex:1" onclick="generateContract()">계약서 생성 → 다운로드</button>
+        <button class="btn btn-primary" style="flex:1;background:linear-gradient(135deg,#34d399,#10b981)" onclick="createSignRequest()">서명 요청 링크 생성</button>
+      </div>
+      <div id="sign-link-box" style="display:none;margin-top:14px;padding:14px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.35);border-radius:12px">
+        <div style="font-size:12px;font-weight:600;color:#34d399;margin-bottom:8px">서명 요청 링크가 생성되었습니다 — 병원에 전달하세요</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="sign-link-url" class="form-control" style="flex:1;font-size:12px" readonly>
+          <button class="btn btn-primary" style="padding:8px 14px;font-size:12px" onclick="copySignLink()">복사</button>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,.55);margin-top:8px">상태: <span id="sign-link-status">대기 중</span> · 서명 완료 시 문서함에 자동 표시됩니다</div>
       </div>
     </div>
 
@@ -1652,7 +1662,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:12px">문서 목록</div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>병원명</th><th>파일명</th><th>종류</th><th>업로드일</th><th>보기</th></tr></thead>
+        <thead><tr><th>병원명</th><th>파일명</th><th>종류</th><th>서명 상태</th><th>업로드일</th><th>작업</th></tr></thead>
         <tbody id="med-docs-tbody"></tbody>
       </table>
     </div>
@@ -3164,11 +3174,20 @@ async function initMedMaster() {
   // 문서 목록
   const docTb = document.getElementById('med-docs-tbody');
   if(docTb) {
-    const docs = await dbQuery('med_contracts','?order=uploaded_at.desc&select=id,client_id,file_name,file_type,uploaded_at');
+    const docs = await dbQuery('med_contracts','?order=uploaded_at.desc&select=id,client_id,file_name,file_type,uploaded_at,share_token,signed_status,signer_name,signed_at');
     const hMap = Object.fromEntries((clients||[]).map(c=>[c.id,c.hospital_name]));
+    const stTag = (s,nm,at)=> s==='signed' ? `<span class="badge badge-green" title="서명자: ${nm||'-'} · ${at?new Date(at).toLocaleString('ko-KR'):''}">서명 완료</span>` : s==='pending' ? `<span class="badge badge-amber">대기</span>` : `<span class="badge" style="background:rgba(148,163,184,.18);color:#cbd5e1">—</span>`;
+    const actCell = d => {
+      if(!d.share_token) return '—';
+      const base = (location.hostname==='localhost' || location.hostname==='127.0.0.1')
+        ? 'https://intheho413.github.io/TheSC-MSO-system/'
+        : (location.origin + location.pathname);
+      const url = `${base}#sign=${d.share_token}`;
+      return `<div style="display:flex;gap:6px;justify-content:center"><button class="btn btn-secondary" style="padding:5px 10px;font-size:11px" onclick="copyTextRobust('${url}','링크 복사됨')">링크</button><button class="btn btn-primary" style="padding:5px 10px;font-size:11px" onclick="window.open('${url}','_blank')">보기</button></div>`;
+    };
     docTb.innerHTML = (docs||[]).length ?
-      (docs||[]).map(d=>`<tr><td>${hMap[d.client_id]||'—'}</td><td>${d.file_name||'—'}</td><td>${d.file_type||'—'}</td><td>${d.uploaded_at||'—'}</td><td>—</td></tr>`).join('') :
-      emptyRow(5,'업로드된 문서 없음');
+      (docs||[]).map(d=>`<tr><td>${hMap[d.client_id]||'—'}</td><td>${d.file_name||'—'}</td><td>${d.file_type||'—'}</td><td style="text-align:center">${stTag(d.signed_status,d.signer_name,d.signed_at)}</td><td>${(d.uploaded_at||'').slice(0,10)||'—'}</td><td>${actCell(d)}</td></tr>`).join('') :
+      emptyRow(6,'업로드된 문서 없음');
   }
 }
 
@@ -4403,6 +4422,96 @@ function generateContract() {
   showToast('계약서가 생성되었습니다');
 }
 
+// ── 서명 요청 링크 생성 ──
+function _genShareToken(){
+  // 24자리 안전한 토큰
+  const a = new Uint8Array(18); crypto.getRandomValues(a);
+  return btoa(String.fromCharCode(...a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function _contractData(){
+  const hosp = document.getElementById('cont-hosp')?.value?.trim();
+  const price = parseInt(document.getElementById('cont-price')?.value||0);
+  if(!hosp){ showToast('병원명을 입력하세요'); return null; }
+  if(!price){ showToast('공급가격을 입력하세요'); return null; }
+  return {
+    병원명: hosp,
+    대표자명: document.getElementById('cont-ceo')?.value?.trim()||'',
+    소재지: document.getElementById('cont-addr')?.value?.trim()||'',
+    제품명: document.getElementById('cont-prod')?.value?.trim()||'',
+    공급가격: '₩'+Number(price).toLocaleString()+'원',
+    계약일자: fmt(TODAY),
+  };
+}
+async function createSignRequest(){
+  const data = _contractData(); if(!data) return;
+  const tmpl_b64 = localStorage.getItem(TMPL_KEY);
+  if(!tmpl_b64){ showToast('먼저 계약서 양식(.docx)을 업로드하세요'); return; }
+  // 거래처(병원) id 매칭 (없으면 null)
+  let client_id = null;
+  try {
+    const found = await dbQuery('med_clients', `?hospital_name=eq.${encodeURIComponent(data.병원명)}&select=id&limit=1`);
+    if(found && found.length) client_id = found[0].id;
+  } catch(e){}
+  const token = _genShareToken();
+  const body = {
+    share_token: token,
+    contract_data: data,
+    template_b64: tmpl_b64,
+    file_name: `계약서_${data.병원명}_${data.계약일자}.docx`,
+    file_type: '납품계약서(전자서명)',
+    signed_status: 'pending',
+    uploaded_at: new Date().toISOString(),
+    client_id,
+  };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/med_contracts`,{method:'POST',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify(body)});
+  if(res.ok||res.status===201){
+    // 항상 라이브 페이지로 링크 (localhost에서 생성해도 외부 공유 가능)
+    const base = (location.hostname==='localhost' || location.hostname==='127.0.0.1')
+      ? 'https://intheho413.github.io/TheSC-MSO-system/'
+      : (location.origin + location.pathname);
+    const url = `${base}#sign=${token}`;
+    const box = document.getElementById('sign-link-box');
+    const inp = document.getElementById('sign-link-url');
+    if(box) box.style.display='block';
+    if(inp) inp.value = url;
+    document.getElementById('sign-link-status').textContent = '대기 중';
+    showToast('서명 요청 링크가 생성되었습니다');
+  } else {
+    const txt = await res.text();
+    showToast('링크 생성 실패: '+ (txt.includes('share_token')?'스키마 마이그레이션 필요':txt.slice(0,80)));
+  }
+}
+function copyTextRobust(text, okMsg){
+  // 1) execCommand 시도 (보안 컨텍스트 제약 우회)
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.position='fixed'; ta.style.opacity='0'; ta.style.left='-9999px';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok){ showToast(okMsg||'복사되었습니다'); return; }
+  } catch(e){}
+  // 2) Clipboard API 폴백
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text)
+      .then(()=>showToast(okMsg||'복사되었습니다'))
+      .catch(()=>showToast('자동 복사 실패 — 입력칸을 직접 선택해 복사하세요'));
+  } else {
+    showToast('자동 복사 실패 — 입력칸을 직접 선택해 복사하세요');
+  }
+}
+function copySignLink(){
+  const inp = document.getElementById('sign-link-url');
+  if(!inp || !inp.value) return;
+  inp.focus(); inp.select(); inp.setSelectionRange(0, inp.value.length);
+  copyTextRobust(inp.value, '링크가 복사되었습니다');
+}
+
 // ══ 설정 패널 ════════════════════════════════════
 const DEFAULT_LABELS = {
   appname: 'MSO 통합 관리 시스템',
@@ -4559,6 +4668,141 @@ window.addEventListener('load', async () => {
 // app_config 테이블 생성 SQL (Supabase SQL Editor에서 1회 실행 → 설정·계약서양식 기기 공유):
 // create table if not exists app_config (id text primary key, settings jsonb, template_b64 text, template_name text, updated_at timestamptz default now());
 // insert into app_config (id) values ('main') on conflict do nothing;
+</script>
+
+<!-- ════ 전자서명 페이지 (URL 해시 #sign=<token>으로 진입) ════ -->
+<div id="sign-page" style="display:none;position:fixed;inset:0;z-index:9999;background:radial-gradient(900px circle at 12% -5%,rgba(96,165,250,.14),transparent 45%),radial-gradient(1000px circle at 100% 8%,rgba(167,139,250,.12),transparent 42%),#070b14;overflow:auto;padding:28px 22px;font-family:'Inter','Pretendard',sans-serif;color:#e2e8f0">
+  <div style="max-width:920px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.4px;color:#93c5fd">MSO 통합 관리 시스템</div>
+        <div style="font-size:20px;font-weight:800;color:#fff;margin-top:2px">계약서 전자서명</div>
+      </div>
+      <div id="sign-status-tag" style="font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:rgba(245,158,11,.18);color:#fbbf24">서명 대기</div>
+    </div>
+    <div class="card" id="sign-info-card" style="margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:6px">계약 정보</div>
+      <div id="sign-info" style="font-size:13px;color:#cbd5e1;line-height:1.7"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-title">계약서 내용</div>
+      <div id="sign-doc-preview" style="background:#5a5f66;border-radius:10px;max-height:560px;overflow:auto;padding:18px;margin-top:10px"></div>
+    </div>
+    <div class="card" id="sign-pad-card" style="margin-bottom:14px">
+      <div class="card-title">서명</div>
+      <div class="card-sub">아래 박스에 손가락 또는 마우스로 서명해주세요</div>
+      <div style="margin-top:10px;background:#fff;border-radius:10px;overflow:hidden">
+        <canvas id="sign-canvas" style="width:100%;height:220px;display:block;cursor:crosshair"></canvas>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
+        <input id="sign-name" type="text" class="form-control" placeholder="서명자 이름" style="max-width:240px">
+        <span style="flex:1"></span>
+        <button class="btn btn-secondary" onclick="signClear()">지우기</button>
+        <button class="btn btn-primary" style="background:linear-gradient(135deg,#34d399,#10b981)" onclick="signSubmit()">서명 제출</button>
+      </div>
+    </div>
+    <div id="sign-done-card" class="card" style="display:none;text-align:center;padding:28px">
+      <div style="font-size:18px;font-weight:700;color:#34d399;margin-bottom:8px">서명이 완료되었습니다</div>
+      <div style="color:#94a3b8;font-size:13px" id="sign-done-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ 전자서명 페이지 라우팅 + 동작 ══
+let _signPad = null, _signToken = null, _signRec = null;
+
+(function checkSignRoute(){
+  const m = location.hash.match(/^#sign=([\w-]+)/);
+  if(m){ window.addEventListener('DOMContentLoaded', ()=>openSignPage(m[1])); }
+})();
+
+async function openSignPage(token){
+  for(let i=0;i<25 && typeof SUPABASE_URL==='undefined';i++) await new Promise(r=>setTimeout(r,200));
+  document.body.style.overflow='hidden';
+  // 메인 앱 숨김
+  document.querySelectorAll('.page, .topnav, .container').forEach(el=>el.style.display='none');
+  const sp = document.getElementById('sign-page'); sp.style.display='block';
+  _signToken = token;
+
+  const rec = await dbQuery('med_contracts', `?share_token=eq.${encodeURIComponent(token)}&select=*&limit=1`);
+  if(!rec || !rec.length){
+    document.getElementById('sign-info').innerHTML = '<span style="color:#fca5a5">유효하지 않거나 만료된 링크입니다.</span>';
+    document.getElementById('sign-pad-card').style.display='none';
+    return;
+  }
+  _signRec = rec[0];
+  const d = _signRec.contract_data || {};
+  document.getElementById('sign-info').innerHTML = `
+    <div><b>병원명:</b> ${d.병원명||'—'}</div>
+    <div><b>대표자:</b> ${d.대표자명||'—'}</div>
+    <div><b>소재지:</b> ${d.소재지||'—'}</div>
+    <div><b>제품명:</b> ${d.제품명||'—'}</div>
+    <div><b>공급가격:</b> ${d.공급가격||'—'}</div>
+    <div><b>계약일자:</b> ${d.계약일자||'—'}</div>`;
+
+  // 이미 서명됨
+  if(_signRec.signed_status==='signed'){
+    document.getElementById('sign-status-tag').textContent='서명 완료';
+    document.getElementById('sign-status-tag').style.background='rgba(52,211,153,.18)';
+    document.getElementById('sign-status-tag').style.color='#34d399';
+    document.getElementById('sign-pad-card').style.display='none';
+    const done = document.getElementById('sign-done-card'); done.style.display='block';
+    document.getElementById('sign-done-msg').innerHTML = `<b>${_signRec.signer_name||''}</b> 님이 ${new Date(_signRec.signed_at).toLocaleString('ko-KR')}에 서명을 완료했습니다.`;
+  }
+
+  // 계약서 미리보기 렌더 (저장된 template_b64로 재생성)
+  await renderSignDocPreview();
+  // 서명 패드 초기화
+  initSignPad();
+}
+
+async function renderSignDocPreview(){
+  const cont = document.getElementById('sign-doc-preview');
+  cont.innerHTML = '<div style="text-align:center;color:#94a3b8">계약서 로딩 중…</div>';
+  try {
+    if(!_signRec.template_b64){ cont.innerHTML='<div style="color:#fca5a5;text-align:center">계약서 양식이 없습니다.</div>'; return; }
+    const zip = new PizZip(_signRec.template_b64, {base64:true});
+    const doc = new docxtemplater(zip, {delimiters:{start:'{{',end:'}}'}, paragraphLoop:true, linebreaks:true, nullGetter:()=>''});
+    doc.render(_signRec.contract_data||{});
+    const blob = doc.getZip().generate({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    cont.innerHTML='';
+    await docx.renderAsync(blob, cont, null, {inWrapper:true, className:'docx', ignoreLastRenderedPageBreak:true});
+  } catch(e){
+    cont.innerHTML='<div style="color:#fca5a5;text-align:center">계약서 표시 실패: '+(e.message||'')+'</div>';
+  }
+}
+
+function initSignPad(){
+  const canvas = document.getElementById('sign-canvas');
+  // 캔버스 실제 픽셀 크기 동기화 (선명도)
+  const ratio = Math.max(window.devicePixelRatio||1, 1);
+  canvas.width = canvas.offsetWidth * ratio;
+  canvas.height = canvas.offsetHeight * ratio;
+  canvas.getContext('2d').scale(ratio, ratio);
+  _signPad = new SignaturePad(canvas, {backgroundColor:'rgba(255,255,255,1)', penColor:'#0b1220'});
+}
+function signClear(){ if(_signPad) _signPad.clear(); }
+async function signSubmit(){
+  if(!_signPad || _signPad.isEmpty()){ alert('서명을 입력해주세요'); return; }
+  const name = document.getElementById('sign-name')?.value?.trim();
+  if(!name){ alert('서명자 이름을 입력해주세요'); return; }
+  const signatureImage = _signPad.toDataURL('image/png');
+  const body = { signature_image:signatureImage, signer_name:name, signed_at:new Date().toISOString(), signed_status:'signed' };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/med_contracts?share_token=eq.${encodeURIComponent(_signToken)}`,{method:'PATCH',
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    body: JSON.stringify(body)});
+  if(res.ok||res.status===204){
+    document.getElementById('sign-status-tag').textContent='서명 완료';
+    document.getElementById('sign-status-tag').style.background='rgba(52,211,153,.18)';
+    document.getElementById('sign-status-tag').style.color='#34d399';
+    document.getElementById('sign-pad-card').style.display='none';
+    const done = document.getElementById('sign-done-card'); done.style.display='block';
+    document.getElementById('sign-done-msg').innerHTML = `<b>${name}</b> 님의 서명이 정상 접수되었습니다. 이 페이지는 닫으셔도 됩니다.`;
+  } else {
+    alert('서명 저장 실패. 다시 시도해주세요. ('+res.status+')');
+  }
+}
 </script>
 </body>
 </html>
