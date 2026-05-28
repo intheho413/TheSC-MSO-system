@@ -18,5 +18,6 @@ preview_dlpdf.html
 preview_dlsearch.html
 preview_medgroup.html
 preview_agency.html
+preview_recvonly.html
 debug.txt
 supabase_setup.sql

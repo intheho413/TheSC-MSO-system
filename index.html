@@ -1415,6 +1415,12 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
 
   <!-- 병원별 미수금 -->
   <div id="med-recv-tab-list" class="tab-pane active">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:#cbd5e1;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);padding:6px 13px;border-radius:20px">
+        <input type="checkbox" id="med-recv-only" checked onchange="filterMedRecvOnly()" style="accent-color:#ef4444"> 미수금 있는 곳만
+      </label>
+      <span id="med-recv-summary" style="font-size:12px;color:#fca5a5;font-weight:600"></span>
+    </div>
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>병원명</th><th>총납품액</th><th>총수금액</th><th>미수금</th><th>수금률</th></tr></thead>
@@ -3095,12 +3101,13 @@ async function initMedRecv() {
         const rate=tot>0?Math.round(paid/tot*100):100;
         const bg=rate>=100?'#22C55E':rate>=70?'#F59E0B':'#EF4444';
         const badge=recv===0?'badge-green':rate>=70?'badge-amber':'badge-red';
-        return `<tr><td>${h.hospital_name}</td><td>${W(tot)}</td><td>${W(paid)}</td>
+        return `<tr class="medrecv-row" data-recv="${recv}"><td>${h.hospital_name}</td><td>${W(tot)}</td><td>${W(paid)}</td>
           <td><span class="badge ${badge}">${W(recv)}</span></td>
           <td><div class="progress-wrap"><div class="progress-bar" style="width:${rate}%;background:${bg}"></div></div>
           <span style="font-size:11px;color:#64748b;margin-left:6px">${rate}%</span></td></tr>`;
       });
       tbody.innerHTML = rows.length ? rows.join('') : emptyRow(5,'납품 내역 없음');
+      filterMedRecvOnly();
     }
   }
 
@@ -3111,6 +3118,21 @@ async function initMedRecv() {
       (leases||[]).map(r=>`<tr><td>${r.date||''}</td><td>${hospMap[r.client_id]||'—'}</td><td>${r.product_name||'—'}</td><td>${W(r.total_amount)}</td><td>${r.note||'—'}</td></tr>`).join('') :
       emptyRow(5,'리스 납품 건 없음');
   }
+}
+
+// ── 병원별 미수금 — "미수금 있는 곳만" 토글 ──
+function filterMedRecvOnly() {
+  const cb = document.getElementById('med-recv-only');
+  const onlyUnpaid = cb ? cb.checked : true;
+  const rows = document.querySelectorAll('#med-recv-list-tbody .medrecv-row');
+  let cnt = 0, sum = 0;
+  rows.forEach(r=>{
+    const recv = parseInt(r.getAttribute('data-recv')||'0', 10) || 0;
+    if(recv > 0){ cnt++; sum += recv; }
+    r.style.display = (onlyUnpaid && recv <= 0) ? 'none' : '';
+  });
+  const sm = document.getElementById('med-recv-summary');
+  if(sm) sm.textContent = `미수 병원 ${cnt}곳 · 합계 ${W(sum)}`;
 }
 
 // ── 의료장비 수금 등록 — 병원 선택 시 미수금 표시 ──
