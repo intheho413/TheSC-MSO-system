@@ -16,6 +16,8 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & Base ── */
@@ -223,6 +225,15 @@ html.light .tog-btn.active{background:rgba(37,99,235,0.1);border-color:#2563eb;c
 .kpi-clickable .kpi-go{position:absolute;top:14px;right:16px;font-size:18px;font-weight:700;color:rgba(147,197,253,0.55);transition:transform .18s,color .18s}
 .kpi-clickable:hover .kpi-go{color:#93c5fd;transform:translateX(3px)}
 .chart-card{cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}
+/* 다운로드 드롭다운 (문서함) */
+.dl-dd{position:relative;display:inline-block}
+.dl-menu{position:absolute;top:100%;left:0;margin-top:4px;min-width:130px;background:#1a2030;border:1px solid rgba(255,255,255,.14);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.45);padding:4px;z-index:50;display:none}
+.dl-dd.open .dl-menu{display:block}
+.dl-menu button{display:block;width:100%;text-align:left;background:transparent;border:none;color:#cbd5e1;padding:7px 12px;font-size:12px;border-radius:6px;cursor:pointer;font-family:inherit}
+.dl-menu button:hover{background:rgba(96,165,250,.15);color:#fff}
+.dl-menu .ico{display:inline-block;width:14px;font-weight:700;margin-right:6px}
+.dl-menu .docx-ico{color:#34d399}
+.dl-menu .pdf-ico{color:#60a5fa}
 .chart-card:hover{border-color:rgba(120,170,255,.4);box-shadow:0 12px 32px rgba(0,0,0,.34)}
 .chart-expand{float:right;font-size:11px;font-weight:600;color:rgba(147,197,253,0.7);transition:color .18s,transform .18s}
 .chart-card:hover .chart-expand{color:#93c5fd}
@@ -1660,9 +1671,20 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     </div>
     <hr class="divider" style="margin:16px 0">
     <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:12px">문서 목록</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+      <input id="meddoc-search" class="form-control" style="flex:1;min-width:240px;max-width:380px" placeholder="병원명·파일명·종류·서명 상태 검색…" oninput="filterMedDocs()">
+      <span id="meddoc-count-info" style="font-size:11px;color:#64748b"></span>
+    </div>
     <div class="btn-group" style="margin-bottom:12px;align-items:center">
       <span id="meddoc-selcount" style="font-size:12px;color:#93c5fd;font-weight:600;margin-right:4px"></span>
-      <button class="btn btn-primary" style="background:linear-gradient(135deg,#34d399,#10b981)" onclick="downloadSelectedMedDocs()">선택 다운로드(.zip)</button>
+      <span style="flex:1"></span>
+      <div class="dl-dd" id="dl-bulk-dd">
+        <button class="btn btn-primary" style="background:linear-gradient(135deg,#34d399,#10b981)" onclick="toggleDlMenu('dl-bulk-dd', event)">선택 다운로드 ▾</button>
+        <div class="dl-menu">
+          <button onclick="downloadSelectedMedDocs('docx');closeDlMenus()"><span class="ico docx-ico">D</span>DOCX zip</button>
+          <button onclick="downloadSelectedMedDocs('pdf');closeDlMenus()"><span class="ico pdf-ico">P</span>PDF zip</button>
+        </div>
+      </div>
       <button class="btn btn-danger" onclick="deleteSelectedMedDocs()">선택 삭제</button>
     </div>
     <div class="tbl-wrap">
@@ -3187,7 +3209,7 @@ async function initMedMaster() {
       const sameBase = location.origin + location.pathname;
       const shareUrl = d.share_token ? `${liveBase}#sign=${d.share_token}` : '';
       const openUrl  = d.share_token ? `${sameBase}#sign=${d.share_token}` : '';
-      const dlBtn   = `<button class="btn btn-primary" style="padding:5px 10px;font-size:11px;background:linear-gradient(135deg,#34d399,#10b981)" onclick="downloadMedDoc(${d.id})">다운로드</button>`;
+      const dlBtn = `<div class="dl-dd" id="dl-dd-${d.id}"><button class="btn btn-primary" style="padding:5px 10px;font-size:11px;background:linear-gradient(135deg,#34d399,#10b981)" onclick="toggleDlMenu('dl-dd-${d.id}', event)">다운로드 ▾</button><div class="dl-menu"><button onclick="downloadMedDoc(${d.id},'docx');closeDlMenus()"><span class="ico docx-ico">D</span>DOCX 다운로드</button><button onclick="downloadMedDoc(${d.id},'pdf');closeDlMenus()"><span class="ico pdf-ico">P</span>PDF 다운로드</button></div></div>`;
       const linkBtns = d.share_token
         ? `<button class="btn btn-secondary" style="padding:5px 10px;font-size:11px" onclick="copyTextRobust('${shareUrl}','링크 복사됨')">링크</button><button class="btn btn-primary" style="padding:5px 10px;font-size:11px" onclick="window.open('${openUrl}','_blank')">보기</button>`
         : '';
@@ -3195,15 +3217,21 @@ async function initMedMaster() {
       return `<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap">${dlBtn}${linkBtns}${delBtn}</div>`;
     };
     docTb.innerHTML = (docs||[]).length ?
-      (docs||[]).map(d=>`<tr>
-        <td style="text-align:center"><input type="checkbox" class="meddoc-chk" onchange="updateMedDocCount()" data-id="${d.id}"></td>
-        <td>${hMap[d.client_id]||'—'}</td><td>${d.file_name||'—'}</td><td>${d.file_type||'—'}</td>
-        <td style="text-align:center">${stTag(d.signed_status,d.signer_name,d.signed_at)}</td>
-        <td>${(d.uploaded_at||'').slice(0,10)||'—'}</td>
-        <td>${actCell(d)}</td>
-      </tr>`).join('') :
+      (docs||[]).map(d=>{
+        const hosp = hMap[d.client_id]||'—';
+        const stText = d.signed_status==='signed'?'서명 완료':(d.signed_status==='pending'?'대기':'—');
+        const haystack = `${hosp} ${d.file_name||''} ${d.file_type||''} ${stText} ${d.signer_name||''}`.toLowerCase();
+        return `<tr class="meddoc-row" data-search="${haystack.replace(/"/g,'&quot;')}">
+          <td style="text-align:center"><input type="checkbox" class="meddoc-chk" onchange="updateMedDocCount()" data-id="${d.id}"></td>
+          <td>${hosp}</td><td>${d.file_name||'—'}</td><td>${d.file_type||'—'}</td>
+          <td style="text-align:center">${stTag(d.signed_status,d.signer_name,d.signed_at)}</td>
+          <td>${(d.uploaded_at||'').slice(0,10)||'—'}</td>
+          <td>${actCell(d)}</td>
+        </tr>`;
+      }).join('') :
       emptyRow(7,'업로드된 문서 없음');
     updateMedDocCount();
+    filterMedDocs();
   }
 }
 
@@ -4509,36 +4537,185 @@ function _regenContractBlob(rec){
     return doc.getZip().generate({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
   } catch(e){ return null; }
 }
-async function downloadMedDoc(id){
-  const rec = (await dbQuery('med_contracts', `?id=eq.${id}&select=file_name,template_b64,contract_data`))[0];
+// (인) 위치에 서명 이미지 오버레이 — 미리보기/PDF 공통
+function _applySignatureOverlay(cont, rec){
+  const sigUrl = rec.signature_image;
+  if(!sigUrl) return 0;
+  const repName = (rec.contract_data?.대표자명 || '').trim();
+  const walker = document.createTreeWalker(cont, NodeFilter.SHOW_TEXT);
+  const matches=[]; let nd; let ready = !repName;
+  while(nd = walker.nextNode()){
+    const v = nd.nodeValue || '';
+    if(!ready && repName && v.includes(repName)) ready = true;
+    if(ready && /\(인\)/.test(v)) matches.push(nd);
+  }
+  let replaced = 0;
+  matches.forEach(node => {
+    const text = node.nodeValue;
+    const idx = text.indexOf('(인)');
+    if(idx < 0) return;
+    const parent = node.parentNode; if(!parent) return;
+    const beforeT = document.createTextNode(text.slice(0, idx));
+    const afterT  = document.createTextNode(text.slice(idx + 3));
+    const wrap = document.createElement('span');
+    wrap.style.cssText = 'position:relative;display:inline-block;white-space:nowrap;vertical-align:middle';
+    wrap.textContent = '(인)';
+    const img = document.createElement('img');
+    img.src = sigUrl; img.alt = '서명';
+    img.style.cssText = 'position:absolute;left:70%;top:55%;height:38px;max-width:80px;mix-blend-mode:multiply;pointer-events:none;opacity:.95';
+    wrap.appendChild(img);
+    parent.insertBefore(beforeT, node);
+    parent.insertBefore(wrap, node);
+    parent.insertBefore(afterT, node);
+    parent.removeChild(node);
+    replaced++;
+  });
+  // 폴백: (인) 못 찾으면 하단 서명란 추가
+  if(!replaced){
+    const when = rec.signed_at ? new Date(rec.signed_at).toLocaleString('ko-KR') : '';
+    const cap = document.createElement('div');
+    cap.style.cssText='margin-top:18px;padding:14px;border-top:1px dashed #999;color:#333;font-size:12px;background:#fff';
+    cap.innerHTML = `<div style="margin-bottom:6px"><b>서명자:</b> ${rec.signer_name||''} · <b>일시:</b> ${when}</div><img src="${sigUrl}" style="height:60px;background:#fff;border:1px solid #ddd;border-radius:4px">`;
+    cont.appendChild(cap);
+  }
+  return replaced;
+}
+
+// PDF Blob 생성 — 양식 렌더 + (서명된 경우) 서명 오버레이 합성
+async function _buildPdfBlob(rec){
+  if(typeof html2canvas==='undefined' || !window.jspdf){ throw new Error('PDF 라이브러리 로딩 중입니다'); }
+  if(!rec || !rec.template_b64){ return null; }
+  const blob = _regenContractBlob(rec);
+  if(!blob) return null;
+  // PDF 렌더 전용 스타일 — 카드 그림자·테두리·여백 제거
+  if(!document.getElementById('_pdfRenderStyle')){
+    const css = document.createElement('style'); css.id='_pdfRenderStyle';
+    css.textContent = '._pdfRender{font-family:"Malgun Gothic","맑은 고딕",sans-serif;color:#000;background:#fff} ._pdfRender .docx-wrapper{background:transparent !important;padding:0 !important;display:block !important;gap:0 !important;margin:0 !important;box-shadow:none !important} ._pdfRender section.docx{box-shadow:none !important;margin:0 !important;border:none !important;background:#fff !important;color:#000 !important} ._pdfRender .docx{color:#000 !important} ._pdfRender p{border:none !important}';
+    document.head.appendChild(css);
+  }
+  const wrap = document.createElement('div');
+  wrap.className = '_pdfRender';
+  wrap.style.cssText = 'position:fixed;left:-99999px;top:0;width:794px;background:#fff;color:#000;padding:0;margin:0';
+  document.body.appendChild(wrap);
+  try {
+    await docx.renderAsync(blob, wrap, null, {inWrapper:true, className:'docx', ignoreLastRenderedPageBreak:true});
+    if(rec.signed_status==='signed' && rec.signature_image){
+      _applySignatureOverlay(wrap, rec);
+    }
+    await new Promise(r=>setTimeout(r,300));   // 이미지 + 폰트 로드 대기
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'p', unit:'mm', format:'a4', compress:true});
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+    const sections = wrap.querySelectorAll('section.docx');
+    const targets = sections.length ? Array.from(sections) : [wrap];
+    for(let i=0;i<targets.length;i++){
+      if(i>0) pdf.addPage();
+      // 캡처 시 명시적으로 박스섀도/배경 무시 + 스케일 1.5(파일크기·선명도 균형)
+      const canvas = await html2canvas(targets[i], {scale:1.0, backgroundColor:'#ffffff', useCORS:true, logging:false, removeContainer:true});
+      const imgData = canvas.toDataURL('image/jpeg', 0.75);   // JPEG 품질 0.75 → 용량/선명도 균형
+      const ratio = canvas.height/canvas.width;
+      const imgH = pdfW * ratio;
+      if(imgH <= pdfH){
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgH, '', 'FAST');
+      } else {
+        // 페이지보다 길면 슬라이스해서 멀티 PDF 페이지로 분할
+        const sliceCount = Math.ceil(imgH / pdfH);
+        const sliceHpx = Math.floor(canvas.height / sliceCount);
+        for(let s=0; s<sliceCount; s++){
+          if(s>0) pdf.addPage();
+          const tmp = document.createElement('canvas');
+          tmp.width = canvas.width;
+          tmp.height = (s===sliceCount-1) ? (canvas.height - s*sliceHpx) : sliceHpx;
+          tmp.getContext('2d').drawImage(canvas, 0, s*sliceHpx, canvas.width, tmp.height, 0, 0, canvas.width, tmp.height);
+          const sliceData = tmp.toDataURL('image/jpeg', 0.75);
+          const sliceImgH = pdfW * (tmp.height / tmp.width);
+          pdf.addImage(sliceData, 'JPEG', 0, 0, pdfW, sliceImgH, '', 'FAST');
+        }
+      }
+    }
+    return pdf.output('blob');
+  } finally {
+    document.body.removeChild(wrap);
+  }
+}
+
+async function downloadMedDoc(id, format='docx'){
+  const rec = (await dbQuery('med_contracts', `?id=eq.${id}&select=*`))[0];
   if(!rec){ showToast('문서를 찾을 수 없습니다'); return; }
   if(!rec.template_b64){ showToast('양식이 저장되지 않은 문서입니다 — 다운로드 불가'); return; }
-  const blob = _regenContractBlob(rec);
-  if(!blob){ showToast('계약서 생성 실패'); return; }
-  _downloadBlob(blob, rec.file_name || `계약서_${id}.docx`);
+  if(format==='pdf'){
+    try {
+      showToast('PDF 생성 중…');
+      const blob = await _buildPdfBlob(rec);
+      if(!blob){ showToast('PDF 생성 실패'); return; }
+      const base = (rec.file_name||`계약서_${id}`).replace(/\.(pdf|docx?)$/i,'') + (rec.signed_status==='signed'?'_서명완료':'') + '.pdf';
+      _downloadBlob(blob, base);
+      showToast('PDF 다운로드 완료');
+    } catch(e){ showToast('PDF 생성 오류: '+(e.message||'')); }
+  } else {
+    const blob = _regenContractBlob(rec);
+    if(!blob){ showToast('계약서 생성 실패'); return; }
+    let name = (rec.file_name || `계약서_${id}.docx`).replace(/\.(pdf|docx?)$/i,'') + '.docx';
+    _downloadBlob(blob, name);
+    showToast('.docx 다운로드 완료');
+  }
 }
-function _checkedMedDocIds(){ return [...document.querySelectorAll('#med-docs-tbody input.meddoc-chk:checked')].map(c=>parseInt(c.dataset.id)); }
-function toggleAllMedDocs(cb){ document.querySelectorAll('#med-docs-tbody input.meddoc-chk').forEach(c=>c.checked=cb.checked); updateMedDocCount(); }
-function updateMedDocCount(){ const el=document.getElementById('meddoc-selcount'); if(el){ const n=document.querySelectorAll('#med-docs-tbody input.meddoc-chk:checked').length; el.textContent=n?`선택 ${n}건`:''; } }
-async function downloadSelectedMedDocs(){
+function _checkedMedDocIds(){ return [...document.querySelectorAll('#med-docs-tbody tr.meddoc-row:not([data-hidden]) input.meddoc-chk:checked')].map(c=>parseInt(c.dataset.id)); }
+function toggleAllMedDocs(cb){ document.querySelectorAll('#med-docs-tbody tr.meddoc-row:not([data-hidden]) input.meddoc-chk').forEach(c=>c.checked=cb.checked); updateMedDocCount(); }
+function updateMedDocCount(){ const el=document.getElementById('meddoc-selcount'); if(el){ const n=document.querySelectorAll('#med-docs-tbody tr.meddoc-row:not([data-hidden]) input.meddoc-chk:checked').length; el.textContent=n?`선택 ${n}건`:''; } }
+// 문서함 검색 (병원명·파일명·종류·서명상태·서명자)
+function filterMedDocs(){
+  const inp = document.getElementById('meddoc-search');
+  const q = (inp?.value||'').trim().toLowerCase();
+  const rows = document.querySelectorAll('#med-docs-tbody tr.meddoc-row');
+  let shown=0;
+  rows.forEach(tr=>{
+    const hay = tr.dataset.search || '';
+    const match = !q || hay.includes(q);
+    if(match){ tr.style.display=''; tr.removeAttribute('data-hidden'); shown++; }
+    else { tr.style.display='none'; tr.setAttribute('data-hidden','1'); }
+  });
+  const info = document.getElementById('meddoc-count-info');
+  if(info) info.textContent = q ? `전체 ${rows.length}건 중 ${shown}건 표시` : `전체 ${rows.length}건`;
+  updateMedDocCount();
+}
+// 다운로드 드롭다운 토글
+function toggleDlMenu(id, ev){
+  if(ev) ev.stopPropagation();
+  const el = document.getElementById(id);
+  const isOpen = el && el.classList.contains('open');
+  closeDlMenus();
+  if(el && !isOpen) el.classList.add('open');
+}
+function closeDlMenus(){ document.querySelectorAll('.dl-dd.open').forEach(e=>e.classList.remove('open')); }
+document.addEventListener('click', e => { if(!e.target.closest('.dl-dd')) closeDlMenus(); });
+async function downloadSelectedMedDocs(format='docx'){
   const ids = _checkedMedDocIds();
   if(!ids.length){ showToast('다운로드할 문서를 선택하세요'); return; }
   if(typeof JSZip==='undefined'){ showToast('JSZip 라이브러리 로딩 중입니다. 잠시 후 다시 시도'); return; }
-  const recs = await dbQuery('med_contracts', `?id=in.(${ids.join(',')})&select=id,file_name,template_b64,contract_data`);
+  const recs = await dbQuery('med_contracts', `?id=in.(${ids.join(',')})&select=*`);
+  const isPdf = format==='pdf';
+  showToast(`${recs.length}건 ${isPdf?'PDF':'.docx'} 생성 중…`);
   const zip = new JSZip();
   let ok=0, skipped=0;
   for(const r of (recs||[])){
     if(!r.template_b64){ skipped++; continue; }
-    const blob = _regenContractBlob(r);
-    if(!blob){ skipped++; continue; }
-    const buf = await blob.arrayBuffer();
-    const name = (r.file_name || `계약서_${r.id}.docx`).replace(/[\\/:*?"<>|]/g,'_');
-    zip.file(name, buf); ok++;
+    try {
+      const blob = isPdf ? await _buildPdfBlob(r) : _regenContractBlob(r);
+      if(!blob){ skipped++; continue; }
+      const buf = await blob.arrayBuffer();
+      const ext = isPdf ? '.pdf' : '.docx';
+      const tag = (isPdf && r.signed_status==='signed') ? '_서명완료' : '';
+      let name = (r.file_name||`계약서_${r.id}`).replace(/\.(pdf|docx?)$/i,'') + tag + ext;
+      name = name.replace(/[\\/:*?"<>|]/g,'_');
+      zip.file(name, buf); ok++;
+    } catch(e){ skipped++; }
   }
   if(!ok){ showToast('다운로드 가능한 문서가 없습니다 (양식 미저장)'); return; }
   const zipBlob = await zip.generateAsync({type:'blob'});
   _downloadBlob(zipBlob, `계약서_${ok}건_${fmt(TODAY)}.zip`);
-  showToast(skipped ? `${ok}건 다운로드 완료, ${skipped}건 건너뜀(양식 없음)` : `${ok}건 zip 다운로드 완료`);
+  showToast(skipped ? `${ok}건 ${isPdf?'PDF':'.docx'} 완료, ${skipped}건 건너뜀` : `${ok}건 ${isPdf?'PDF':'.docx'} zip 다운로드 완료`);
 }
 async function deleteSelectedMedDocs(){
   const ids = _checkedMedDocIds();
@@ -4773,8 +4950,7 @@ window.addEventListener('load', async () => {
         <canvas id="sign-canvas" style="width:100%;height:220px;display:block;cursor:crosshair"></canvas>
       </div>
       <div style="display:flex;gap:10px;margin-top:12px;align-items:center">
-        <input id="sign-name" type="text" class="form-control" placeholder="서명자 이름" style="max-width:240px">
-        <span style="flex:1"></span>
+        <span style="flex:1;font-size:12px;color:#94a3b8">서명은 계약서 미리보기의 (인) 위치에 합성되어 PDF로 저장됩니다.</span>
         <button class="btn btn-secondary" onclick="signClear()">지우기</button>
         <button class="btn btn-primary" style="background:linear-gradient(135deg,#34d399,#10b981)" onclick="signSubmit()">서명 제출</button>
       </div>
@@ -4923,8 +5099,8 @@ function initSignPad(){
 function signClear(){ if(_signPad) _signPad.clear(); }
 async function signSubmit(){
   if(!_signPad || _signPad.isEmpty()){ alert('서명을 입력해주세요'); return; }
-  const name = document.getElementById('sign-name')?.value?.trim();
-  if(!name){ alert('서명자 이름을 입력해주세요'); return; }
+  // 서명자 이름은 계약 데이터의 대표자명으로 자동 기입 (별도 입력 없음)
+  const name = (_signRec?.contract_data?.대표자명 || '').trim() || '서명자';
   const signatureImage = _signPad.toDataURL('image/png');
   const body = { signature_image:signatureImage, signer_name:name, signed_at:new Date().toISOString(), signed_status:'signed' };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/med_contracts?share_token=eq.${encodeURIComponent(_signToken)}`,{method:'PATCH',

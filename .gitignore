@@ -14,5 +14,7 @@ preview_medout.html
 preview_medpick.html
 preview_signdoc.html
 preview_signink.html
+preview_dlpdf.html
+preview_dlsearch.html
 debug.txt
 supabase_setup.sql
