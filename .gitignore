@@ -16,5 +16,7 @@ preview_signdoc.html
 preview_signink.html
 preview_dlpdf.html
 preview_dlsearch.html
+preview_medgroup.html
+preview_agency.html
 debug.txt
 supabase_setup.sql

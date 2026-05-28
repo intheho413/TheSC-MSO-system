@@ -1304,11 +1304,13 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
       <div class="form-row cols-2">
         <div class="form-group">
           <label class="form-label">장비사</label>
-          <input type="text" class="form-control" id="med-in-mfr" placeholder="예: 솔타메디칼">
+          <input type="text" class="form-control" id="med-in-mfr" list="med-in-mfr-list" placeholder="예: 솔타메디칼 (입력 또는 선택)" autocomplete="off">
+          <datalist id="med-in-mfr-list"></datalist>
         </div>
         <div class="form-group">
           <label class="form-label">장비명</label>
-          <input type="text" class="form-control" id="med-in-prod" placeholder="예: 써마지 FLX">
+          <input type="text" class="form-control" id="med-in-prod" list="med-in-prod-list" placeholder="예: 써마지 FLX (입력 또는 선택)" autocomplete="off" oninput="onMedInProdPick(this)">
+          <datalist id="med-in-prod-list"></datalist>
         </div>
       </div>
       <div class="form-row cols-2">
@@ -1327,9 +1329,14 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
           <input type="text" class="form-control" id="med-in-serial" placeholder="SN-XXXXX">
         </div>
         <div class="form-group">
-          <label class="form-label">비고</label>
-          <input type="text" class="form-control" id="med-in-note" placeholder="메모 (선택)">
+          <label class="form-label">대리점</label>
+          <input type="text" class="form-control" id="med-in-agency" list="med-in-agency-list" placeholder="예: 희메디텍 (입력 또는 선택)" autocomplete="off">
+          <datalist id="med-in-agency-list"></datalist>
         </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">비고</label>
+        <input type="text" class="form-control" id="med-in-note" placeholder="자유 메모 (선택)">
       </div>
       <button class="btn btn-primary btn-full" onclick="submitMedIn()">매입 등록</button>
     </div>
@@ -1341,7 +1348,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleAllMedIn(this)" title="전체 선택"></th><th>날짜</th><th>장비사</th><th>장비명</th><th>수량</th><th>잔여</th><th>매입가(단가)</th><th>시리얼번호</th><th>비고</th><th>작업</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllMedIn(this)" title="전체 선택"></th><th>날짜</th><th>장비사</th><th>장비명</th><th>수량</th><th>잔여</th><th>매입가(단가)</th><th>대리점</th><th>시리얼번호</th><th>비고</th><th>작업</th></tr></thead>
         <tbody id="med-in-tbody"></tbody>
       </table>
     </div>
@@ -1357,7 +1364,8 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
         </div>
         <div class="form-group">
           <label class="form-label">병원명</label>
-          <input type="text" class="form-control" id="med-out-hosp" placeholder="병원명 직접 입력">
+          <input type="text" class="form-control" id="med-out-hosp" list="med-out-hosp-list" placeholder="병원명 입력 또는 선택…" autocomplete="off">
+          <datalist id="med-out-hosp-list"></datalist>
         </div>
       </div>
       <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px">아래 표에 장비를 행 추가하여 복수 등록 가능합니다.</div>
@@ -1509,13 +1517,17 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
         <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="submitMedProd()">등록</button>
       </div>
     </div>
-    <div class="btn-group" style="margin-top:12px;margin-bottom:12px">
+    <div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap">
+      <span style="font-size:12px;color:#94a3b8">장비사별 보기</span>
+      <select class="form-control" id="medprod-mfr-filter" style="max-width:260px" onchange="filterMedProdByMfr()"><option value="">전체</option></select>
+    </div>
+    <div class="btn-group" style="margin-bottom:12px">
       <button class="btn btn-primary" onclick="saveSelectedMedProd()">선택 저장</button>
       <button class="btn btn-danger" onclick="deleteSelectedMedProd()">선택 삭제</button>
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleAllMedProd(this)" title="전체 선택"></th><th>장비명</th><th>장비사</th><th>규격</th><th>작업</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllMedProd(this)" title="전체 선택"></th><th>장비명</th><th>장비사</th><th>규격</th><th>대리점</th><th>비고</th><th>작업</th></tr></thead>
         <tbody id="med-prod-tbody"></tbody>
       </table>
     </div>
@@ -2556,12 +2568,26 @@ async function initMedReport() {
 // ── 의료장비 영업관리 초기화 ─────────────────────
 async function initMedSales() {
   document.querySelectorAll('#page-med-sales input[type=date]').forEach(el => el.value = fmt(TODAY));
-  const [sins, souts, hosps] = await Promise.all([
+  const [sins, souts, hosps, meds] = await Promise.all([
     dbQuery('med_stock_in',  '?order=date.desc&limit=50'),
     dbQuery('med_stock_out', '?order=date.desc&limit=50&select=id,date,client_id,product_name,manufacturer,serial_number,is_purchased,payment_method,sale_price,commission,quantity,note'),
     dbQuery('med_clients',   '?select=id,hospital_name'),
+    dbQuery('med_products',  '?order=name&select=name,manufacturer'),
   ]);
   const hospMap = Object.fromEntries((hosps||[]).map(h=>[h.id,h.hospital_name]));
+  // 납품 등록 병원명 datalist (기존 병원 선택 가능)
+  const hospDl = document.getElementById('med-out-hosp-list');
+  if(hospDl) hospDl.innerHTML = (hosps||[]).map(h=>`<option value="${_esc(h.hospital_name)}">`).join('');
+  // 매입 등록 장비명/장비사 datalist (기존 등록 장비 선택 가능)
+  const prodDl = document.getElementById('med-in-prod-list');
+  if(prodDl) prodDl.innerHTML = (meds||[]).map(m=>`<option value="${_esc(m.name)}">`).join('');
+  const mfrDl = document.getElementById('med-in-mfr-list');
+  if(mfrDl) mfrDl.innerHTML = [...new Set((meds||[]).map(m=>m.manufacturer).filter(Boolean))].map(v=>`<option value="${_esc(v)}">`).join('');
+  window._medProdMfrMap = {};
+  (meds||[]).forEach(m=>{ if(m.name) window._medProdMfrMap[m.name] = m.manufacturer||''; });
+  // 대리점 datalist (기존 입력 대리점 자동완성)
+  const agencyDl = document.getElementById('med-in-agency-list');
+  if(agencyDl) agencyDl.innerHTML = [...new Set((sins||[]).map(s=>(s.agency||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b)).map(v=>`<option value="${_esc(v)}">`).join('');
   // 매입 장비 선택 드롭다운 소스 갱신 + 입력행 확보
   medInList = sins || [];
   const outRowsBody = document.getElementById('med-out-rows');
@@ -2579,10 +2605,11 @@ async function initMedSales() {
       <td style="text-align:center;color:rgba(255,255,255,.7);width:58px" title="매입 등록 수량(보존)">${r.quantity||1}</td>
       <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:58px;text-align:center" id="mi-rem-${r.id}" value="${r.remaining_qty??r.quantity??1}" title="잔여 재고(수정 가능)"></td>
       <td><input type="number" ${_eipt} style="padding:5px 8px;font-size:12px;width:100px" id="mi-price-${r.id}" value="${r.purchase_price||0}"></td>
+      <td><input ${_eipt} list="med-in-agency-list" style="padding:5px 8px;font-size:12px;width:100px" id="mi-agency-${r.id}" value="${_esc(r.agency)}"></td>
       <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:100px" id="mi-serial-${r.id}" value="${_esc(r.serial_number)}"></td>
       <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:100px" id="mi-note-${r.id}" value="${_esc(r.note)}"></td>
       <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="saveMedInRow(${r.id})">저장</button><button class="btn btn-danger" style="padding:5px 10px;font-size:12px" onclick="deleteMedInRow(${r.id})">삭제</button></div></td>
-    </tr>`).join('') : emptyRow(10,'매입 내역 없음');
+    </tr>`).join('') : emptyRow(11,'매입 내역 없음');
   updateMedInCount();
   const outTb = document.getElementById('med-out-tbody');
   const saleOpt = v => ['매입','판매수수료'].map(o=>`<option${o===v?' selected':''}>${o}</option>`).join('');
@@ -2620,6 +2647,12 @@ async function _ensureMedProduct(name, mfr) {
   } catch(e){ return 'fail'; }
 }
 
+// 매입 등록 장비명 선택 시 장비사 자동 입력 (등록 장비와 정확히 일치할 때)
+function onMedInProdPick(el){
+  const name = (el.value||'').trim();
+  const mfr = (window._medProdMfrMap||{})[name];
+  if(mfr){ const m=document.getElementById('med-in-mfr'); if(m && !m.value.trim()) m.value = mfr; }
+}
 async function submitMedIn() {
   const mfr=document.getElementById('med-in-mfr')?.value?.trim();
   const prod=document.getElementById('med-in-prod')?.value?.trim();
@@ -2629,6 +2662,7 @@ async function submitMedIn() {
     quantity:qty, remaining_qty:qty,   // 잔여재고는 초기 매입수량과 동일하게 시작
     purchase_price:parseInt(document.getElementById('med-in-price')?.value||0),
     serial_number:document.getElementById('med-in-serial')?.value||null,
+    agency:document.getElementById('med-in-agency')?.value?.trim()||null,
     note:document.getElementById('med-in-note')?.value||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_stock_in`,{method:'POST',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
@@ -2636,7 +2670,7 @@ async function submitMedIn() {
     // 매입한 장비를 장비 관리에 자동 등록
     const reg = await _ensureMedProduct(prod, mfr);
     showToast(reg==='created' ? `매입 등록 완료 — 장비 관리에도 추가됨` : '매입 등록 완료');
-    ['med-in-mfr','med-in-prod','med-in-price','med-in-serial','med-in-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    ['med-in-mfr','med-in-prod','med-in-price','med-in-serial','med-in-agency','med-in-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
     const q=document.getElementById('med-in-qty'); if(q) q.value='1';
     initMedSales();
   }
@@ -2655,6 +2689,7 @@ async function _saveMedInCore(id){
     product_name:prod,
     purchase_price:parseInt(document.getElementById('mi-price-'+id)?.value)||0,
     serial_number:document.getElementById('mi-serial-'+id)?.value?.trim()||null,
+    agency:document.getElementById('mi-agency-'+id)?.value?.trim()||null,
     note:document.getElementById('mi-note-'+id)?.value?.trim()||null};
   if(remEl) body.remaining_qty = parseInt(remEl.value)||0;
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_stock_in?id=eq.${id}`,{method:'PATCH',
@@ -2943,8 +2978,17 @@ async function deleteMedProdRow(id){
   if(!confirm('이 장비를 삭제할까요?\n되돌릴 수 없습니다. (매입/납품 이력이 있으면 삭제되지 않습니다)')) return;
   const r=await _deleteMedProdCore(id); showToast(r.ok?'장비 삭제 완료':`삭제 실패 — ${r.msg}`); if(r.ok) initMedMaster();
 }
-function _checkedMedProdIds(){ return [...document.querySelectorAll('#med-prod-tbody input.medprod-chk:checked')].map(c=>c.dataset.id); }
-function toggleAllMedProd(cb){ document.querySelectorAll('#med-prod-tbody input.medprod-chk').forEach(c=>c.checked=cb.checked); }
+function _checkedMedProdIds(){ return [...document.querySelectorAll('#med-prod-tbody tr.medprod-row:not([data-hidden]) input.medprod-chk:checked')].map(c=>c.dataset.id); }
+function toggleAllMedProd(cb){ document.querySelectorAll('#med-prod-tbody tr.medprod-row:not([data-hidden]) input.medprod-chk').forEach(c=>c.checked=cb.checked); }
+// 장비사별 필터 — 선택한 장비사 그룹만 표시
+function filterMedProdByMfr(){
+  const v = document.getElementById('medprod-mfr-filter')?.value || '';
+  document.querySelectorAll('#med-prod-tbody tr.medprod-grp, #med-prod-tbody tr.medprod-row').forEach(tr=>{
+    const show = !v || tr.dataset.mfr===v;
+    tr.style.display = show ? '' : 'none';
+    if(show) tr.removeAttribute('data-hidden'); else tr.setAttribute('data-hidden','1');
+  });
+}
 async function saveSelectedMedProd(){
   if(_bulkBusy) return;
   const ids=_checkedMedProdIds();
@@ -3154,22 +3198,60 @@ async function deleteMedLedgerRow(type, id){
 // ── 의료장비 기초관리 초기화 ──────────────────────
 async function initMedMaster() {
   refreshTemplateStatus();
-  const [prods, clients] = await Promise.all([
+  const [prods, clients, sins] = await Promise.all([
     dbQuery('med_products','?order=name&select=id,name,manufacturer,spec'),
     dbQuery('med_clients', '?order=hospital_name&select=id,hospital_name,ceo_name,contact_person,phone,address'),
+    dbQuery('med_stock_in', '?order=date.desc&select=product_name,manufacturer,agency,note,date'),
   ]);
+  // 장비별(장비명+장비사) 최신 매입의 대리점/비고 매핑 (sins는 date.desc 정렬 → 첫 등장이 최신)
+  const agencyMap = {}, noteMap = {};
+  (sins||[]).forEach(r=>{
+    const key = `${(r.product_name||'').trim()}|${(r.manufacturer||'').trim()}`;
+    const ag = (r.agency||'').trim(), nt = (r.note||'').trim();
+    if(ag){ if(!agencyMap[key]) agencyMap[key]={latest:ag, set:new Set([ag])}; else agencyMap[key].set.add(ag); }
+    if(nt){ if(!noteMap[key]) noteMap[key]={latest:nt, set:new Set([nt])}; else noteMap[key].set.add(nt); }
+  });
+  const _mapVal = (map, p) => {
+    const key = `${(p.name||'').trim()}|${(p.manufacturer||'').trim()}`;
+    const e = map[key]; if(!e) return '';
+    return e.latest + (e.set.size>1 ? ` 외 ${e.set.size-1}건` : '');
+  };
+  const prodAgency = p => _mapVal(agencyMap, p);
+  const prodNote = p => _mapVal(noteMap, p);
 
-  // 장비 테이블 (인라인 수정 + 복수 선택)
+  // 장비 테이블 (장비사별 그룹 + 인라인 수정 + 복수 선택)
   const prodTb = document.getElementById('med-prod-tbody');
-  if(prodTb) prodTb.innerHTML = (prods||[]).length ?
-    (prods||[]).map(p=>`<tr>
-      <td style="text-align:center"><input type="checkbox" class="medprod-chk" data-id="${p.id}"></td>
-      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:140px" id="emp-name-${p.id}" value="${_esc(p.name)}"></td>
-      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:120px" id="emp-mfr-${p.id}" value="${_esc(p.manufacturer)}"></td>
-      <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:110px" id="emp-spec-${p.id}" value="${_esc(p.spec)}"></td>
-      <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveMedProdRow(${p.id})">저장</button><button class="btn btn-danger" style="padding:5px 12px;font-size:12px" onclick="deleteMedProdRow(${p.id})">삭제</button></div></td>
-    </tr>`).join('') :
-    emptyRow(5,'등록된 장비 없음');
+  if(prodTb){
+    if(!(prods||[]).length){ prodTb.innerHTML = emptyRow(7,'등록된 장비 없음'); }
+    else {
+      const sorted = (prods||[]).slice().sort((a,b)=> ((a.manufacturer||'').trim()).localeCompare((b.manufacturer||'').trim()) || (a.name||'').localeCompare(b.name||''));
+      const groups = {};
+      sorted.forEach(p=>{ const k=(p.manufacturer||'').trim()||'(미지정)'; (groups[k]=groups[k]||[]).push(p); });
+      const prodRow = p => `<tr class="medprod-row" data-mfr="${_esc((p.manufacturer||'').trim()||'(미지정)')}">
+        <td style="text-align:center"><input type="checkbox" class="medprod-chk" data-id="${p.id}"></td>
+        <td><input ${_eipt} style="padding:5px 8px;font-size:12px;min-width:140px" id="emp-name-${p.id}" value="${_esc(p.name)}"></td>
+        <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:120px" id="emp-mfr-${p.id}" value="${_esc(p.manufacturer)}"></td>
+        <td><input ${_eipt} style="padding:5px 8px;font-size:12px;width:90px" id="emp-spec-${p.id}" value="${_esc(p.spec)}"></td>
+        <td style="font-size:12px;color:#93c5fd;font-weight:600;max-width:150px" title="${_esc(prodAgency(p))}">${_esc(prodAgency(p))||'—'}</td>
+        <td style="font-size:12px;color:#cbd5e1;max-width:160px" title="${_esc(prodNote(p))}">${_esc(prodNote(p))||'—'}</td>
+        <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" style="padding:5px 12px;font-size:12px" onclick="saveMedProdRow(${p.id})">저장</button><button class="btn btn-danger" style="padding:5px 12px;font-size:12px" onclick="deleteMedProdRow(${p.id})">삭제</button></div></td>
+      </tr>`;
+      prodTb.innerHTML = Object.keys(groups).map(mfr=>{
+        const head = `<tr class="medprod-grp" data-mfr="${_esc(mfr)}"><td colspan="7" style="background:linear-gradient(90deg,rgba(96,165,250,.16),rgba(96,165,250,.03));font-weight:700;color:#fff;border-top:1px solid rgba(96,165,250,.18);border-bottom:1px solid rgba(96,165,250,.25)"><span style="display:inline-block;width:4px;height:13px;background:#60a5fa;border-radius:2px;vertical-align:middle;margin-right:8px"></span>${_esc(mfr)} <span style="font-weight:600;color:#93c5fd;font-size:11px;margin-left:6px">${groups[mfr].length}대</span></td></tr>`;
+        return head + groups[mfr].map(prodRow).join('');
+      }).join('');
+    }
+  }
+  // 장비사 필터 드롭다운 채우기
+  const mfrFilter = document.getElementById('medprod-mfr-filter');
+  if(mfrFilter){
+    const mfrs = [...new Set((prods||[]).map(p=>(p.manufacturer||'').trim()||'(미지정)'))].sort((a,b)=>a.localeCompare(b));
+    const cur = mfrFilter.value;
+    mfrFilter.innerHTML = `<option value="">전체 (${mfrs.length}개사 · ${(prods||[]).length}대)</option>` +
+      mfrs.map(m=>{ const cnt=(prods||[]).filter(p=>((p.manufacturer||'').trim()||'(미지정)')===m).length; return `<option value="${_esc(m)}">${_esc(m)} (${cnt})</option>`; }).join('');
+    if(cur && mfrs.includes(cur)) mfrFilter.value = cur;
+  }
+  filterMedProdByMfr();
 
   // 거래처 테이블 (인라인 수정 + 복수 선택)
   const cliTb = document.getElementById('med-client-tbody');
