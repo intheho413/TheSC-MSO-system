@@ -613,26 +613,41 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-chart{width:100%;height:300px}
 .mr-chart.med{height:260px}
 
-.mr-catgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:760px){.mr-catgrid{grid-template-columns:repeat(2,1fr)}}
+.mr-catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .mr-cat{background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:16px 18px;position:relative;overflow:hidden;transition:.2s}
 .mr-cat:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.18)}
 .mr-cat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
 .mr-cat.c1::before{background:#60a5fa;box-shadow:0 0 12px #60a5fa}
 .mr-cat.c2::before{background:#ec4899;box-shadow:0 0 12px #ec4899}
+.mr-cat.c3::before{background:#fb923c;box-shadow:0 0 12px #fb923c}
+.mr-cat.c4::before{background:#34d399;box-shadow:0 0 12px #34d399}
+.mr-cat.c5::before{background:#a78bfa;box-shadow:0 0 12px #a78bfa}
+.mr-cat.c6::before{background:#fbbf24;box-shadow:0 0 12px #fbbf24}
 .mr-cat::after{content:"";position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;filter:blur(35px);opacity:.25}
 .mr-cat.c1::after{background:#60a5fa}
 .mr-cat.c2::after{background:#ec4899}
+.mr-cat.c3::after{background:#fb923c}
+.mr-cat.c4::after{background:#34d399}
+.mr-cat.c5::after{background:#a78bfa}
+.mr-cat.c6::after{background:#fbbf24}
 .mr-cat .name{font-size:13.5px;font-weight:800;color:#fff;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
 .mr-cat .name .cnt{font-size:11px;font-weight:700;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:5px;color:#cbd5e1}
 .mr-cat .stat{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;position:relative;z-index:1}
 .mr-cat .stat .num{font-size:24px;font-weight:900;color:#fff;letter-spacing:-.3px}
 .mr-cat.c1 .stat .num{background:linear-gradient(135deg,#60a5fa,#93c5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
 .mr-cat.c2 .stat .num{background:linear-gradient(135deg,#ec4899,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-cat.c3 .stat .num{background:linear-gradient(135deg,#fb923c,#fdba74);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-cat.c4 .stat .num{background:linear-gradient(135deg,#34d399,#6ee7b7);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-cat.c5 .stat .num{background:linear-gradient(135deg,#a78bfa,#c4b5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-cat.c6 .stat .num{background:linear-gradient(135deg,#fbbf24,#fde68a);-webkit-background-clip:text;background-clip:text;color:transparent}
 .mr-cat .stat .lbl{font-size:10.5px;color:#64748b;font-weight:600}
 .mr-cat .bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:5px;position:relative;z-index:1}
 .mr-cat.c1 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#93c5fd);box-shadow:0 0 8px #60a5fa}
 .mr-cat.c2 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#ec4899,#f0abfc);box-shadow:0 0 8px #ec4899}
+.mr-cat.c3 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#fb923c,#fdba74);box-shadow:0 0 8px #fb923c}
+.mr-cat.c4 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#34d399,#6ee7b7);box-shadow:0 0 8px #34d399}
+.mr-cat.c5 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#a78bfa,#c4b5fd);box-shadow:0 0 8px #a78bfa}
+.mr-cat.c6 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#fbbf24,#fde68a);box-shadow:0 0 8px #fbbf24}
 .mr-cat .sub-stat{display:flex;justify-content:space-between;font-size:10.5px;color:#64748b;margin-top:8px;font-weight:600;position:relative;z-index:1}
 
 .mr-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
@@ -1202,15 +1217,15 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       <div id="mr-chart-trend" class="mr-chart"></div>
     </div>
     <div class="mr-card">
-      <div class="h">카테고리 분포</div>
-      <div class="sh">의료장비 / 화장품 비율</div>
+      <div class="h">제품별 분포</div>
+      <div class="sh">시너젯 / 써마지 / 기타 비율</div>
       <div id="mr-chart-donut" class="mr-chart"></div>
     </div>
   </div>
 
-  <!-- 카테고리별 카드 -->
+  <!-- 제품별 카드 -->
   <div class="mr-card" style="margin-bottom:14px">
-    <div class="h">카테고리별 요약 <span class="meta">건수 · 평균 진행률</span></div>
+    <div class="h">제품별 요약 <span class="meta">건수 · 평균 진행률 · 완료율</span></div>
     <div class="mr-catgrid" id="mr-catgrid"></div>
   </div>
 
@@ -1271,7 +1286,6 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
           <label>품목 분류 <span class="req">*필수</span></label>
           <div class="mr-catpick" id="mr-catpick">
             <button class="k1 on" data-cat="med"><span class="cdot"></span>의료장비</button>
-            <button class="k2" data-cat="cosm"><span class="cdot"></span>화장품</button>
           </div>
         </div>
         <div class="mr-fg">
@@ -6028,11 +6042,6 @@ let MR_CASES = [
     {who:'정인호', role:'대리', time:'4/30', body:'데모장비 A/S — 팁 불량으로 확인. 총괄실장님 데모 결과 만족, 원장님도 긍정적.'},
     {who:'정인호', role:'대리', time:'5/7', body:'데모장비 철수 (30%). 서브시전에 대한 만족도가 떨어지심 (쥬베룩 볼륨과 올리디아 활용).'}
   ]},
-  {id:2, cat:'med', prod:'바크로', client:'아이비여성의원', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-04-30', due:'2026-05-31', status:'컨펌 대기', progress:30, desc:'물톡스 데모. 상시할인 10% 적용 안내. 피드백 요청 중.', tags:['물톡스'], comments:[
-    {who:'정인호', role:'대리', time:'4/30', body:'안건 등록 — 아이비여성의원 · 바크로 물톡스 데모', event:'created'},
-    {who:'정인호', role:'대리', time:'4/30', body:'물톡스 데모 진행 (30%). 상시할인 10% 적용 안내.'},
-    {who:'정인호', role:'대리', time:'5/8', body:'데모 피드백 요청 중.'}
-  ]},
   {id:3, cat:'med', prod:'써마지', client:'수원 데이뷰', type:'납품', owner:'정인호', mgr:'정인호', startDate:'2026-04-28', due:'2026-04-28', status:'완료', progress:100, desc:'써마지 납품 완료. 계약서: 장제원이사님.', tags:['수원'], comments:[
     {who:'정인호', role:'대리', time:'4/28', body:'안건 등록 — 수원 데이뷰 · 써마지 납품', event:'created'},
     {who:'정인호', role:'대리', time:'4/28', body:'써마지 납품 완료. 계약서: 장제원이사님.'},
@@ -6040,11 +6049,6 @@ let MR_CASES = [
   ]},
 
   // ─── 5월2주차 (5/4~5/8) ───
-  {id:4, cat:'med', prod:'바크로', client:'셀린의원 명동점', type:'납품', owner:'정인호', mgr:'정인호', startDate:'2026-05-06', due:'2026-05-11', status:'완료', progress:100, desc:'바크로 발주, 상시할인 10% 적용 안내.', tags:['명동권','상시할인'], comments:[
-    {who:'정인호', role:'대리', time:'5/6', body:'안건 등록 — 셀린의원 명동점 · 바크로 발주', event:'created'},
-    {who:'정인호', role:'대리', time:'5/6', body:'바크로 발주 완료 (100%). 상시할인 10% 적용 안내.'},
-    {who:'시스템', role:'자동', time:'5/11', body:'<b>완료 처리됨</b> — 납품 완료', event:'complete'}
-  ]},
   {id:5, cat:'med', prod:'써마지', client:'종로 오블리브', type:'납품', owner:'정인호', mgr:'정인호', startDate:'2026-05-07', due:'2026-05-07', status:'완료', progress:100, desc:'써마지 납품 완료.', tags:['종로'], comments:[
     {who:'정인호', role:'대리', time:'5/7', body:'안건 등록 — 종로 오블리브 · 써마지 납품', event:'created'},
     {who:'시스템', role:'자동', time:'5/7', body:'<b>완료 처리됨</b> — 납품 완료 (100%)', event:'complete'}
@@ -6061,10 +6065,6 @@ let MR_CASES = [
     {who:'정인호', role:'대리', time:'5/12', body:'시너젯 데모 진행 (50%). 올리디아 240 주입에 대한 테스트 진행 이후 데모 이용시 주입만.'},
     {who:'정인호', role:'대리', time:'5/15', body:'데모 철수. 사용 피드백 미팅 예정 (전복길 부장).'}
   ]},
-  {id:8, cat:'med', prod:'바크로', client:'데이뷰/세라미크', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-11', due:null, status:'진행 중', progress:20, desc:'바크로 마케팅 관련 영상물 제작 및 인플루언서 협찬 지원 논의.', tags:['마케팅','인플루언서'], comments:[
-    {who:'정인호', role:'대리', time:'5/11', body:'안건 등록 — 데이뷰/세라미크 · 바크로 마케팅 미팅', event:'created'},
-    {who:'정인호', role:'대리', time:'5/11', body:'바크로 마케팅 관련하여 영상물 제작 및 인플루언서 협찬 지원 협의.'}
-  ]},
 
   // ─── 5월4주차 (5/18~5/22) ───
   {id:9, cat:'med', prod:'시너젯', client:'미뉴얼의원 동탄점', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-05-18', due:'2026-07-31', status:'진행 중', progress:40, desc:'큐어젯 사용 유저. 빠른 리쥬비네이션으로 관심 보이심.', tags:['동탄권','큐어젯 사용','리쥬비네이션'], comments:[
@@ -6074,14 +6074,6 @@ let MR_CASES = [
   {id:10, cat:'med', prod:'시너젯', client:'릴리브의원', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-21', due:null, status:'신규', progress:10, desc:'원장님 휴무 관계로 총괄실장님께 설명 및 자료 전달드린 상태.', tags:['자료전달'], comments:[
     {who:'정인호', role:'대리', time:'5/21', body:'안건 등록 — 릴리브의원 · 시너젯 데모 제안', event:'created'},
     {who:'정인호', role:'대리', time:'5/21', body:'시너젯 데모 제안 (10%). 원장님 휴무 관계로 총괄실장님께 설명 및 자료 전달드린 상태. 큐어젯 사용 경험 확인 필요.'}
-  ]},
-  {id:11, cat:'med', prod:'바크로', client:'릴리브의원', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-21', due:null, status:'진행 중', progress:20, desc:'외국 고객 수요 많아 고급관리 품목으로 추천. 상시 프로모션 안내.', tags:['외국고객','고급관리'], comments:[
-    {who:'정인호', role:'대리', time:'5/21', body:'안건 등록 — 릴리브의원 · 바크로 물톡스 제안', event:'created'},
-    {who:'정인호', role:'대리', time:'5/21', body:'물톡스 데모 제안 (20%). 외국 고객 수요가 많아 고급관리 품목으로 추천 드림. 상시 프로모션 안내.'}
-  ]},
-  {id:12, cat:'med', prod:'바크로', client:'바크로×더데이랩스×The SC', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-21', due:null, status:'진행 중', progress:30, desc:'세라미크 강남 영상물 홍보 효과 보고. 세라미크의원 브랜드 협업.', tags:['마케팅','협업','강남권'], comments:[
-    {who:'정인호', role:'대리', time:'5/21', body:'안건 등록 — 바크로×더데이랩스×The SC · 마케팅 미팅', event:'created'},
-    {who:'정인호', role:'대리', time:'5/21', body:'세라미크 강남 영상물 홍보 효과 보고. 이후 세라미크의원 브랜드 협업 협의.'}
   ]},
 
   // ─── 5월5주차 (5/25~5/29) ───
@@ -6496,18 +6488,29 @@ function mrRenderStats(){
   document.getElementById('mr-cnt-hold').textContent = hold;
   // 카테고리 카드
   const grid = document.getElementById('mr-catgrid');
-  const catData = [
-    {key:'med', name:'의료장비', cls:'c1'},
-    {key:'cosm', name:'화장품', cls:'c2'}
-  ];
-  grid.innerHTML = catData.map(cd=>{
-    const list = all.filter(c=>c.cat===cd.key);
+  // 제품별 그룹 (실제 등록된 제품 자동 추출)
+  const prodSet = new Set();
+  all.forEach(c=>{ if(c.prod) prodSet.add(c.prod); });
+  // 정해진 순서: 시너젯 → 써마지 → 인텐스울트라 → 그 외 알파벳 순
+  const PROD_ORDER = ['시너젯','써마지','인텐스울트라'];
+  const sortedProds = [...prodSet].sort((a,b)=>{
+    const ai = PROD_ORDER.indexOf(a), bi = PROD_ORDER.indexOf(b);
+    if(ai>=0 && bi>=0) return ai-bi;
+    if(ai>=0) return -1;
+    if(bi>=0) return 1;
+    return a.localeCompare(b,'ko');
+  });
+  // 컬러 인덱스 매핑
+  const colorClasses = ['c1','c3','c2','c4','c5','c6'];
+  grid.innerHTML = sortedProds.map((prod,idx)=>{
+    const list = all.filter(c=>c.prod===prod);
     const avg = list.length ? Math.round(list.reduce((s,c)=>s+c.progress,0)/list.length) : 0;
     const dn = list.filter(c=>c.status==='완료').length;
     const ip = list.filter(c=>c.status==='진행 중').length;
     const soonC = list.filter(c=>{ if(!c.due||c.status==='완료')return false; const d=Math.floor((new Date(c.due)-now)/(1000*60*60*24)); return d>=0 && d<=30; }).length;
-    return `<div class="mr-cat ${cd.cls}">
-      <div class="name">${cd.name} <span class="cnt">${list.length}건</span></div>
+    const cls = colorClasses[idx % colorClasses.length];
+    return `<div class="mr-cat ${cls}">
+      <div class="name">${prod} <span class="cnt">${list.length}건</span></div>
       <div class="stat"><div class="num">${avg}%</div><div class="lbl">평균 진행률</div></div>
       <div class="bar"><i style="width:${avg}%"></i></div>
       <div class="sub-stat"><span>진행 중 ${ip}</span><span>완료 ${dn}</span><span>D-30 ${soonC}</span></div>
@@ -7063,12 +7066,21 @@ function mrRenderCharts(){
     {x:weeks, y:trendAvg, type:'scatter', mode:'lines+markers', name:'평균 진행률(%)', line:{color:'#a78bfa',width:3.5,shape:'spline'}, marker:{size:9,color:'#a78bfa',line:{color:'#fff',width:2}}, yaxis:'y2', fill:'tozeroy', fillcolor:'rgba(167,139,250,.08)'}
   ], {...baseLayout, yaxis:{...baseLayout.yaxis,title:{text:'건수',font:{color:'#60a5fa',size:11}},range:[0,6]}, yaxis2:{overlaying:'y',side:'right',ticksuffix:'%',color:'#a78bfa',gridcolor:'transparent',range:[0,100],title:{text:'진행률',font:{color:'#a78bfa',size:11}}}, showlegend:true, legend:{orientation:'h',y:-.18,font:{color:'#cbd5e1',size:11},x:.5,xanchor:'center'}, margin:{l:50,r:55,t:20,b:55}}, cfg);
 
-  // 카테고리 도넛 (의료장비/화장품)
-  const medCount = MR_CASES.filter(c=>c.cat==='med').length;
-  const cosmCount = MR_CASES.filter(c=>c.cat==='cosm').length;
+  // 제품별 도넛
+  const prodCount = {};
+  MR_CASES.forEach(c=>{ if(c.prod) prodCount[c.prod] = (prodCount[c.prod]||0)+1; });
+  const PROD_ORDER = ['시너젯','써마지','인텐스울트라'];
+  const sortedProds = Object.keys(prodCount).sort((a,b)=>{
+    const ai = PROD_ORDER.indexOf(a), bi = PROD_ORDER.indexOf(b);
+    if(ai>=0 && bi>=0) return ai-bi;
+    if(ai>=0) return -1;
+    if(bi>=0) return 1;
+    return a.localeCompare(b,'ko');
+  });
+  const donutColors = ['#60a5fa','#fb923c','#34d399','#a78bfa','#fbbf24','#ec4899'];
   Plotly.newPlot('mr-chart-donut', [{
-    values:[medCount, cosmCount], labels:['의료장비','화장품'], type:'pie', hole:.6,
-    marker:{colors:['#60a5fa','#ec4899'], line:{color:'#0a0f1d',width:2}},
+    values:sortedProds.map(p=>prodCount[p]), labels:sortedProds, type:'pie', hole:.6,
+    marker:{colors:donutColors.slice(0,sortedProds.length), line:{color:'#0a0f1d',width:2}},
     textinfo:'label+value', textfont:{size:12,color:'#fff',weight:700}, textposition:'inside', sort:false
   }], {...baseLayout, margin:{l:10,r:10,t:20,b:10}, annotations:[{text:`<b>${MR_CASES.length}</b><br><span style="font-size:11px;color:#64748b">전체 안건</span>`, showarrow:false, font:{size:22,color:'#fff'}, x:.5, y:.5}]}, cfg);
 
