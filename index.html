@@ -902,7 +902,10 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-cal-item{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:4px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mr-cal-item.k1{background:rgba(96,165,250,.18);color:#bfdbfe;border-left:2px solid #60a5fa}
 .mr-cal-item.k2{background:rgba(236,72,153,.18);color:#fbcfe8;border-left:2px solid #ec4899}
-.mr-cal-item:hover{filter:brightness(1.2)}
+.mr-cal-item.mid{padding:1px 6px;font-size:9px;border-left:none;text-align:center;opacity:.55}
+.mr-cal-item.k1.mid{background:rgba(96,165,250,.12);border-top:2px solid #60a5fa;border-bottom:2px solid #60a5fa}
+.mr-cal-item.k2.mid{background:rgba(236,72,153,.12);border-top:2px solid #ec4899;border-bottom:2px solid #ec4899}
+.mr-cal-item:hover{filter:brightness(1.2);opacity:1}
 .mr-cal-more{font-size:10px;color:#64748b;font-weight:700;padding:1px 4px}
 
 </style>
@@ -1266,8 +1269,12 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       <div class="stt">일정 · 시작 진행률</div>
       <div class="mr-g3">
         <div class="mr-fg">
-          <label>판매 예정일 <span class="hint">D-Day 자동 계산</span></label>
-          <input type="date" id="mr-due">
+          <label>일정 (시작 일시 ~ 종료 일시) <span class="hint">캘린더 자동 반영 · 시간 단위 표시</span></label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="datetime-local" id="mr-start-date" style="flex:1;min-width:0">
+            <span style="color:#64748b;font-weight:700">~</span>
+            <input type="datetime-local" id="mr-due" style="flex:1;min-width:0">
+          </div>
         </div>
         <div class="mr-fg">
           <label>초기 상태</label>
@@ -5952,6 +5959,31 @@ let MR_CURRENT_ID = null;
 let MR_FILTER = 'all';
 let MR_SELECTED_CAT = 'med';
 
+// 날짜/시간 헬퍼
+function mrParseDT(s){ // accepts "YYYY-MM-DDTHH:MM" or "YYYY-MM-DD"
+  if(!s) return null;
+  return new Date(s.length<=10 ? s+'T00:00' : s);
+}
+function mrFmtDate(d){ // "YYYY-MM-DD"
+  if(!d) return '';
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+function mrFmtTime(d){ // "HH:MM"
+  if(!d) return '';
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+function mrFmtShort(d){ // "MM/DD HH:MM"
+  if(!d) return '';
+  return String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')+' '+mrFmtTime(d);
+}
+function mrHasTime(s){
+  return typeof s === 'string' && s.length > 10;
+}
+function mrDateKey(d){
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
 async function initMsoReport(){
   mrSetReportMode(true);
   mrRenderStats();
@@ -6007,13 +6039,47 @@ function mrRenderCalendar(){
   const daysInMonth = new Date(y, m+1, 0).getDate();
   const prevDays = new Date(y, m, 0).getDate();
   const today = new Date(); today.setHours(0,0,0,0);
-  // 안건 → 날짜별 그룹
+  // 안건 → 날짜별 그룹 (시작 일시 ~ 종료 일시 범위 전체 표시)
   const byDate = {};
   MR_CASES.forEach(c=>{
-    if(!c.due) return;
-    const d = new Date(c.due);
-    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    (byDate[key] = byDate[key]||[]).push(c);
+    if(!c.due && !c.startDate) return;
+    const startDT = mrParseDT(c.startDate || c.due);
+    const endDT = mrParseDT(c.due || c.startDate);
+    if(!startDT || !endDT) return;
+    // 안전: 시작이 끝보다 늦으면 swap
+    const s = startDT <= endDT ? startDT : endDT;
+    const e = startDT <= endDT ? endDT : startDT;
+    const sKey = mrDateKey(s);
+    const eKey = mrDateKey(e);
+    const startHasTime = mrHasTime(c.startDate || c.due);
+    const endHasTime = mrHasTime(c.due || c.startDate);
+    // 시작 일자 (단일이면 _start=_end true)
+    const isSingleDay = (sKey === eKey);
+    // 시작일 마커
+    (byDate[sKey] = byDate[sKey]||[]).push({...c,
+      _start:true,
+      _end:isSingleDay,
+      _label:'시작',
+      _time: startHasTime ? mrFmtTime(s) : ''
+    });
+    if(!isSingleDay){
+      // 종료일 마커 (철수)
+      (byDate[eKey] = byDate[eKey]||[]).push({...c,
+        _end:true,
+        _label:'철수',
+        _time: endHasTime ? mrFmtTime(e) : ''
+      });
+      // 중간 일자 (60일 초과 시 생략)
+      const dayMs = 24*60*60*1000;
+      const sMid = new Date(s.getFullYear(), s.getMonth(), s.getDate()+1);
+      const eMid = new Date(e.getFullYear(), e.getMonth(), e.getDate());
+      const diff = Math.floor((eMid-sMid)/dayMs);
+      if(diff <= 60){
+        for(let d = sMid; d < eMid; d = new Date(d.getTime()+dayMs)){
+          (byDate[mrDateKey(d)] = byDate[mrDateKey(d)]||[]).push({...c, _mid:true});
+        }
+      }
+    }
   });
   // 7 요일 헤더
   const wkn = ['일','월','화','수','목','금','토'];
@@ -6029,7 +6095,16 @@ function mrRenderCalendar(){
     const isToday = date.getTime() === today.getTime();
     const key = `${y}-${m}-${d}`;
     const items = byDate[key] || [];
-    const itemsHtml = items.slice(0,3).map(c=>`<div class="mr-cal-item ${c.cat==='med'?'k1':'k2'}" onclick="mrCalSelect(${c.id})" title="${c.client} · ${c.prod} ${c.type}">${c.client.length>10?c.client.substring(0,10)+'…':c.client}</div>`).join('');
+    const itemsHtml = items.slice(0,3).map(c=>{
+      const midCls = c._mid ? ' mid' : '';
+      const shortClient = c.client.length>8 ? c.client.substring(0,8)+'…' : c.client;
+      let label;
+      if(c._mid) label = '·';
+      else if(c._end && c._start) label = (c._time?c._time+' ':'') + shortClient;
+      else if(c._end) label = (c._time?c._time+' ':'') + shortClient + ' 철수';
+      else label = (c._time?c._time+' ':'') + shortClient;
+      return `<div class="mr-cal-item ${c.cat==='med'?'k1':'k2'}${midCls}" onclick="mrCalSelect(${c.id})" title="${c.client} · ${c.prod} ${c.type}${c._end&&!c._start?' (철수)':''}">${label}</div>`;
+    }).join('');
     const moreCount = items.length-3;
     html += `<div class="mr-cal-cell ${isToday?'today':''} ${dow===0?'sun':dow===6?'sat':''}">
       <div class="mr-cal-date">${d}</div>
@@ -6098,8 +6173,11 @@ function mrRenderCases(){
   if(MR_FILTER!=='all') list = list.filter(c=>c.status===MR_FILTER);
   if(search) list = list.filter(c=>(c.client+c.prod+c.desc+(c.tags||[]).join(' ')).toLowerCase().includes(search));
   const html = list.map(c=>{
-    const days = c.due ? Math.floor((new Date(c.due)-new Date())/(1000*60*60*24)) : null;
-    const dueLabel = c.status==='완료' ? '판매완료' : (days===null ? '미정' : (days<0 ? '경과 '+(-days)+'일' : 'D-'+days));
+    const dueDT = c.due ? mrParseDT(c.due) : null;
+    const startDT = c.startDate ? mrParseDT(c.startDate) : null;
+    const days = dueDT ? Math.floor((dueDT - new Date())/(1000*60*60*24)) : null;
+    const rangeLabel = startDT && dueDT ? `${mrFmtShort(startDT)} ~ ${mrFmtShort(dueDT)}` : '';
+    const dueLabel = c.status==='완료' ? '판매완료' : (days===null ? '미정' : (rangeLabel ? `${rangeLabel} (D${days>=0?'-':'+'}${Math.abs(days)})` : (days<0 ? '경과 '+(-days)+'일' : 'D-'+days)));
     const dueStyle = (days!==null && days>=0 && days<=7 && c.status!=='완료') ? 'style="color:#fca5a5"' : '';
     const pgClass = c.progress>=70?'high':(c.progress>=40?'mid':'low');
     const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='실패'?'mr-st-6':'mr-st-5';
@@ -6136,8 +6214,17 @@ function mrSelectCase(id){
   }
   document.getElementById('mr-detail').style.display='flex';
   document.getElementById('mr-detail-empty').style.display='none';
-  const days = c.due ? Math.floor((new Date(c.due)-new Date())/(1000*60*60*24)) : null;
-  const dueLabel = c.due ? (c.due + (days!==null ? ' (D-'+days+')' : '')) : '미정';
+  const days = c.due ? Math.floor((mrParseDT(c.due)-new Date())/(1000*60*60*24)) : null;
+  let dueLabel;
+  if(!c.due && !c.startDate) dueLabel='미정';
+  else {
+    const sDT = c.startDate?mrParseDT(c.startDate):null;
+    const eDT = c.due?mrParseDT(c.due):null;
+    const sLabel = sDT ? (mrFmtDate(sDT)+(mrHasTime(c.startDate)?' '+mrFmtTime(sDT):'')) : '';
+    const eLabel = eDT ? (mrFmtDate(eDT)+(mrHasTime(c.due)?' '+mrFmtTime(eDT):'')) : '';
+    const ddayLabel = days!==null ? ' (D'+(days>=0?'-':'+')+Math.abs(days)+')' : '';
+    dueLabel = (sLabel && eLabel ? sLabel+' ~ '+eLabel : (sLabel||eLabel)) + ddayLabel;
+  }
   const catLabel = c.cat==='med' ? '의료장비' : '화장품';
   const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='실패'?'mr-st-6':'mr-st-5';
   const catTagCls = c.cat==='med' ? 'background:rgba(96,165,250,.15);color:#93c5fd' : 'background:rgba(236,72,153,.15);color:#fbcfe8';
@@ -6355,7 +6442,7 @@ function mrEditMeta(field){
   if(field==='client') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.client||'').replace(/"/g,'&quot;')}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
   if(field==='owner') html = `<span class="ied"><select id="mr-edit-${field}"><option ${c.owner==='정인호'?'selected':''}>정인호</option><option ${c.owner==='김다영'?'selected':''}>김다영</option><option ${c.owner==='이수민'?'selected':''}>이수민</option></select><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
   if(field==='mgr')   html = `<span class="ied"><select id="mr-edit-${field}"><option value=""${!c.mgr?'selected':''}>-</option><option ${c.mgr==='박지호'?'selected':''}>박지호</option><option ${c.mgr==='최영준'?'selected':''}>최영준</option></select><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
-  if(field==='due')   html = `<span class="ied"><input type="date" id="mr-edit-${field}" value="${c.due||''}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  if(field==='due')   html = `<span class="ied"><input type="datetime-local" id="mr-edit-${field}" value="${c.due||''}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
   target.outerHTML = html;
 }
 
@@ -6575,6 +6662,7 @@ function mrSubmitCase(){
   const type = document.querySelector('#mr-typepick .on')?.dataset.t;
   const owner = document.querySelector('#mr-owner-pick .mr-mbchip.on')?.dataset.m;
   const mgr = document.querySelector('#mr-mgr-pick .mr-mbchip.on')?.dataset.m;
+  const startDate = document.getElementById('mr-start-date').value || null;
   const due = document.getElementById('mr-due').value || null;
   const status = document.getElementById('mr-init-status').value;
   const progress = parseInt(document.getElementById('mr-init-pg').value);
@@ -6585,12 +6673,15 @@ function mrSubmitCase(){
   if(!prod){ showToast('물품명을 입력하세요'); return; }
   if(!type){ showToast('유형을 선택하세요'); return; }
   if(!owner){ showToast('담당자를 선택하세요'); return; }
+  // 시작일이 종료일보다 늦으면 경고
+  if(startDate && due && startDate > due){ showToast('시작일이 종료일보다 늦을 수 없습니다'); return; }
 
   const newId = Math.max(0, ...MR_CASES.map(c=>c.id)) + 1;
+  const dateLabel = startDate && due ? ` · 일정 ${startDate} ~ ${due}` : (due ? ` · 마감 ${due}` : '');
   const newCase = {
-    id:newId, cat:MR_SELECTED_CAT, prod, client, type, owner, mgr, due, status, progress,
+    id:newId, cat:MR_SELECTED_CAT, prod, client, type, owner, mgr, startDate, due, status, progress,
     desc, tags, comments:[
-      {who:owner, role:'담당', time:'방금 전', body:`안건 등록 — ${client} · ${prod} ${type}`, event:'created'}
+      {who:owner, role:'담당', time:'방금 전', body:`안건 등록 — ${client} · ${prod} ${type}${dateLabel}`, event:'created'}
     ]
   };
   if(desc) newCase.comments.push({who:owner, role:'담당', time:'방금 전', body:desc});
@@ -6599,12 +6690,15 @@ function mrSubmitCase(){
   document.getElementById('mr-client').value = '';
   document.getElementById('mr-prod-name').value = '';
   document.getElementById('mr-desc').value = '';
+  document.getElementById('mr-start-date').value = '';
   document.getElementById('mr-due').value = '';
   [...document.querySelectorAll('#mr-tag-box .tag')].forEach(t=>t.remove());
   mrToggleForm(false);
   mrSelectCase(newId);
   mrRenderStats();
   mrRenderCharts();
+  mrRenderCalendar();
+  mrRenderFailAnalysis();
   showToast('안건 등록 완료');
 }
 
