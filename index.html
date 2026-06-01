@@ -16,7 +16,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & Base ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -455,7 +455,41 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
     radial-gradient(1400px circle at 110% 10%,rgba(167,139,250,.16),transparent 45%),
     radial-gradient(900px circle at 50% 110%,rgba(52,211,153,.10),transparent 45%),
     #060912;
-  display:flex;
+  display:flex;flex-direction:column;
+}
+.home-wrap{display:flex;flex-direction:column;justify-content:center;flex:1;min-height:0}
+.home-top{flex:0 0 auto}
+.home-grid-wrap{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+/* ── 브랜드 헤딩 (THE SC / MSO Business Part) ── */
+.home-heading{text-align:center;line-height:1.05;margin-bottom:36px}
+.home-heading .hh-top{
+  font-family:'Inter',sans-serif;font-weight:900;font-size:64px;letter-spacing:-1.5px;
+  background:linear-gradient(135deg,#60a5fa 0%,#a78bfa 50%,#ec4899 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 22px rgba(96,165,250,.35));
+  position:relative;display:inline-block;
+}
+.home-heading .hh-top::after{
+  content:"";position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);
+  width:52px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,#a78bfa,transparent);
+  box-shadow:0 0 12px rgba(167,139,250,.55);
+}
+.home-heading .hh-bot{
+  font-family:'Manrope',sans-serif;font-weight:400;font-size:14px;letter-spacing:6px;
+  color:#94a3b8;margin-top:26px;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.home-heading .hh-bot b{
+  font-weight:800;font-size:15px;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+@media(max-width:880px){
+  .home-heading .hh-top{font-size:46px;letter-spacing:-1px}
+  .home-heading .hh-bot{font-size:12px;letter-spacing:4px}
+  .home-heading{margin-bottom:26px}
 }
 html.light .home-stage{background:radial-gradient(1200px circle at 8% -8%,rgba(59,130,246,.10),transparent 45%),radial-gradient(1400px circle at 110% 10%,rgba(139,92,246,.08),transparent 45%),#f1f5f9}
 
@@ -483,7 +517,7 @@ html.light .home-h1{color:#0f172a}
 .home-h1-sub{font-size:14px;color:#94a3b8;line-height:1.6;max-width:620px}
 .home-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 @media(max-width:880px){.home-grid{grid-template-columns:1fr}.home-h1{font-size:30px}}
-.home-tile{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:30px 32px 28px;cursor:pointer;overflow:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .35s;isolation:isolate;min-height:340px}
+.home-tile{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:30px 32px;cursor:pointer;overflow:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .35s;isolation:isolate;min-height:230px}
 html.light .home-tile{background:linear-gradient(160deg,#fff,#f8fafc);border-color:rgba(0,0,0,.08)}
 .home-tile::before{content:"";position:absolute;inset:-1px;border-radius:22px;padding:1px;background:linear-gradient(135deg,transparent 30%,rgba(96,165,250,.55),rgba(167,139,250,.55),transparent 70%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s;z-index:1;pointer-events:none}
 .home-tile::after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;filter:blur(60px);opacity:.35;z-index:0;pointer-events:none;transition:.5s}
@@ -499,20 +533,21 @@ html.light .home-tile{background:linear-gradient(160deg,#fff,#f8fafc);border-col
 .t2 .home-tile-icon{background:linear-gradient(135deg,#a78bfa,#ec4899);box-shadow:0 12px 30px rgba(167,139,250,.4)}
 .home-tile-arrow{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;color:#cbd5e1;font-size:16px;transition:.3s}
 .home-tile:hover .home-tile-arrow{background:rgba(255,255,255,.14);transform:translate(4px,-4px) rotate(-12deg);color:#fff}
-.home-tile-title{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.3px;margin-bottom:8px}
-html.light .home-tile-title{color:#0f172a}
-.home-tile-desc{font-size:13.5px;color:#94a3b8;line-height:1.65;margin-bottom:22px}
-.home-tile-feats{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:22px}
-.home-feat{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#cbd5e1;font-weight:500}
-html.light .home-feat{color:#334155}
-.home-feat .pip{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.t1 .home-feat .pip{background:#60a5fa;box-shadow:0 0 8px #60a5fa}
-.t2 .home-feat .pip{background:#c4b5fd;box-shadow:0 0 8px #c4b5fd}
-.home-tile-stats{display:flex;gap:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}
-.home-stat .num{font-size:20px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
-.home-stat .lbl{font-size:10.5px;color:#64748b;font-weight:600;margin-top:3px;letter-spacing:.5px;text-transform:uppercase}
-.t1 .home-stat .num{background:linear-gradient(135deg,#60a5fa,#93c5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
-.t2 .home-stat .num{background:linear-gradient(135deg,#a78bfa,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* 카드 제목 — 그라데이션 텍스트 (카드별 색상) */
+.home-tile-title{font-family:'Inter',sans-serif;font-size:25px;font-weight:900;letter-spacing:-.5px;margin-bottom:18px}
+.t1 .home-tile-title{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 14px rgba(96,165,250,.25))}
+.t2 .home-tile-title{background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 14px rgba(167,139,250,.25))}
+/* 라이트 테마에서는 그라데이션 더 진하게 */
+html.light .t1 .home-tile-title{background:linear-gradient(135deg,#1d4ed8,#7c3aed);-webkit-background-clip:text;background-clip:text}
+html.light .t2 .home-tile-title{background:linear-gradient(135deg,#7c3aed,#be185d);-webkit-background-clip:text;background-clip:text}
+
+/* 기능 칩 (알약) */
+.home-tile-feats{display:flex;flex-wrap:wrap;gap:7px}
+.home-feat{font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px}
+.t1 .home-feat{color:#bfdbfe;border:1px solid rgba(96,165,250,.25);background:rgba(59,130,246,.1)}
+.t2 .home-feat{color:#e9d5ff;border:1px solid rgba(167,139,250,.25);background:rgba(167,139,250,.1)}
+html.light .t1 .home-feat{color:#1e40af;border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.08)}
+html.light .t2 .home-feat{color:#7c3aed;border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
 .home-hint{margin-top:32px;text-align:center;font-size:12px;color:#475569;font-weight:500}
 .home-kbd{display:inline-block;font-size:10.5px;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:2px 7px;border-radius:5px;color:#cbd5e1;margin:0 3px}
 
@@ -550,46 +585,35 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
         <span id="home-clock"></span>
       </div>
     </div>
-    <div class="home-hero">
-      <span class="home-eyebrow">MSO HOME</span>
-      <div class="home-h1">두 개의 워크스페이스,<br><span class="grad">하나의 컨트롤 센터</span></div>
-      <div class="home-h1-sub">화장품·의료장비 영업 전체 흐름을 다루는 <b style="color:#cbd5e1">통합 관리 시스템</b>과 경영 의사결정을 위한 <b style="color:#cbd5e1">리포트 대시보드</b>를 한 화면에서 진입하세요.</div>
+    <div class="home-grid-wrap">
+    <div class="home-heading">
+      <div class="hh-top">THE SC</div>
+      <div class="hh-bot"><b>MSO</b>&nbsp;BUSINESS PART</div>
     </div>
     <div class="home-grid">
       <div class="home-tile t1" id="home-tile-mso" data-dir="left" onclick="enterApp('mso',this)">
         <div class="home-tile-head"><div class="home-tile-icon">M1</div><div class="home-tile-arrow">→</div></div>
         <div class="home-tile-title">MSO 통합 관리 시스템</div>
-        <div class="home-tile-desc">화장품·의료장비 영업의 모든 흐름. 발주·매입·납품·수금·계약서까지 단일 플로우로 처리합니다.</div>
         <div class="home-tile-feats">
-          <div class="home-feat"><span class="pip"></span>영업/재고/수금</div>
-          <div class="home-feat"><span class="pip"></span>의료장비 매입·납품</div>
-          <div class="home-feat"><span class="pip"></span>거래처별 원장</div>
-          <div class="home-feat"><span class="pip"></span>전자 서명 계약서</div>
-        </div>
-        <div class="home-tile-stats">
-          <div class="home-stat"><div class="num">8</div><div class="lbl">하위 모듈</div></div>
-          <div class="home-stat"><div class="num">실시간</div><div class="lbl">Supabase</div></div>
-          <div class="home-stat"><div class="num">2.0</div><div class="lbl">버전</div></div>
+          <span class="home-feat">영업/재고/수금</span>
+          <span class="home-feat">의료장비 매입·납품</span>
+          <span class="home-feat">거래처별 원장</span>
+          <span class="home-feat">전자 서명 계약서</span>
         </div>
       </div>
       <div class="home-tile t2" id="home-tile-report" data-dir="right" onclick="enterApp('report',this)">
         <div class="home-tile-head"><div class="home-tile-icon">R</div><div class="home-tile-arrow">→</div></div>
         <div class="home-tile-title">MSO 리포트</div>
-        <div class="home-tile-desc">매출·미수금·재고 회전율 분석. 차트 클릭 드릴다운으로 거래처/장비/기간별 인사이트를 제공합니다.</div>
         <div class="home-tile-feats">
-          <div class="home-feat"><span class="pip"></span>매출 추이 (E4)</div>
-          <div class="home-feat"><span class="pip"></span>미수금 현황</div>
-          <div class="home-feat"><span class="pip"></span>거래처별 KPI</div>
-          <div class="home-feat"><span class="pip"></span>차트 드릴다운</div>
-        </div>
-        <div class="home-tile-stats">
-          <div class="home-stat"><div class="num">12</div><div class="lbl">차트 위젯</div></div>
-          <div class="home-stat"><div class="num">자동</div><div class="lbl">갱신</div></div>
-          <div class="home-stat"><div class="num">엑셀</div><div class="lbl">내보내기</div></div>
+          <span class="home-feat">매출 추이</span>
+          <span class="home-feat">미수금 현황</span>
+          <span class="home-feat">거래처별 KPI</span>
+          <span class="home-feat">차트 드릴다운</span>
         </div>
       </div>
     </div>
     <div class="home-hint">카드 클릭으로 진입 · <span class="home-kbd">1</span> 통합 관리 · <span class="home-kbd">2</span> 리포트 · <span class="home-kbd">ESC</span> 홈으로</div>
+    </div>
   </div>
 </div>
 
