@@ -908,6 +908,66 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-cal-item:hover{filter:brightness(1.2);opacity:1}
 .mr-cal-more{font-size:10px;color:#64748b;font-weight:700;padding:1px 4px}
 
+/* 기초 관리 — 사원 관리 */
+.mr-emp-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.mr-emp-stat{display:flex;gap:14px;font-size:12px;color:#94a3b8}
+.mr-emp-stat-item b{color:#fff;font-weight:800;margin:0 2px;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-emp-form{background:linear-gradient(160deg,rgba(52,211,153,.06),rgba(96,165,250,.03));border:1px solid rgba(52,211,153,.22);border-radius:14px;padding:18px 20px;margin-bottom:14px;display:none}
+.mr-emp-form.open{display:block}
+.mr-emp-form-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.mr-emp-form-ttl{font-size:14px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px}
+.mr-emp-form-ttl::before{content:"＋";display:inline-grid;place-items:center;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#34d399,#10b981);color:#fff;font-size:13px;font-weight:900}
+.mr-emp-close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit}
+.mr-emp-role{display:flex;gap:5px;padding:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px}
+.mr-emp-role button{flex:1;background:transparent;border:none;color:#94a3b8;padding:7px 8px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s}
+.mr-emp-role button.on{background:linear-gradient(135deg,#34d399,#10b981);color:#fff;box-shadow:0 4px 10px rgba(52,211,153,.3)}
+
+.mr-emp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.mr-emp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:.2s;position:relative;overflow:hidden}
+.mr-emp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.mr-emp-card.role-manager::before{background:#fb923c;box-shadow:0 0 10px #fb923c}
+.mr-emp-card.role-owner::before{background:#60a5fa;box-shadow:0 0 10px #60a5fa}
+.mr-emp-card:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.16)}
+.mr-emp-avt{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0}
+.mr-emp-card.role-manager .mr-emp-avt{background:linear-gradient(135deg,#fb923c,#f59e0b);box-shadow:0 6px 16px rgba(251,146,60,.4)}
+.mr-emp-card.role-owner .mr-emp-avt{background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 6px 16px rgba(59,130,246,.4)}
+.mr-emp-info{flex:1;min-width:0}
+.mr-emp-name-row{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.mr-emp-name{font-size:14px;font-weight:800;color:#fff}
+.mr-emp-pos{font-size:10.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:5px}
+.mr-emp-role-tag{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px}
+.mr-emp-role-tag.manager{background:rgba(251,146,60,.18);color:#fdba74}
+.mr-emp-role-tag.owner{background:rgba(96,165,250,.18);color:#93c5fd}
+.mr-emp-actions{display:flex;gap:5px;flex-shrink:0}
+.mr-emp-actions button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#94a3b8;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;transition:.15s}
+.mr-emp-actions .edit:hover{background:rgba(96,165,250,.18);color:#bfdbfe;border-color:rgba(96,165,250,.4)}
+.mr-emp-actions .del:hover{background:rgba(239,68,68,.18);color:#fca5a5;border-color:rgba(239,68,68,.4)}
+
+/* 복수 등록 행 */
+.mr-emp-row{display:grid;grid-template-columns:1fr 130px 180px 32px;gap:8px;align-items:end;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px}
+@media(max-width:760px){.mr-emp-row{grid-template-columns:1fr 1fr;gap:6px}}
+.mr-emp-row label{font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.3px;display:block;margin-bottom:3px}
+.mr-emp-row input,.mr-emp-row select{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;padding:7px 10px;border-radius:7px;font-size:12px;font-family:inherit;transition:.15s}
+.mr-emp-row input:focus,.mr-emp-row select:focus{outline:none;border-color:rgba(52,211,153,.5)}
+.mr-emp-row-role{display:flex;gap:3px;padding:2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:7px}
+.mr-emp-row-role button{flex:1;background:transparent;border:none;color:#94a3b8;padding:5px 6px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.mr-emp-row-role button.on.manager{background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff;box-shadow:0 3px 8px rgba(251,146,60,.3)}
+.mr-emp-row-role button.on.owner{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;box-shadow:0 3px 8px rgba(59,130,246,.3)}
+.mr-emp-row-del{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;width:32px;height:32px;border-radius:7px;cursor:pointer;font-size:15px;font-weight:700;font-family:inherit;align-self:end;margin-bottom:0}
+.mr-emp-row-del:hover{background:rgba(239,68,68,.25);color:#fff}
+.mr-btn-add-row{background:rgba(52,211,153,.12);border:1px dashed rgba(52,211,153,.35);color:#6ee7b7;padding:7px 14px;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.mr-btn-add-row:hover{background:rgba(52,211,153,.18);border-style:solid}
+
+/* 체크박스 + 벌크바 */
+.mr-emp-card .mr-emp-check{width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);cursor:pointer;flex-shrink:0;display:grid;place-items:center;font-size:12px;font-weight:900;color:#fff;transition:.15s;margin-right:6px}
+.mr-emp-card.checked .mr-emp-check{background:linear-gradient(135deg,#a78bfa,#ec4899);border-color:transparent}
+.mr-emp-card.checked .mr-emp-check::after{content:"✓"}
+.mr-emp-card.checked{background:linear-gradient(160deg,rgba(167,139,250,.1),rgba(167,139,250,.02));border-color:rgba(167,139,250,.4)}
+.mr-emp-bulkbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(90deg,rgba(167,139,250,.12),rgba(167,139,250,.02));border:1px solid rgba(167,139,250,.35);border-radius:10px;margin-bottom:10px;font-size:12.5px;color:#cbd5e1}
+.mr-emp-bulkbar b{color:#fff;font-weight:800;margin:0 2px}
+.mr-emp-bulk-del{background:linear-gradient(135deg,#ef4444,#dc2626);border:none;color:#fff;padding:6px 12px;border-radius:7px;font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(239,68,68,.25);margin-left:auto}
+.mr-emp-bulk-clear{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:6px 12px;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+
 </style>
 </head>
 <body>
@@ -1033,6 +1093,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     </div>
     <div class="nav-item" onclick="mrSwitchTab('calendar',this)">
       <span class="menu-label">캘린더</span>
+    </div>
+    <div class="nav-item" onclick="mrSwitchTab('master',this)">
+      <span class="menu-label">기초 관리</span>
     </div>
   </div>
 
@@ -1251,15 +1314,12 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
           <label>담당자 <span class="req">*필수</span></label>
           <div class="mr-mbpick" id="mr-owner-pick">
             <div class="mr-mbchip on" data-m="정인호"><div class="avt a1">정</div>정인호 (대리)</div>
-            <div class="mr-mbchip" data-m="김다영"><div class="avt a2">김</div>김다영</div>
-            <div class="mr-mbchip" data-m="이수민"><div class="avt a4">이</div>이수민</div>
           </div>
         </div>
         <div class="mr-fg">
           <label>관리자 (코멘트/승인) <span class="hint">선택</span></label>
           <div class="mr-mbpick" id="mr-mgr-pick">
-            <div class="mr-mbchip on" data-m="박지호"><div class="avt a3">박</div>박지호 (팀장)</div>
-            <div class="mr-mbchip" data-m="최영준"><div class="avt a2">최</div>최영준 (실장)</div>
+            <div class="mr-mbchip" data-m="">관리자 미지정</div>
           </div>
         </div>
       </div>
@@ -1462,6 +1522,44 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       </div>
     </div>
     <div class="mr-cal-grid" id="mr-cal-grid"></div>
+  </div>
+
+  <!-- ── 기초 관리 탭 ── -->
+  <div id="mr-tab-master" class="mr-tab" style="display:none">
+    <div class="mr-sec">사원 관리 · 담당자/관리자 등록</div>
+
+    <div class="mr-emp-toolbar">
+      <div class="mr-emp-stat">
+        <span class="mr-emp-stat-item">전체 <b id="mr-emp-total">0</b>명</span>
+        <span class="mr-emp-stat-item">관리자 <b id="mr-emp-mgr">0</b>명</span>
+        <span class="mr-emp-stat-item">담당자 <b id="mr-emp-owner">0</b>명</span>
+      </div>
+      <button class="mr-btn-new" onclick="mrEmpToggleForm(true)">＋ 사원 등록</button>
+    </div>
+
+    <!-- 사원 등록 폼 (복수 등록 지원) -->
+    <div class="mr-emp-form" id="mr-emp-form">
+      <div class="mr-emp-form-head">
+        <div class="mr-emp-form-ttl">신규 사원 등록 <span id="mr-emp-mode-tag" style="font-size:10px;font-weight:700;color:#64748b;margin-left:6px">행 추가로 한 번에 여러 명 등록 가능</span></div>
+        <button class="mr-emp-close" onclick="mrEmpToggleForm(false)">×</button>
+      </div>
+      <div id="mr-emp-rows"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);gap:10px;flex-wrap:wrap">
+        <button class="mr-btn-add-row" onclick="mrEmpAddRow()">＋ 행 추가 (복수 등록)</button>
+        <div style="display:flex;gap:8px">
+          <button class="mr-btn mr-btn-ghost" onclick="mrEmpToggleForm(false)">취소</button>
+          <button class="mr-btn mr-btn-primary" onclick="mrEmpSubmit()">＋ 사원 등록</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 사원 리스트 -->
+    <div id="mr-emp-bulkbar" class="mr-emp-bulkbar" style="display:none">
+      <span><b id="mr-emp-checked-count">0</b>명 선택됨</span>
+      <button class="mr-emp-bulk-del" onclick="mrEmpDeleteSelected()">선택 삭제</button>
+      <button class="mr-emp-bulk-clear" onclick="mrEmpClearChecked()">선택 해제</button>
+    </div>
+    <div class="mr-emp-list" id="mr-emp-list"></div>
   </div>
 
 </div>
@@ -5921,43 +6019,290 @@ const MR_PROD_SUG = {
   med: ['시너젯','바크로','써마지 FLX','프락셀 듀얼','슈링크 유니버스','클래시스','올리디아','쥬베룩'],
   cosm:['멜라쉐이드','부스터 세럼','클렌징 폼','앰플','마스크팩','선크림','토너']
 };
+// MR_CASES — 주간업무보고서(2026-04-27 ~ 2026-05-29) 실제 데이터 기반 안건 15건 (작성자: 정인호 대리)
 let MR_CASES = [
-  {id:1, cat:'med', prod:'시너젯', client:'미뉴얼의원 동탄점', type:'데모', owner:'정인호', mgr:'박지호', due:'2026-07-31', status:'진행 중', progress:40, desc:'큐어젯 사용 유저, 빠른 리쥬비네이션으로 관심 보이심. 다음 주 데모 예정.', tags:['동탄권','큐어젯 사용','리쥬비네이션'], comments:[
-    {who:'정인호', role:'대리', time:'5/12 09:00', body:'안건 등록 — 미뉴얼의원 동탄점 · 시너젯 데모', event:'created'},
-    {who:'정인호', role:'대리', time:'5/18 14:30', body:'큐어젯 사용 유저, 빠른 리쥬비네이션으로 관심 보이심.'},
-    {who:'시스템', role:'자동', time:'5/18 14:31', body:'진행률 변경: <b>0% → 40%</b> (데모 진행 단계)', event:'progress'},
-    {who:'박지호', role:'팀장', time:'5/19 11:20', body:'<span class="ment">@정인호</span> 동탄점 원장님 보수적인 분이시라 사용 사례 자료 충분히 준비해서.'},
-    {who:'정인호', role:'대리', time:'5/21 16:45', body:'사용 사례 자료 추가 송부 완료. 다음 주 후속 미팅 일정 잡힘.'}
+  // ─── 4월5주차 (4/27~5/1) ───
+  {id:1, cat:'med', prod:'시너젯', client:'세가지소원의원 동탄점', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-04-28', due:'2026-05-07', status:'보류', progress:30, desc:'데모 시 실사용에 장비 조작 어려움 없었음, 두피와 흉터 관련. 5/7 철수 후 서브시전 만족도 떨어짐.', tags:['동탄권'], comments:[
+    {who:'정인호', role:'대리', time:'4/28', body:'안건 등록 — 세가지소원의원 동탄점 · 시너젯 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'4/28', body:'데모 진행 (40%). 데모 시 실사용에 장비 조작 어려움 없었음. 두피와 흉터 관련 활용 가능성.'},
+    {who:'정인호', role:'대리', time:'4/30', body:'데모장비 A/S — 팁 불량으로 확인. 총괄실장님 데모 결과 만족, 원장님도 긍정적.'},
+    {who:'정인호', role:'대리', time:'5/7', body:'데모장비 철수 (30%). 서브시전에 대한 만족도가 떨어지심 (쥬베룩 볼륨과 올리디아 활용).'}
   ]},
-  {id:2, cat:'med', prod:'바크로', client:'아이비여성의원', type:'데모', owner:'이수민', mgr:'박지호', due:'2026-06-03', status:'컨펌 대기', progress:30, desc:'물톡스 데모 진행 후 피드백 대기 중', tags:['강남권'], comments:[
-    {who:'이수민', role:'영업', time:'5/8 10:00', body:'안건 등록 — 아이비여성의원 · 바크로 데모', event:'created'},
-    {who:'이수민', role:'영업', time:'5/15 16:00', body:'데모 완료, 상시할인 10% 안내.'},
-    {who:'박지호', role:'팀장', time:'5/22 09:30', body:'피드백 받으셨나요? D-2 다가옵니다.'}
+  {id:2, cat:'med', prod:'바크로', client:'아이비여성의원', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-04-30', due:'2026-05-31', status:'컨펌 대기', progress:30, desc:'물톡스 데모. 상시할인 10% 적용 안내. 피드백 요청 중.', tags:['물톡스'], comments:[
+    {who:'정인호', role:'대리', time:'4/30', body:'안건 등록 — 아이비여성의원 · 바크로 물톡스 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'4/30', body:'물톡스 데모 진행 (30%). 상시할인 10% 적용 안내.'},
+    {who:'정인호', role:'대리', time:'5/8', body:'데모 피드백 요청 중.'}
   ]},
-  {id:3, cat:'med', prod:'써마지 FLX', client:'리앤영의원', type:'납품', owner:'김다영', mgr:'박지호', due:'2026-05-07', status:'완료', progress:100, desc:'써마지 계약 완료, 납품 진행', tags:['대표원장 직접소통'], comments:[
-    {who:'김다영', role:'영업', time:'5/2 14:00', body:'안건 등록 — 리앤영의원 · 써마지 납품', event:'created'},
-    {who:'김다영', role:'영업', time:'5/7 11:00', body:'계약서: 경철수 부장님 (원장님 직접소통)'},
-    {who:'시스템', role:'자동', time:'5/7 16:00', body:'<b>완료 처리됨</b> — 납품 완료', event:'complete'}
+  {id:3, cat:'med', prod:'써마지', client:'수원 데이뷰', type:'납품', owner:'정인호', mgr:'정인호', startDate:'2026-04-28', due:'2026-04-28', status:'완료', progress:100, desc:'써마지 납품 완료. 계약서: 장제원이사님.', tags:['수원'], comments:[
+    {who:'정인호', role:'대리', time:'4/28', body:'안건 등록 — 수원 데이뷰 · 써마지 납품', event:'created'},
+    {who:'정인호', role:'대리', time:'4/28', body:'써마지 납품 완료. 계약서: 장제원이사님.'},
+    {who:'시스템', role:'자동', time:'4/28', body:'<b>완료 처리됨</b> — 납품 완료 (100%)', event:'complete'}
   ]},
-  {id:4, cat:'med', prod:'시너젯', client:'밸런스랩성형외과', type:'데모', owner:'정인호', mgr:'박지호', due:'2026-06-30', status:'진행 중', progress:50, desc:'올리디아 240 활용 리쥬비네이션 관심', tags:['신규개척'], comments:[
-    {who:'정인호', role:'대리', time:'5/11 09:00', body:'안건 등록 — 밸런스랩 · 시너젯 데모', event:'created'},
-    {who:'정인호', role:'대리', time:'5/15 14:00', body:'사용 피드백 미팅 예정(전복길 부장님).'}
+
+  // ─── 5월2주차 (5/4~5/8) ───
+  {id:4, cat:'med', prod:'바크로', client:'셀린의원 명동점', type:'납품', owner:'정인호', mgr:'정인호', startDate:'2026-05-06', due:'2026-05-11', status:'완료', progress:100, desc:'바크로 발주, 상시할인 10% 적용 안내.', tags:['명동권','상시할인'], comments:[
+    {who:'정인호', role:'대리', time:'5/6', body:'안건 등록 — 셀린의원 명동점 · 바크로 발주', event:'created'},
+    {who:'정인호', role:'대리', time:'5/6', body:'바크로 발주 완료 (100%). 상시할인 10% 적용 안내.'},
+    {who:'시스템', role:'자동', time:'5/11', body:'<b>완료 처리됨</b> — 납품 완료', event:'complete'}
   ]},
-  {id:5, cat:'cosm', prod:'멜라쉐이드', client:'더데이랩스', type:'제안/미팅', owner:'이수민', mgr:'박지호', due:null, status:'신규', progress:10, desc:'마케팅 협업 제안 단계', tags:['인플루언서'], comments:[
-    {who:'이수민', role:'영업', time:'5/27 11:00', body:'안건 등록 — 더데이랩스 · 멜라쉐이드 제안', event:'created'}
+  {id:5, cat:'med', prod:'써마지', client:'종로 오블리브', type:'납품', owner:'정인호', mgr:'정인호', startDate:'2026-05-07', due:'2026-05-07', status:'완료', progress:100, desc:'써마지 납품 완료.', tags:['종로'], comments:[
+    {who:'정인호', role:'대리', time:'5/7', body:'안건 등록 — 종로 오블리브 · 써마지 납품', event:'created'},
+    {who:'시스템', role:'자동', time:'5/7', body:'<b>완료 처리됨</b> — 납품 완료 (100%)', event:'complete'}
   ]},
-  {id:6, cat:'med', prod:'시너젯', client:'바이오의원', type:'데모', owner:'김다영', mgr:'박지호', due:'2026-05-20', status:'실패', progress:40, desc:'데모 후 인모드 선택', tags:['강남권'], reasons:['경쟁사 선택','사용 피드백 부정'],
-    nextAction:null,
-    comments:[
-      {who:'김다영', role:'영업', time:'5/3 10:00', body:'안건 등록 — 바이오의원 · 시너젯 데모', event:'created'},
-      {who:'김다영', role:'영업', time:'5/12 15:00', body:'데모 완료. 원장님 인모드와 비교 검토 의향.'},
-      {who:'시스템', role:'자동', time:'5/20 17:00', body:'<b>[거절 / 종결]</b> 진행률 <b>40% → 0%</b> · 상태 <b>진행 중 → 실패</b> · 사유: <b>경쟁사 선택, 사용 피드백 부정</b> · 메모: 인모드 대비 가격 30% 높음, 리쥬비네이션 일관성 지적', event:'fail'}
-    ]
-  }
+  {id:6, cat:'med', prod:'써마지', client:'리앤영의원', type:'납품', owner:'정인호', mgr:'정인호', startDate:'2026-05-07', due:'2026-05-07', status:'완료', progress:100, desc:'써마지 계약서 작성. 계약서: 경철수 부장님 (원장님 직접소통).', tags:['대표원장 직접소통'], comments:[
+    {who:'정인호', role:'대리', time:'5/7', body:'안건 등록 — 리앤영의원 · 써마지 계약', event:'created'},
+    {who:'정인호', role:'대리', time:'5/7', body:'써마지 계약서 작성. 계약서: 경철수 부장님 (원장님 직접소통).'},
+    {who:'시스템', role:'자동', time:'5/7', body:'<b>완료 처리됨</b> — 판매 완료', event:'complete'}
+  ]},
+
+  // ─── 5월3주차 (5/11~5/15) ───
+  {id:7, cat:'med', prod:'시너젯', client:'밸런스랩성형외과', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-05-12', due:'2026-06-30', status:'진행 중', progress:50, desc:'올리디아 240 주입 테스트. 사용 피드백 미팅 예정 (전복길 부장).', tags:['신규개척','올리디아240'], comments:[
+    {who:'정인호', role:'대리', time:'5/12', body:'안건 등록 — 밸런스랩성형외과 · 시너젯 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'5/12', body:'시너젯 데모 진행 (50%). 올리디아 240 주입에 대한 테스트 진행 이후 데모 이용시 주입만.'},
+    {who:'정인호', role:'대리', time:'5/15', body:'데모 철수. 사용 피드백 미팅 예정 (전복길 부장).'}
+  ]},
+  {id:8, cat:'med', prod:'바크로', client:'데이뷰/세라미크', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-11', due:null, status:'진행 중', progress:20, desc:'바크로 마케팅 관련 영상물 제작 및 인플루언서 협찬 지원 논의.', tags:['마케팅','인플루언서'], comments:[
+    {who:'정인호', role:'대리', time:'5/11', body:'안건 등록 — 데이뷰/세라미크 · 바크로 마케팅 미팅', event:'created'},
+    {who:'정인호', role:'대리', time:'5/11', body:'바크로 마케팅 관련하여 영상물 제작 및 인플루언서 협찬 지원 협의.'}
+  ]},
+
+  // ─── 5월4주차 (5/18~5/22) ───
+  {id:9, cat:'med', prod:'시너젯', client:'미뉴얼의원 동탄점', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-05-18', due:'2026-07-31', status:'진행 중', progress:40, desc:'큐어젯 사용 유저. 빠른 리쥬비네이션으로 관심 보이심.', tags:['동탄권','큐어젯 사용','리쥬비네이션'], comments:[
+    {who:'정인호', role:'대리', time:'5/18', body:'안건 등록 — 미뉴얼의원 동탄점 · 시너젯 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'5/18', body:'시너젯 데모 진행 (40%). 큐어젯 사용 유저, 빠른 리쥬비네이션으로 관심 보이심. 리쥬비네이션 시 주입만에 대한 테스트 요청.'}
+  ]},
+  {id:10, cat:'med', prod:'시너젯', client:'릴리브의원', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-21', due:null, status:'신규', progress:10, desc:'원장님 휴무 관계로 총괄실장님께 설명 및 자료 전달드린 상태.', tags:['자료전달'], comments:[
+    {who:'정인호', role:'대리', time:'5/21', body:'안건 등록 — 릴리브의원 · 시너젯 데모 제안', event:'created'},
+    {who:'정인호', role:'대리', time:'5/21', body:'시너젯 데모 제안 (10%). 원장님 휴무 관계로 총괄실장님께 설명 및 자료 전달드린 상태. 큐어젯 사용 경험 확인 필요.'}
+  ]},
+  {id:11, cat:'med', prod:'바크로', client:'릴리브의원', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-21', due:null, status:'진행 중', progress:20, desc:'외국 고객 수요 많아 고급관리 품목으로 추천. 상시 프로모션 안내.', tags:['외국고객','고급관리'], comments:[
+    {who:'정인호', role:'대리', time:'5/21', body:'안건 등록 — 릴리브의원 · 바크로 물톡스 제안', event:'created'},
+    {who:'정인호', role:'대리', time:'5/21', body:'물톡스 데모 제안 (20%). 외국 고객 수요가 많아 고급관리 품목으로 추천 드림. 상시 프로모션 안내.'}
+  ]},
+  {id:12, cat:'med', prod:'바크로', client:'바크로×더데이랩스×The SC', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-21', due:null, status:'진행 중', progress:30, desc:'세라미크 강남 영상물 홍보 효과 보고. 세라미크의원 브랜드 협업.', tags:['마케팅','협업','강남권'], comments:[
+    {who:'정인호', role:'대리', time:'5/21', body:'안건 등록 — 바크로×더데이랩스×The SC · 마케팅 미팅', event:'created'},
+    {who:'정인호', role:'대리', time:'5/21', body:'세라미크 강남 영상물 홍보 효과 보고. 이후 세라미크의원 브랜드 협업 협의.'}
+  ]},
+
+  // ─── 5월5주차 (5/25~5/29) ───
+  {id:13, cat:'med', prod:'시너젯', client:'데이뷰의원 안양', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-05-26', due:'2026-07-31', status:'진행 중', progress:40, desc:'큐어젯 데모 경험 있음. 리쥬비네이션 어려움 및 제트압 조절 어려움.', tags:['안양','큐어젯 사용'], comments:[
+    {who:'정인호', role:'대리', time:'5/26', body:'안건 등록 — 데이뷰의원 안양 · 시너젯 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'5/26', body:'시너젯 데모 진행 (40%). 큐어젯 데모 경험 있음. 리쥬비네이션 어려움 및 제트압 조절 어려움.'}
+  ]},
+  {id:14, cat:'med', prod:'시너젯', client:'뉴아트라인의원', type:'데모', owner:'정인호', mgr:'정인호', startDate:'2026-05-29', due:'2026-08-31', status:'진행 중', progress:50, desc:'서브시전 사용감 만족. 테크닉 숙달은 필요하나 약물주입 감은 잡힘.', tags:['수원','서브시전'], comments:[
+    {who:'정인호', role:'대리', time:'5/29', body:'안건 등록 — 뉴아트라인의원 · 시너젯 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'5/29', body:'시너젯 데모 진행 (50%). 서브시전 사용감 만족. 테크닉 숙달은 필요하나 약물주입 감은 잡힘.'}
+  ]},
+  {id:15, cat:'med', prod:'인텐스울트라', client:'릴리브의원', type:'제안/미팅', owner:'정인호', mgr:'정인호', startDate:'2026-05-27', due:null, status:'신규', progress:10, desc:'인텐스울트라 보상판매 제안. 총괄실장님께 제안, 대표원장님 컨펌 대기 중.', tags:['보상판매','기타장비'], comments:[
+    {who:'정인호', role:'대리', time:'5/27', body:'안건 등록 — 릴리브의원 · 인텐스울트라 보상판매 제안', event:'created'},
+    {who:'정인호', role:'대리', time:'5/27', body:'인텐스울트라 보상판매 제안 (10%). 총괄실장님께 제안드려 대표원장님 컨펌 대기 중.'}
+  ]}
 ];
 let MR_CURRENT_ID = null;
 let MR_FILTER = 'all';
 let MR_SELECTED_CAT = 'med';
+
+// 사원 마스터 데이터 (관리자/담당자 단일 역할)
+const MR_POSITIONS = ['사원','주임','대리','과장','차장','부장','본부장'];
+let MR_EMPLOYEES = [
+  {id:1, name:'정인호', position:'대리', role:'manager', createdAt:'2026-04-27'}
+];
+let MR_EMP_NEXT_ID = 2;
+let MR_EMP_EDIT_ID = null;
+let MR_EMP_CHECKED = new Set();
+
+function mrEmpBuildRow(prefill){
+  const id = 'r'+Math.random().toString(36).slice(2,9);
+  const posOpts = MR_POSITIONS.map(p=>`<option value="${p}"${prefill?.position===p?' selected':''}>${p}</option>`).join('');
+  const role = prefill?.role || 'manager';
+  return `<div class="mr-emp-row" data-rowid="${id}">
+    <div><label>이름</label><input type="text" class="r-name" placeholder="예: 정인호" value="${(prefill?.name||'').replace(/"/g,'&quot;')}"></div>
+    <div><label>직급</label><select class="r-position">${posOpts}</select></div>
+    <div><label>역할</label>
+      <div class="mr-emp-row-role">
+        <button type="button" class="manager${role==='manager'?' on':''}" data-r="manager">관리자</button>
+        <button type="button" class="owner${role==='owner'?' on':''}" data-r="owner">담당자</button>
+      </div>
+    </div>
+    <button type="button" class="mr-emp-row-del" onclick="mrEmpRemoveRow('${id}')" title="행 삭제">×</button>
+  </div>`;
+}
+
+function mrEmpToggleForm(open){
+  const f = document.getElementById('mr-emp-form');
+  if(open===undefined) f.classList.toggle('open');
+  else f.classList.toggle('open', open);
+  if(f.classList.contains('open')){
+    const rows = document.getElementById('mr-emp-rows');
+    if(MR_EMP_EDIT_ID!==null){
+      const emp = MR_EMPLOYEES.find(e=>e.id===MR_EMP_EDIT_ID);
+      rows.innerHTML = mrEmpBuildRow(emp);
+      document.getElementById('mr-emp-mode-tag').textContent = '수정 모드 — 단일 사원 정보 변경';
+    } else {
+      rows.innerHTML = mrEmpBuildRow();
+      document.getElementById('mr-emp-mode-tag').textContent = '행 추가로 한 번에 여러 명 등록 가능';
+    }
+    mrEmpAttachRowHandlers();
+    f.scrollIntoView({behavior:'smooth', block:'start'});
+    setTimeout(()=>f.querySelector('.r-name')?.focus(), 200);
+  } else {
+    MR_EMP_EDIT_ID = null;
+  }
+}
+
+function mrEmpAttachRowHandlers(){
+  document.querySelectorAll('#mr-emp-rows .mr-emp-row-role button').forEach(b=>{
+    b.onclick = ()=>{
+      const group = b.parentElement;
+      group.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+    };
+  });
+}
+
+function mrEmpAddRow(){
+  if(MR_EMP_EDIT_ID!==null){ showToast('수정 모드에서는 행 추가 불가'); return; }
+  document.getElementById('mr-emp-rows').insertAdjacentHTML('beforeend', mrEmpBuildRow());
+  mrEmpAttachRowHandlers();
+}
+
+function mrEmpRemoveRow(id){
+  const rows = document.querySelectorAll('#mr-emp-rows .mr-emp-row');
+  if(rows.length<=1){ showToast('최소 1개 행은 유지됩니다'); return; }
+  document.querySelector(`#mr-emp-rows [data-rowid="${id}"]`)?.remove();
+}
+
+function mrEmpSubmit(){
+  const rows = [...document.querySelectorAll('#mr-emp-rows .mr-emp-row')];
+  const parsed = rows.map(r=>({
+    name: (r.querySelector('.r-name').value||'').trim(),
+    position: r.querySelector('.r-position').value,
+    role: r.querySelector('.mr-emp-row-role button.on')?.dataset.r || 'manager'
+  })).filter(r=>r.name);
+  if(parsed.length===0){ showToast('이름을 1명 이상 입력하세요'); return; }
+  // 중복 체크 — 폼 내부 + 기존 데이터 (수정 모드는 자기 자신 제외)
+  const seen = new Set();
+  for(const p of parsed){
+    if(seen.has(p.name)){ showToast(`폼 내 중복: ${p.name}`); return; }
+    seen.add(p.name);
+    const dup = MR_EMPLOYEES.find(e=>e.name===p.name && (MR_EMP_EDIT_ID===null || e.id!==MR_EMP_EDIT_ID));
+    if(dup){ showToast(`이미 등록된 이름: ${p.name}`); return; }
+  }
+  if(MR_EMP_EDIT_ID!==null){
+    const emp = MR_EMPLOYEES.find(e=>e.id===MR_EMP_EDIT_ID);
+    if(emp){ Object.assign(emp, parsed[0]); }
+    showToast('사원 정보 수정 완료');
+  } else {
+    const today = new Date().toISOString().substring(0,10);
+    parsed.forEach(p=>MR_EMPLOYEES.push({id:MR_EMP_NEXT_ID++, ...p, createdAt:today}));
+    showToast(`${parsed.length}명 등록 완료`);
+  }
+  MR_EMP_EDIT_ID = null;
+  mrEmpToggleForm(false);
+  mrRenderEmployees();
+  mrRefreshEmployeePickers();
+}
+
+function mrEmpEdit(id){
+  const emp = MR_EMPLOYEES.find(e=>e.id===id);
+  if(!emp) return;
+  MR_EMP_EDIT_ID = id;
+  mrEmpToggleForm(true);
+}
+
+function mrEmpDelete(id){
+  const emp = MR_EMPLOYEES.find(e=>e.id===id);
+  if(!emp) return;
+  if(!confirm(`${emp.name} (${emp.position}) 을(를) 삭제할까요?`)) return;
+  MR_EMPLOYEES = MR_EMPLOYEES.filter(e=>e.id!==id);
+  MR_EMP_CHECKED.delete(id);
+  mrRenderEmployees();
+  mrRefreshEmployeePickers();
+  showToast('사원 삭제 완료');
+}
+
+function mrEmpToggleCheck(id){
+  if(MR_EMP_CHECKED.has(id)) MR_EMP_CHECKED.delete(id);
+  else MR_EMP_CHECKED.add(id);
+  mrRenderEmployees();
+}
+
+function mrEmpClearChecked(){
+  MR_EMP_CHECKED.clear();
+  mrRenderEmployees();
+}
+
+function mrEmpDeleteSelected(){
+  if(MR_EMP_CHECKED.size===0) return;
+  const names = MR_EMPLOYEES.filter(e=>MR_EMP_CHECKED.has(e.id)).map(e=>e.name).join(', ');
+  if(!confirm(`선택한 ${MR_EMP_CHECKED.size}명 (${names}) 을(를) 삭제할까요?`)) return;
+  MR_EMPLOYEES = MR_EMPLOYEES.filter(e=>!MR_EMP_CHECKED.has(e.id));
+  const cnt = MR_EMP_CHECKED.size;
+  MR_EMP_CHECKED.clear();
+  mrRenderEmployees();
+  mrRefreshEmployeePickers();
+  showToast(`${cnt}명 삭제 완료`);
+}
+
+function mrRenderEmployees(){
+  const list = document.getElementById('mr-emp-list');
+  if(!list) return;
+  const total = MR_EMPLOYEES.length;
+  const mgrs = MR_EMPLOYEES.filter(e=>e.role==='manager').length;
+  const owners = MR_EMPLOYEES.filter(e=>e.role==='owner').length;
+  document.getElementById('mr-emp-total').textContent = total;
+  document.getElementById('mr-emp-mgr').textContent = mgrs;
+  document.getElementById('mr-emp-owner').textContent = owners;
+  // 벌크바
+  const bar = document.getElementById('mr-emp-bulkbar');
+  if(bar){
+    if(MR_EMP_CHECKED.size>0){ bar.style.display='flex'; document.getElementById('mr-emp-checked-count').textContent = MR_EMP_CHECKED.size; }
+    else bar.style.display='none';
+  }
+  list.innerHTML = MR_EMPLOYEES.map(e=>{
+    const roleLabel = e.role==='manager' ? '관리자' : '담당자';
+    const first = e.name.charAt(0);
+    const checked = MR_EMP_CHECKED.has(e.id);
+    return `<div class="mr-emp-card role-${e.role}${checked?' checked':''}">
+      <div class="mr-emp-check" onclick="mrEmpToggleCheck(${e.id})" title="선택"></div>
+      <div class="mr-emp-avt">${first}</div>
+      <div class="mr-emp-info">
+        <div class="mr-emp-name-row">
+          <span class="mr-emp-name">${e.name}</span>
+          <span class="mr-emp-pos">${e.position}</span>
+        </div>
+        <span class="mr-emp-role-tag ${e.role}">${roleLabel}</span>
+      </div>
+      <div class="mr-emp-actions">
+        <button class="edit" onclick="mrEmpEdit(${e.id})" title="수정">✎</button>
+        <button class="del" onclick="mrEmpDelete(${e.id})" title="삭제">×</button>
+      </div>
+    </div>`;
+  }).join('') || '<div style="text-align:center;color:#64748b;padding:40px;font-size:13px">등록된 사원이 없습니다 — 우상단 "사원 등록" 버튼으로 추가하세요</div>';
+}
+
+function mrRefreshEmployeePickers(){
+  // 안건 등록 폼의 담당자/관리자 셀렉터 재구성
+  const owners = MR_EMPLOYEES.filter(e=>e.role==='owner');
+  const mgrs = MR_EMPLOYEES.filter(e=>e.role==='manager');
+  const ownerBox = document.getElementById('mr-owner-pick');
+  const mgrBox = document.getElementById('mr-mgr-pick');
+  const colors = ['a1','a2','a3','a4'];
+  if(ownerBox){
+    ownerBox.innerHTML = owners.map((e,i)=>`<div class="mr-mbchip${i===0?' on':''}" data-m="${e.name}"><div class="avt ${colors[i%4]}">${e.name.charAt(0)}</div>${e.name} (${e.position})</div>`).join('') || '<div style="font-size:11.5px;color:#64748b">등록된 담당자 없음 — 기초 관리에서 추가</div>';
+    ownerBox.querySelectorAll('.mr-mbchip').forEach(c=>c.addEventListener('click', ()=>{
+      ownerBox.querySelectorAll('.mr-mbchip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+    }));
+  }
+  if(mgrBox){
+    mgrBox.innerHTML = mgrs.map((e,i)=>`<div class="mr-mbchip${i===0?' on':''}" data-m="${e.name}"><div class="avt ${colors[i%4]}">${e.name.charAt(0)}</div>${e.name} (${e.position})</div>`).join('') || '<div style="font-size:11.5px;color:#64748b">등록된 관리자 없음 — 기초 관리에서 추가</div>';
+    mgrBox.querySelectorAll('.mr-mbchip').forEach(c=>c.addEventListener('click', ()=>{
+      mgrBox.querySelectorAll('.mr-mbchip').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+    }));
+  }
+}
 
 // 날짜/시간 헬퍼
 function mrParseDT(s){ // accepts "YYYY-MM-DDTHH:MM" or "YYYY-MM-DD"
@@ -5988,6 +6333,8 @@ async function initMsoReport(){
   mrSetReportMode(true);
   mrRenderStats();
   mrRenderCases();
+  mrRenderEmployees();
+  mrRefreshEmployeePickers();
   mrSetupForm();
   mrSetupFilters();
   // 첫 탭 활성화
@@ -6005,10 +6352,11 @@ function mrSetReportMode(on){
 
 let MR_CAL_VIEW = new Date();
 function mrSwitchTab(tab, el){
-  ['report','cases','calendar'].forEach(t=>{
+  ['report','cases','calendar','master'].forEach(t=>{
     const div = document.getElementById('mr-tab-'+t);
     if(div) div.style.display = (t===tab) ? '' : 'none';
   });
+  if(tab==='master') mrRenderEmployees();
   // nav-menu-report 메뉴 active 토글
   document.querySelectorAll('#nav-menu-report .nav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
@@ -6440,8 +6788,8 @@ function mrEditMeta(field){
   if(!target) return;
   let html = '';
   if(field==='client') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.client||'').replace(/"/g,'&quot;')}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
-  if(field==='owner') html = `<span class="ied"><select id="mr-edit-${field}"><option ${c.owner==='정인호'?'selected':''}>정인호</option><option ${c.owner==='김다영'?'selected':''}>김다영</option><option ${c.owner==='이수민'?'selected':''}>이수민</option></select><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
-  if(field==='mgr')   html = `<span class="ied"><select id="mr-edit-${field}"><option value=""${!c.mgr?'selected':''}>-</option><option ${c.mgr==='박지호'?'selected':''}>박지호</option><option ${c.mgr==='최영준'?'selected':''}>최영준</option></select><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  if(field==='owner') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.owner||'').replace(/"/g,'&quot;')}" placeholder="담당자명"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  if(field==='mgr')   html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.mgr||'').replace(/"/g,'&quot;')}" placeholder="관리자명 (선택)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
   if(field==='due')   html = `<span class="ied"><input type="datetime-local" id="mr-edit-${field}" value="${c.due||''}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
   target.outerHTML = html;
 }
@@ -6566,6 +6914,7 @@ function mrToggleForm(open){
   if(open===undefined) f.classList.toggle('open');
   else f.classList.toggle('open', open);
   if(f.classList.contains('open')){
+    mrRefreshEmployeePickers();
     mrBuildAutoTitle();
     f.scrollIntoView({behavior:'smooth', block:'start'});
   }
