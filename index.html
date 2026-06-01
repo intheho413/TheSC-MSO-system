@@ -31,7 +31,16 @@ body{
 }
 
 /* ── Layout (상단 네비) ── */
-.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.app{position:relative;height:100vh;overflow:hidden;background:#070b14}
+.app-shell{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .45s cubic-bezier(.7,0,.2,1);will-change:transform;backface-visibility:hidden;z-index:2;background:#070b14}
+html.light .app-shell{background:#f1f5f9}
+html.light .app{background:#f1f5f9}
+.home-stage{position:absolute;inset:0;z-index:1}
+/* 진입 중에는 카드 영역 클릭/호버 잠금 — 흔들림 방지 */
+.app:not(.home-mode) .home-stage{pointer-events:none}
+.app.home-mode .app-shell{pointer-events:none}
+/* 호버 lift는 부드러운 이징으로 — 클릭 직전/직후 스냅 방지 */
+.home-tile{transition:transform .45s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .45s}
 .content{flex:1;overflow-y:auto;padding:24px 40px}
 .page-inner{max-width:1400px;margin:0 auto}
 
@@ -438,13 +447,158 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
   .form-row.cols-3{grid-template-columns:1fr 1fr}
   .settings-panel{width:100%}
 }
+
+/* ═══ 홈 랜딩 (드릴다운 진입 + Slide Push 트랜지션) ═══ */
+.home-stage{
+  overflow-y:auto;
+  background:radial-gradient(1200px circle at 8% -8%,rgba(96,165,250,.18),transparent 45%),
+    radial-gradient(1400px circle at 110% 10%,rgba(167,139,250,.16),transparent 45%),
+    radial-gradient(900px circle at 50% 110%,rgba(52,211,153,.10),transparent 45%),
+    #060912;
+  display:flex;
+}
+html.light .home-stage{background:radial-gradient(1200px circle at 8% -8%,rgba(59,130,246,.10),transparent 45%),radial-gradient(1400px circle at 110% 10%,rgba(139,92,246,.08),transparent 45%),#f1f5f9}
+
+/* 홈 모드: shell만 데이터-방향에 따라 화면 밖 (홈은 항상 고정) */
+.app.home-mode[data-dir="left"]  .app-shell{transform:translateX(-100%)}
+.app.home-mode[data-dir="right"] .app-shell{transform:translateX(100%)}
+.app.home-mode:not([data-dir]) .app-shell{transform:translateX(100%)}
+
+/* 앱 모드: shell이 자기 방향에서 슬라이드 인하여 홈 위를 덮음 (좌측 카드는 좌측에서만, 우측 카드는 우측에서만 — 교차 없음) */
+.app:not(.home-mode) .app-shell{transform:translateX(0)}
+.home-wrap{max-width:1280px;margin:0 auto;padding:40px 36px 60px;width:100%}
+.home-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:42px}
+.home-brand{display:flex;align-items:center;gap:12px}
+.home-logo{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:grid;place-items:center;font-weight:900;color:#fff;box-shadow:0 8px 30px rgba(99,102,241,.45)}
+.home-brand-name{font-size:16px;font-weight:800;color:#fff}
+html.light .home-brand-name{color:#0f172a}
+.home-brand-sub{font-size:11px;color:#64748b;font-weight:600;margin-top:1px}
+.home-meta{display:flex;align-items:center;gap:14px;font-size:12px;color:#64748b;font-weight:600}
+.home-meta .ldot{width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 12px #22c55e}
+.home-hero{margin-bottom:42px}
+.home-eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:2px;color:#a5b4fc;background:rgba(99,102,241,.15);padding:6px 12px;border-radius:20px;border:1px solid rgba(99,102,241,.3);margin-bottom:14px}
+.home-h1{font-size:38px;font-weight:900;color:#fff;line-height:1.15;letter-spacing:-.5px;margin-bottom:12px}
+html.light .home-h1{color:#0f172a}
+.home-h1 .grad{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.home-h1-sub{font-size:14px;color:#94a3b8;line-height:1.6;max-width:620px}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:880px){.home-grid{grid-template-columns:1fr}.home-h1{font-size:30px}}
+.home-tile{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:30px 32px 28px;cursor:pointer;overflow:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .35s;isolation:isolate;min-height:340px}
+html.light .home-tile{background:linear-gradient(160deg,#fff,#f8fafc);border-color:rgba(0,0,0,.08)}
+.home-tile::before{content:"";position:absolute;inset:-1px;border-radius:22px;padding:1px;background:linear-gradient(135deg,transparent 30%,rgba(96,165,250,.55),rgba(167,139,250,.55),transparent 70%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s;z-index:1;pointer-events:none}
+.home-tile::after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;filter:blur(60px);opacity:.35;z-index:0;pointer-events:none;transition:.5s}
+.home-tile.t1::after{background:radial-gradient(circle,rgba(96,165,250,.6),transparent 60%);top:-120px;right:-100px}
+.home-tile.t2::after{background:radial-gradient(circle,rgba(167,139,250,.6),transparent 60%);bottom:-120px;left:-100px}
+.home-tile:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.18);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.home-tile:hover::before{opacity:1}
+.home-tile:hover::after{opacity:.55;transform:scale(1.1)}
+.home-tile>*{position:relative;z-index:2}
+.home-tile-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.home-tile-icon{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:20px;font-weight:900;color:#fff;letter-spacing:-.5px}
+.t1 .home-tile-icon{background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 12px 30px rgba(59,130,246,.4)}
+.t2 .home-tile-icon{background:linear-gradient(135deg,#a78bfa,#ec4899);box-shadow:0 12px 30px rgba(167,139,250,.4)}
+.home-tile-arrow{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;color:#cbd5e1;font-size:16px;transition:.3s}
+.home-tile:hover .home-tile-arrow{background:rgba(255,255,255,.14);transform:translate(4px,-4px) rotate(-12deg);color:#fff}
+.home-tile-title{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.3px;margin-bottom:8px}
+html.light .home-tile-title{color:#0f172a}
+.home-tile-desc{font-size:13.5px;color:#94a3b8;line-height:1.65;margin-bottom:22px}
+.home-tile-feats{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:22px}
+.home-feat{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#cbd5e1;font-weight:500}
+html.light .home-feat{color:#334155}
+.home-feat .pip{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.t1 .home-feat .pip{background:#60a5fa;box-shadow:0 0 8px #60a5fa}
+.t2 .home-feat .pip{background:#c4b5fd;box-shadow:0 0 8px #c4b5fd}
+.home-tile-stats{display:flex;gap:24px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}
+.home-stat .num{font-size:20px;font-weight:800;letter-spacing:-.3px;line-height:1.1}
+.home-stat .lbl{font-size:10.5px;color:#64748b;font-weight:600;margin-top:3px;letter-spacing:.5px;text-transform:uppercase}
+.t1 .home-stat .num{background:linear-gradient(135deg,#60a5fa,#93c5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+.t2 .home-stat .num{background:linear-gradient(135deg,#a78bfa,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.home-hint{margin-top:32px;text-align:center;font-size:12px;color:#475569;font-weight:500}
+.home-kbd{display:inline-block;font-size:10.5px;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:2px 7px;border-radius:5px;color:#cbd5e1;margin:0 3px}
+
+/* 홈 버튼 (topnav 내부) */
+.home-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:7px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;margin-right:14px;transition:.2s;font-family:inherit}
+.home-btn:hover{background:rgba(96,165,250,.18);color:#fff;border-color:rgba(96,165,250,.4)}
+html.light .home-btn{background:rgba(0,0,0,.04);color:#334155;border-color:rgba(0,0,0,.08)}
+html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
+
+/* 클릭 임팩트 — Press Down (3D 눌림) — 더 빠른 반응 (0.18s) */
+.home-tile.fire-press{animation:home-press 0.18s cubic-bezier(.35,0,.25,1) both;will-change:transform,box-shadow}
+@keyframes home-press{
+  0%{transform:translateY(0) scale(1);box-shadow:0 0 0 0 rgba(0,0,0,0)}
+  45%{transform:translateY(2px) scale(.94);box-shadow:inset 0 6px 22px rgba(0,0,0,.45),0 4px 12px rgba(0,0,0,.35)}
+  100%{transform:translateY(0) scale(1);box-shadow:0 0 0 0 rgba(0,0,0,0)}
+}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app home-mode" id="app-root" data-dir="right">
+
+<!-- ── 홈 랜딩 ── -->
+<div class="home-stage" id="home-stage">
+  <div class="home-wrap">
+    <div class="home-top">
+      <div class="home-brand">
+        <div class="home-logo">M</div>
+        <div>
+          <div class="home-brand-name">MSO Platform</div>
+          <div class="home-brand-sub">TheSC · v2.0</div>
+        </div>
+      </div>
+      <div class="home-meta">
+        <span><span class="ldot"></span> 정상 운영 중</span>
+        <span id="home-clock"></span>
+      </div>
+    </div>
+    <div class="home-hero">
+      <span class="home-eyebrow">MSO HOME</span>
+      <div class="home-h1">두 개의 워크스페이스,<br><span class="grad">하나의 컨트롤 센터</span></div>
+      <div class="home-h1-sub">화장품·의료장비 영업 전체 흐름을 다루는 <b style="color:#cbd5e1">통합 관리 시스템</b>과 경영 의사결정을 위한 <b style="color:#cbd5e1">리포트 대시보드</b>를 한 화면에서 진입하세요.</div>
+    </div>
+    <div class="home-grid">
+      <div class="home-tile t1" id="home-tile-mso" data-dir="left" onclick="enterApp('mso',this)">
+        <div class="home-tile-head"><div class="home-tile-icon">M1</div><div class="home-tile-arrow">→</div></div>
+        <div class="home-tile-title">MSO 통합 관리 시스템</div>
+        <div class="home-tile-desc">화장품·의료장비 영업의 모든 흐름. 발주·매입·납품·수금·계약서까지 단일 플로우로 처리합니다.</div>
+        <div class="home-tile-feats">
+          <div class="home-feat"><span class="pip"></span>영업/재고/수금</div>
+          <div class="home-feat"><span class="pip"></span>의료장비 매입·납품</div>
+          <div class="home-feat"><span class="pip"></span>거래처별 원장</div>
+          <div class="home-feat"><span class="pip"></span>전자 서명 계약서</div>
+        </div>
+        <div class="home-tile-stats">
+          <div class="home-stat"><div class="num">8</div><div class="lbl">하위 모듈</div></div>
+          <div class="home-stat"><div class="num">실시간</div><div class="lbl">Supabase</div></div>
+          <div class="home-stat"><div class="num">2.0</div><div class="lbl">버전</div></div>
+        </div>
+      </div>
+      <div class="home-tile t2" id="home-tile-report" data-dir="right" onclick="enterApp('report',this)">
+        <div class="home-tile-head"><div class="home-tile-icon">R</div><div class="home-tile-arrow">→</div></div>
+        <div class="home-tile-title">MSO 리포트</div>
+        <div class="home-tile-desc">매출·미수금·재고 회전율 분석. 차트 클릭 드릴다운으로 거래처/장비/기간별 인사이트를 제공합니다.</div>
+        <div class="home-tile-feats">
+          <div class="home-feat"><span class="pip"></span>매출 추이 (E4)</div>
+          <div class="home-feat"><span class="pip"></span>미수금 현황</div>
+          <div class="home-feat"><span class="pip"></span>거래처별 KPI</div>
+          <div class="home-feat"><span class="pip"></span>차트 드릴다운</div>
+        </div>
+        <div class="home-tile-stats">
+          <div class="home-stat"><div class="num">12</div><div class="lbl">차트 위젯</div></div>
+          <div class="home-stat"><div class="num">자동</div><div class="lbl">갱신</div></div>
+          <div class="home-stat"><div class="num">엑셀</div><div class="lbl">내보내기</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="home-hint">카드 클릭으로 진입 · <span class="home-kbd">1</span> 통합 관리 · <span class="home-kbd">2</span> 리포트 · <span class="home-kbd">ESC</span> 홈으로</div>
+  </div>
+</div>
+
+<!-- ── 앱 셸 (topnav + 콘텐츠 — 슬라이드 트랜지션 단위) ── -->
+<div class="app-shell">
 
 <!-- ── 상단 네비바 ── -->
 <nav class="topnav">
+  <button class="home-btn" onclick="goHome()" title="홈으로 (ESC)">← 홈</button>
   <!-- 앱 이름 -->
   <div class="nav-brand">
     <span class="nav-appname" id="nav-appname">MSO 통합 관리 시스템</span>
@@ -505,7 +659,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
   </div>
 </nav>
 
-<!-- ── 설정 드로어 ── -->
+<!-- ── 설정 드로어 (제자리) ── -->
 <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
 <div class="settings-panel" id="settings-panel">
   <div class="settings-hd">
@@ -1707,6 +1861,7 @@ html.light .rd-rank{color:rgba(0,0,0,.35)}
 </div>
 
 </main>
+</div><!-- /.app-shell -->
 </div>
 
 <!-- Toast -->
@@ -5017,13 +5172,102 @@ function startClock() {
   upd(); setInterval(upd, 1000);
 }
 
+// ── 홈 랜딩 진입/복귀 ────────────────────────────
+function enterApp(mode, tileEl){
+  const root = document.getElementById('app-root');
+  const shell = document.querySelector('.app-shell');
+  // 카드 data-dir → app data-dir 로 복사 (Slide 방향 결정)
+  const dir = tileEl?.dataset?.dir || (mode==='mso'?'left':'right');
+  const prevDir = root.getAttribute('data-dir');
+  // 다른 카드를 눌러 방향이 바뀌면 shell을 트랜지션 없이 새 사이드로 순간 이동
+  // (offscreen 끼리의 점프는 보이지 않고, 그 직후 슬라이드는 한 방향에서만 이루어짐)
+  if(prevDir !== dir && root.classList.contains('home-mode')){
+    shell.style.transition = 'none';
+    root.setAttribute('data-dir', dir);
+    void shell.offsetWidth;
+    shell.style.transition = '';
+  } else {
+    root.setAttribute('data-dir', dir);
+  }
+  // 클릭 임팩트 — Press Down (0.28s, 카드만)
+  if(tileEl){
+    tileEl.classList.remove('fire-press');
+    void tileEl.offsetWidth;
+    tileEl.classList.add('fire-press');
+    tileEl.style.pointerEvents = 'none';
+    setTimeout(()=>{
+      tileEl.classList.remove('fire-press');
+      tileEl.style.pointerEvents = '';
+    }, 220);
+  }
+  // 프레스 종료(0.18s)에 맞춰 슬라이드 시작 → 끊김 없이 빠르게
+  setTimeout(()=>root.classList.remove('home-mode'), 180);
+  // mso 카드 → 화장품 영업 관리 / report 카드 → 화장품 리포트(대시보드)
+  if(mode==='report'){
+    // 리포트로 진입: 화장품 카테고리 + 리포트(대시보드) 페이지
+    if(currentCat!=='cosm'){
+      switchCat('cosm', document.getElementById('cat-btn-cosm'));
+    } else {
+      navigate('dashboard', document.querySelector('#nav-menu-cosm .nav-item'));
+    }
+  } else {
+    // 통합 관리로 진입: 화장품 영업 관리
+    if(currentCat!=='cosm'){
+      switchCat('cosm', document.getElementById('cat-btn-cosm'));
+    }
+    navigate('stock', document.querySelectorAll('#nav-menu-cosm .nav-item')[1]);
+  }
+}
+function goHome(){
+  document.getElementById('app-root').classList.add('home-mode');
+  updateHomeClock();
+}
+function homeBurst(x,y,color){
+  for(let i=0;i<14;i++){
+    const s = document.createElement('div');
+    s.className='home-spark'; s.style.background=color;
+    s.style.left=(x-3)+'px'; s.style.top=(y-3)+'px';
+    const a = (Math.PI*2)*(i/14);
+    const r = 80 + Math.random()*120;
+    s.style.setProperty('--tx',(Math.cos(a)*r)+'px');
+    s.style.setProperty('--ty',(Math.sin(a)*r)+'px');
+    s.style.animation = `homeBurst ${.6+Math.random()*.3}s cubic-bezier(.2,.8,.2,1) forwards`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 1000);
+  }
+}
+function updateHomeClock(){
+  const el = document.getElementById('home-clock');
+  if(!el) return;
+  const d = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  el.textContent = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} (${days[d.getDay()]})`;
+}
+document.addEventListener('keydown', e=>{
+  const inHome = document.getElementById('app-root').classList.contains('home-mode');
+  if(inHome){
+    if(e.key==='1') document.getElementById('home-tile-mso').click();
+    if(e.key==='2') document.getElementById('home-tile-report').click();
+  } else {
+    if(e.key==='Escape' && !document.querySelector('.settings-panel.open') && !document.getElementById('sign-page')?.offsetParent) goHome();
+  }
+});
+
 // ── 초기 실행 ────────────────────────────────────
 window.addEventListener('load', async () => {
+  // 설정 드로어를 .app-shell 밖으로 이동 (transform 부모 영향 차단)
+  const ov = document.getElementById('settings-overlay');
+  const pn = document.getElementById('settings-panel');
+  if(ov && pn && ov.parentElement.classList.contains('app-shell')){
+    document.body.appendChild(ov);
+    document.body.appendChild(pn);
+  }
   startClock();
+  updateHomeClock();
   loadSettings();
   initReportRange();
   await loadMasterData();
-  initDashboard();
+  // 홈 모드에서 시작 — 카드 클릭 시 enterApp() 호출되어 페이지 진입
 });
 // app_config 테이블 생성 SQL (Supabase SQL Editor에서 1회 실행 → 설정·계약서양식 기기 공유):
 // create table if not exists app_config (id text primary key, settings jsonb, template_b64 text, template_name text, updated_at timestamptz default now());
