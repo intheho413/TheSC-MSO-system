@@ -551,9 +551,23 @@ html.light .t2 .home-feat{color:#7c3aed;border-color:rgba(167,139,250,.4);backgr
 .home-hint{margin-top:32px;text-align:center;font-size:12px;color:#475569;font-weight:500}
 .home-kbd{display:inline-block;font-size:10.5px;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:2px 7px;border-radius:5px;color:#cbd5e1;margin:0 3px}
 
-/* 홈 버튼 (topnav 내부) */
-.home-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:7px 12px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;margin-right:14px;transition:.2s;font-family:inherit}
+/* MSO 리포트 모드 — 카테고리/메뉴 교체 */
+.topnav.report-mode .nav-cats,
+.topnav.report-mode #nav-menu-cosm,
+.topnav.report-mode #nav-menu-med{display:none !important}
+.topnav.report-mode #nav-menu-report{display:flex !important}
+.topnav.report-mode #nav-appname{display:none !important}
+.topnav.report-mode #nav-appname-report{display:inline-flex !important;align-items:center;gap:8px}
+.topnav.report-mode .nav-sep:nth-of-type(2){display:none}
+.nav-appname-report{font-size:14px;font-weight:800;color:#fff;letter-spacing:.2px;align-items:center;gap:8px}
+.nav-badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:1.2px;color:#a5b4fc;background:rgba(99,102,241,.22);padding:2px 7px;border-radius:5px;text-transform:uppercase}
+html.light .nav-appname-report{color:#0f172a}
+html.light .nav-badge{color:#4338ca;background:rgba(99,102,241,.14)}
+
+/* 홈 버튼 (topnav 내부) — 셰브론 + 집 아이콘 (icon only) */
+.home-btn{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;width:38px;height:34px;border-radius:9px;cursor:pointer;margin-right:14px;transition:.2s;font-family:inherit;padding:0}
 .home-btn:hover{background:rgba(96,165,250,.18);color:#fff;border-color:rgba(96,165,250,.4)}
+.home-btn svg{width:22px;height:15px;flex-shrink:0}
 html.light .home-btn{background:rgba(0,0,0,.04);color:#334155;border-color:rgba(0,0,0,.08)}
 html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 
@@ -564,6 +578,333 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   45%{transform:translateY(2px) scale(.94);box-shadow:inset 0 6px 22px rgba(0,0,0,.45),0 4px 12px rgba(0,0,0,.35)}
   100%{transform:translateY(0) scale(1);box-shadow:0 0 0 0 rgba(0,0,0,0)}
 }
+
+/* ═══════════════ MSO 리포트 페이지 ═══════════════ */
+.mr-sec{font-size:11px;font-weight:800;color:#64748b;letter-spacing:2px;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.mr-sec::before{content:"";display:inline-block;width:3px;height:13px;border-radius:2px;background:linear-gradient(180deg,#a78bfa,#ec4899)}
+
+.mr-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:960px){.mr-kpis{grid-template-columns:repeat(2,1fr)}}
+.mr-kpi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:14px 16px;position:relative;overflow:hidden}
+.mr-kpi::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;filter:blur(46px);opacity:.3;pointer-events:none;top:-60px;right:-40px}
+.mr-kpi.b::after{background:radial-gradient(circle,rgba(96,165,250,.8),transparent)}
+.mr-kpi.p::after{background:radial-gradient(circle,rgba(167,139,250,.8),transparent)}
+.mr-kpi.g::after{background:radial-gradient(circle,rgba(52,211,153,.8),transparent)}
+.mr-kpi.o::after{background:radial-gradient(circle,rgba(251,146,60,.8),transparent)}
+.mr-kpi.r::after{background:radial-gradient(circle,rgba(239,68,68,.8),transparent)}
+.mr-kpi .l{font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;position:relative;z-index:1}
+.mr-kpi .v{font-size:26px;font-weight:900;letter-spacing:-.5px;line-height:1;position:relative;z-index:1}
+.mr-kpi.b .v{background:linear-gradient(135deg,#60a5fa,#93c5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-kpi.p .v{background:linear-gradient(135deg,#a78bfa,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-kpi.g .v{background:linear-gradient(135deg,#34d399,#6ee7b7);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-kpi.o .v{background:linear-gradient(135deg,#fb923c,#fdba74);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-kpi.r .v{background:linear-gradient(135deg,#ef4444,#f87171);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-kpi .d{font-size:11px;color:#64748b;margin-top:6px;font-weight:500;position:relative;z-index:1}
+
+.mr-row{display:grid;gap:14px;margin-bottom:14px}
+.mr-row.c2{grid-template-columns:1fr 1fr}
+.mr-row.b2{grid-template-columns:1.5fr 1fr}
+.mr-row.b3{grid-template-columns:1.4fr 1fr}
+@media(max-width:960px){.mr-row.b3,.mr-row.c2,.mr-row.b2{grid-template-columns:1fr}}
+.mr-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 20px}
+.mr-card .h{font-size:13.5px;font-weight:800;color:#fff;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mr-card .h .meta{font-size:11px;color:#64748b;font-weight:500}
+.mr-card .sh{font-size:11.5px;color:#64748b;margin-bottom:14px;font-weight:500}
+.mr-chart{width:100%;height:300px}
+.mr-chart.med{height:260px}
+
+.mr-catgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:760px){.mr-catgrid{grid-template-columns:repeat(2,1fr)}}
+.mr-cat{background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:16px 18px;position:relative;overflow:hidden;transition:.2s}
+.mr-cat:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.18)}
+.mr-cat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.mr-cat.c1::before{background:#60a5fa;box-shadow:0 0 12px #60a5fa}
+.mr-cat.c2::before{background:#ec4899;box-shadow:0 0 12px #ec4899}
+.mr-cat::after{content:"";position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;filter:blur(35px);opacity:.25}
+.mr-cat.c1::after{background:#60a5fa}
+.mr-cat.c2::after{background:#ec4899}
+.mr-cat .name{font-size:13.5px;font-weight:800;color:#fff;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1}
+.mr-cat .name .cnt{font-size:11px;font-weight:700;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:5px;color:#cbd5e1}
+.mr-cat .stat{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;position:relative;z-index:1}
+.mr-cat .stat .num{font-size:24px;font-weight:900;color:#fff;letter-spacing:-.3px}
+.mr-cat.c1 .stat .num{background:linear-gradient(135deg,#60a5fa,#93c5fd);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-cat.c2 .stat .num{background:linear-gradient(135deg,#ec4899,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-cat .stat .lbl{font-size:10.5px;color:#64748b;font-weight:600}
+.mr-cat .bar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-top:5px;position:relative;z-index:1}
+.mr-cat.c1 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#93c5fd);box-shadow:0 0 8px #60a5fa}
+.mr-cat.c2 .bar>i{display:block;height:100%;background:linear-gradient(90deg,#ec4899,#f0abfc);box-shadow:0 0 8px #ec4899}
+.mr-cat .sub-stat{display:flex;justify-content:space-between;font-size:10.5px;color:#64748b;margin-top:8px;font-weight:600;position:relative;z-index:1}
+
+.mr-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.mr-filters{display:flex;gap:6px;flex-wrap:wrap}
+.mr-filt{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
+.mr-filt.on{background:linear-gradient(135deg,#a78bfa,#ec4899);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(167,139,250,.3)}
+.mr-filt .mr-badge{background:rgba(255,255,255,.18);font-size:10.5px;padding:1px 6px;border-radius:8px;font-weight:700}
+.mr-search{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-family:inherit;width:200px}
+.mr-search::placeholder{color:#475569}
+.mr-search:focus{outline:none;border-color:rgba(167,139,250,.5)}
+.mr-btn-new{background:linear-gradient(135deg,#34d399,#10b981);border:none;color:#fff;padding:8px 16px;border-radius:9px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px rgba(52,211,153,.35)}
+
+/* 안건 등록 폼 */
+.mr-form{background:linear-gradient(160deg,rgba(52,211,153,.06),rgba(96,165,250,.03));border:1px solid rgba(52,211,153,.22);border-radius:14px;padding:20px 22px;margin-bottom:14px;display:none}
+.mr-form.open{display:block}
+.mr-form .head-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mr-form .head-row .ttl{font-size:15px;font-weight:800;color:#fff;display:flex;align-items:center;gap:9px}
+.mr-form .head-row .ttl::before{content:"＋";display:inline-grid;place-items:center;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#34d399,#10b981);color:#fff;font-size:14px;font-weight:900}
+.mr-form .head-row .close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:14px;font-weight:700}
+.mr-fsec{margin-bottom:18px}
+.mr-fsec .stt{font-size:11px;font-weight:800;color:#64748b;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.mr-fsec .stt::before{content:"";display:inline-block;width:3px;height:11px;border-radius:2px;background:linear-gradient(180deg,#34d399,#10b981)}
+.mr-g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mr-g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:760px){.mr-g2,.mr-g3{grid-template-columns:1fr}}
+.mr-fg{display:flex;flex-direction:column;gap:6px}
+.mr-fg label{font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:.3px;display:flex;align-items:center;gap:6px}
+.mr-fg label .req{color:#fca5a5;font-size:10px}
+.mr-fg label .hint{font-size:10px;color:#475569;font-weight:500;margin-left:auto}
+.mr-fg input,.mr-fg select,.mr-fg textarea{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;padding:9px 12px;border-radius:8px;font-size:13px;font-family:inherit;transition:.15s}
+.mr-fg input:focus,.mr-fg select:focus,.mr-fg textarea:focus{outline:none;border-color:rgba(52,211,153,.5);background:rgba(255,255,255,.07)}
+.mr-fg input::placeholder,.mr-fg textarea::placeholder{color:#475569}
+.mr-fg textarea{resize:vertical;min-height:80px;line-height:1.55}
+.mr-catpick{display:flex;gap:8px;flex-wrap:wrap}
+.mr-catpick button{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:10px 22px;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;transition:.18s}
+.mr-catpick button:hover{background:rgba(255,255,255,.07)}
+.mr-catpick button .cdot{width:8px;height:8px;border-radius:50%}
+.mr-catpick button.on.k1{background:rgba(96,165,250,.18);border-color:rgba(96,165,250,.5);color:#bfdbfe;box-shadow:0 4px 14px rgba(96,165,250,.25)}
+.mr-catpick button.on.k2{background:rgba(236,72,153,.18);border-color:rgba(236,72,153,.5);color:#fbcfe8;box-shadow:0 4px 14px rgba(236,72,153,.25)}
+.mr-catpick .k1 .cdot{background:#60a5fa;box-shadow:0 0 6px #60a5fa}
+.mr-catpick .k2 .cdot{background:#ec4899;box-shadow:0 0 6px #ec4899}
+.mr-typepick{display:flex;gap:6px}
+.mr-typepick button{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:9px 12px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s}
+.mr-typepick button.on{background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(251,146,60,.35)}
+.mr-pgrange{display:flex;align-items:center;gap:14px}
+.mr-pgrange input[type=range]{flex:1;accent-color:#a78bfa;height:6px}
+.mr-pgrange .pgval{font-size:18px;font-weight:900;width:60px;text-align:right;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-mbpick{display:flex;gap:8px;flex-wrap:wrap}
+.mr-mbchip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:5px 12px 5px 5px;border-radius:999px;cursor:pointer;font-size:12.5px;font-weight:600;color:#cbd5e1;transition:.18s}
+.mr-mbchip:hover{background:rgba(255,255,255,.08)}
+.mr-mbchip.on{background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.4);color:#fff}
+.mr-mbchip .avt{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:10.5px;font-weight:900;color:#fff}
+.mr-mbchip .avt.a1{background:linear-gradient(135deg,#3b82f6,#6366f1)}
+.mr-mbchip .avt.a2{background:linear-gradient(135deg,#a78bfa,#ec4899)}
+.mr-mbchip .avt.a3{background:linear-gradient(135deg,#34d399,#10b981)}
+.mr-mbchip .avt.a4{background:linear-gradient(135deg,#fb923c,#f59e0b)}
+.mr-autotitle{background:rgba(167,139,250,.08);border:1px dashed rgba(167,139,250,.35);border-radius:9px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.mr-autotitle .lbl{font-size:10.5px;font-weight:800;color:#a5b4fc;letter-spacing:1px;text-transform:uppercase}
+.mr-autotitle .val{font-size:14.5px;font-weight:800;color:#fff;flex:1;text-align:right}
+.mr-autotitle .val .em{background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-combo{position:relative}
+.mr-combo .sug{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#0b1322;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:4px;z-index:5;display:none;max-height:160px;overflow-y:auto}
+.mr-combo.open .sug{display:block}
+.mr-combo .sug button{display:block;width:100%;text-align:left;background:transparent;border:none;color:#cbd5e1;padding:7px 10px;border-radius:6px;font-size:12.5px;cursor:pointer;font-family:inherit}
+.mr-combo .sug button:hover{background:rgba(255,255,255,.07);color:#fff}
+.mr-combo .sug button b{color:#a78bfa}
+.mr-taginput{display:flex;flex-wrap:wrap;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 8px;transition:.15s}
+.mr-taginput:focus-within{border-color:rgba(52,211,153,.5);background:rgba(255,255,255,.07)}
+.mr-taginput .tag{display:inline-flex;align-items:center;gap:6px;background:rgba(167,139,250,.2);color:#c4b5fd;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700}
+.mr-taginput .tag .x{cursor:pointer;opacity:.65;font-size:14px;line-height:1}
+.mr-taginput .tag .x:hover{opacity:1;color:#fff}
+.mr-taginput input{background:transparent;border:none;color:#fff;padding:4px 6px;font-size:12.5px;font-family:inherit;flex:1;min-width:140px;outline:none}
+.mr-taginput input::placeholder{color:#475569}
+.mr-alerts{display:flex;flex-direction:column;gap:8px;padding-top:2px}
+.mr-alert{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;color:#cbd5e1;font-weight:600;cursor:pointer;padding:3px 0}
+.mr-alert input[type=checkbox]{appearance:none;width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);cursor:pointer;position:relative;flex-shrink:0;transition:.15s}
+.mr-alert input[type=checkbox]:checked{background:linear-gradient(135deg,#34d399,#10b981);border-color:transparent}
+.mr-alert input[type=checkbox]:checked::after{content:"✓";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;font-size:13px;font-weight:900;line-height:1}
+.mr-actions{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);gap:10px;flex-wrap:wrap}
+.mr-actions .left{font-size:11.5px;color:#64748b;display:flex;align-items:center;gap:8px}
+.mr-actions .left .pip{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399}
+.mr-actions .right{display:flex;gap:8px}
+.mr-btn{padding:9px 18px;border-radius:9px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;border:none}
+.mr-btn-ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1}
+.mr-btn-primary{background:linear-gradient(135deg,#34d399,#10b981);color:#fff;box-shadow:0 8px 22px rgba(52,211,153,.4)}
+
+/* 안건 리스트 */
+.mr-case-list{display:flex;flex-direction:column;gap:8px}
+.mr-case{position:relative;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:13px 16px;cursor:pointer;transition:.2s}
+.mr-case:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.16)}
+.mr-case.active{background:linear-gradient(160deg,rgba(167,139,250,.13),rgba(96,165,250,.06));border-color:rgba(167,139,250,.4)}
+.mr-case::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px}
+.mr-case.k1::before{background:#60a5fa;box-shadow:0 0 10px #60a5fa}
+.mr-case.k2::before{background:#ec4899;box-shadow:0 0 10px #ec4899}
+.mr-case .crow1{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.mr-case .ctag{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:5px}
+.mr-case.k1 .ctag{background:rgba(96,165,250,.15);color:#93c5fd}
+.mr-case.k2 .ctag{background:rgba(236,72,153,.15);color:#fbcfe8}
+.mr-case .ctitle{font-size:13.5px;font-weight:800;color:#fff;flex:1;min-width:0}
+.mr-case .stp{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:5px}
+.mr-st-1{background:rgba(96,165,250,.15);color:#93c5fd}
+.mr-st-2{background:rgba(251,146,60,.18);color:#fdba74}
+.mr-st-3{background:rgba(245,158,11,.18);color:#fbbf24}
+.mr-st-4{background:rgba(52,211,153,.18);color:#6ee7b7}
+.mr-st-5{background:rgba(148,163,184,.18);color:#cbd5e1}
+.mr-case .crow2{display:flex;align-items:center;gap:14px;font-size:11.5px;color:#94a3b8;flex-wrap:wrap}
+.mr-case .crow2 .m{display:inline-flex;align-items:center;gap:5px}
+.mr-case .crow2 .m b{color:#cbd5e1;font-weight:700}
+.mr-pg{display:inline-block;width:80px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;vertical-align:middle}
+.mr-pg>i{display:block;height:100%}
+.mr-pg>i.high{background:linear-gradient(90deg,#34d399,#10b981)}
+.mr-pg>i.mid{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
+.mr-pg>i.low{background:linear-gradient(90deg,#60a5fa,#a78bfa)}
+.mr-avt{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-size:10px;font-weight:900;color:#fff;border:2px solid #0d1424;margin-left:-7px}
+.mr-avt:first-child{margin-left:0}
+.mr-avt.a1{background:linear-gradient(135deg,#3b82f6,#6366f1)}
+.mr-avt.a2{background:linear-gradient(135deg,#a78bfa,#ec4899)}
+.mr-avt.a3{background:linear-gradient(135deg,#34d399,#10b981)}
+.mr-avt.a4{background:linear-gradient(135deg,#fb923c,#f59e0b)}
+
+/* 안건 상세 */
+.mr-detail{background:linear-gradient(160deg,rgba(99,102,241,.06),rgba(167,139,250,.03));border:1px solid rgba(167,139,250,.2);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-height:620px}
+.mr-detail .dh{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.18)}
+.mr-detail .live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:#34d399;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);padding:3px 9px;border-radius:20px;float:right}
+.mr-detail .live .ldot{width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 8px #34d399;animation:mrpulse 1.5s ease-in-out infinite}
+@keyframes mrpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.mr-detail .dtitle-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.mr-detail .dtitle{font-size:15px;font-weight:800;color:#fff}
+.mr-detail .dmeta{display:flex;align-items:center;gap:12px;font-size:11.5px;color:#94a3b8;flex-wrap:wrap}
+.mr-detail .dmeta b{color:#cbd5e1}
+.mr-statbar{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mr-statbar .ll{font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.mr-statbtns{display:inline-flex;gap:4px;padding:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px}
+.mr-statbtns button{background:transparent;border:none;color:#94a3b8;padding:5px 11px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s}
+.mr-statbtns button.on{background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff;box-shadow:0 4px 10px rgba(251,146,60,.4)}
+.mr-statbtns button.complete.on{background:linear-gradient(135deg,#34d399,#10b981);box-shadow:0 4px 10px rgba(52,211,153,.4)}
+.mr-pgctl{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
+.mr-pgctl .pgl{font-size:11px;color:#64748b;font-weight:700}
+.mr-pgctl input[type=range]{width:130px;accent-color:#a78bfa}
+.mr-pgctl .pgv{font-size:13px;font-weight:900;width:42px;text-align:right;background:linear-gradient(135deg,#a78bfa,#ec4899);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mr-thread{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:11px;max-height:380px}
+.mr-thread::-webkit-scrollbar{width:6px}.mr-thread::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.mr-cmt{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:10px 13px;animation:mrIn .4s cubic-bezier(.2,.8,.2,1)}
+.mr-cmt.new{border-color:rgba(52,211,153,.4);box-shadow:0 0 0 1px rgba(52,211,153,.2),0 0 18px rgba(52,211,153,.15)}
+.mr-cmt.event{background:linear-gradient(90deg,rgba(251,146,60,.12),rgba(251,146,60,.02));border-color:rgba(251,146,60,.25)}
+.mr-cmt.event.complete{background:linear-gradient(90deg,rgba(52,211,153,.14),rgba(52,211,153,.03));border-color:rgba(52,211,153,.35)}
+@keyframes mrIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.mr-cmt .ctop{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.mr-cmt .who{font-size:12.5px;font-weight:700;color:#fff}
+.mr-cmt .role{font-size:10px;font-weight:600;color:#94a3b8;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px}
+.mr-cmt .time{font-size:10.5px;color:#64748b;margin-left:auto;font-weight:500}
+.mr-cmt .body{font-size:12.5px;color:#cbd5e1;line-height:1.55}
+.mr-cmt .body b{color:#fff;font-weight:700}
+.mr-cmt .body .ment{color:#a5b4fc;font-weight:600}
+.mr-cmt.event .body{color:#fdba74}
+.mr-cmt.event.complete .body{color:#6ee7b7}
+.mr-cmtinput{padding:12px 14px;border-top:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.2)}
+.mr-cmtinput .ta{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:9px 11px;font-size:12.5px;font-family:inherit;resize:none;min-height:46px;margin-bottom:7px}
+.mr-cmtinput .ta:focus{outline:none;border-color:rgba(167,139,250,.5)}
+.mr-cmtinput .ta::placeholder{color:#475569}
+.mr-cmtinput .send-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mr-cmtinput .hint{font-size:10.5px;color:#475569;font-weight:500}
+.mr-cmtinput .send{background:linear-gradient(135deg,#a78bfa,#ec4899);border:none;color:#fff;padding:6px 14px;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* 빠른 액션 / 다음 액션 / 실패 사유 / 인라인 편집 */
+.mr-qa-bar{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)}
+.mr-qa-section{margin-bottom:10px}
+.mr-qa-section:last-child{margin-bottom:0}
+.mr-qa-title{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.mr-qa-title.pos{color:#6ee7b7}
+.mr-qa-title.neg{color:#fca5a5}
+.mr-qa-title.neu{color:#cbd5e1}
+.mr-qa-title::before{content:"";display:inline-block;width:3px;height:10px;border-radius:2px}
+.mr-qa-title.pos::before{background:linear-gradient(180deg,#34d399,#10b981);box-shadow:0 0 6px #34d399}
+.mr-qa-title.neg::before{background:linear-gradient(180deg,#ef4444,#f87171);box-shadow:0 0 6px #ef4444}
+.mr-qa-title.neu::before{background:linear-gradient(180deg,#a78bfa,#ec4899)}
+.mr-qa-grid{display:flex;flex-wrap:wrap;gap:5px}
+.mr-qa-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:#cbd5e1;padding:6px 11px;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.mr-qa-btn.pos:hover{background:rgba(52,211,153,.16);border-color:rgba(52,211,153,.4);color:#fff}
+.mr-qa-btn.neg:hover{background:rgba(239,68,68,.16);border-color:rgba(239,68,68,.4);color:#fff}
+.mr-qa-btn.neu:hover{background:rgba(167,139,250,.16);border-color:rgba(167,139,250,.4);color:#fff}
+.mr-qa-btn .dl{font-size:9.5px;font-weight:800;padding:1px 5px;border-radius:4px}
+.mr-qa-btn.pos .dl{background:rgba(52,211,153,.22);color:#6ee7b7}
+.mr-qa-btn.neg .dl{background:rgba(239,68,68,.22);color:#fca5a5}
+.mr-qa-btn.neu .dl{background:rgba(167,139,250,.22);color:#c4b5fd}
+
+/* 다음 액션 */
+.mr-next-act{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:linear-gradient(90deg,rgba(96,165,250,.06),transparent)}
+.mr-na-title{font-size:10px;font-weight:800;color:#64748b;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:7px}
+.mr-na-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.mr-na-row .badge{font-size:10.5px;font-weight:700;color:#93c5fd;background:rgba(96,165,250,.18);padding:3px 8px;border-radius:5px}
+.mr-na-row .txt{font-size:12.5px;color:#fff;font-weight:600;flex:1;min-width:180px}
+.mr-na-row .date{font-size:11px;color:#fbbf24;font-weight:700;background:rgba(245,158,11,.15);padding:2px 7px;border-radius:5px}
+.mr-na-row .btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#94a3b8;padding:3px 9px;border-radius:6px;font-size:10.5px;font-weight:600;cursor:pointer;font-family:inherit}
+.mr-na-row .btn:hover{background:rgba(167,139,250,.15);color:#fff;border-color:rgba(167,139,250,.4)}
+.mr-na-empty{font-size:11.5px;color:#64748b;display:flex;align-items:center;gap:8px}
+.mr-na-empty button{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.35);color:#c4b5fd;padding:4px 11px;border-radius:6px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.mr-na-edit{display:flex;align-items:center;gap:6px}
+.mr-na-edit input[type=text]{background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.4);color:#fff;padding:4px 8px;border-radius:6px;font-size:11.5px;font-family:inherit;outline:none;flex:1;min-width:160px}
+.mr-na-edit input[type=date]{background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.4);color:#fff;padding:4px 6px;border-radius:6px;font-size:11px;font-family:inherit;outline:none}
+.mr-na-edit .ok{background:#34d399;border:none;color:#fff;width:24px;height:24px;border-radius:5px;cursor:pointer;font-weight:900}
+.mr-na-edit .x{background:rgba(255,255,255,.08);border:none;color:#cbd5e1;width:24px;height:24px;border-radius:5px;cursor:pointer;font-weight:700}
+
+/* 실패 사유 픽커 */
+.mr-reason{background:linear-gradient(160deg,rgba(239,68,68,.08),rgba(239,68,68,.02));border:1px solid rgba(239,68,68,.3);border-radius:11px;padding:14px 16px;margin:12px 18px;display:none;animation:rsslide .3s ease-out}
+.mr-reason.open{display:block}
+@keyframes rsslide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.mr-reason .rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mr-reason .rt{font-size:12.5px;font-weight:800;color:#fff;display:flex;align-items:center;gap:7px}
+.mr-reason .rt .ic{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:12px;font-weight:900}
+.mr-reason .rx{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;width:22px;height:22px;border-radius:5px;cursor:pointer;font-weight:700}
+.mr-reason .rs{font-size:11px;color:#94a3b8;margin-bottom:10px}
+.mr-reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+@media(max-width:760px){.mr-reason-grid{grid-template-columns:repeat(2,1fr)}}
+.mr-rsn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:7px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;transition:.15s}
+.mr-rsn:hover{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.4);color:#fff}
+.mr-rsn.on{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.55);color:#fff;box-shadow:0 4px 10px rgba(239,68,68,.2)}
+.mr-reason .rmemo label{font-size:10px;font-weight:700;color:#94a3b8;display:block;margin-bottom:4px}
+.mr-reason .rmemo textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;padding:6px 9px;border-radius:6px;font-size:11.5px;font-family:inherit;resize:vertical;min-height:48px;outline:none;margin-bottom:9px}
+.mr-reason .ract{display:flex;justify-content:flex-end;gap:7px}
+.mr-reason .bc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.mr-reason .bp{background:linear-gradient(135deg,#ef4444,#dc2626);border:none;color:#fff;padding:6px 14px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(239,68,68,.25)}
+
+/* 실패 상태 */
+.mr-statbtns button.fail.on{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 4px 10px rgba(239,68,68,.4)}
+.mr-st-6{background:rgba(239,68,68,.2);color:#fca5a5}
+
+/* 실패 안건 카드 표시 */
+.mr-case.fail{background:linear-gradient(160deg,rgba(239,68,68,.08),rgba(239,68,68,.02));border-color:rgba(239,68,68,.3)}
+.mr-case.fail::before{background:#ef4444;box-shadow:0 0 10px #ef4444}
+.mr-case .crow2 .m.reason{color:#fca5a5}
+
+/* 인라인 편집 메타 */
+.mr-detail .dmeta .ed{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:5px;cursor:pointer;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.08);transition:.15s}
+.mr-detail .dmeta .ed:hover{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35);border-style:solid}
+.mr-detail .dmeta .ed b{color:#cbd5e1;font-weight:700}
+.mr-detail .dmeta .ed .pen{opacity:0;font-size:9px;color:#a5b4fc;transition:.15s}
+.mr-detail .dmeta .ed:hover .pen{opacity:1}
+.mr-detail .dmeta .ied{display:inline-flex;align-items:center;gap:4px;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.5);border-radius:5px;padding:2px 5px}
+.mr-detail .dmeta .ied input,.mr-detail .dmeta .ied select{background:transparent;border:none;color:#fff;font-size:11px;font-family:inherit;outline:none;font-weight:700;min-width:80px}
+.mr-detail .dmeta .ied .ok{background:#34d399;border:none;color:#fff;width:18px;height:18px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:900}
+.mr-detail .dmeta .ied .nx{background:rgba(255,255,255,.1);border:none;color:#cbd5e1;width:18px;height:18px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700}
+
+/* 캘린더 */
+.mr-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.mr-cal-nav{display:flex;align-items:center;gap:8px}
+.mr-cal-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;font-weight:700;font-family:inherit}
+.mr-cal-btn:hover{background:rgba(167,139,250,.18);color:#fff;border-color:rgba(167,139,250,.4)}
+.mr-cal-month{font-size:16px;font-weight:800;color:#fff;min-width:130px;text-align:center}
+.mr-cal-today{background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.4);color:#fff;padding:6px 12px;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-left:6px}
+.mr-cal-legend{display:flex;gap:14px;font-size:11.5px;color:#94a3b8;font-weight:600}
+.mr-cal-lg{display:inline-flex;align-items:center;gap:6px}
+.mr-cal-lg i{display:inline-block;width:10px;height:10px;border-radius:50%;box-shadow:0 0 6px currentColor}
+.mr-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
+.mr-cal-dh{background:#0d1424;padding:10px;text-align:center;font-size:11px;font-weight:800;color:#64748b;letter-spacing:.5px;text-transform:uppercase}
+.mr-cal-dh.sun{color:#fca5a5}
+.mr-cal-dh.sat{color:#93c5fd}
+.mr-cal-cell{background:rgba(13,20,36,.6);min-height:90px;padding:6px 8px;display:flex;flex-direction:column;gap:3px;transition:.18s;position:relative}
+.mr-cal-cell.other{background:rgba(13,20,36,.3);color:#475569}
+.mr-cal-cell.today{background:linear-gradient(160deg,rgba(167,139,250,.14),rgba(167,139,250,.04));box-shadow:inset 0 0 0 1px rgba(167,139,250,.4)}
+.mr-cal-cell:hover{background:rgba(255,255,255,.04)}
+.mr-cal-date{font-size:11.5px;font-weight:700;color:#cbd5e1}
+.mr-cal-cell.other .mr-cal-date{color:#475569}
+.mr-cal-cell.today .mr-cal-date{color:#fff;font-weight:900}
+.mr-cal-cell.sun .mr-cal-date{color:#fca5a5}
+.mr-cal-cell.sat .mr-cal-date{color:#93c5fd}
+.mr-cal-item{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:4px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mr-cal-item.k1{background:rgba(96,165,250,.18);color:#bfdbfe;border-left:2px solid #60a5fa}
+.mr-cal-item.k2{background:rgba(236,72,153,.18);color:#fbcfe8;border-left:2px solid #ec4899}
+.mr-cal-item:hover{filter:brightness(1.2)}
+.mr-cal-more{font-size:10px;color:#64748b;font-weight:700;padding:1px 4px}
+
 </style>
 </head>
 <body>
@@ -622,10 +963,16 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 
 <!-- ── 상단 네비바 ── -->
 <nav class="topnav">
-  <button class="home-btn" onclick="goHome()" title="홈으로 (ESC)">← 홈</button>
+  <button class="home-btn" onclick="goHome()" title="홈으로 (ESC)" aria-label="홈으로">
+    <svg viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 6L3 10l4 4"/>
+      <path d="M14 10l6-5 6 5v7h-4v-4h-4v4h-4v-7z"/>
+    </svg>
+  </button>
   <!-- 앱 이름 -->
   <div class="nav-brand">
     <span class="nav-appname" id="nav-appname">MSO 통합 관리 시스템</span>
+    <span class="nav-appname-report" id="nav-appname-report" style="display:none">MSO 리포트 <span class="nav-badge">REPORT</span></span>
     <span class="nav-caption">TheSC-MSO v2.0</span>
   </div>
   <div class="nav-sep"></div>
@@ -670,6 +1017,19 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     </div>
     <div class="nav-item" onclick="navigate('med-master',this)">
       <span class="menu-label" id="menu-med-3">기초 관리</span>
+    </div>
+  </div>
+
+  <!-- MSO 리포트 전용 메뉴 (mso-report 페이지 진입 시에만 표시) -->
+  <div class="nav-menu" id="nav-menu-report" style="display:none">
+    <div class="nav-item active" onclick="mrSwitchTab('report',this)">
+      <span class="menu-label">리포트</span>
+    </div>
+    <div class="nav-item" onclick="mrSwitchTab('cases',this)">
+      <span class="menu-label">안건 관리</span>
+    </div>
+    <div class="nav-item" onclick="mrSwitchTab('calendar',this)">
+      <span class="menu-label">캘린더</span>
     </div>
   </div>
 
@@ -753,6 +1113,352 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 <main class="content">
 
 <!-- ════ 화장품 대시보드 ════ -->
+<!-- ════ MSO 리포트 페이지 (홈 → 리포트 카드 진입) ════ -->
+<div id="page-mso-report" class="page" style="display:none">
+
+  <!-- ── 리포트 탭 (통계) ── -->
+  <div id="mr-tab-report" class="mr-tab">
+
+  <!-- KPI -->
+  <div class="mr-kpis">
+    <div class="mr-kpi b"><div class="l">전체 안건</div><div class="v" id="mr-k-total">0</div><div class="d" id="mr-k-total-sub">진행 중 - · 완료 -</div></div>
+    <div class="mr-kpi o"><div class="l">진행 중</div><div class="v" id="mr-k-progress">0</div><div class="d">코멘트 활발</div></div>
+    <div class="mr-kpi p"><div class="l">컨펌 대기</div><div class="v" id="mr-k-pending">0</div><div class="d">후속 미팅 필요</div></div>
+    <div class="mr-kpi g"><div class="l">완료</div><div class="v" id="mr-k-done">0</div><div class="d">납품/계약 완료</div></div>
+    <div class="mr-kpi r"><div class="l">마감 임박</div><div class="v" id="mr-k-soon">0</div><div class="d">D-30 이내</div></div>
+  </div>
+
+  <!-- 메인 차트 2개 -->
+  <div class="mr-row b2">
+    <div class="mr-card">
+      <div class="h">주차별 활동 추이 <span class="meta">건수 + 평균 진행률</span></div>
+      <div class="sh">최근 5주간 안건 수와 평균 진행률 추이</div>
+      <div id="mr-chart-trend" class="mr-chart"></div>
+    </div>
+    <div class="mr-card">
+      <div class="h">카테고리 분포</div>
+      <div class="sh">의료장비 / 화장품 비율</div>
+      <div id="mr-chart-donut" class="mr-chart"></div>
+    </div>
+  </div>
+
+  <!-- 카테고리별 카드 -->
+  <div class="mr-card" style="margin-bottom:14px">
+    <div class="h">카테고리별 요약 <span class="meta">건수 · 평균 진행률</span></div>
+    <div class="mr-catgrid" id="mr-catgrid"></div>
+  </div>
+
+  <!-- 보조 차트 -->
+  <div class="mr-row c2">
+    <div class="mr-card">
+      <div class="h">진행률 단계 분포 <span class="meta">문의 → 데모 → 컨펌 → 완료</span></div>
+      <div id="mr-chart-funnel" class="mr-chart med"></div>
+    </div>
+    <div class="mr-card">
+      <div class="h">주차별 완료 vs 신규 <span class="meta">최근 5주</span></div>
+      <div id="mr-chart-weekstack" class="mr-chart med"></div>
+    </div>
+  </div>
+
+  <!-- 실패 분석 -->
+  <div class="mr-sec" style="margin-top:24px">실패 분석 · 영업 인사이트</div>
+  <div class="mr-row c2">
+    <div class="mr-card">
+      <div class="h">실패 사유 분포 <span class="meta">전체 기간</span></div>
+      <div class="sh">가장 많은 실패 원인 → 대응 전략 우선순위</div>
+      <div id="mr-chart-reason" class="mr-chart med"></div>
+    </div>
+    <div class="mr-card">
+      <div class="h">실패 KPI <span class="meta">실패율 · 평균 진행률</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+        <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:11px;padding:14px">
+          <div style="font-size:10.5px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">실패율</div>
+          <div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,#ef4444,#f87171);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1" id="mr-fail-rate">0%</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:5px" id="mr-fail-rate-sub">- / -건</div>
+        </div>
+        <div style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);border-radius:11px;padding:14px">
+          <div style="font-size:10.5px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">실패 평균 진행률</div>
+          <div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,#60a5fa,#93c5fd);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1" id="mr-fail-avgpg">0%</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:5px" id="mr-fail-stage">단계 분석</div>
+        </div>
+      </div>
+      <div id="mr-fail-insight" style="margin-top:10px;padding:9px 12px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:9px;font-size:11.5px;color:#fbbf24"></div>
+    </div>
+  </div>
+
+  </div><!-- /mr-tab-report -->
+
+  <!-- ── 안건 관리 탭 ── -->
+  <div id="mr-tab-cases" class="mr-tab" style="display:none">
+
+  <!-- 안건 등록 폼 (인라인 펼침) -->
+  <div class="mr-form" id="mr-form">
+    <div class="head-row">
+      <div class="ttl">신규 안건 등록</div>
+      <button class="close" onclick="mrToggleForm(false)">✕</button>
+    </div>
+
+    <div class="mr-fsec">
+      <div class="stt">분류</div>
+      <div class="mr-g2">
+        <div class="mr-fg">
+          <label>품목 분류 <span class="req">*필수</span></label>
+          <div class="mr-catpick" id="mr-catpick">
+            <button class="k1 on" data-cat="med"><span class="cdot"></span>의료장비</button>
+            <button class="k2" data-cat="cosm"><span class="cdot"></span>화장품</button>
+          </div>
+        </div>
+        <div class="mr-fg">
+          <label>물품명 <span class="req">*필수</span><span class="hint">자동완성 / 직접 입력</span></label>
+          <div class="mr-combo" id="mr-prod-combo">
+            <input id="mr-prod-name" placeholder="예: 시너젯, 바크로, 써마지...">
+            <div class="sug" id="mr-prod-sug"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mr-fsec">
+      <div class="stt">거래처 · 유형</div>
+      <div class="mr-g2">
+        <div class="mr-fg">
+          <label>거래처/병원명 <span class="req">*필수</span><span class="hint">기존 거래처 + 직접 입력</span></label>
+          <input id="mr-client" placeholder="예: 미뉴얼의원 동탄점">
+        </div>
+        <div class="mr-fg">
+          <label>유형 <span class="req">*필수</span></label>
+          <div class="mr-typepick" id="mr-typepick">
+            <button data-t="데모">데모</button>
+            <button class="on" data-t="제안/미팅">제안/미팅</button>
+            <button data-t="납품">납품</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mr-autotitle">
+      <span class="lbl">자동 제목</span>
+      <div class="val" id="mr-auto-title"><span class="em">거래처명</span> · 물품명 유형</div>
+    </div>
+
+    <div class="mr-fsec">
+      <div class="stt">담당</div>
+      <div class="mr-g2">
+        <div class="mr-fg">
+          <label>담당자 <span class="req">*필수</span></label>
+          <div class="mr-mbpick" id="mr-owner-pick">
+            <div class="mr-mbchip on" data-m="정인호"><div class="avt a1">정</div>정인호 (대리)</div>
+            <div class="mr-mbchip" data-m="김다영"><div class="avt a2">김</div>김다영</div>
+            <div class="mr-mbchip" data-m="이수민"><div class="avt a4">이</div>이수민</div>
+          </div>
+        </div>
+        <div class="mr-fg">
+          <label>관리자 (코멘트/승인) <span class="hint">선택</span></label>
+          <div class="mr-mbpick" id="mr-mgr-pick">
+            <div class="mr-mbchip on" data-m="박지호"><div class="avt a3">박</div>박지호 (팀장)</div>
+            <div class="mr-mbchip" data-m="최영준"><div class="avt a2">최</div>최영준 (실장)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mr-fsec">
+      <div class="stt">일정 · 시작 진행률</div>
+      <div class="mr-g3">
+        <div class="mr-fg">
+          <label>판매 예정일 <span class="hint">D-Day 자동 계산</span></label>
+          <input type="date" id="mr-due">
+        </div>
+        <div class="mr-fg">
+          <label>초기 상태</label>
+          <select id="mr-init-status">
+            <option value="신규">신규</option>
+            <option value="진행 중" selected>진행 중</option>
+            <option value="컨펌 대기">컨펌 대기</option>
+            <option value="보류">보류</option>
+          </select>
+        </div>
+        <div class="mr-fg">
+          <label>초기 진행률</label>
+          <div class="mr-pgrange">
+            <input type="range" id="mr-init-pg" min="0" max="100" value="30" step="10">
+            <div class="pgval" id="mr-init-pg-val">30%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mr-fsec">
+      <div class="stt">안건 상세</div>
+      <div class="mr-fg">
+        <label>상세 내용 <span class="hint">첫 코멘트로 자동 기록</span></label>
+        <textarea id="mr-desc" rows="4" placeholder="예: 큐어젯 사용 유저, 빠른 리쥬비네이션으로 관심 보이심..."></textarea>
+      </div>
+    </div>
+
+    <div class="mr-fsec">
+      <div class="stt">태그 · 알림</div>
+      <div class="mr-g2">
+        <div class="mr-fg">
+          <label>태그 <span class="hint">검색·필터에 활용</span></label>
+          <div class="mr-taginput" id="mr-tag-box">
+            <input id="mr-tag-inp" placeholder="태그 입력 후 엔터...">
+          </div>
+        </div>
+        <div class="mr-fg">
+          <label>알림 설정</label>
+          <div class="mr-alerts">
+            <label class="mr-alert"><input type="checkbox" id="mr-al-1" checked><span>마감 7일 전 알림</span></label>
+            <label class="mr-alert"><input type="checkbox" id="mr-al-2"><span>진행률 변경 시 관리자 알림</span></label>
+            <label class="mr-alert"><input type="checkbox" id="mr-al-3" checked><span>새 코멘트 즉시 알림</span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mr-actions">
+      <div class="left"><span class="pip"></span>실시간 자동 저장 중</div>
+      <div class="right">
+        <button class="mr-btn mr-btn-ghost" onclick="mrToggleForm(false)">취소</button>
+        <button class="mr-btn mr-btn-primary" onclick="mrSubmitCase()">＋ 안건 등록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 필터 + 검색 + 신규 -->
+  <div class="mr-toolbar">
+    <div class="mr-filters" id="mr-filters">
+      <button class="mr-filt on" data-f="all">전체 <span class="mr-badge" id="mr-cnt-all">0</span></button>
+      <button class="mr-filt" data-f="진행 중">진행 중 <span class="mr-badge" id="mr-cnt-prog">0</span></button>
+      <button class="mr-filt" data-f="컨펌 대기">컨펌 대기 <span class="mr-badge" id="mr-cnt-pend">0</span></button>
+      <button class="mr-filt" data-f="완료">완료 <span class="mr-badge" id="mr-cnt-done">0</span></button>
+      <button class="mr-filt" data-f="보류">보류 <span class="mr-badge" id="mr-cnt-hold">0</span></button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input class="mr-search" id="mr-search" placeholder="병원·내용·태그 검색...">
+      <button class="mr-btn-new" onclick="mrToggleForm(true)">＋ 신규 안건</button>
+    </div>
+  </div>
+
+  <!-- 안건 리스트 + 상세 -->
+  <div class="mr-row b3">
+    <div>
+      <div class="mr-case-list" id="mr-case-list"></div>
+    </div>
+    <div>
+      <div class="mr-detail" id="mr-detail" style="display:none">
+        <div class="dh">
+          <div class="live"><span class="ldot"></span>LIVE</div>
+          <div class="dtitle-row" id="mr-d-title-row"></div>
+          <div class="dmeta" id="mr-d-meta"></div>
+        </div>
+        <div class="mr-statbar">
+          <span class="ll">상태</span>
+          <div class="mr-statbtns" id="mr-statbtns">
+            <button data-s="신규">신규</button>
+            <button data-s="진행 중">진행 중</button>
+            <button data-s="컨펌 대기">컨펌 대기</button>
+            <button class="complete" data-s="완료">완료</button>
+            <button data-s="보류">보류</button>
+            <button class="fail" data-s="실패">실패</button>
+          </div>
+          <div class="mr-pgctl">
+            <span class="pgl">진행률</span>
+            <input type="range" id="mr-d-pg" min="0" max="100" value="0">
+            <span class="pgv" id="mr-d-pg-val">0%</span>
+          </div>
+        </div>
+
+        <!-- 빠른 액션 -->
+        <div class="mr-qa-bar">
+          <div class="mr-qa-section">
+            <div class="mr-qa-title pos">긍정 진행</div>
+            <div class="mr-qa-grid">
+              <button class="mr-qa-btn pos" data-act="demo-done">데모 완료 <span class="dl">+20%</span></button>
+              <button class="mr-qa-btn pos" data-act="positive">긍정 피드백 <span class="dl">+15%</span></button>
+              <button class="mr-qa-btn pos" data-act="confirm-wait">컨펌 대기 <span class="dl">상태</span></button>
+              <button class="mr-qa-btn pos" data-act="delivered">납품 완료 <span class="dl">100%</span></button>
+            </div>
+          </div>
+          <div class="mr-qa-section">
+            <div class="mr-qa-title neg">부정 진행 · 실패 원인 기록</div>
+            <div class="mr-qa-grid">
+              <button class="mr-qa-btn neg" data-act="negative">부정 피드백 <span class="dl">-10%</span></button>
+              <button class="mr-qa-btn neg" data-act="reject">거절 / 종결 <span class="dl">실패</span></button>
+              <button class="mr-qa-btn neg" data-act="competitor">경쟁사 선택 <span class="dl">실패</span></button>
+              <button class="mr-qa-btn neg" data-act="budget">예산 부족 <span class="dl">보류</span></button>
+              <button class="mr-qa-btn neg" data-act="noresp">무응답 <span class="dl">보류</span></button>
+            </div>
+          </div>
+          <div class="mr-qa-section">
+            <div class="mr-qa-title neu">중립 · 일반 액션</div>
+            <div class="mr-qa-grid">
+              <button class="mr-qa-btn neu" data-act="material">추가 자료 송부 <span class="dl">코멘트</span></button>
+              <button class="mr-qa-btn neu" data-act="meeting">후속 미팅 일정 <span class="dl">코멘트</span></button>
+              <button class="mr-qa-btn neu" data-act="handover">담당자 변경 요청 <span class="dl">상태</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 실패 사유 픽커 -->
+        <div class="mr-reason" id="mr-reason">
+          <div class="rh">
+            <div class="rt"><span class="ic">!</span><span id="mr-reason-title">실패 / 보류 사유 선택</span></div>
+            <button class="rx" onclick="mrCloseReason()">×</button>
+          </div>
+          <div class="rs">데이터 분석을 위해 사유를 선택해주세요 (복수 선택 가능)</div>
+          <div class="mr-reason-grid" id="mr-reason-grid"></div>
+          <div class="rmemo">
+            <label>상세 메모 (선택)</label>
+            <textarea id="mr-reason-memo" placeholder="예: 경쟁사 제품 대비 가격 차이, 부정 피드백 구체 내용 등"></textarea>
+          </div>
+          <div class="ract">
+            <button class="bc" onclick="mrCloseReason()">취소</button>
+            <button class="bp" onclick="mrConfirmReason()" id="mr-reason-confirm">처리 + 사유 기록</button>
+          </div>
+        </div>
+
+        <!-- 다음 액션 -->
+        <div class="mr-next-act">
+          <div class="mr-na-title">다음 액션</div>
+          <div id="mr-na-content"></div>
+        </div>
+
+        <div class="mr-thread" id="mr-d-thread"></div>
+        <div class="mr-cmtinput">
+          <textarea class="ta" id="mr-cmt-input" placeholder="진행 상황·특이사항 코멘트 작성... @멘션 지원"></textarea>
+          <div class="send-row">
+            <div class="hint">Ctrl+Enter로 게시 · 상태 변경 시 자동 기록</div>
+            <button class="send" onclick="mrPostComment()">코멘트 등록</button>
+          </div>
+        </div>
+      </div>
+      <div id="mr-detail-empty" style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.1);border-radius:14px;padding:50px 30px;text-align:center;color:#64748b;font-size:13px">
+        좌측에서 안건을 선택하면 상세 내용과 코멘트가 표시됩니다
+      </div>
+    </div>
+  </div>
+  </div><!-- /mr-tab-cases -->
+
+  <!-- ── 캘린더 탭 ── -->
+  <div id="mr-tab-calendar" class="mr-tab" style="display:none">
+    <div class="mr-cal-head">
+      <div class="mr-cal-nav">
+        <button class="mr-cal-btn" onclick="mrCalNav(-1)">‹</button>
+        <div class="mr-cal-month" id="mr-cal-month">2026년 6월</div>
+        <button class="mr-cal-btn" onclick="mrCalNav(1)">›</button>
+        <button class="mr-cal-today" onclick="mrCalToday()">오늘</button>
+      </div>
+      <div class="mr-cal-legend">
+        <span class="mr-cal-lg"><i style="background:#60a5fa"></i>의료장비</span>
+        <span class="mr-cal-lg"><i style="background:#ec4899"></i>화장품</span>
+      </div>
+    </div>
+    <div class="mr-cal-grid" id="mr-cal-grid"></div>
+  </div>
+
+</div>
+
 <div id="page-dashboard" class="page">
 
   <!-- 엑셀 다운로드 -->
@@ -1931,6 +2637,12 @@ function navigate(page, el) {
   void document.getElementById('page-'+page).offsetWidth;
   document.getElementById('page-'+page).classList.add('page');
 
+  // MSO 리포트가 아닌 페이지로 가면 report-mode 해제
+  if(page !== 'mso-report'){
+    const nav = document.querySelector('.topnav');
+    if(nav) nav.classList.remove('report-mode');
+  }
+
   document.querySelectorAll('#nav-menu-'+currentCat+' .nav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.closest('.nav-item').classList.add('active');
   currentPage = page;
@@ -1943,6 +2655,7 @@ function navigate(page, el) {
   if(page==='med-sales')  initMedSales();
   if(page==='med-recv')   initMedRecv();
   if(page==='med-master') initMedMaster();
+  if(page==='mso-report') initMsoReport();
 }
 
 function switchCat(cat, el) {
@@ -5196,6 +5909,746 @@ function startClock() {
   upd(); setInterval(upd, 1000);
 }
 
+// ═══════════════ MSO 리포트 페이지 ═══════════════
+const MR_PROD_SUG = {
+  med: ['시너젯','바크로','써마지 FLX','프락셀 듀얼','슈링크 유니버스','클래시스','올리디아','쥬베룩'],
+  cosm:['멜라쉐이드','부스터 세럼','클렌징 폼','앰플','마스크팩','선크림','토너']
+};
+let MR_CASES = [
+  {id:1, cat:'med', prod:'시너젯', client:'미뉴얼의원 동탄점', type:'데모', owner:'정인호', mgr:'박지호', due:'2026-07-31', status:'진행 중', progress:40, desc:'큐어젯 사용 유저, 빠른 리쥬비네이션으로 관심 보이심. 다음 주 데모 예정.', tags:['동탄권','큐어젯 사용','리쥬비네이션'], comments:[
+    {who:'정인호', role:'대리', time:'5/12 09:00', body:'안건 등록 — 미뉴얼의원 동탄점 · 시너젯 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'5/18 14:30', body:'큐어젯 사용 유저, 빠른 리쥬비네이션으로 관심 보이심.'},
+    {who:'시스템', role:'자동', time:'5/18 14:31', body:'진행률 변경: <b>0% → 40%</b> (데모 진행 단계)', event:'progress'},
+    {who:'박지호', role:'팀장', time:'5/19 11:20', body:'<span class="ment">@정인호</span> 동탄점 원장님 보수적인 분이시라 사용 사례 자료 충분히 준비해서.'},
+    {who:'정인호', role:'대리', time:'5/21 16:45', body:'사용 사례 자료 추가 송부 완료. 다음 주 후속 미팅 일정 잡힘.'}
+  ]},
+  {id:2, cat:'med', prod:'바크로', client:'아이비여성의원', type:'데모', owner:'이수민', mgr:'박지호', due:'2026-06-03', status:'컨펌 대기', progress:30, desc:'물톡스 데모 진행 후 피드백 대기 중', tags:['강남권'], comments:[
+    {who:'이수민', role:'영업', time:'5/8 10:00', body:'안건 등록 — 아이비여성의원 · 바크로 데모', event:'created'},
+    {who:'이수민', role:'영업', time:'5/15 16:00', body:'데모 완료, 상시할인 10% 안내.'},
+    {who:'박지호', role:'팀장', time:'5/22 09:30', body:'피드백 받으셨나요? D-2 다가옵니다.'}
+  ]},
+  {id:3, cat:'med', prod:'써마지 FLX', client:'리앤영의원', type:'납품', owner:'김다영', mgr:'박지호', due:'2026-05-07', status:'완료', progress:100, desc:'써마지 계약 완료, 납품 진행', tags:['대표원장 직접소통'], comments:[
+    {who:'김다영', role:'영업', time:'5/2 14:00', body:'안건 등록 — 리앤영의원 · 써마지 납품', event:'created'},
+    {who:'김다영', role:'영업', time:'5/7 11:00', body:'계약서: 경철수 부장님 (원장님 직접소통)'},
+    {who:'시스템', role:'자동', time:'5/7 16:00', body:'<b>완료 처리됨</b> — 납품 완료', event:'complete'}
+  ]},
+  {id:4, cat:'med', prod:'시너젯', client:'밸런스랩성형외과', type:'데모', owner:'정인호', mgr:'박지호', due:'2026-06-30', status:'진행 중', progress:50, desc:'올리디아 240 활용 리쥬비네이션 관심', tags:['신규개척'], comments:[
+    {who:'정인호', role:'대리', time:'5/11 09:00', body:'안건 등록 — 밸런스랩 · 시너젯 데모', event:'created'},
+    {who:'정인호', role:'대리', time:'5/15 14:00', body:'사용 피드백 미팅 예정(전복길 부장님).'}
+  ]},
+  {id:5, cat:'cosm', prod:'멜라쉐이드', client:'더데이랩스', type:'제안/미팅', owner:'이수민', mgr:'박지호', due:null, status:'신규', progress:10, desc:'마케팅 협업 제안 단계', tags:['인플루언서'], comments:[
+    {who:'이수민', role:'영업', time:'5/27 11:00', body:'안건 등록 — 더데이랩스 · 멜라쉐이드 제안', event:'created'}
+  ]},
+  {id:6, cat:'med', prod:'시너젯', client:'바이오의원', type:'데모', owner:'김다영', mgr:'박지호', due:'2026-05-20', status:'실패', progress:40, desc:'데모 후 인모드 선택', tags:['강남권'], reasons:['경쟁사 선택','사용 피드백 부정'],
+    nextAction:null,
+    comments:[
+      {who:'김다영', role:'영업', time:'5/3 10:00', body:'안건 등록 — 바이오의원 · 시너젯 데모', event:'created'},
+      {who:'김다영', role:'영업', time:'5/12 15:00', body:'데모 완료. 원장님 인모드와 비교 검토 의향.'},
+      {who:'시스템', role:'자동', time:'5/20 17:00', body:'<b>[거절 / 종결]</b> 진행률 <b>40% → 0%</b> · 상태 <b>진행 중 → 실패</b> · 사유: <b>경쟁사 선택, 사용 피드백 부정</b> · 메모: 인모드 대비 가격 30% 높음, 리쥬비네이션 일관성 지적', event:'fail'}
+    ]
+  }
+];
+let MR_CURRENT_ID = null;
+let MR_FILTER = 'all';
+let MR_SELECTED_CAT = 'med';
+
+async function initMsoReport(){
+  mrSetReportMode(true);
+  mrRenderStats();
+  mrRenderCases();
+  mrSetupForm();
+  mrSetupFilters();
+  // 첫 탭 활성화
+  mrSwitchTab('report', document.querySelector('#nav-menu-report .nav-item'));
+  // 차트는 리포트 탭에서 렌더
+  setTimeout(()=>{mrRenderCharts(); mrRenderFailAnalysis();}, 50);
+  // 화면 초기엔 첫 안건 자동 선택 (안건 탭용)
+  if(MR_CASES.length>0){ mrSelectCase(MR_CASES[0].id); }
+}
+
+function mrSetReportMode(on){
+  const nav = document.querySelector('.topnav');
+  if(nav) nav.classList.toggle('report-mode', on);
+}
+
+let MR_CAL_VIEW = new Date();
+function mrSwitchTab(tab, el){
+  ['report','cases','calendar'].forEach(t=>{
+    const div = document.getElementById('mr-tab-'+t);
+    if(div) div.style.display = (t===tab) ? '' : 'none';
+  });
+  // nav-menu-report 메뉴 active 토글
+  document.querySelectorAll('#nav-menu-report .nav-item').forEach(i=>i.classList.remove('active'));
+  if(el) el.classList.add('active');
+  // 캘린더 진입 시 렌더
+  if(tab==='calendar') mrRenderCalendar();
+  // 차트는 페이지 보이기 후 한 번 더 리사이즈 (Plotly 그리드 고정 위함)
+  if(tab==='report') setTimeout(()=>{
+    try{
+      ['mr-chart-trend','mr-chart-donut','mr-chart-funnel','mr-chart-weekstack'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el && window.Plotly) Plotly.Plots.resize(el);
+      });
+    }catch(e){}
+  }, 100);
+}
+
+function mrCalNav(delta){ MR_CAL_VIEW.setMonth(MR_CAL_VIEW.getMonth()+delta); mrRenderCalendar(); }
+function mrCalToday(){ MR_CAL_VIEW = new Date(); mrRenderCalendar(); }
+function mrRenderCalendar(){
+  const grid = document.getElementById('mr-cal-grid');
+  const label = document.getElementById('mr-cal-month');
+  if(!grid || !label) return;
+  const y = MR_CAL_VIEW.getFullYear();
+  const m = MR_CAL_VIEW.getMonth();
+  label.textContent = `${y}년 ${m+1}월`;
+  const first = new Date(y, m, 1);
+  const startDay = first.getDay(); // 0=일
+  const daysInMonth = new Date(y, m+1, 0).getDate();
+  const prevDays = new Date(y, m, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  // 안건 → 날짜별 그룹
+  const byDate = {};
+  MR_CASES.forEach(c=>{
+    if(!c.due) return;
+    const d = new Date(c.due);
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    (byDate[key] = byDate[key]||[]).push(c);
+  });
+  // 7 요일 헤더
+  const wkn = ['일','월','화','수','목','금','토'];
+  let html = wkn.map((w,i)=>`<div class="mr-cal-dh ${i===0?'sun':i===6?'sat':''}">${w}</div>`).join('');
+  // 이전 달 회색 날짜
+  for(let i=startDay-1; i>=0; i--){
+    html += `<div class="mr-cal-cell other"><div class="mr-cal-date">${prevDays-i}</div></div>`;
+  }
+  // 현재 달
+  for(let d=1; d<=daysInMonth; d++){
+    const date = new Date(y, m, d);
+    const dow = date.getDay();
+    const isToday = date.getTime() === today.getTime();
+    const key = `${y}-${m}-${d}`;
+    const items = byDate[key] || [];
+    const itemsHtml = items.slice(0,3).map(c=>`<div class="mr-cal-item ${c.cat==='med'?'k1':'k2'}" onclick="mrCalSelect(${c.id})" title="${c.client} · ${c.prod} ${c.type}">${c.client.length>10?c.client.substring(0,10)+'…':c.client}</div>`).join('');
+    const moreCount = items.length-3;
+    html += `<div class="mr-cal-cell ${isToday?'today':''} ${dow===0?'sun':dow===6?'sat':''}">
+      <div class="mr-cal-date">${d}</div>
+      ${itemsHtml}
+      ${moreCount>0 ? `<div class="mr-cal-more">+${moreCount} 건</div>` : ''}
+    </div>`;
+  }
+  // 다음 달 빈칸 채우기
+  const totalCells = 7 + startDay + daysInMonth;
+  const trailing = (7 - (totalCells % 7)) % 7;
+  for(let d=1; d<=trailing; d++){
+    html += `<div class="mr-cal-cell other"><div class="mr-cal-date">${d}</div></div>`;
+  }
+  grid.innerHTML = html;
+}
+function mrCalSelect(id){
+  // 안건 탭으로 이동 + 해당 안건 선택
+  mrSwitchTab('cases', document.querySelectorAll('#nav-menu-report .nav-item')[1]);
+  mrSelectCase(id);
+}
+
+function mrRenderStats(){
+  const all = MR_CASES;
+  const prog = all.filter(c=>c.status==='진행 중').length;
+  const pend = all.filter(c=>c.status==='컨펌 대기').length;
+  const done = all.filter(c=>c.status==='완료').length;
+  const hold = all.filter(c=>c.status==='보류').length;
+  const now = new Date();
+  const soon = all.filter(c=>{ if(!c.due||c.status==='완료')return false; const d=Math.floor((new Date(c.due)-now)/(1000*60*60*24)); return d>=0 && d<=30; }).length;
+  document.getElementById('mr-k-total').textContent = all.length;
+  document.getElementById('mr-k-total-sub').textContent = `진행 중 ${prog} · 완료 ${done}`;
+  document.getElementById('mr-k-progress').textContent = prog;
+  document.getElementById('mr-k-pending').textContent = pend;
+  document.getElementById('mr-k-done').textContent = done;
+  document.getElementById('mr-k-soon').textContent = soon;
+  // 필터 뱃지
+  document.getElementById('mr-cnt-all').textContent = all.length;
+  document.getElementById('mr-cnt-prog').textContent = prog;
+  document.getElementById('mr-cnt-pend').textContent = pend;
+  document.getElementById('mr-cnt-done').textContent = done;
+  document.getElementById('mr-cnt-hold').textContent = hold;
+  // 카테고리 카드
+  const grid = document.getElementById('mr-catgrid');
+  const catData = [
+    {key:'med', name:'의료장비', cls:'c1'},
+    {key:'cosm', name:'화장품', cls:'c2'}
+  ];
+  grid.innerHTML = catData.map(cd=>{
+    const list = all.filter(c=>c.cat===cd.key);
+    const avg = list.length ? Math.round(list.reduce((s,c)=>s+c.progress,0)/list.length) : 0;
+    const dn = list.filter(c=>c.status==='완료').length;
+    const ip = list.filter(c=>c.status==='진행 중').length;
+    const soonC = list.filter(c=>{ if(!c.due||c.status==='완료')return false; const d=Math.floor((new Date(c.due)-now)/(1000*60*60*24)); return d>=0 && d<=30; }).length;
+    return `<div class="mr-cat ${cd.cls}">
+      <div class="name">${cd.name} <span class="cnt">${list.length}건</span></div>
+      <div class="stat"><div class="num">${avg}%</div><div class="lbl">평균 진행률</div></div>
+      <div class="bar"><i style="width:${avg}%"></i></div>
+      <div class="sub-stat"><span>진행 중 ${ip}</span><span>완료 ${dn}</span><span>D-30 ${soonC}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function mrRenderCases(){
+  const search = (document.getElementById('mr-search')?.value||'').toLowerCase();
+  let list = MR_CASES.slice();
+  if(MR_FILTER!=='all') list = list.filter(c=>c.status===MR_FILTER);
+  if(search) list = list.filter(c=>(c.client+c.prod+c.desc+(c.tags||[]).join(' ')).toLowerCase().includes(search));
+  const html = list.map(c=>{
+    const days = c.due ? Math.floor((new Date(c.due)-new Date())/(1000*60*60*24)) : null;
+    const dueLabel = c.status==='완료' ? '판매완료' : (days===null ? '미정' : (days<0 ? '경과 '+(-days)+'일' : 'D-'+days));
+    const dueStyle = (days!==null && days>=0 && days<=7 && c.status!=='완료') ? 'style="color:#fca5a5"' : '';
+    const pgClass = c.progress>=70?'high':(c.progress>=40?'mid':'low');
+    const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='실패'?'mr-st-6':'mr-st-5';
+    const catCls = c.cat==='med' ? 'k1' : 'k2';
+    const catLabel = c.cat==='med' ? '의료장비' : '화장품';
+    const active = c.id===MR_CURRENT_ID ? 'active' : '';
+    const failCls = c.status==='실패' ? 'fail' : '';
+    const reasonRow = (c.status==='실패' && c.reasons?.length) ? `<span class="m reason">사유: <b>${c.reasons.slice(0,2).join(', ')}${c.reasons.length>2?' +'+(c.reasons.length-2):''}</b></span>` : '';
+    return `<div class="mr-case ${catCls} ${failCls} ${active}" onclick="mrSelectCase(${c.id})">
+      <div class="crow1">
+        <span class="ctag">${catLabel}</span>
+        <div class="ctitle">${c.client} · ${c.prod} ${c.type}</div>
+        <span class="stp ${statClass}">${c.status}</span>
+      </div>
+      <div class="crow2">
+        <span class="m"><b>${c.client}</b></span>
+        <span class="m" ${dueStyle}>${dueLabel}</span>
+        <span class="m"><span class="mr-pg"><i class="${pgClass}" style="width:${c.progress}%"></i></span> <b>${c.progress}%</b></span>
+        <span class="m">코멘트 <b>${c.comments.length}</b></span>
+        ${reasonRow}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('mr-case-list').innerHTML = html || '<div style="text-align:center;color:#64748b;padding:30px;font-size:13px">조건에 맞는 안건이 없습니다</div>';
+}
+
+function mrSelectCase(id){
+  MR_CURRENT_ID = id;
+  const c = MR_CASES.find(x=>x.id===id);
+  if(!c){
+    document.getElementById('mr-detail').style.display='none';
+    document.getElementById('mr-detail-empty').style.display='block';
+    return;
+  }
+  document.getElementById('mr-detail').style.display='flex';
+  document.getElementById('mr-detail-empty').style.display='none';
+  const days = c.due ? Math.floor((new Date(c.due)-new Date())/(1000*60*60*24)) : null;
+  const dueLabel = c.due ? (c.due + (days!==null ? ' (D-'+days+')' : '')) : '미정';
+  const catLabel = c.cat==='med' ? '의료장비' : '화장품';
+  const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='실패'?'mr-st-6':'mr-st-5';
+  const catTagCls = c.cat==='med' ? 'background:rgba(96,165,250,.15);color:#93c5fd' : 'background:rgba(236,72,153,.15);color:#fbcfe8';
+  document.getElementById('mr-d-title-row').innerHTML = `
+    <span class="ctag" style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:5px;${catTagCls}">${catLabel}</span>
+    <span class="stp ${statClass}">${c.status}</span>
+    <div class="dtitle">${c.client} · ${c.prod} ${c.type}</div>`;
+  document.getElementById('mr-d-meta').innerHTML = `
+    <span class="ed" data-f="client" onclick="mrEditMeta('client')">병원: <b>${c.client}</b> <span class="pen">✎</span></span>
+    <span class="ed" data-f="owner" onclick="mrEditMeta('owner')">담당: <b>${c.owner}</b> <span class="pen">✎</span></span>
+    <span class="ed" data-f="mgr" onclick="mrEditMeta('mgr')">관리: <b>${c.mgr||'-'}</b> <span class="pen">✎</span></span>
+    <span class="ed" data-f="due" onclick="mrEditMeta('due')">마감: <b>${dueLabel}</b> <span class="pen">✎</span></span>`;
+  // 다음 액션 렌더
+  mrRenderNextAction(c);
+  // 상태 버튼
+  document.querySelectorAll('#mr-statbtns button').forEach(b=>{
+    b.classList.toggle('on', b.dataset.s===c.status);
+  });
+  // 진행률
+  document.getElementById('mr-d-pg').value = c.progress;
+  document.getElementById('mr-d-pg-val').textContent = c.progress+'%';
+  // 코멘트 스레드
+  const th = document.getElementById('mr-d-thread');
+  th.innerHTML = c.comments.map(cm=>{
+    const evCls = cm.event==='complete' ? 'event complete' : (cm.event ? 'event' : '');
+    const icon = cm.event==='created' ? '＋' : cm.event==='progress' ? '▴' : cm.event==='complete' ? '●' : '';
+    return `<div class="mr-cmt ${evCls}">
+      <div class="ctop"><span class="who">${cm.who}</span><span class="role">${cm.role}</span><span class="time">${cm.time}</span></div>
+      <div class="body">${icon?`<span style="margin-right:4px">${icon}</span>`:''}${cm.body}</div>
+    </div>`;
+  }).join('');
+  // 자동 스크롤 끝
+  setTimeout(()=>{th.scrollTop = th.scrollHeight;}, 50);
+  // 리스트 active
+  mrRenderCases();
+}
+
+// 빠른 액션 정의
+const MR_QA = {
+  'demo-done':    {label:'데모 완료',          progressDelta:+20, statusTo:'진행 중', commentText:'데모 완료'},
+  'positive':     {label:'긍정 피드백',         progressDelta:+15, commentText:'긍정 피드백 수신'},
+  'confirm-wait': {label:'컨펌 대기',           statusTo:'컨펌 대기', commentText:'컨펌 대기 상태로 전환'},
+  'delivered':    {label:'납품 완료',           progressTo:100, statusTo:'완료', commentText:'납품 완료 처리', event:'complete'},
+  'negative':     {label:'부정 피드백',         progressDelta:-10, needsReason:true, reasonType:'부정 피드백'},
+  'reject':       {label:'거절 / 종결',         statusTo:'실패', progressTo:0, needsReason:true, reasonType:'거절·종결'},
+  'competitor':   {label:'경쟁사 선택',         statusTo:'실패', needsReason:true, reasonType:'경쟁사 선택', presetReason:'경쟁사 선택'},
+  'budget':       {label:'예산 부족',           statusTo:'보류', needsReason:true, reasonType:'예산 부족', presetReason:'가격 (예산 부족)'},
+  'noresp':       {label:'무응답 / 연락 두절', statusTo:'보류', needsReason:true, reasonType:'무응답', presetReason:'의사결정 보류'},
+  'material':     {label:'추가 자료 송부',      commentText:'추가 자료 송부 완료'},
+  'meeting':      {label:'후속 미팅 일정',      commentText:'후속 미팅 일정 잡음'},
+  'handover':     {label:'담당자 변경 요청',    commentText:'담당자 변경 요청'}
+};
+
+const MR_REASONS = [
+  {key:'가격 (예산 부족)',    desc:'예산 부족 · 견적 차이'},
+  {key:'경쟁사 선택',         desc:'타사 장비 선택'},
+  {key:'기능/스펙 불일치',    desc:'필요 기능 미흡'},
+  {key:'의사결정 보류',       desc:'시기 미정 · 검토 중'},
+  {key:'사용 피드백 부정',    desc:'데모 후 실사용 어려움'},
+  {key:'신뢰/관계 이슈',      desc:'A/S · 대응 우려'},
+  {key:'담당자 변경',         desc:'병원 인사 이동'},
+  {key:'기존 장비 만족',      desc:'교체 필요성 낮음'},
+  {key:'기타',               desc:'사유 직접 입력'}
+];
+
+let MR_PENDING_ACT = null;
+
+function mrQuickAction(actKey){
+  if(!MR_CURRENT_ID) return;
+  const def = MR_QA[actKey];
+  if(!def) return;
+  if(def.needsReason){
+    MR_PENDING_ACT = actKey;
+    mrOpenReason(def);
+    return;
+  }
+  mrApplyAction(actKey, null, null);
+}
+
+function mrOpenReason(def){
+  const box = document.getElementById('mr-reason');
+  document.getElementById('mr-reason-title').textContent = `${def.reasonType||def.label} — 사유 선택`;
+  document.getElementById('mr-reason-memo').value = '';
+  // grid
+  const grid = document.getElementById('mr-reason-grid');
+  grid.innerHTML = MR_REASONS.map(r=>`<button class="mr-rsn ${def.presetReason===r.key?'on':''}" data-r="${r.key}">${r.key}<div style="font-size:10px;color:#94a3b8;font-weight:500;margin-top:2px">${r.desc}</div></button>`).join('');
+  grid.querySelectorAll('.mr-rsn').forEach(b=>b.addEventListener('click', ()=>b.classList.toggle('on')));
+  document.getElementById('mr-reason-confirm').textContent = def.statusTo==='실패' ? '실패 처리 + 사유 기록' : (def.statusTo==='보류' ? '보류 처리 + 사유 기록' : '사유 기록');
+  box.classList.add('open');
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function mrCloseReason(){
+  document.getElementById('mr-reason').classList.remove('open');
+  MR_PENDING_ACT = null;
+}
+
+function mrConfirmReason(){
+  if(!MR_PENDING_ACT) return;
+  const reasons = [...document.querySelectorAll('#mr-reason-grid .mr-rsn.on')].map(b=>b.dataset.r);
+  const memo = document.getElementById('mr-reason-memo').value.trim();
+  if(reasons.length===0){ showToast('사유를 하나 이상 선택하세요'); return; }
+  mrApplyAction(MR_PENDING_ACT, reasons, memo);
+  mrCloseReason();
+}
+
+function mrApplyAction(actKey, reasons, memo){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const def = MR_QA[actKey];
+  let bodyParts = [];
+  // 진행률
+  if(def.progressTo!==undefined){
+    bodyParts.push(`진행률 <b>${c.progress}% → ${def.progressTo}%</b>`);
+    c.progress = def.progressTo;
+  } else if(def.progressDelta){
+    const next = Math.max(0, Math.min(100, c.progress + def.progressDelta));
+    bodyParts.push(`진행률 <b>${c.progress}% → ${next}%</b>`);
+    c.progress = next;
+  }
+  // 상태
+  if(def.statusTo && def.statusTo !== c.status){
+    bodyParts.push(`상태 <b>${c.status} → ${def.statusTo}</b>`);
+    c.status = def.statusTo;
+  }
+  // 사유 저장
+  if(reasons && reasons.length){
+    c.reasons = (c.reasons||[]).concat(reasons.filter(r=>!(c.reasons||[]).includes(r)));
+    bodyParts.push(`사유: <b>${reasons.join(', ')}</b>`);
+  }
+  if(memo) bodyParts.push(`메모: ${memo}`);
+  const evt = def.event || (def.statusTo==='실패' ? 'fail' : (def.statusTo==='완료' ? 'complete' : 'progress'));
+  c.comments.push({
+    who:'시스템', role:'자동', time:'방금 전',
+    body: `<b>[${def.label}]</b> ${bodyParts.join(' · ') || (def.commentText||'')}`,
+    event: evt
+  });
+  if(def.commentText && !bodyParts.length){
+    // 일반 코멘트만 있는 경우 추가
+  }
+  mrSelectCase(c.id);
+  mrRenderStats();
+  mrRenderCharts();
+  mrRenderFailAnalysis();
+  showToast(`${def.label} 처리됨`);
+}
+
+// 다음 액션
+function mrRenderNextAction(c){
+  const box = document.getElementById('mr-na-content');
+  if(!box) return;
+  if(c.nextAction && c.nextAction.text){
+    const days = c.nextAction.date ? Math.floor((new Date(c.nextAction.date)-new Date())/(1000*60*60*24)) : null;
+    const dlabel = c.nextAction.date ? `${c.nextAction.date}${days!==null?(' (D'+(days>=0?'-':'+')+Math.abs(days)+')'):''}` : '날짜 미정';
+    box.innerHTML = `<div class="mr-na-row">
+      <span class="badge">▶ 다음 단계</span>
+      <span class="txt">${c.nextAction.text}</span>
+      <span class="date">${dlabel}</span>
+      <button class="btn" onclick="mrEditNextAction()">수정</button>
+      <button class="btn" onclick="mrClearNextAction()">해제</button>
+    </div>`;
+  } else {
+    box.innerHTML = `<div class="mr-na-empty">
+      <span>예정된 다음 단계가 없습니다</span>
+      <button onclick="mrEditNextAction()">＋ 다음 액션 추가</button>
+    </div>`;
+  }
+}
+
+function mrEditNextAction(){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const box = document.getElementById('mr-na-content');
+  const curText = c.nextAction?.text || '';
+  const curDate = c.nextAction?.date || '';
+  box.innerHTML = `<div class="mr-na-row mr-na-edit">
+    <input type="text" id="mr-na-text" placeholder="다음 단계 (예: 추가 자료 송부, 후속 미팅 등)" value="${curText.replace(/"/g,'&quot;')}">
+    <input type="date" id="mr-na-date" value="${curDate}">
+    <button class="ok" onclick="mrSaveNextAction()">✓</button>
+    <button class="x" onclick="mrSelectCase(${c.id})">×</button>
+  </div>`;
+  setTimeout(()=>document.getElementById('mr-na-text').focus(), 50);
+}
+
+function mrSaveNextAction(){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const text = (document.getElementById('mr-na-text').value||'').trim();
+  const date = document.getElementById('mr-na-date').value || null;
+  if(!text){ showToast('다음 단계 내용을 입력하세요'); return; }
+  const oldText = c.nextAction?.text;
+  c.nextAction = {text, date};
+  c.comments.push({
+    who:'시스템', role:'자동', time:'방금 전',
+    body: `▶ 다음 액션 ${oldText?'변경':'등록'}: <b>${text}</b>${date?' · '+date:''}`,
+    event: 'next'
+  });
+  mrSelectCase(c.id);
+}
+
+function mrClearNextAction(){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  c.nextAction = null;
+  mrSelectCase(c.id);
+}
+
+// 인라인 편집 — 메타 필드
+function mrEditMeta(field){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const target = document.querySelector(`#mr-d-meta .ed[data-f="${field}"]`);
+  if(!target) return;
+  let html = '';
+  if(field==='client') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.client||'').replace(/"/g,'&quot;')}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  if(field==='owner') html = `<span class="ied"><select id="mr-edit-${field}"><option ${c.owner==='정인호'?'selected':''}>정인호</option><option ${c.owner==='김다영'?'selected':''}>김다영</option><option ${c.owner==='이수민'?'selected':''}>이수민</option></select><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  if(field==='mgr')   html = `<span class="ied"><select id="mr-edit-${field}"><option value=""${!c.mgr?'selected':''}>-</option><option ${c.mgr==='박지호'?'selected':''}>박지호</option><option ${c.mgr==='최영준'?'selected':''}>최영준</option></select><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  if(field==='due')   html = `<span class="ied"><input type="date" id="mr-edit-${field}" value="${c.due||''}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  target.outerHTML = html;
+}
+
+function mrSaveMeta(field){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const el = document.getElementById('mr-edit-'+field);
+  if(!el) return;
+  const newVal = el.value;
+  const oldVal = c[field] || '';
+  if(newVal !== oldVal){
+    const labels = {client:'거래처', owner:'담당자', mgr:'관리자', due:'마감일'};
+    c.comments.push({who:'시스템', role:'자동', time:'방금 전', body:`${labels[field]} 변경: <b>${oldVal||'-'} → ${newVal||'-'}</b>`, event:'progress'});
+    c[field] = newVal;
+  }
+  mrSelectCase(c.id);
+  mrRenderStats();
+  if(field==='due') mrRenderCalendar?.();
+}
+
+function mrRenderFailAnalysis(){
+  const fails = MR_CASES.filter(c=>c.status==='실패');
+  const total = MR_CASES.length;
+  const rate = total>0 ? Math.round((fails.length/total)*100) : 0;
+  const avgPg = fails.length>0 ? Math.round(fails.reduce((s,c)=>s+(c.progress||0),0)/fails.length) : 0;
+  const rateEl = document.getElementById('mr-fail-rate');
+  if(rateEl){
+    rateEl.textContent = rate+'%';
+    document.getElementById('mr-fail-rate-sub').textContent = `${fails.length} / ${total}건`;
+    document.getElementById('mr-fail-avgpg').textContent = avgPg+'%';
+    const stageLabel = avgPg<30 ? '문의 단계에서 주로 실패' : avgPg<60 ? '데모 단계에서 가장 많이 실패' : '컨펌 단계에서 주로 실패';
+    document.getElementById('mr-fail-stage').textContent = stageLabel;
+    // 사유 집계
+    const reasonCount = {};
+    fails.forEach(c=>(c.reasons||[]).forEach(r=>reasonCount[r] = (reasonCount[r]||0)+1));
+    const sortedReasons = Object.entries(reasonCount).sort((a,b)=>b[1]-a[1]);
+    const top = sortedReasons.slice(0,2).map(r=>r[0]).join(' + ') || '아직 데이터 없음';
+    document.getElementById('mr-fail-insight').innerHTML = fails.length>0 ?
+      `<b>인사이트</b>: ${stageLabel}. 주요 사유 <b>${top}</b>. 대응 자료 보강이 필요합니다.` :
+      `<b>인사이트</b>: 아직 실패 안건이 없습니다. 실패 안건이 누적되면 자동 분석됩니다.`;
+    // 차트
+    const reasonLabels = sortedReasons.length ? sortedReasons.map(r=>r[0]) : ['데이터 없음'];
+    const reasonValues = sortedReasons.length ? sortedReasons.map(r=>r[1]) : [1];
+    const reasonColors = ['#ef4444','#fb923c','#fbbf24','#a78bfa','#60a5fa','#94a3b8','#475569','#22d3ee','#f472b6'];
+    if(document.getElementById('mr-chart-reason') && window.Plotly){
+      Plotly.newPlot('mr-chart-reason', [{
+        values:reasonValues, labels:reasonLabels, type:'pie', hole:.55,
+        marker:{colors:reasonColors, line:{color:'#0a0f1d',width:2}},
+        textinfo:'label+value', textfont:{size:11,color:'#fff',weight:700}, textposition:'inside'
+      }], {paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)', font:{family:'Inter',color:'#94a3b8',size:11}, margin:{l:10,r:10,t:10,b:10}, showlegend:false, annotations:[{text:`<b>${fails.length}</b><br><span style="font-size:10px;color:#64748b">실패</span>`, showarrow:false, font:{size:18,color:'#fff'}, x:.5, y:.5}]}, {displayModeBar:false, responsive:true});
+    }
+  }
+}
+
+function mrPostComment(){
+  if(!MR_CURRENT_ID) return;
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const inp = document.getElementById('mr-cmt-input');
+  const text = (inp.value||'').trim();
+  if(!text){ showToast('내용을 입력하세요'); return; }
+  c.comments.push({who:'정인호', role:'대리', time:'방금 전', body:text.replace(/@(\S+)/g,'<span class="ment">@$1</span>')});
+  inp.value = '';
+  mrSelectCase(c.id);
+  mrRenderStats();
+}
+
+function mrSetupQuickActions(){
+  document.querySelectorAll('.mr-qa-btn').forEach(b=>{
+    b.addEventListener('click', ()=>mrQuickAction(b.dataset.act));
+  });
+}
+
+function mrSetupFilters(){
+  mrSetupQuickActions();
+  document.querySelectorAll('#mr-filters .mr-filt').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#mr-filters .mr-filt').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      MR_FILTER = b.dataset.f;
+      mrRenderCases();
+    });
+  });
+  document.getElementById('mr-search').addEventListener('input', ()=>mrRenderCases());
+  // 상태 변경 버튼
+  document.querySelectorAll('#mr-statbtns button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      if(!MR_CURRENT_ID) return;
+      const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+      const newStatus = b.dataset.s;
+      if(c.status === newStatus) return;
+      c.comments.push({who:'시스템', role:'자동', time:'방금 전', body:`상태 변경: <b>${c.status} → ${newStatus}</b>`, event: newStatus==='완료'?'complete':'progress'});
+      c.status = newStatus;
+      if(newStatus==='완료') c.progress = 100;
+      mrSelectCase(c.id);
+      mrRenderStats();
+      mrRenderCharts();
+    });
+  });
+  // 진행률 슬라이더
+  const pg = document.getElementById('mr-d-pg');
+  pg.addEventListener('input', ()=>{
+    document.getElementById('mr-d-pg-val').textContent = pg.value+'%';
+  });
+  pg.addEventListener('change', ()=>{
+    if(!MR_CURRENT_ID) return;
+    const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+    const oldP = c.progress;
+    const newP = parseInt(pg.value);
+    if(oldP === newP) return;
+    c.comments.push({who:'시스템', role:'자동', time:'방금 전', body:`진행률 변경: <b>${oldP}% → ${newP}%</b>`, event:'progress'});
+    c.progress = newP;
+    mrSelectCase(c.id);
+    mrRenderStats();
+    mrRenderCharts();
+  });
+}
+
+function mrToggleForm(open){
+  const f = document.getElementById('mr-form');
+  if(open===undefined) f.classList.toggle('open');
+  else f.classList.toggle('open', open);
+  if(f.classList.contains('open')){
+    mrBuildAutoTitle();
+    f.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function mrSetupForm(){
+  // 카테고리 토글
+  document.querySelectorAll('#mr-catpick button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#mr-catpick button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      MR_SELECTED_CAT = b.dataset.cat;
+      mrBuildAutoTitle();
+    });
+  });
+  // 유형 토글
+  document.querySelectorAll('#mr-typepick button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('#mr-typepick button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      // 납품 선택 시 진행률 자동 100
+      if(b.dataset.t==='납품'){
+        document.getElementById('mr-init-pg').value = 100;
+        document.getElementById('mr-init-pg-val').textContent = '100%';
+      }
+      mrBuildAutoTitle();
+    });
+  });
+  // 멤버 칩
+  document.querySelectorAll('#mr-owner-pick .mr-mbchip, #mr-mgr-pick .mr-mbchip').forEach(c=>{
+    c.addEventListener('click', ()=>c.classList.toggle('on'));
+  });
+  // 진행률 슬라이더
+  const pg = document.getElementById('mr-init-pg');
+  pg.addEventListener('input', ()=>document.getElementById('mr-init-pg-val').textContent = pg.value+'%');
+  // 거래처/물품명 입력 → 자동 제목
+  document.getElementById('mr-client').addEventListener('input', mrBuildAutoTitle);
+  // 물품명 자동완성
+  const prodInp = document.getElementById('mr-prod-name');
+  const prodCombo = document.getElementById('mr-prod-combo');
+  const prodSug = document.getElementById('mr-prod-sug');
+  function refreshSug(){
+    const q = (prodInp.value||'').toLowerCase();
+    const list = (MR_PROD_SUG[MR_SELECTED_CAT]||[]).filter(p=>p.toLowerCase().includes(q));
+    prodSug.innerHTML = list.map(p=>`<button type="button"><b>${p}</b> · ${MR_SELECTED_CAT==='med'?'의료장비':'화장품'}</button>`).join('') +
+      (q && !list.includes(prodInp.value) ? `<button type="button">＋ 새 물품 "<b>${prodInp.value}</b>" 추가</button>` : '');
+    prodSug.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('mousedown', e=>{
+        e.preventDefault();
+        const bd = b.querySelector('b');
+        if(bd && !b.textContent.includes('＋')) prodInp.value = bd.textContent;
+        prodCombo.classList.remove('open');
+        mrBuildAutoTitle();
+      });
+    });
+  }
+  prodInp.addEventListener('focus', ()=>{refreshSug(); prodCombo.classList.add('open');});
+  prodInp.addEventListener('blur', ()=>setTimeout(()=>prodCombo.classList.remove('open'), 150));
+  prodInp.addEventListener('input', ()=>{refreshSug(); mrBuildAutoTitle();});
+  // 태그 입력
+  const tagBox = document.getElementById('mr-tag-box');
+  const tagInp = document.getElementById('mr-tag-inp');
+  function addTag(text){
+    text = (text||'').trim();
+    if(!text) return;
+    const existing = [...tagBox.querySelectorAll('.tag')].map(t=>t.textContent.replace('×','').trim());
+    if(existing.includes(text)) return;
+    const span = document.createElement('span');
+    span.className='tag';
+    span.innerHTML = `${text} <span class="x">×</span>`;
+    tagBox.insertBefore(span, tagInp);
+    span.querySelector('.x').addEventListener('click', ()=>span.remove());
+    tagInp.value='';
+  }
+  tagInp.addEventListener('keydown', e=>{
+    if(e.key==='Enter'||e.key===','){ e.preventDefault(); addTag(tagInp.value); }
+    if(e.key==='Backspace' && !tagInp.value){
+      const last = tagBox.querySelector('.tag:last-of-type');
+      if(last) last.remove();
+    }
+  });
+}
+
+function mrBuildAutoTitle(){
+  const client = document.getElementById('mr-client')?.value || '거래처명';
+  const prod = document.getElementById('mr-prod-name')?.value || '물품명';
+  const type = document.querySelector('#mr-typepick .on')?.dataset.t || '유형';
+  document.getElementById('mr-auto-title').innerHTML = `<span class="em">${client}</span> · ${prod} ${type}`;
+}
+
+function mrSubmitCase(){
+  const client = document.getElementById('mr-client').value.trim();
+  const prod = document.getElementById('mr-prod-name').value.trim();
+  const type = document.querySelector('#mr-typepick .on')?.dataset.t;
+  const owner = document.querySelector('#mr-owner-pick .mr-mbchip.on')?.dataset.m;
+  const mgr = document.querySelector('#mr-mgr-pick .mr-mbchip.on')?.dataset.m;
+  const due = document.getElementById('mr-due').value || null;
+  const status = document.getElementById('mr-init-status').value;
+  const progress = parseInt(document.getElementById('mr-init-pg').value);
+  const desc = document.getElementById('mr-desc').value.trim();
+  const tags = [...document.querySelectorAll('#mr-tag-box .tag')].map(t=>t.textContent.replace('×','').trim());
+
+  if(!client){ showToast('거래처명을 입력하세요'); return; }
+  if(!prod){ showToast('물품명을 입력하세요'); return; }
+  if(!type){ showToast('유형을 선택하세요'); return; }
+  if(!owner){ showToast('담당자를 선택하세요'); return; }
+
+  const newId = Math.max(0, ...MR_CASES.map(c=>c.id)) + 1;
+  const newCase = {
+    id:newId, cat:MR_SELECTED_CAT, prod, client, type, owner, mgr, due, status, progress,
+    desc, tags, comments:[
+      {who:owner, role:'담당', time:'방금 전', body:`안건 등록 — ${client} · ${prod} ${type}`, event:'created'}
+    ]
+  };
+  if(desc) newCase.comments.push({who:owner, role:'담당', time:'방금 전', body:desc});
+  MR_CASES.unshift(newCase);
+  // 폼 초기화
+  document.getElementById('mr-client').value = '';
+  document.getElementById('mr-prod-name').value = '';
+  document.getElementById('mr-desc').value = '';
+  document.getElementById('mr-due').value = '';
+  [...document.querySelectorAll('#mr-tag-box .tag')].forEach(t=>t.remove());
+  mrToggleForm(false);
+  mrSelectCase(newId);
+  mrRenderStats();
+  mrRenderCharts();
+  showToast('안건 등록 완료');
+}
+
+function mrRenderCharts(){
+  const weeks=['4/5주','5/2주','5/3주','5/4주','5/5주'];
+  // 주차별 추이 (mock — 실제 데이터로 대체 가능)
+  const trendCounts = [3,4,2,4,3];
+  const trendAvg = [50,55,50,35,45];
+  const baseLayout = {paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)', font:{family:'Inter',color:'#94a3b8',size:11.5}, margin:{l:46,r:14,t:10,b:40}, xaxis:{gridcolor:'rgba(255,255,255,.06)',color:'#64748b'}, yaxis:{gridcolor:'rgba(255,255,255,.06)',color:'#64748b'}, showlegend:false};
+  const cfg = {displayModeBar:false, responsive:true};
+  Plotly.newPlot('mr-chart-trend', [
+    {x:weeks, y:trendCounts, type:'bar', name:'건수', marker:{color:'rgba(96,165,250,.55)',line:{width:1,color:'#60a5fa'}}, yaxis:'y', text:trendCounts, textposition:'outside', textfont:{color:'#93c5fd',size:11}},
+    {x:weeks, y:trendAvg, type:'scatter', mode:'lines+markers', name:'평균 진행률(%)', line:{color:'#a78bfa',width:3.5,shape:'spline'}, marker:{size:9,color:'#a78bfa',line:{color:'#fff',width:2}}, yaxis:'y2', fill:'tozeroy', fillcolor:'rgba(167,139,250,.08)'}
+  ], {...baseLayout, yaxis:{...baseLayout.yaxis,title:{text:'건수',font:{color:'#60a5fa',size:11}},range:[0,6]}, yaxis2:{overlaying:'y',side:'right',ticksuffix:'%',color:'#a78bfa',gridcolor:'transparent',range:[0,100],title:{text:'진행률',font:{color:'#a78bfa',size:11}}}, showlegend:true, legend:{orientation:'h',y:-.18,font:{color:'#cbd5e1',size:11},x:.5,xanchor:'center'}, margin:{l:50,r:55,t:20,b:55}}, cfg);
+
+  // 카테고리 도넛 (의료장비/화장품)
+  const medCount = MR_CASES.filter(c=>c.cat==='med').length;
+  const cosmCount = MR_CASES.filter(c=>c.cat==='cosm').length;
+  Plotly.newPlot('mr-chart-donut', [{
+    values:[medCount, cosmCount], labels:['의료장비','화장품'], type:'pie', hole:.6,
+    marker:{colors:['#60a5fa','#ec4899'], line:{color:'#0a0f1d',width:2}},
+    textinfo:'label+value', textfont:{size:12,color:'#fff',weight:700}, textposition:'inside', sort:false
+  }], {...baseLayout, margin:{l:10,r:10,t:20,b:10}, annotations:[{text:`<b>${MR_CASES.length}</b><br><span style="font-size:11px;color:#64748b">전체 안건</span>`, showarrow:false, font:{size:22,color:'#fff'}, x:.5, y:.5}]}, cfg);
+
+  // 진행률 단계 퍼널
+  const stages = {
+    '단순 문의/제안 (10~30%)': MR_CASES.filter(c=>c.progress<=30).length,
+    '데모 진행 (40~60%)': MR_CASES.filter(c=>c.progress>=40 && c.progress<=60).length,
+    '컨펌/긍정 (70~90%)': MR_CASES.filter(c=>c.progress>=70 && c.progress<100).length,
+    '완료 (100%)': MR_CASES.filter(c=>c.progress===100).length
+  };
+  Plotly.newPlot('mr-chart-funnel', [{
+    type:'funnel', y:Object.keys(stages), x:Object.values(stages), textinfo:'value', textfont:{size:14,color:'#fff'},
+    marker:{color:['#60a5fa','#fb923c','#fbbf24','#34d399']},
+    connector:{line:{color:'rgba(255,255,255,.08)',width:1}}
+  }], {...baseLayout, margin:{l:160,r:30,t:10,b:30}}, cfg);
+
+  // 주차별 완료 vs 신규 (mock)
+  Plotly.newPlot('mr-chart-weekstack', [
+    {x:weeks, y:[1,2,0,1,0], type:'bar', name:'완료', marker:{color:'#34d399'}, text:[1,2,0,1,0], textposition:'outside', textfont:{color:'#6ee7b7'}},
+    {x:weeks, y:[2,2,2,3,3], type:'bar', name:'신규 등록', marker:{color:'#a78bfa'}, text:[2,2,2,3,3], textposition:'outside', textfont:{color:'#c4b5fd'}}
+  ], {...baseLayout, barmode:'group', showlegend:true, legend:{orientation:'h',y:-.18,font:{color:'#cbd5e1',size:11},x:.5,xanchor:'center'}, margin:{l:40,r:14,t:20,b:55}}, cfg);
+}
+
 // ── 홈 랜딩 진입/복귀 ────────────────────────────
 function enterApp(mode, tileEl){
   const root = document.getElementById('app-root');
@@ -5226,14 +6679,10 @@ function enterApp(mode, tileEl){
   }
   // 프레스 종료(0.18s)에 맞춰 슬라이드 시작 → 끊김 없이 빠르게
   setTimeout(()=>root.classList.remove('home-mode'), 180);
-  // mso 카드 → 화장품 영업 관리 / report 카드 → 화장품 리포트(대시보드)
+  // mso 카드 → 화장품 영업 관리 / report 카드 → MSO 리포트(안건 트래킹)
   if(mode==='report'){
-    // 리포트로 진입: 화장품 카테고리 + 리포트(대시보드) 페이지
-    if(currentCat!=='cosm'){
-      switchCat('cosm', document.getElementById('cat-btn-cosm'));
-    } else {
-      navigate('dashboard', document.querySelector('#nav-menu-cosm .nav-item'));
-    }
+    // 리포트로 진입: 전용 MSO 리포트 페이지
+    setTimeout(()=>navigate('mso-report', null), 200);
   } else {
     // 통합 관리로 진입: 화장품 영업 관리
     if(currentCat!=='cosm'){
