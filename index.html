@@ -607,7 +607,35 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-row.c2{grid-template-columns:1fr 1fr}
 .mr-row.b2{grid-template-columns:1.5fr 1fr}
 .mr-row.b3{grid-template-columns:1.4fr 1fr}
-@media(max-width:960px){.mr-row.b3,.mr-row.c2,.mr-row.b2{grid-template-columns:1fr}}
+.mr-row.b3-3col{grid-template-columns:400px minmax(0,1fr) 400px;align-items:stretch}
+@media(max-width:1280px){.mr-row.b3-3col{grid-template-columns:340px minmax(0,1fr) 360px}}
+@media(max-width:960px){.mr-row.b3,.mr-row.c2,.mr-row.b2,.mr-row.b3-3col{grid-template-columns:1fr}}
+
+/* 3분할 패널 공통 */
+.mr-panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;min-height:620px}
+.mr-panel-head{padding:11px 15px;border-bottom:1px solid rgba(255,255,255,.07);font-size:11px;font-weight:800;color:#a5b4fc;letter-spacing:1.4px;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;gap:6px;background:rgba(255,255,255,.015)}
+.mr-panel-head .cnt{font-size:10px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:99px}
+.mr-panel-body{flex:1;overflow-y:auto;padding:12px 14px}
+.mr-panel-body.np{padding:0}
+
+/* 컬럼1 — 안건 리스트 상단 검색 + 상태 필터 */
+.mr-list-search{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.015)}
+.mr-list-search input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:#fff;padding:7px 11px;border-radius:8px;font-size:12px;outline:none;font-family:inherit}
+.mr-list-search input:focus{border-color:rgba(167,139,250,.5)}
+.mr-list-search .hint{font-size:10px;color:#64748b;padding:0 2px;margin-top:5px}
+.mr-list-filters{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;background:rgba(255,255,255,.015);border-bottom:1px solid rgba(255,255,255,.07);align-items:center}
+.mr-list-filters .tg-lbl{font-size:9.5px;font-weight:800;color:#64748b;letter-spacing:1.1px;text-transform:uppercase;width:100%;margin-bottom:2px}
+.mr-list-tg{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:4px 9px;border-radius:7px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:.15s}
+.mr-list-tg:hover{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35)}
+.mr-list-tg.on{background:linear-gradient(135deg,#a78bfa,#ec4899);border-color:transparent;color:#fff;box-shadow:0 4px 10px rgba(167,139,250,.3)}
+.mr-list-tg .n{font-size:9.5px;font-weight:800;background:rgba(255,255,255,.14);padding:1px 5px;border-radius:99px;color:#fff}
+.mr-list-tg.on .n{background:rgba(255,255,255,.25)}
+.mr-list-tg.s1{border-left:3px solid #a78bfa}
+.mr-list-tg.s2{border-left:3px solid #fb923c}
+.mr-list-tg.s3{border-left:3px solid #f59e0b}
+.mr-list-tg.s4{border-left:3px solid #34d399}
+.mr-list-tg.s5{border-left:3px solid #94a3b8}
+.mr-list-tg.s6{border-left:3px solid #ef4444}
 .mr-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px 20px}
 .mr-card .h{font-size:13.5px;font-weight:800;color:#fff;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .mr-card .h .meta{font-size:11px;color:#64748b;font-weight:500}
@@ -1551,26 +1579,65 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     </div>
   </div>
 
-  <!-- 필터 + 검색 + 신규 -->
-  <div class="mr-toolbar">
-    <div class="mr-filters" id="mr-filters">
-      <button class="mr-filt on" data-f="all">전체 <span class="mr-badge" id="mr-cnt-all">0</span></button>
-      <button class="mr-filt" data-f="진행 중">진행 중 <span class="mr-badge" id="mr-cnt-prog">0</span></button>
-      <button class="mr-filt" data-f="컨펌 대기">컨펌 대기 <span class="mr-badge" id="mr-cnt-pend">0</span></button>
-      <button class="mr-filt" data-f="완료">완료 <span class="mr-badge" id="mr-cnt-done">0</span></button>
-      <button class="mr-filt" data-f="보류">보류 <span class="mr-badge" id="mr-cnt-hold">0</span></button>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <input class="mr-search" id="mr-search" placeholder="병원·내용·태그 검색...">
-      <button class="mr-btn-new" onclick="mrToggleForm(true)">＋ 신규 안건</button>
-    </div>
+  <!-- 신규 안건 버튼 (상단 우측) -->
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+    <button class="mr-btn-new" onclick="mrToggleForm(true)">＋ 신규 안건</button>
   </div>
 
-  <!-- 안건 리스트 + 상세 -->
-  <div class="mr-row b3">
-    <div>
-      <div class="mr-case-list" id="mr-case-list"></div>
+  <!-- 3분할: 안건 리스트 | 다음액션·코멘트 | 상세·진행상태 -->
+  <div class="mr-row b3-3col">
+
+    <!-- 컬럼1: 안건 리스트 -->
+    <div class="mr-panel">
+      <div class="mr-panel-head">안건 리스트 <span class="cnt" id="mr-list-cnt">0건</span></div>
+      <div class="mr-list-search">
+        <input id="mr-search" placeholder="병원명·담당자명 검색...">
+        <div class="hint">예: "분당" · "정인호" · "강남 박지연"</div>
+      </div>
+      <div class="mr-list-filters" id="mr-filters">
+        <span class="tg-lbl">상태 필터</span>
+        <button class="mr-list-tg on" data-f="all">전체 <span class="n" id="mr-cnt-all">0</span></button>
+        <button class="mr-list-tg s1" data-f="신규">신규 <span class="n" id="mr-cnt-new">0</span></button>
+        <button class="mr-list-tg s2" data-f="진행 중">진행 중 <span class="n" id="mr-cnt-prog">0</span></button>
+        <button class="mr-list-tg s3" data-f="컨펌 대기">컨펌 대기 <span class="n" id="mr-cnt-pend">0</span></button>
+        <button class="mr-list-tg s4" data-f="완료">완료 <span class="n" id="mr-cnt-done">0</span></button>
+        <button class="mr-list-tg s5" data-f="보류">보류 <span class="n" id="mr-cnt-hold">0</span></button>
+        <button class="mr-list-tg s6" data-f="종결">종결 <span class="n" id="mr-cnt-end">0</span></button>
+      </div>
+      <div class="mr-panel-body">
+        <div class="mr-case-list" id="mr-case-list"></div>
+      </div>
     </div>
+
+    <!-- 컬럼2: 다음 액션 + 코멘트 (가운데) -->
+    <div class="mr-panel" id="mr-detail-comments" style="display:none">
+      <div class="mr-panel-head">다음 액션 & 코멘트</div>
+      <div class="mr-panel-body np" style="display:flex;flex-direction:column;overflow:hidden">
+        <div class="mr-next-act">
+          <div class="mr-na-title">다음 액션</div>
+          <div id="mr-na-content"></div>
+        </div>
+        <div class="mr-thread" id="mr-d-thread" style="flex:1;overflow-y:auto;min-height:120px"></div>
+        <div class="mr-cmtinput">
+          <div class="mr-cmt-header">
+            <div class="mr-cmt-title">코멘트 등록</div>
+            <div class="mr-cmt-cats">
+              <button class="mr-cmt-cat" data-cat="특이사항">특이사항</button>
+              <button class="mr-cmt-cat" data-cat="피드백">피드백</button>
+              <button class="mr-cmt-cat" data-cat="소모품">소모품</button>
+              <button class="mr-cmt-cat" data-cat="기타">기타</button>
+            </div>
+          </div>
+          <textarea class="ta" id="mr-cmt-input" placeholder="특이사항·피드백·소모품 등 코멘트 작성..."></textarea>
+          <div class="send-row">
+            <div class="hint">상단 카테고리 선택 후 작성 · Ctrl+Enter로 등록</div>
+            <button class="send" onclick="mrPostComment()">＋ 코멘트 등록</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 컬럼3: 상세 · 진행 상태 (오른쪽) -->
     <div>
       <div class="mr-detail" id="mr-detail" style="display:none">
         <div class="dh">
@@ -1637,34 +1704,12 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
           </div>
         </div>
 
-        <!-- 다음 액션 -->
-        <div class="mr-next-act">
-          <div class="mr-na-title">다음 액션</div>
-          <div id="mr-na-content"></div>
-        </div>
-
-        <div class="mr-thread" id="mr-d-thread"></div>
-        <div class="mr-cmtinput">
-          <div class="mr-cmt-header">
-            <div class="mr-cmt-title">코멘트 등록</div>
-            <div class="mr-cmt-cats">
-              <button class="mr-cmt-cat" data-cat="특이사항">특이사항</button>
-              <button class="mr-cmt-cat" data-cat="피드백">피드백</button>
-              <button class="mr-cmt-cat" data-cat="소모품">소모품</button>
-              <button class="mr-cmt-cat" data-cat="기타">기타</button>
-            </div>
-          </div>
-          <textarea class="ta" id="mr-cmt-input" placeholder="특이사항·피드백·소모품 등 코멘트 작성..."></textarea>
-          <div class="send-row">
-            <div class="hint">상단 카테고리 선택 후 작성 · Ctrl+Enter로 등록</div>
-            <button class="send" onclick="mrPostComment()">＋ 코멘트 등록</button>
-          </div>
-        </div>
       </div>
       <div id="mr-detail-empty" style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.1);border-radius:14px;padding:50px 30px;text-align:center;color:#64748b;font-size:13px">
         좌측에서 안건을 선택하면 상세 내용과 코멘트가 표시됩니다
       </div>
     </div>
+
   </div>
   </div><!-- /mr-tab-cases -->
 
@@ -6999,11 +7044,16 @@ function mrRenderStats(){
   document.getElementById('mr-k-done').textContent = done;
   document.getElementById('mr-k-soon').textContent = soon;
   // 필터 뱃지
+  const news = all.filter(c=>c.status==='신규').length;
+  const ends = all.filter(c=>c.status==='종결').length;
   document.getElementById('mr-cnt-all').textContent = all.length;
   document.getElementById('mr-cnt-prog').textContent = prog;
   document.getElementById('mr-cnt-pend').textContent = pend;
   document.getElementById('mr-cnt-done').textContent = done;
   document.getElementById('mr-cnt-hold').textContent = hold;
+  const nNew = document.getElementById('mr-cnt-new'); if(nNew) nNew.textContent = news;
+  const nEnd = document.getElementById('mr-cnt-end'); if(nEnd) nEnd.textContent = ends;
+  const lc = document.getElementById('mr-list-cnt'); if(lc) lc.textContent = all.length+'건';
   // 카테고리 카드
   const grid = document.getElementById('mr-catgrid');
   // 제품별 그룹 (실제 등록된 제품 자동 추출)
@@ -7040,7 +7090,13 @@ function mrRenderCases(){
   const search = (document.getElementById('mr-search')?.value||'').toLowerCase();
   let list = MR_CASES.slice();
   if(MR_FILTER!=='all') list = list.filter(c=>c.status===MR_FILTER);
-  if(search) list = list.filter(c=>(c.client+c.prod+c.desc+(c.tags||[]).join(' ')).toLowerCase().includes(search));
+  if(search){
+    const terms = search.split(/\s+/).filter(t=>t);
+    list = list.filter(c=>{
+      const hay = (c.client+' '+(c.owner||'')+' '+(c.mgr||'')+' '+c.prod+' '+(c.desc||'')+' '+(c.tags||[]).join(' ')).toLowerCase();
+      return terms.every(t=>hay.includes(t));
+    });
+  }
   const html = list.map(c=>{
     const dueDT = c.due ? mrParseDT(c.due) : null;
     const startDT = c.startDate ? mrParseDT(c.startDate) : null;
@@ -7088,10 +7144,12 @@ function mrSelectCase(id){
   if(!c){
     document.getElementById('mr-detail').style.display='none';
     document.getElementById('mr-detail-empty').style.display='block';
+    const cm = document.getElementById('mr-detail-comments'); if(cm) cm.style.display='none';
     return;
   }
   document.getElementById('mr-detail').style.display='flex';
   document.getElementById('mr-detail-empty').style.display='none';
+  const cm = document.getElementById('mr-detail-comments'); if(cm) cm.style.display='flex';
   const days = c.due ? Math.floor((mrParseDT(c.due)-new Date())/(1000*60*60*24)) : null;
   let dueLabel;
   if(!c.due && !c.startDate) dueLabel='미정';
@@ -7725,9 +7783,9 @@ function mrSetupQuickActions(){
 
 function mrSetupFilters(){
   mrSetupQuickActions();
-  document.querySelectorAll('#mr-filters .mr-filt').forEach(b=>{
+  document.querySelectorAll('#mr-filters .mr-list-tg').forEach(b=>{
     b.addEventListener('click', ()=>{
-      document.querySelectorAll('#mr-filters .mr-filt').forEach(x=>x.classList.remove('on'));
+      document.querySelectorAll('#mr-filters .mr-list-tg').forEach(x=>x.classList.remove('on'));
       b.classList.add('on');
       MR_FILTER = b.dataset.f;
       mrRenderCases();
