@@ -1600,19 +1600,6 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
           <div class="mr-rr-list" id="mr-rr-list"></div>
         </div>
 
-        <!-- 사유 기록 버튼 영역 (보류/종결 상태에서만) -->
-        <div class="mr-neg-section" id="mr-neg-section" style="display:none">
-          <div class="mr-neg-title">사유 기록 <span class="mr-neg-sub">클릭 시 사유 선택 모달 열림</span></div>
-          <div class="mr-neg-grid">
-            <button class="mr-neg-btn" data-target="보류" data-from="예산 부족">예산 부족 <span class="dl">→ 보류</span></button>
-            <button class="mr-neg-btn" data-target="보류" data-from="무응답 / 연락 두절">무응답 / 연락 두절 <span class="dl">→ 보류</span></button>
-            <button class="mr-neg-btn" data-target="보류" data-from="검토 보류">검토 보류 <span class="dl">→ 보류</span></button>
-            <button class="mr-neg-btn" data-target="종결" data-from="거절 / 종결">거절 / 종결 <span class="dl">→ 종결</span></button>
-            <button class="mr-neg-btn" data-target="종결" data-from="경쟁사 선택">경쟁사 선택 <span class="dl">→ 종결</span></button>
-            <button class="mr-neg-btn" data-target="종결" data-from="기능 불일치">기능 불일치 <span class="dl">→ 종결</span></button>
-          </div>
-        </div>
-
         <!-- 실패 사유 픽커 -->
         <div class="mr-reason" id="mr-reason">
           <div class="rh">
@@ -7424,10 +7411,8 @@ function mrRenderRecordedReasons(c){
   mrEnsureCaseFields(c);
   const showStatus = (c.status==='보류' || c.status==='종결');
   const rrBox = document.getElementById('mr-recorded-reasons');
-  const negBox = document.getElementById('mr-neg-section');
-  if(!rrBox || !negBox) return;
+  if(!rrBox) return;
   rrBox.style.display = showStatus ? '' : 'none';
-  negBox.style.display = showStatus ? '' : 'none';
   if(!showStatus) return;
   document.getElementById('mr-rr-status-label').textContent = c.status+' 사유';
   document.getElementById('mr-rr-count').textContent = c.recordedReasons.length+'건';
@@ -7693,20 +7678,6 @@ function mrSetupFilters(){
       mrRenderStats();
       mrRenderCharts();
       showToast(`상태 → ${newStatus}`);
-    });
-  });
-  // 사유 기록 버튼 (보류/종결)
-  document.querySelectorAll('.mr-neg-btn').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      if(!MR_CURRENT_ID) return;
-      const target = b.dataset.target;
-      const preset = b.dataset.from;
-      mrOpenReasonPicker(target);
-      // preset 자동 선택
-      setTimeout(()=>{
-        const match = [...document.querySelectorAll('#mr-reason-grid .mr-rsn')].find(x=>x.dataset.r.includes(preset.split(' ')[0])||x.textContent.includes(preset));
-        if(match) match.classList.add('on');
-      }, 50);
     });
   });
   // 진행률 슬라이더 — 좌측 상태창에만 반영, 코멘트 자동 등록 X
