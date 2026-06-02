@@ -9,6 +9,8 @@
 <title>MSO 통합 관리 시스템</title>
 <link rel="icon" type="image/png" href="favicon.png?v=1">
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"></script>
@@ -959,7 +961,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-emp-actions .del:hover{background:rgba(239,68,68,.18);color:#fca5a5;border-color:rgba(239,68,68,.4)}
 
 /* 복수 등록 행 */
-.mr-emp-row{display:grid;grid-template-columns:1fr 130px 180px 32px;gap:8px;align-items:end;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px}
+.mr-emp-row{display:grid;grid-template-columns:1fr 100px 1.4fr 160px 32px;gap:8px;align-items:end;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px}
 @media(max-width:760px){.mr-emp-row{grid-template-columns:1fr 1fr;gap:6px}}
 .mr-emp-row label{font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.3px;display:block;margin-bottom:3px}
 .mr-emp-row input,.mr-emp-row select{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;padding:7px 10px;border-radius:7px;font-size:12px;font-family:inherit;transition:.15s}
@@ -982,6 +984,39 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-emp-bulkbar b{color:#fff;font-weight:800;margin:0 2px}
 .mr-emp-bulk-del{background:linear-gradient(135deg,#ef4444,#dc2626);border:none;color:#fff;padding:6px 12px;border-radius:7px;font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(239,68,68,.25);margin-left:auto}
 .mr-emp-bulk-clear{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:6px 12px;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* 구글 캘린더 연동 */
+.mr-gcal-card{background:linear-gradient(160deg,rgba(66,133,244,.06),rgba(15,157,88,.03));border:1px solid rgba(66,133,244,.2);border-radius:14px;padding:20px 22px;margin-top:12px}
+.mr-gcal-status-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:14px}
+.mr-gcal-status{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;color:#cbd5e1}
+.mr-gcal-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.mr-gcal-dot.connected{background:#34d399;box-shadow:0 0 10px #34d399}
+.mr-gcal-dot.disconnected{background:#94a3b8}
+.mr-gcal-status-text b{color:#fff}
+.mr-gcal-actions{display:flex;gap:7px;flex-wrap:wrap}
+.mr-gcal-btn-login{background:#fff;border:none;color:#202124;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.mr-gcal-btn-login::before{content:"";display:inline-block;width:14px;height:14px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%234285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="%2334a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="%23fbbc04" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="%23ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>') no-repeat center/contain}
+.mr-gcal-btn-login:hover{background:#f8f9fa}
+.mr-gcal-btn-logout,.mr-gcal-btn-test,.mr-gcal-btn-syncall{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:8px 13px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.mr-gcal-btn-test:hover{background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.4);color:#fff}
+.mr-gcal-btn-syncall:hover{background:rgba(52,211,153,.15);border-color:rgba(52,211,153,.4);color:#fff}
+.mr-gcal-btn-logout:hover{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:#fca5a5}
+
+.mr-gcal-fields{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:14px}
+@media(max-width:760px){.mr-gcal-fields{grid-template-columns:1fr}}
+.mr-gcal-fields .mr-fg input{font-family:'Inter',monospace;font-size:11.5px}
+
+.mr-gcal-options{padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:14px}
+.mr-gcal-opt-title{font-size:10.5px;font-weight:800;color:#64748b;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px}
+.mr-gcal-options .mr-alert{margin-bottom:6px}
+
+.mr-gcal-colormap{padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:14px}
+.mr-gcal-colors{display:flex;flex-wrap:wrap;gap:10px}
+.mr-gcal-color{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:#cbd5e1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);padding:5px 11px;border-radius:7px;font-weight:600}
+.mr-gcal-color i{display:inline-block;width:11px;height:11px;border-radius:50%;box-shadow:0 0 6px currentColor}
+
+.mr-gcal-info{display:flex;gap:20px;flex-wrap:wrap;font-size:11.5px;color:#94a3b8}
+.mr-gcal-info b{color:#fff;font-weight:700}
 
 </style>
 </head>
@@ -1574,6 +1609,61 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       <button class="mr-emp-bulk-clear" onclick="mrEmpClearChecked()">선택 해제</button>
     </div>
     <div class="mr-emp-list" id="mr-emp-list"></div>
+
+    <!-- 구글 캘린더 연동 -->
+    <div class="mr-sec" style="margin-top:30px">구글 캘린더 연동 · 공유 캘린더 자동 동기화</div>
+    <div class="mr-gcal-card">
+      <div class="mr-gcal-status-row">
+        <div class="mr-gcal-status" id="mr-gcal-status">
+          <span class="mr-gcal-dot disconnected"></span>
+          <span class="mr-gcal-status-text">연결되지 않음 — 로그인 필요</span>
+        </div>
+        <div class="mr-gcal-actions">
+          <button class="mr-gcal-btn-login" id="mr-gcal-btn-login" onclick="mrGCalLogin()">Google 로그인</button>
+          <button class="mr-gcal-btn-logout" id="mr-gcal-btn-logout" onclick="mrGCalLogout()" style="display:none">로그아웃</button>
+          <button class="mr-gcal-btn-test" id="mr-gcal-btn-test" onclick="mrGCalTest()" style="display:none">연동 테스트</button>
+          <button class="mr-gcal-btn-syncall" id="mr-gcal-btn-syncall" onclick="mrGCalSyncAll()" style="display:none">전체 동기화</button>
+        </div>
+      </div>
+
+      <div class="mr-gcal-fields">
+        <div class="mr-fg">
+          <label>OAuth 클라이언트 ID <span class="req">*</span><span class="hint">Google Cloud Console → Credentials</span></label>
+          <input type="text" id="mr-gcal-client-id" placeholder="예: 1234567890-abc.apps.googleusercontent.com" autocomplete="off">
+        </div>
+        <div class="mr-fg">
+          <label>공유 캘린더 ID <span class="req">*</span><span class="hint">Google Calendar 설정 → 캘린더 통합</span></label>
+          <input type="text" id="mr-gcal-calendar-id" autocomplete="off">
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button class="mr-btn mr-btn-ghost" onclick="mrGCalReset()">초기화</button>
+          <button class="mr-btn mr-btn-primary" onclick="mrGCalSaveConfig()">설정 저장</button>
+        </div>
+      </div>
+
+      <div class="mr-gcal-options" id="mr-gcal-options">
+        <div class="mr-gcal-opt-title">자동 동기화 옵션</div>
+        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-create" checked><span>안건 등록 시 캘린더에 추가</span></label>
+        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-update" checked><span>상태/진행률 변경 시 캘린더 이벤트 업데이트</span></label>
+        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-delete"><span>실패/보류 처리 시 캘린더 이벤트 삭제</span></label>
+        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-attendees" checked><span>담당자·관리자 이메일을 참석자로 추가 (자동 알림)</span></label>
+      </div>
+
+      <div class="mr-gcal-colormap">
+        <div class="mr-gcal-opt-title">제품별 색상 매핑 (캘린더 이벤트)</div>
+        <div class="mr-gcal-colors">
+          <div class="mr-gcal-color"><i style="background:#3f51b5"></i>시너젯 — 블루베리</div>
+          <div class="mr-gcal-color"><i style="background:#f5511d"></i>써마지 — 탠저린</div>
+          <div class="mr-gcal-color"><i style="background:#0b8043"></i>인텐스울트라 — 바질</div>
+          <div class="mr-gcal-color"><i style="background:#8e24aa"></i>기타 제품 — 그레이프</div>
+        </div>
+      </div>
+
+      <div class="mr-gcal-info" id="mr-gcal-info">
+        <div>마지막 동기화: <b id="mr-gcal-last-sync">없음</b></div>
+        <div>등록된 이벤트: <b id="mr-gcal-event-count">0</b>건</div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -6094,6 +6184,293 @@ let MR_CURRENT_ID = null;
 let MR_FILTER = 'all';
 let MR_SELECTED_CAT = 'med';
 
+// ═══════════════ 구글 캘린더 연동 ═══════════════
+const MR_GCAL_DEFAULT_CALENDAR = '3cdcb19598c4ab7644b56e65ff9eb22049efbc96e0e19c5db788f687b4af37b9@group.calendar.google.com';
+const MR_GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+const MR_GCAL_COLOR_MAP = { '시너젯':'9', '써마지':'6', '인텐스울트라':'10' }; // default 3 (grape)
+let MR_GCAL_TOKEN = null;
+let MR_GCAL_TOKEN_CLIENT = null;
+let MR_GCAL_GAPI_READY = false;
+let MR_GCAL_GIS_READY = false;
+let MR_GCAL_LAST_SYNC = '';
+let MR_GCAL_EVENT_COUNT = 0;
+
+function mrGCalLoadConfig(){
+  try{
+    const cfg = JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
+    document.getElementById('mr-gcal-client-id').value = cfg.clientId || '';
+    document.getElementById('mr-gcal-calendar-id').value = cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR;
+    ['create','update','delete','attendees'].forEach(k=>{
+      const el = document.getElementById('mr-gcal-opt-'+k);
+      if(el && cfg.opts && k in cfg.opts) el.checked = !!cfg.opts[k];
+    });
+    MR_GCAL_LAST_SYNC = cfg.lastSync || '없음';
+    MR_GCAL_EVENT_COUNT = cfg.eventCount || 0;
+    document.getElementById('mr-gcal-last-sync').textContent = MR_GCAL_LAST_SYNC;
+    document.getElementById('mr-gcal-event-count').textContent = MR_GCAL_EVENT_COUNT;
+  }catch(e){}
+}
+
+function mrGCalSaveConfig(){
+  const clientId = document.getElementById('mr-gcal-client-id').value.trim();
+  const calendarId = document.getElementById('mr-gcal-calendar-id').value.trim() || MR_GCAL_DEFAULT_CALENDAR;
+  const opts = {
+    create: document.getElementById('mr-gcal-opt-create').checked,
+    update: document.getElementById('mr-gcal-opt-update').checked,
+    delete: document.getElementById('mr-gcal-opt-delete').checked,
+    attendees: document.getElementById('mr-gcal-opt-attendees').checked
+  };
+  const cur = JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
+  localStorage.setItem('mr_gcal_cfg', JSON.stringify({...cur, clientId, calendarId, opts}));
+  showToast('설정 저장 완료');
+  mrGCalUpdateStatus();
+}
+
+function mrGCalReset(){
+  if(!confirm('OAuth 설정과 동기화 정보를 초기화할까요?')) return;
+  localStorage.removeItem('mr_gcal_cfg');
+  localStorage.removeItem('mr_gcal_token');
+  MR_GCAL_TOKEN = null;
+  mrGCalLoadConfig();
+  mrGCalUpdateStatus();
+  showToast('초기화 완료');
+}
+
+function mrGCalGetCfg(){
+  return JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
+}
+
+function mrGCalInitGAPI(){
+  if(typeof gapi==='undefined') return;
+  gapi.load('client', async ()=>{
+    await gapi.client.init({ discoveryDocs:['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'] });
+    MR_GCAL_GAPI_READY = true;
+    // 저장된 토큰 복원
+    try{
+      const saved = JSON.parse(localStorage.getItem('mr_gcal_token')||'null');
+      if(saved && saved.access_token && saved.expires_at > Date.now()){
+        MR_GCAL_TOKEN = saved;
+        gapi.client.setToken({access_token: saved.access_token});
+        mrGCalUpdateStatus();
+      }
+    }catch(e){}
+  });
+}
+
+function mrGCalInitGIS(){
+  if(typeof google==='undefined' || !google.accounts) return;
+  const cfg = mrGCalGetCfg();
+  if(!cfg.clientId) return;
+  MR_GCAL_TOKEN_CLIENT = google.accounts.oauth2.initTokenClient({
+    client_id: cfg.clientId,
+    scope: MR_GCAL_SCOPES,
+    callback: (resp)=>{
+      if(resp.error){ showToast('인증 실패: '+(resp.error_description||resp.error)); return; }
+      const expSec = resp.expires_in || 3600;
+      MR_GCAL_TOKEN = {
+        access_token: resp.access_token,
+        expires_at: Date.now() + (expSec*1000) - 60000
+      };
+      localStorage.setItem('mr_gcal_token', JSON.stringify(MR_GCAL_TOKEN));
+      if(gapi?.client) gapi.client.setToken({access_token: resp.access_token});
+      mrGCalUpdateStatus();
+      showToast('Google 로그인 성공');
+    }
+  });
+  MR_GCAL_GIS_READY = true;
+}
+
+function mrGCalLogin(){
+  const cfg = mrGCalGetCfg();
+  if(!cfg.clientId){ showToast('OAuth 클라이언트 ID를 먼저 입력하고 저장하세요'); return; }
+  if(!MR_GCAL_TOKEN_CLIENT) mrGCalInitGIS();
+  if(!MR_GCAL_TOKEN_CLIENT){ showToast('Google SDK 로딩 중... 잠시 후 다시 시도'); return; }
+  MR_GCAL_TOKEN_CLIENT.requestAccessToken({prompt: 'consent'});
+}
+
+function mrGCalLogout(){
+  if(MR_GCAL_TOKEN?.access_token && typeof google!=='undefined'){
+    google.accounts.oauth2.revoke(MR_GCAL_TOKEN.access_token, ()=>{});
+  }
+  MR_GCAL_TOKEN = null;
+  localStorage.removeItem('mr_gcal_token');
+  if(gapi?.client) gapi.client.setToken(null);
+  mrGCalUpdateStatus();
+  showToast('로그아웃 완료');
+}
+
+function mrGCalIsConnected(){
+  return MR_GCAL_TOKEN && MR_GCAL_TOKEN.expires_at > Date.now() && MR_GCAL_GAPI_READY;
+}
+
+function mrGCalUpdateStatus(){
+  const dot = document.querySelector('.mr-gcal-dot');
+  const text = document.querySelector('.mr-gcal-status-text');
+  const btnLogin = document.getElementById('mr-gcal-btn-login');
+  const btnLogout = document.getElementById('mr-gcal-btn-logout');
+  const btnTest = document.getElementById('mr-gcal-btn-test');
+  const btnSync = document.getElementById('mr-gcal-btn-syncall');
+  if(!dot) return;
+  const cfg = mrGCalGetCfg();
+  if(mrGCalIsConnected()){
+    dot.className = 'mr-gcal-dot connected';
+    text.innerHTML = `연동됨 — 캘린더 <b>${(cfg.calendarId||MR_GCAL_DEFAULT_CALENDAR).substring(0,18)}…</b>`;
+    btnLogin.style.display = 'none';
+    btnLogout.style.display = 'inline-flex';
+    btnTest.style.display = 'inline-flex';
+    btnSync.style.display = 'inline-flex';
+  } else {
+    dot.className = 'mr-gcal-dot disconnected';
+    if(!cfg.clientId){
+      text.innerHTML = '연결되지 않음 — <b>OAuth 클라이언트 ID 입력 후 저장</b>';
+    } else {
+      text.innerHTML = '연결되지 않음 — <b>Google 로그인 필요</b>';
+    }
+    btnLogin.style.display = 'inline-flex';
+    btnLogout.style.display = 'none';
+    btnTest.style.display = 'none';
+    btnSync.style.display = 'none';
+  }
+}
+
+function mrGCalBuildEvent(c){
+  const cfg = mrGCalGetCfg();
+  const startDT = c.startDate ? mrParseDT(c.startDate) : (c.due ? mrParseDT(c.due) : null);
+  const endDT = c.due ? mrParseDT(c.due) : startDT;
+  if(!startDT || !endDT) return null;
+  const startStr = mrHasTime(c.startDate||c.due) ? startDT.toISOString() : mrFmtDate(startDT);
+  const endStr = mrHasTime(c.due||c.startDate) ? endDT.toISOString() : mrFmtDate(endDT);
+  const statusEmoji = c.status==='완료'?'[완료] ':c.status==='실패'?'[실패] ':c.status==='보류'?'[보류] ':'';
+  const summary = `${statusEmoji}[${c.prod}] ${c.client} · ${c.type}`;
+  const lines = [
+    `거래처: ${c.client}`,
+    `제품: ${c.prod}`,
+    `유형: ${c.type}`,
+    `담당자: ${c.owner||'-'}`,
+    `관리자: ${c.mgr||'-'}`,
+    `상태: ${c.status}`,
+    `진행률: ${c.progress}%`
+  ];
+  if(c.tags?.length) lines.push(`태그: ${c.tags.join(', ')}`);
+  if(c.desc) lines.push('', '메모:', c.desc);
+  if(c.reasons?.length) lines.push('', `실패 사유: ${c.reasons.join(', ')}`);
+  lines.push('', `▶ 앱에서 보기: ${location.origin}${location.pathname}#case=${c.id}`);
+  const evt = {
+    summary,
+    description: lines.join('\n'),
+    colorId: MR_GCAL_COLOR_MAP[c.prod] || '3',
+    start: mrHasTime(c.startDate||c.due) ? {dateTime:startStr, timeZone:'Asia/Seoul'} : {date:startStr},
+    end:   mrHasTime(c.due||c.startDate) ? {dateTime:endStr,   timeZone:'Asia/Seoul'} : {date:endStr}
+  };
+  // 참석자
+  if(cfg.opts?.attendees){
+    const attendees = [];
+    if(c.owner){ const e = MR_EMPLOYEES.find(x=>x.name===c.owner && x.email); if(e) attendees.push({email:e.email}); }
+    if(c.mgr && c.mgr!==c.owner){ const e = MR_EMPLOYEES.find(x=>x.name===c.mgr && x.email); if(e) attendees.push({email:e.email}); }
+    if(attendees.length) evt.attendees = attendees;
+  }
+  return evt;
+}
+
+async function mrGCalCreate(c){
+  if(!mrGCalIsConnected()) return null;
+  const cfg = mrGCalGetCfg();
+  if(!cfg.opts?.create) return null;
+  try{
+    const evt = mrGCalBuildEvent(c);
+    if(!evt) return null;
+    const res = await gapi.client.calendar.events.insert({
+      calendarId: cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR,
+      resource: evt,
+      sendUpdates: cfg.opts.attendees ? 'all' : 'none'
+    });
+    c.gcalEventId = res.result.id;
+    mrGCalBumpSync('등록', 1);
+    return res.result.id;
+  } catch(e){ console.error('gcal create error', e); showToast('캘린더 등록 실패: '+(e.result?.error?.message||e.message)); return null; }
+}
+
+async function mrGCalUpdate(c){
+  if(!mrGCalIsConnected() || !c.gcalEventId) return false;
+  const cfg = mrGCalGetCfg();
+  if(!cfg.opts?.update) return false;
+  try{
+    const evt = mrGCalBuildEvent(c);
+    if(!evt) return false;
+    await gapi.client.calendar.events.patch({
+      calendarId: cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR,
+      eventId: c.gcalEventId,
+      resource: evt
+    });
+    mrGCalBumpSync('업데이트', 0);
+    return true;
+  } catch(e){ console.error('gcal update error', e); return false; }
+}
+
+async function mrGCalDelete(c){
+  if(!mrGCalIsConnected() || !c.gcalEventId) return false;
+  const cfg = mrGCalGetCfg();
+  if(!cfg.opts?.delete) return false;
+  try{
+    await gapi.client.calendar.events.delete({
+      calendarId: cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR,
+      eventId: c.gcalEventId
+    });
+    c.gcalEventId = null;
+    mrGCalBumpSync('삭제', -1);
+    return true;
+  } catch(e){ console.error('gcal delete error', e); return false; }
+}
+
+async function mrGCalSyncAll(){
+  if(!mrGCalIsConnected()){ showToast('Google 로그인 후 시도하세요'); return; }
+  if(!confirm(`${MR_CASES.length}건의 안건을 캘린더에 일괄 등록할까요? 이미 등록된 안건은 업데이트됩니다.`)) return;
+  let created=0, updated=0, failed=0;
+  for(const c of MR_CASES){
+    try{
+      if(c.gcalEventId){
+        const ok = await mrGCalUpdate(c);
+        if(ok) updated++; else failed++;
+      } else {
+        const id = await mrGCalCreate(c);
+        if(id) created++; else failed++;
+      }
+    } catch(e){ failed++; }
+  }
+  showToast(`동기화 완료 — 신규 ${created} · 업데이트 ${updated} · 실패 ${failed}`);
+}
+
+async function mrGCalTest(){
+  if(!mrGCalIsConnected()){ showToast('로그인 후 시도하세요'); return; }
+  const cfg = mrGCalGetCfg();
+  try{
+    const res = await gapi.client.calendar.calendars.get({calendarId: cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR});
+    showToast(`연동 OK — 캘린더 "${res.result.summary}"`);
+  } catch(e){
+    showToast('연동 실패: '+(e.result?.error?.message||e.message)+'  · 캘린더 ID와 권한을 확인하세요');
+  }
+}
+
+function mrGCalBumpSync(label, delta){
+  MR_GCAL_LAST_SYNC = new Date().toLocaleString('ko-KR');
+  MR_GCAL_EVENT_COUNT += delta;
+  if(MR_GCAL_EVENT_COUNT < 0) MR_GCAL_EVENT_COUNT = 0;
+  const cur = JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
+  localStorage.setItem('mr_gcal_cfg', JSON.stringify({...cur, lastSync:MR_GCAL_LAST_SYNC, eventCount:MR_GCAL_EVENT_COUNT}));
+  const lsEl = document.getElementById('mr-gcal-last-sync');
+  const ecEl = document.getElementById('mr-gcal-event-count');
+  if(lsEl) lsEl.textContent = MR_GCAL_LAST_SYNC;
+  if(ecEl) ecEl.textContent = MR_GCAL_EVENT_COUNT;
+}
+
+// 페이지 로드 시 SDK 초기화 시도
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    if(typeof gapi!=='undefined') mrGCalInitGAPI();
+    setTimeout(()=>{ if(typeof google!=='undefined') mrGCalInitGIS(); }, 500);
+  }, 1000);
+});
+
 // 사원 마스터 데이터 (관리자/담당자 단일 역할)
 const MR_POSITIONS = ['사원','주임','대리','과장','차장','부장','본부장'];
 let MR_EMPLOYEES = [
@@ -6110,6 +6487,7 @@ function mrEmpBuildRow(prefill){
   return `<div class="mr-emp-row" data-rowid="${id}">
     <div><label>이름</label><input type="text" class="r-name" placeholder="예: 정인호" value="${(prefill?.name||'').replace(/"/g,'&quot;')}"></div>
     <div><label>직급</label><select class="r-position">${posOpts}</select></div>
+    <div><label>구글 이메일 <span style="font-size:9px;color:#475569;font-weight:500">(캘린더 초대용)</span></label><input type="email" class="r-email" placeholder="example@gmail.com" value="${(prefill?.email||'').replace(/"/g,'&quot;')}"></div>
     <div><label>역할</label>
       <div class="mr-emp-row-role">
         <button type="button" class="manager${role==='manager'?' on':''}" data-r="manager">관리자</button>
@@ -6169,6 +6547,7 @@ function mrEmpSubmit(){
   const parsed = rows.map(r=>({
     name: (r.querySelector('.r-name').value||'').trim(),
     position: r.querySelector('.r-position').value,
+    email: (r.querySelector('.r-email')?.value||'').trim(),
     role: r.querySelector('.mr-emp-row-role button.on')?.dataset.r || 'manager'
   })).filter(r=>r.name);
   if(parsed.length===0){ showToast('이름을 1명 이상 입력하세요'); return; }
@@ -6255,6 +6634,7 @@ function mrRenderEmployees(){
     const roleLabel = e.role==='manager' ? '관리자' : '담당자';
     const first = e.name.charAt(0);
     const checked = MR_EMP_CHECKED.has(e.id);
+    const emailLine = e.email ? `<div style="font-size:10.5px;color:#94a3b8;margin-top:3px;font-family:monospace">${e.email}</div>` : '';
     return `<div class="mr-emp-card role-${e.role}${checked?' checked':''}">
       <div class="mr-emp-check" onclick="mrEmpToggleCheck(${e.id})" title="선택"></div>
       <div class="mr-emp-avt">${first}</div>
@@ -6264,6 +6644,7 @@ function mrRenderEmployees(){
           <span class="mr-emp-pos">${e.position}</span>
         </div>
         <span class="mr-emp-role-tag ${e.role}">${roleLabel}</span>
+        ${emailLine}
       </div>
       <div class="mr-emp-actions">
         <button class="edit" onclick="mrEmpEdit(${e.id})" title="수정">✎</button>
@@ -6348,7 +6729,7 @@ function mrSwitchTab(tab, el){
     const div = document.getElementById('mr-tab-'+t);
     if(div) div.style.display = (t===tab) ? '' : 'none';
   });
-  if(tab==='master') mrRenderEmployees();
+  if(tab==='master'){ mrRenderEmployees(); mrGCalLoadConfig(); mrGCalUpdateStatus(); }
   // nav-menu-report 메뉴 active 토글
   document.querySelectorAll('#nav-menu-report .nav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
@@ -6721,6 +7102,12 @@ function mrApplyAction(actKey, reasons, memo){
   mrRenderCharts();
   mrRenderFailAnalysis();
   showToast(`${def.label} 처리됨`);
+  // 구글 캘린더 업데이트 (또는 실패/보류 시 삭제 옵션)
+  if(c.status==='실패' || c.status==='보류'){
+    mrGCalDelete(c).then(deleted=>{ if(!deleted) mrGCalUpdate(c); });
+  } else {
+    mrGCalUpdate(c);
+  }
 }
 
 // 다음 액션
@@ -7051,6 +7438,8 @@ function mrSubmitCase(){
   mrRenderCharts();
   mrRenderCalendar();
   mrRenderFailAnalysis();
+  // 구글 캘린더 자동 등록
+  mrGCalCreate(newCase);
   showToast('안건 등록 완료');
 }
 
