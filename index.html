@@ -758,6 +758,25 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-case .crow2{display:flex;align-items:center;gap:14px;font-size:11.5px;color:#94a3b8;flex-wrap:wrap}
 .mr-case .crow2 .m{display:inline-flex;align-items:center;gap:5px}
 .mr-case .crow2 .m b{color:#cbd5e1;font-weight:700}
+.mr-case .crow2 .m.owner{color:#a5b4fc}
+.mr-case .crow2 .m.owner b{color:#c4b5fd}
+.mr-case-del{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#64748b;font-size:14px;font-weight:700;line-height:1;cursor:pointer;font-family:inherit;display:grid;place-items:center;opacity:0;transition:.18s;z-index:3}
+.mr-case:hover .mr-case-del{opacity:1}
+.mr-case-del:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.5);color:#fca5a5}
+
+/* 삭제 확인 모달 */
+.mr-confirm-mask{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.mr-confirm-mask.open{display:flex}
+.mr-confirm{background:linear-gradient(160deg,#1a2238,#0f172a);border:1px solid rgba(239,68,68,.35);border-radius:14px;padding:22px 24px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.mr-confirm .ic{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#ef4444,#dc2626);display:grid;place-items:center;color:#fff;font-size:22px;font-weight:900;margin-bottom:13px;box-shadow:0 8px 22px rgba(239,68,68,.4)}
+.mr-confirm h3{margin:0 0 8px 0;font-size:15px;font-weight:800;color:#fff}
+.mr-confirm p{margin:0 0 18px 0;font-size:12.5px;color:#cbd5e1;line-height:1.6}
+.mr-confirm .row{display:flex;gap:8px;justify-content:flex-end}
+.mr-confirm button{padding:8px 18px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;border:none}
+.mr-confirm .no{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1}
+.mr-confirm .no:hover{background:rgba(255,255,255,.1)}
+.mr-confirm .yes{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 6px 16px rgba(239,68,68,.35)}
+.mr-confirm .yes:hover{filter:brightness(1.08)}
 .mr-pg{display:inline-block;width:80px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;vertical-align:middle}
 .mr-pg>i{display:block;height:100%}
 .mr-pg>i.high{background:linear-gradient(90deg,#34d399,#10b981)}
@@ -1648,6 +1667,19 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     </div>
   </div>
   </div><!-- /mr-tab-cases -->
+
+  <!-- 안건 삭제 확인 모달 -->
+  <div class="mr-confirm-mask" id="mr-confirm-mask" onclick="if(event.target===this)mrCancelDelete()">
+    <div class="mr-confirm">
+      <div class="ic">!</div>
+      <h3 id="mr-confirm-title">안건을 삭제하시겠습니까?</h3>
+      <p>기록이 모두 지워지며 <b style="color:#fca5a5">복구할 수 없습니다.</b><br>정말 삭제하시겠습니까?</p>
+      <div class="row">
+        <button class="no" onclick="mrCancelDelete()">아니오</button>
+        <button class="yes" onclick="mrExecuteDelete()">삭제</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── 캘린더 탭 ── -->
   <div id="mr-tab-calendar" class="mr-tab" style="display:none">
@@ -7031,6 +7063,7 @@ function mrRenderCases(){
     const milDone = MR_MILESTONE_KEYS.filter(k=>c.milestones[k]).length;
     const warnMark = (c.status!=='완료' && c.status!=='종결' && dueDays!==null && dueDays<=3 && milDone<3) ? `<span style="font-size:10.5px;color:#fca5a5;font-weight:800;margin-left:4px">⚠</span>` : '';
     return `<div class="mr-case ${catCls} ${failCls} ${active}" onclick="mrSelectCase(${c.id})">
+      <button class="mr-case-del" onclick="event.stopPropagation();mrConfirmDeleteCase(${c.id})" title="안건 삭제">×</button>
       <div class="crow1">
         <span class="ctag">${catLabel}</span>
         <div class="ctitle">${c.client} · ${c.prod} ${c.type}${warnMark}<span class="mr-ms-dots">${milDots}</span></div>
@@ -7038,6 +7071,7 @@ function mrRenderCases(){
       </div>
       <div class="crow2">
         <span class="m"><b>${c.client}</b></span>
+        <span class="m owner">담당 <b>${c.owner||'-'}</b></span>
         <span class="m" ${dueStyle}>${dueLabel}</span>
         <span class="m"><span class="mr-pg"><i class="${pgClass}" style="width:${c.progress}%"></i></span> <b>${c.progress}%</b></span>
         <span class="m">코멘트 <b>${c.comments.length}</b></span>
@@ -7438,6 +7472,41 @@ function mrRenderRecordedReasons(c){
       ${memo}
     </div>`;
   }).join('');
+}
+
+let MR_PENDING_DELETE_ID = null;
+function mrConfirmDeleteCase(id){
+  const c = MR_CASES.find(x=>x.id===id);
+  if(!c) return;
+  MR_PENDING_DELETE_ID = id;
+  document.getElementById('mr-confirm-title').textContent = `[${c.client}] 안건을 삭제하시겠습니까?`;
+  document.getElementById('mr-confirm-mask').classList.add('open');
+}
+function mrCancelDelete(){
+  MR_PENDING_DELETE_ID = null;
+  document.getElementById('mr-confirm-mask').classList.remove('open');
+}
+function mrExecuteDelete(){
+  const id = MR_PENDING_DELETE_ID;
+  if(id==null){ mrCancelDelete(); return; }
+  const c = MR_CASES.find(x=>x.id===id);
+  // 구글 캘린더 이벤트도 삭제 시도
+  if(c && typeof mrGCalDelete==='function'){ try{ mrGCalDelete(c); }catch(e){} }
+  MR_CASES = MR_CASES.filter(x=>x.id!==id);
+  if(MR_CURRENT_ID===id){
+    MR_CURRENT_ID = MR_CASES.length ? MR_CASES[0].id : null;
+  }
+  mrCancelDelete();
+  mrRenderCases();
+  if(MR_CURRENT_ID) mrSelectCase(MR_CURRENT_ID);
+  else {
+    document.getElementById('mr-detail').style.display='none';
+    document.getElementById('mr-detail-empty').style.display='block';
+  }
+  mrRenderStats();
+  mrRenderCharts();
+  if(typeof mrRenderFailAnalysis==='function') mrRenderFailAnalysis();
+  showToast('안건이 삭제되었습니다');
 }
 
 function mrDeleteRecordedReason(idx){
