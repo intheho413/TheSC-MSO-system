@@ -613,6 +613,131 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 /* MSO 리포트 페이지 폭 확장 — 3분할 레이아웃 가시성 ↑ */
 #page-mso-report.page{max-width:1500px}
 
+/* ═════════════════════════════════════════════════════════════
+   📱 MOBILE — 1단계 (기반) + 2단계 (리포트)
+   ═════════════════════════════════════════════════════════════ */
+
+/* 모바일 햄버거 메뉴 + 슬라이드 메뉴 (768px 이하) */
+.mob-hamburger,.mob-menu-mask,.mob-menu,.mob-bottombar{display:none}
+
+@media (max-width:768px){
+  /* 데스크탑 사이드/탑 네비 일부 숨김 */
+  .topnav .nav-cats,.topnav .nav-menu,.topnav .nav-clock,.topnav .nav-caption,.topnav .nav-sep,.topnav .home-btn{display:none !important}
+  .topnav{padding:0 12px;justify-content:flex-start;gap:0;height:50px;position:sticky;top:0;z-index:90}
+  .topnav .nav-brand{flex:1;text-align:center;padding-left:0}
+  .topnav .nav-appname,.topnav .nav-appname-report{font-size:14.5px;font-weight:800}
+
+  /* 햄버거 버튼 */
+  .mob-hamburger{display:grid;place-items:center;width:38px;height:38px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:9px;color:#cbd5e1;cursor:pointer;flex-shrink:0}
+  .mob-hamburger:active{background:rgba(255,255,255,.1)}
+  .mob-hamburger svg{width:18px;height:18px}
+
+  /* 슬라이드 메뉴 마스크 */
+  .mob-menu-mask{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:998;opacity:0;visibility:hidden;transition:.25s}
+  .mob-menu-mask.open{opacity:1;visibility:visible}
+
+  /* 슬라이드 메뉴 본체 */
+  .mob-menu{display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;width:78%;max-width:300px;background:linear-gradient(180deg,#0f172a,#0a0e1a);border-right:1px solid rgba(255,255,255,.08);box-shadow:6px 0 26px rgba(0,0,0,.5);z-index:999;transform:translateX(-100%);transition:.28s cubic-bezier(.4,0,.2,1);padding-top:env(safe-area-inset-top,0)}
+  .mob-menu.open{transform:translateX(0)}
+  .mob-menu .mh-top{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between}
+  .mob-menu .mh-title{font-size:14.5px;font-weight:900;color:#fff;display:flex;align-items:center;gap:8px}
+  .mob-menu .mh-title .lg{font-size:9.5px;font-weight:800;color:#fff;background:linear-gradient(135deg,#a78bfa,#ec4899);padding:2px 6px;border-radius:4px}
+  .mob-menu .mh-close{width:30px;height:30px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:none;border-radius:7px;color:#cbd5e1;font-size:18px;cursor:pointer}
+  .mob-menu .mh-list{padding:8px 0;overflow-y:auto;flex:1}
+  .mob-menu .mh-li{padding:13px 18px;display:flex;align-items:center;gap:12px;font-size:13px;color:#cbd5e1;font-weight:600;cursor:pointer;transition:.15s;border:none;background:transparent;width:100%;text-align:left;font-family:inherit}
+  .mob-menu .mh-li:active{background:rgba(167,139,250,.1)}
+  .mob-menu .mh-li.on{background:linear-gradient(90deg,rgba(167,139,250,.18),transparent);color:#fff;font-weight:800;border-left:3px solid #a78bfa;padding-left:15px}
+  .mob-menu .mh-li .ic{width:20px;height:20px;color:#a5b4fc;flex-shrink:0;display:grid;place-items:center}
+  .mob-menu .mh-li .ic svg{width:18px;height:18px}
+  .mob-menu .mh-li.dis{opacity:.45;cursor:not-allowed}
+  .mob-menu .mh-li .pc-only{margin-left:auto;font-size:9.5px;color:#64748b;background:rgba(255,255,255,.05);padding:2px 6px;border-radius:4px}
+  .mob-menu .mh-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.08);font-size:10.5px;color:#64748b;line-height:1.55}
+
+  /* 하단 탭 바 (라인 아이콘 + 점) */
+  .mob-bottombar{display:flex;justify-content:space-around;align-items:center;position:fixed;bottom:0;left:0;right:0;padding:11px 0 calc(12px + env(safe-area-inset-bottom,0));background:rgba(10,14,26,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.06);z-index:80}
+  .mob-bottombar .it{position:relative;width:44px;height:44px;display:grid;place-items:center;color:#64748b;border:none;background:transparent;cursor:pointer;font-family:inherit;transition:color .2s}
+  .mob-bottombar .it svg{width:22px;height:22px}
+  .mob-bottombar .it.on{color:#fff}
+  .mob-bottombar .it.on::after{content:"";position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#a78bfa;box-shadow:0 0 10px #a78bfa}
+
+  /* 페이지 하단 여백 확보 (탭바 가림 방지) */
+  body{padding-bottom:74px}
+  .page{padding-bottom:14px}
+
+  /* 페이지 폭 풀 폭 */
+  .page,.home-wrap,#page-mso-report.page{max-width:100% !important;padding-left:12px;padding-right:12px}
+
+  /* 1단계 — 입력 폼 iOS 줌 방지 (16px) */
+  input[type=text],input[type=date],input[type=datetime-local],input[type=email],input[type=number],input[type=tel],input[type=password],input[type=search],textarea,select{font-size:16px !important}
+
+  /* 1단계 — :hover 전용 액션 → 항상 노출 (모바일) */
+  .mr-case-del,.cmt-actions,.mr-cmt .acts,.cmt-act{opacity:1 !important}
+  .mr-case .pen,.mr-detail .pen{opacity:.7 !important}
+
+  /* 1단계 — 터치 타깃 확대 */
+  .mr-case-del{width:32px !important;height:32px !important;font-size:18px !important}
+  .cmt-act{width:28px !important;height:28px !important}
+  .mr-case{padding:11px 12px 11px 16px !important}
+  .mr-cal-btn,.mr-cal-today{min-height:36px;min-width:36px}
+  button{min-height:32px}
+
+  /* MSO 리포트 페이지 헤더(앱 헤더용) 만들기 - topnav를 활용 */
+  .topnav .nav-appname{display:none}
+  .topnav .nav-appname-report{display:block}
+
+  /* 카테고리 화장품 버튼 숨김 (의료장비 단일) */
+  .topnav .nav-cats button{display:none}
+
+  /* ═══════════════════════
+     2단계 — 리포트 모바일
+     ═══════════════════════ */
+  /* KPI 5개 → 2×3 그리드 (마지막 마감임박은 풀폭) */
+  .mr-kpis{grid-template-columns:1fr 1fr !important;gap:8px}
+  .mr-kpi{padding:11px 13px}
+  .mr-kpi .v{font-size:24px}
+  .mr-kpi:nth-child(5){grid-column:span 2}
+
+  /* 차트 카드 세로 스택 + 적정 높이 */
+  .mr-row.b2{grid-template-columns:1fr !important}
+  .mr-card{padding:14px;min-height:auto}
+  .mr-card .h{font-size:12.5px}
+
+  /* 제품별 요약 카드 1열 그리드 */
+  .mr-catgrid{grid-template-columns:1fr !important;gap:8px}
+
+  /* 실패 분석 g2/g3 풀폭 */
+  .mr-g2,.mr-g3{grid-template-columns:1fr !important}
+
+  /* PPT 다운로드 한 줄 — 모바일 컴팩트 */
+  .mr-ppt-bar{flex-wrap:wrap;justify-content:stretch;gap:6px;margin-bottom:10px}
+  .mr-ppt-range{flex:1;min-width:0;padding:6px 9px}
+  .mr-ppt-range input{width:auto;flex:1;min-width:0}
+  .mr-ppt-preset-wrap{order:2}
+  .mr-ppt-dl{flex:1;justify-content:center;padding:7px 12px}
+  .mr-ppt-pop{width:280px}
+
+  /* MSO 리포트 탭 내비게이션은 하단 탭바가 대체하므로 숨김 */
+  .topnav .nav-menu{display:none}
+
+  /* 안건 관리 카드 리스트 (모바일 풀폭) */
+  .mr-row.b3-3col{grid-template-columns:1fr !important}
+  .mr-panel{min-height:auto}
+
+  /* 토스트 위로 (탭바 위) */
+  .toast{bottom:90px}
+  .mr-confirm-mask{z-index:1000}
+}
+
+/* 더 작은 폰 (480px 이하) — 추가 압축 */
+@media (max-width:480px){
+  .mr-kpi .v{font-size:21px}
+  .mr-kpi .l{font-size:9.5px}
+  .mr-kpi .d{font-size:9.5px}
+  .mr-card{padding:12px}
+  .mr-card .h{font-size:11.5px}
+  .topnav .nav-appname-report{font-size:13px}
+}
+
 /* PPT 다운로드 한 줄 (리포트 탭 최상단 우측 정렬) */
 .mr-ppt-bar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .mr-ppt-range{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);padding:5px 10px;border-radius:7px;font-size:11.5px;color:#cbd5e1}
@@ -1242,6 +1367,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 
 <!-- ── 상단 네비바 ── -->
 <nav class="topnav">
+  <button class="mob-hamburger" onclick="mobMenuToggle()" aria-label="메뉴">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
   <button class="home-btn" onclick="goHome()" title="홈으로 (ESC)" aria-label="홈으로">
     <svg viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M7 6L3 10l4 4"/>
@@ -6975,6 +7103,8 @@ function mrSwitchTab(tab, el){
   // nav-menu-report 메뉴 active 토글
   document.querySelectorAll('#nav-menu-report .nav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.classList.add('active');
+  // 📱 모바일 하단 탭/햄버거 메뉴 active 동기화
+  try{ mobSyncTabs(tab); }catch(e){}
   // 캘린더 진입 시 렌더
   if(tab==='calendar') mrRenderCalendar();
   // 차트는 페이지 보이기 후 한 번 더 리사이즈 (Plotly 그리드 고정 위함)
@@ -8489,6 +8619,120 @@ async function signSubmit(){
     alert('서명 저장 실패. 다시 시도해주세요. ('+res.status+')');
   }
 }
+
+// ═══ 📱 모바일 네비게이션 함수 ═══
+function mobMenuToggle(force){
+  const menu = document.getElementById('mob-menu');
+  const mask = document.getElementById('mob-menu-mask');
+  if(!menu||!mask) return;
+  const willOpen = (typeof force==='boolean') ? force : !menu.classList.contains('open');
+  menu.classList.toggle('open', willOpen);
+  mask.classList.toggle('open', willOpen);
+  menu.setAttribute('aria-hidden', willOpen?'false':'true');
+  document.body.style.overflow = willOpen ? 'hidden' : '';
+}
+// MSO 리포트 페이지 + 탭으로 이동 (햄버거 메뉴에서)
+function mobNavTo(page, tab){
+  mobMenuToggle(false);
+  if(page==='report'){
+    // MSO 리포트 페이지로 진입
+    if(typeof navigate==='function'){
+      // nav-menu-report 메뉴 진입 - "report" 카테고리의 navigate 호출
+      const ev = document.querySelector('#nav-menu-report .nav-item');
+      if(ev && typeof navigateToReport==='function') navigateToReport();
+      else {
+        // 직접 페이지 토글
+        document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+        const tgt = document.getElementById('page-mso-report');
+        if(tgt) tgt.style.display='';
+      }
+    }
+    setTimeout(()=>mrSwitchTab(tab, document.querySelector(`#nav-menu-report .nav-item:nth-child(${({'report':1,'cases':2,'calendar':3,'master':4})[tab]||1})`)), 50);
+  }
+}
+// 하단 탭바 클릭
+function mobBottomTab(tab){
+  if(tab==='menu'){ mobMenuToggle(true); return; }
+  // MSO 리포트 페이지가 아니면 먼저 진입
+  const reportPage = document.getElementById('page-mso-report');
+  if(reportPage && getComputedStyle(reportPage).display==='none'){
+    document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+    reportPage.style.display='';
+  }
+  mrSwitchTab(tab, document.querySelector(`#nav-menu-report .nav-item:nth-child(${({'report':1,'cases':2,'calendar':3})[tab]||1})`));
+  // Plotly 리사이즈
+  setTimeout(()=>{
+    try{
+      ['mr-chart-trend','mr-chart-donut','mr-chart-funnel','mr-chart-weekstack'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el && window.Plotly) Plotly.Plots.resize(el);
+      });
+    }catch(e){}
+  }, 200);
+}
+// 활성 탭/메뉴 시각 동기화
+function mobSyncTabs(activeTab){
+  document.querySelectorAll('#mob-bottombar .it').forEach(b=>b.classList.toggle('on', b.dataset.tab===activeTab));
+  document.querySelectorAll('#mob-menu .mh-li[data-nav]').forEach(b=>{
+    b.classList.toggle('on', b.dataset.nav==='report-'+activeTab);
+  });
+}
+// 페이지 로드 시 초기 동기화
+window.addEventListener('DOMContentLoaded', ()=>{
+  setTimeout(()=>mobSyncTabs('report'), 100);
+});
 </script>
+<!-- ═══ 📱 모바일 — 햄버거 메뉴 + 하단 탭바 ═══ -->
+<div class="mob-menu-mask" id="mob-menu-mask" onclick="mobMenuToggle(false)"></div>
+<aside class="mob-menu" id="mob-menu" aria-hidden="true">
+  <div class="mh-top">
+    <div class="mh-title">MSO <span class="lg">v2.0</span></div>
+    <button class="mh-close" onclick="mobMenuToggle(false)" aria-label="닫기">×</button>
+  </div>
+  <div class="mh-list">
+    <button class="mh-li on" data-nav="report-report" onclick="mobNavTo('report','report')">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
+      리포트
+    </button>
+    <button class="mh-li" data-nav="report-cases" onclick="mobNavTo('report','cases')">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="14" x2="16" y2="14"/></svg></span>
+      안건 관리
+    </button>
+    <button class="mh-li" data-nav="report-calendar" onclick="mobNavTo('report','calendar')">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+      캘린더
+    </button>
+    <button class="mh-li dis" onclick="showToast('PC에서 사용해주세요')">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg></span>
+      기초 관리 <span class="pc-only">PC 전용</span>
+    </button>
+    <div style="height:1px;background:rgba(255,255,255,.06);margin:8px 14px"></div>
+    <button class="mh-li" onclick="goHome();mobMenuToggle(false)">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg></span>
+      홈으로
+    </button>
+    <button class="mh-li dis" onclick="showToast('PC에서 설정 가능합니다')">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.65 1.65 0 0 0-1.8-.3 1.65 1.65 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.65 1.65 0 0 0-1-1.5 1.65 1.65 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.65 1.65 0 0 0 .3-1.8 1.65 1.65 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.65 1.65 0 0 0 1.5-1 1.65 1.65 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.65 1.65 0 0 0 1.8.3h0a1.65 1.65 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.65 1.65 0 0 0 1 1.5h0a1.65 1.65 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.65 1.65 0 0 0-.3 1.8v0a1.65 1.65 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.65 1.65 0 0 0-1.5 1z"/></svg></span>
+      설정 <span class="pc-only">PC 전용</span>
+    </button>
+  </div>
+  <div class="mh-foot">정인호 대리 · intheho413@gmail.com<br>TheSC-MSO v2.0</div>
+</aside>
+
+<nav class="mob-bottombar" id="mob-bottombar">
+  <button class="it on" data-tab="report" onclick="mobBottomTab('report')" aria-label="리포트">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg>
+  </button>
+  <button class="it" data-tab="cases" onclick="mobBottomTab('cases')" aria-label="안건">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="14" x2="16" y2="14"/></svg>
+  </button>
+  <button class="it" data-tab="calendar" onclick="mobBottomTab('calendar')" aria-label="캘린더">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  </button>
+  <button class="it" data-tab="menu" onclick="mobMenuToggle(true)" aria-label="메뉴">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</nav>
+
 </body>
 </html>
