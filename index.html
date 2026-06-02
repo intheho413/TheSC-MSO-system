@@ -6186,6 +6186,7 @@ let MR_SELECTED_CAT = 'med';
 
 // ═══════════════ 구글 캘린더 연동 ═══════════════
 const MR_GCAL_DEFAULT_CALENDAR = '3cdcb19598c4ab7644b56e65ff9eb22049efbc96e0e19c5db788f687b4af37b9@group.calendar.google.com';
+const MR_GCAL_DEFAULT_CLIENT_ID = '614321764934-f62ksk50pcut5g2t8p8ffe8v8lo4vnmp.apps.googleusercontent.com';
 const MR_GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar.events';
 const MR_GCAL_COLOR_MAP = { '시너젯':'9', '써마지':'6', '인텐스울트라':'10' }; // default 3 (grape)
 let MR_GCAL_TOKEN = null;
@@ -6197,8 +6198,15 @@ let MR_GCAL_EVENT_COUNT = 0;
 
 function mrGCalLoadConfig(){
   try{
-    const cfg = JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
-    document.getElementById('mr-gcal-client-id').value = cfg.clientId || '';
+    let cfg = JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
+    // 첫 로딩 시 기본 클라이언트 ID 자동 저장
+    if(!cfg.clientId){
+      cfg = {...cfg, clientId: MR_GCAL_DEFAULT_CLIENT_ID, calendarId: MR_GCAL_DEFAULT_CALENDAR};
+      localStorage.setItem('mr_gcal_cfg', JSON.stringify(cfg));
+      // GIS 클라이언트 재초기화
+      setTimeout(()=>{ if(typeof google!=='undefined') mrGCalInitGIS(); }, 200);
+    }
+    document.getElementById('mr-gcal-client-id').value = cfg.clientId || MR_GCAL_DEFAULT_CLIENT_ID;
     document.getElementById('mr-gcal-calendar-id').value = cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR;
     ['create','update','delete','attendees'].forEach(k=>{
       const el = document.getElementById('mr-gcal-opt-'+k);
