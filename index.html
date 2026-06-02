@@ -6199,11 +6199,15 @@ let MR_GCAL_EVENT_COUNT = 0;
 function mrGCalLoadConfig(){
   try{
     let cfg = JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
-    // 첫 로딩 시 기본 클라이언트 ID 자동 저장
-    if(!cfg.clientId){
+    // 기본 ID와 다르면 강제로 최신 기본값으로 덮어쓰기 (이전 잘못된 값 정리)
+    if(cfg.clientId !== MR_GCAL_DEFAULT_CLIENT_ID){
       cfg = {...cfg, clientId: MR_GCAL_DEFAULT_CLIENT_ID, calendarId: MR_GCAL_DEFAULT_CALENDAR};
       localStorage.setItem('mr_gcal_cfg', JSON.stringify(cfg));
+      // 이전 토큰도 폐기
+      localStorage.removeItem('mr_gcal_token');
+      MR_GCAL_TOKEN = null;
       // GIS 클라이언트 재초기화
+      MR_GCAL_TOKEN_CLIENT = null;
       setTimeout(()=>{ if(typeof google!=='undefined') mrGCalInitGIS(); }, 200);
     }
     document.getElementById('mr-gcal-client-id').value = cfg.clientId || MR_GCAL_DEFAULT_CLIENT_ID;
