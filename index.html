@@ -801,7 +801,25 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-cmt .who{font-size:12.5px;font-weight:700;color:#fff}
 .mr-cmt .role{font-size:10px;font-weight:600;color:#94a3b8;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px}
 .mr-cmt .time{font-size:10.5px;color:#64748b;margin-left:auto;font-weight:500}
+.mr-cmt{position:relative}
 .mr-cmt .body{font-size:12.5px;color:#cbd5e1;line-height:1.55}
+
+/* 코멘트 액션 아이콘 (우상단 항상 표시) */
+.mr-cmt .cmt-actions{position:absolute;top:6px;right:6px;display:flex;gap:2px;z-index:2}
+.mr-cmt .cmt-act{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);color:#94a3b8;width:18px;height:18px;border-radius:4px;cursor:pointer;font-family:inherit;display:grid;place-items:center;padding:0;transition:.15s}
+.mr-cmt .cmt-act:hover{background:rgba(255,255,255,.08);color:#fff}
+.mr-cmt .cmt-act.pin:hover{color:#fbbf24;border-color:rgba(251,191,36,.4)}
+.mr-cmt .cmt-act.pin.on{background:rgba(251,191,36,.18);color:#fbbf24;border-color:rgba(251,191,36,.4)}
+.mr-cmt .cmt-act.edit:hover{color:#93c5fd;border-color:rgba(96,165,250,.4)}
+.mr-cmt .cmt-act.del:hover{color:#fca5a5;border-color:rgba(239,68,68,.4)}
+.mr-cmt .cmt-act svg{display:block}
+.mr-cmt .ctop{padding-right:72px}
+/* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
+.mr-cmt .time{margin-right:0}
+
+/* 고정된 코멘트 */
+.mr-cmt.pinned{background:linear-gradient(160deg,rgba(251,191,36,.1),rgba(251,191,36,.02));border-color:rgba(251,191,36,.3)}
+.mr-cmt.pinned::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#fbbf24,#f59e0b);border-radius:11px 0 0 11px;box-shadow:0 0 8px #fbbf24}
 .mr-cmt .body b{color:#fff;font-weight:700}
 .mr-cmt .body .ment{color:#a5b4fc;font-weight:600}
 .mr-cmt.event .body{color:#fdba74}
@@ -812,7 +830,17 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-cmtinput .ta::placeholder{color:#475569}
 .mr-cmtinput .send-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .mr-cmtinput .hint{font-size:10.5px;color:#475569;font-weight:500}
-.mr-cmtinput .send{background:linear-gradient(135deg,#a78bfa,#ec4899);border:none;color:#fff;padding:6px 14px;border-radius:7px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.mr-cmtinput .send{background:linear-gradient(135deg,#a78bfa,#ec4899);border:none;color:#fff;padding:7px 16px;border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(167,139,250,.3)}
+.mr-cmtinput .send:hover{filter:brightness(1.1)}
+
+/* 중요 코멘트 등록 헤더 */
+.mr-cmt-header{margin-bottom:9px}
+.mr-cmt-title{font-size:10.5px;font-weight:800;color:#a5b4fc;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.mr-cmt-title::before{content:"";display:inline-block;width:3px;height:11px;border-radius:2px;background:linear-gradient(180deg,#a78bfa,#ec4899)}
+.mr-cmt-cats{display:flex;flex-wrap:wrap;gap:5px}
+.mr-cmt-cat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#94a3b8;padding:3px 9px;border-radius:5px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.mr-cmt-cat:hover{background:rgba(167,139,250,.14);color:#c4b5fd;border-color:rgba(167,139,250,.3)}
+.mr-cmt-cat.on{background:linear-gradient(135deg,#a78bfa,#ec4899);color:#fff;border-color:transparent;box-shadow:0 4px 10px rgba(167,139,250,.3)}
 
 /* 빠른 액션 / 다음 액션 / 실패 사유 / 인라인 편집 */
 .mr-qa-bar{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02)}
@@ -835,6 +863,69 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-qa-btn.pos .dl{background:rgba(52,211,153,.22);color:#6ee7b7}
 .mr-qa-btn.neg .dl{background:rgba(239,68,68,.22);color:#fca5a5}
 .mr-qa-btn.neu .dl{background:rgba(167,139,250,.22);color:#c4b5fd}
+
+/* 마일스톤 (긍정 진행) */
+.mr-milestone-section{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:linear-gradient(90deg,rgba(52,211,153,.06),transparent)}
+.mr-mil-title{font-size:10.5px;font-weight:800;color:#6ee7b7;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.mr-mil-title::before{content:"";display:inline-block;width:3px;height:11px;border-radius:2px;background:linear-gradient(180deg,#34d399,#10b981);box-shadow:0 0 6px #34d399}
+.mr-mil-count{font-size:10px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.08);padding:2px 8px;border-radius:99px;margin-left:auto}
+.mr-mil-progress{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.mr-mil-bar{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.mr-mil-bar>i{display:block;height:100%;background:linear-gradient(90deg,#34d399,#10b981);box-shadow:0 0 8px #34d399;transition:width .35s}
+.mr-mil-pct{font-size:11.5px;font-weight:900;color:#6ee7b7;min-width:42px;text-align:right}
+.mr-mil-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:7px}
+.mr-mil-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 11px;cursor:pointer;transition:.18s;position:relative;user-select:none}
+.mr-mil-item:hover{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3)}
+.mr-mil-item.done{background:linear-gradient(160deg,rgba(52,211,153,.16),rgba(52,211,153,.06));border-color:rgba(52,211,153,.45)}
+.mr-mil-suggest{position:absolute;top:6px;right:8px;font-size:9px;font-weight:700;color:#a5b4fc;background:rgba(167,139,250,.16);padding:1px 6px;border-radius:4px}
+.mr-mil-row{display:flex;align-items:center;gap:8px}
+.mr-mil-check{width:17px;height:17px;border-radius:5px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.18);flex-shrink:0;display:grid;place-items:center;transition:.18s}
+.mr-mil-item.done .mr-mil-check{background:linear-gradient(135deg,#34d399,#10b981);border-color:transparent}
+.mr-mil-item.done .mr-mil-check::after{content:"✓";color:#fff;font-size:11px;font-weight:900;line-height:1}
+.mr-mil-label{font-size:12px;font-weight:700;color:#cbd5e1}
+.mr-mil-item.done .mr-mil-label{color:#fff}
+.mr-mil-date{font-size:9.5px;color:#6ee7b7;font-weight:700;margin-top:4px;margin-left:25px;background:rgba(52,211,153,.12);padding:1px 7px;border-radius:4px;display:inline-block}
+
+/* 누적된 사유 */
+.mr-recorded-reasons{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:linear-gradient(160deg,rgba(239,68,68,.06),rgba(239,68,68,.01))}
+.mr-rr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.mr-rr-title{font-size:10.5px;font-weight:800;color:#fca5a5;letter-spacing:1.2px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.mr-rr-title::before{content:"";display:inline-block;width:3px;height:11px;border-radius:2px;background:linear-gradient(180deg,#ef4444,#dc2626);box-shadow:0 0 6px #ef4444}
+.mr-rr-cnt{font-size:10px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.08);padding:2px 7px;border-radius:99px}
+.mr-rr-add{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#fca5a5;padding:4px 11px;border-radius:6px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.mr-rr-add:hover{background:rgba(239,68,68,.25);color:#fff}
+.mr-rr-list{display:flex;flex-direction:column;gap:6px}
+.mr-rr-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:8px 10px}
+.mr-rr-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.mr-rr-when{font-size:10px;color:#94a3b8;font-weight:600}
+.mr-rr-stat{font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:4px}
+.mr-rr-stat.hold{background:rgba(245,158,11,.18);color:#fbbf24}
+.mr-rr-stat.end{background:rgba(239,68,68,.18);color:#fca5a5}
+.mr-rr-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+.mr-rr-chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(239,68,68,.14);color:#fca5a5}
+.mr-rr-chip.hold{background:rgba(245,158,11,.14);color:#fbbf24}
+.mr-rr-memo{font-size:11px;color:#cbd5e1;line-height:1.5;margin-top:3px}
+.mr-rr-del{background:transparent;border:none;color:#64748b;cursor:pointer;font-size:11px;padding:2px 5px;font-family:inherit}
+.mr-rr-del:hover{color:#fca5a5}
+
+/* 사유 기록 버튼 영역 */
+.mr-neg-section{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:linear-gradient(90deg,rgba(239,68,68,.06),transparent)}
+.mr-neg-title{font-size:10.5px;font-weight:800;color:#fca5a5;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.mr-neg-title::before{content:"";display:inline-block;width:3px;height:11px;border-radius:2px;background:linear-gradient(180deg,#ef4444,#dc2626);box-shadow:0 0 6px #ef4444}
+.mr-neg-sub{font-size:9.5px;font-weight:600;color:#64748b;text-transform:none;letter-spacing:0;margin-left:auto}
+.mr-neg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px}
+.mr-neg-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:7px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;gap:6px;transition:.15s;text-align:left}
+.mr-neg-btn:hover{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.4);color:#fff}
+.mr-neg-btn .dl{font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;background:rgba(239,68,68,.22);color:#fca5a5}
+
+/* 마감 임박 경고 배지 */
+.mr-warn-badge{position:absolute;top:14px;right:18px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:5px 11px;border-radius:8px;font-size:10.5px;font-weight:800;letter-spacing:.3px;box-shadow:0 6px 18px rgba(239,68,68,.4);animation:mr-warn-pulse 1.5s ease-in-out infinite;cursor:help;z-index:5}
+@keyframes mr-warn-pulse{0%,100%{box-shadow:0 6px 18px rgba(239,68,68,.4),0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 6px 18px rgba(239,68,68,.6),0 0 0 8px rgba(239,68,68,0)}}
+
+/* 안건 카드 마일스톤 도트 */
+.mr-ms-dots{display:inline-flex;gap:3px;align-items:center;margin-left:6px}
+.mr-ms-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.15)}
+.mr-ms-dot.on{background:#34d399;box-shadow:0 0 5px #34d399}
 
 /* 다음 액션 */
 .mr-next-act{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.07);background:linear-gradient(90deg,rgba(96,165,250,.06),transparent)}
@@ -1476,7 +1567,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
             <button data-s="컨펌 대기">컨펌 대기</button>
             <button class="complete" data-s="완료">완료</button>
             <button data-s="보류">보류</button>
-            <button class="fail" data-s="실패">실패</button>
+            <button class="fail" data-s="종결">종결</button>
           </div>
           <div class="mr-pgctl">
             <span class="pgl">진행률</span>
@@ -1485,34 +1576,40 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
           </div>
         </div>
 
-        <!-- 빠른 액션 -->
-        <div class="mr-qa-bar">
-          <div class="mr-qa-section">
-            <div class="mr-qa-title pos">긍정 진행</div>
-            <div class="mr-qa-grid">
-              <button class="mr-qa-btn pos" data-act="demo-done">데모 완료 <span class="dl">+20%</span></button>
-              <button class="mr-qa-btn pos" data-act="positive">긍정 피드백 <span class="dl">+15%</span></button>
-              <button class="mr-qa-btn pos" data-act="confirm-wait">컨펌 대기 <span class="dl">상태</span></button>
-              <button class="mr-qa-btn pos" data-act="delivered">납품 완료 <span class="dl">100%</span></button>
-            </div>
+        <!-- 마일스톤 (긍정 진행 - 달성 단계 체크) -->
+        <div class="mr-milestone-section">
+          <div class="mr-mil-title">긍정 진행 — 달성 단계 체크 <span class="mr-mil-count" id="mr-mil-count">0/4 달성</span></div>
+          <div class="mr-mil-progress">
+            <div class="mr-mil-bar"><i id="mr-mil-bar-fill" style="width:0%"></i></div>
+            <div class="mr-mil-pct" id="mr-mil-pct">0%</div>
           </div>
-          <div class="mr-qa-section">
-            <div class="mr-qa-title neg">부정 진행 · 실패 원인 기록</div>
-            <div class="mr-qa-grid">
-              <button class="mr-qa-btn neg" data-act="negative">부정 피드백 <span class="dl">-10%</span></button>
-              <button class="mr-qa-btn neg" data-act="reject">거절 / 종결 <span class="dl">실패</span></button>
-              <button class="mr-qa-btn neg" data-act="competitor">경쟁사 선택 <span class="dl">실패</span></button>
-              <button class="mr-qa-btn neg" data-act="budget">예산 부족 <span class="dl">보류</span></button>
-              <button class="mr-qa-btn neg" data-act="noresp">무응답 <span class="dl">보류</span></button>
-            </div>
+          <div class="mr-mil-grid" id="mr-mil-grid">
+            <div class="mr-mil-item" data-key="meeting" data-suggest="25"><span class="mr-mil-suggest">→ 25%</span><div class="mr-mil-row"><div class="mr-mil-check"></div><div class="mr-mil-label">미팅 완료</div></div></div>
+            <div class="mr-mil-item" data-key="demo" data-suggest="50"><span class="mr-mil-suggest">→ 50%</span><div class="mr-mil-row"><div class="mr-mil-check"></div><div class="mr-mil-label">데모 완료</div></div></div>
+            <div class="mr-mil-item" data-key="confirm" data-suggest="75"><span class="mr-mil-suggest">→ 75%</span><div class="mr-mil-row"><div class="mr-mil-check"></div><div class="mr-mil-label">컨펌 완료</div></div></div>
+            <div class="mr-mil-item" data-key="delivery" data-suggest="100" data-status="완료"><span class="mr-mil-suggest" style="background:rgba(52,211,153,.18);color:#6ee7b7">→ 완료 상태</span><div class="mr-mil-row"><div class="mr-mil-check"></div><div class="mr-mil-label">납품 완료</div></div></div>
           </div>
-          <div class="mr-qa-section">
-            <div class="mr-qa-title neu">중립 · 일반 액션</div>
-            <div class="mr-qa-grid">
-              <button class="mr-qa-btn neu" data-act="material">추가 자료 송부 <span class="dl">코멘트</span></button>
-              <button class="mr-qa-btn neu" data-act="meeting">후속 미팅 일정 <span class="dl">코멘트</span></button>
-              <button class="mr-qa-btn neu" data-act="handover">담당자 변경 요청 <span class="dl">상태</span></button>
-            </div>
+        </div>
+
+        <!-- 누적된 사유 (보류/종결 상태에서만) -->
+        <div class="mr-recorded-reasons" id="mr-recorded-reasons" style="display:none">
+          <div class="mr-rr-head">
+            <div class="mr-rr-title"><span id="mr-rr-status-label">종결 사유</span><span class="mr-rr-cnt" id="mr-rr-count">0건</span></div>
+            <button class="mr-rr-add" onclick="mrOpenReasonPicker(null)">+ 사유 추가</button>
+          </div>
+          <div class="mr-rr-list" id="mr-rr-list"></div>
+        </div>
+
+        <!-- 사유 기록 버튼 영역 (보류/종결 상태에서만) -->
+        <div class="mr-neg-section" id="mr-neg-section" style="display:none">
+          <div class="mr-neg-title">사유 기록 <span class="mr-neg-sub">클릭 시 사유 선택 모달 열림</span></div>
+          <div class="mr-neg-grid">
+            <button class="mr-neg-btn" data-target="보류" data-from="예산 부족">예산 부족 <span class="dl">→ 보류</span></button>
+            <button class="mr-neg-btn" data-target="보류" data-from="무응답 / 연락 두절">무응답 / 연락 두절 <span class="dl">→ 보류</span></button>
+            <button class="mr-neg-btn" data-target="보류" data-from="검토 보류">검토 보류 <span class="dl">→ 보류</span></button>
+            <button class="mr-neg-btn" data-target="종결" data-from="거절 / 종결">거절 / 종결 <span class="dl">→ 종결</span></button>
+            <button class="mr-neg-btn" data-target="종결" data-from="경쟁사 선택">경쟁사 선택 <span class="dl">→ 종결</span></button>
+            <button class="mr-neg-btn" data-target="종결" data-from="기능 불일치">기능 불일치 <span class="dl">→ 종결</span></button>
           </div>
         </div>
 
@@ -1542,10 +1639,19 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 
         <div class="mr-thread" id="mr-d-thread"></div>
         <div class="mr-cmtinput">
-          <textarea class="ta" id="mr-cmt-input" placeholder="진행 상황·특이사항 코멘트 작성... @멘션 지원"></textarea>
+          <div class="mr-cmt-header">
+            <div class="mr-cmt-title">코멘트 등록</div>
+            <div class="mr-cmt-cats">
+              <button class="mr-cmt-cat" data-cat="특이사항">특이사항</button>
+              <button class="mr-cmt-cat" data-cat="피드백">피드백</button>
+              <button class="mr-cmt-cat" data-cat="소모품">소모품</button>
+              <button class="mr-cmt-cat" data-cat="기타">기타</button>
+            </div>
+          </div>
+          <textarea class="ta" id="mr-cmt-input" placeholder="특이사항·피드백·소모품 등 코멘트 작성..."></textarea>
           <div class="send-row">
-            <div class="hint">Ctrl+Enter로 게시 · 상태 변경 시 자동 기록</div>
-            <button class="send" onclick="mrPostComment()">코멘트 등록</button>
+            <div class="hint">상단 카테고리 선택 후 작성 · Ctrl+Enter로 등록</div>
+            <button class="send" onclick="mrPostComment()">＋ 코멘트 등록</button>
           </div>
         </div>
       </div>
@@ -6352,7 +6458,7 @@ function mrGCalBuildEvent(c){
   if(!startDT || !endDT) return null;
   const startStr = mrHasTime(c.startDate||c.due) ? startDT.toISOString() : mrFmtDate(startDT);
   const endStr = mrHasTime(c.due||c.startDate) ? endDT.toISOString() : mrFmtDate(endDT);
-  const statusEmoji = c.status==='완료'?'[완료] ':c.status==='실패'?'[실패] ':c.status==='보류'?'[보류] ':'';
+  const statusEmoji = c.status==='완료'?'[완료] ':c.status==='종결'?'[실패] ':c.status==='보류'?'[보류] ':'';
   const summary = `${statusEmoji}[${c.prod}] ${c.client} · ${c.type}`;
   const lines = [
     `거래처: ${c.client}`,
@@ -6924,16 +7030,23 @@ function mrRenderCases(){
     const dueLabel = c.status==='완료' ? '판매완료' : (days===null ? '미정' : (rangeLabel ? `${rangeLabel} (D${days>=0?'-':'+'}${Math.abs(days)})` : (days<0 ? '경과 '+(-days)+'일' : 'D-'+days)));
     const dueStyle = (days!==null && days>=0 && days<=7 && c.status!=='완료') ? 'style="color:#fca5a5"' : '';
     const pgClass = c.progress>=70?'high':(c.progress>=40?'mid':'low');
-    const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='실패'?'mr-st-6':'mr-st-5';
+    const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='종결'?'mr-st-6':'mr-st-5';
     const catCls = c.cat==='med' ? 'k1' : 'k2';
     const catLabel = c.cat==='med' ? '의료장비' : '화장품';
     const active = c.id===MR_CURRENT_ID ? 'active' : '';
-    const failCls = c.status==='실패' ? 'fail' : '';
-    const reasonRow = (c.status==='실패' && c.reasons?.length) ? `<span class="m reason">사유: <b>${c.reasons.slice(0,2).join(', ')}${c.reasons.length>2?' +'+(c.reasons.length-2):''}</b></span>` : '';
+    const failCls = c.status==='종결' ? 'fail' : '';
+    mrEnsureCaseFields(c);
+    const recReasons = (c.recordedReasons||[]).flatMap(r=>r.reasons||[]);
+    const allReasons = [...(c.reasons||[]), ...recReasons];
+    const reasonRow = ((c.status==='종결'||c.status==='보류') && allReasons.length) ? `<span class="m reason">사유: <b>${allReasons.slice(0,2).join(', ')}${allReasons.length>2?' +'+(allReasons.length-2):''}</b></span>` : '';
+    const milDots = MR_MILESTONE_KEYS.map(k=>`<span class="mr-ms-dot ${c.milestones[k]?'on':''}"></span>`).join('');
+    const dueDays = c.due ? Math.floor((mrParseDT(c.due)-new Date())/(1000*60*60*24)) : null;
+    const milDone = MR_MILESTONE_KEYS.filter(k=>c.milestones[k]).length;
+    const warnMark = (c.status!=='완료' && c.status!=='종결' && dueDays!==null && dueDays<=3 && milDone<3) ? `<span style="font-size:10.5px;color:#fca5a5;font-weight:800;margin-left:4px">⚠</span>` : '';
     return `<div class="mr-case ${catCls} ${failCls} ${active}" onclick="mrSelectCase(${c.id})">
       <div class="crow1">
         <span class="ctag">${catLabel}</span>
-        <div class="ctitle">${c.client} · ${c.prod} ${c.type}</div>
+        <div class="ctitle">${c.client} · ${c.prod} ${c.type}${warnMark}<span class="mr-ms-dots">${milDots}</span></div>
         <span class="stp ${statClass}">${c.status}</span>
       </div>
       <div class="crow2">
@@ -6970,7 +7083,7 @@ function mrSelectCase(id){
     dueLabel = (sLabel && eLabel ? sLabel+' ~ '+eLabel : (sLabel||eLabel)) + ddayLabel;
   }
   const catLabel = c.cat==='med' ? '의료장비' : '화장품';
-  const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='실패'?'mr-st-6':'mr-st-5';
+  const statClass = c.status==='신규'?'mr-st-1':c.status==='진행 중'?'mr-st-2':c.status==='컨펌 대기'?'mr-st-3':c.status==='완료'?'mr-st-4':c.status==='종결'?'mr-st-6':'mr-st-5';
   const catTagCls = c.cat==='med' ? 'background:rgba(96,165,250,.15);color:#93c5fd' : 'background:rgba(236,72,153,.15);color:#fbcfe8';
   document.getElementById('mr-d-title-row').innerHTML = `
     <span class="ctag" style="font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:5px;${catTagCls}">${catLabel}</span>
@@ -6987,40 +7100,190 @@ function mrSelectCase(id){
   document.querySelectorAll('#mr-statbtns button').forEach(b=>{
     b.classList.toggle('on', b.dataset.s===c.status);
   });
+  // 빠른 액션 필터 — 현재 상태에 맞는 액션만 노출
+  if(document.querySelector('.mr-qa-bar')) mrFilterQuickActions(c.status);
   // 진행률
   document.getElementById('mr-d-pg').value = c.progress;
   document.getElementById('mr-d-pg-val').textContent = c.progress+'%';
-  // 코멘트 스레드
+  // 코멘트 스레드 — 각 코멘트에 id 부여 + 고정된 코멘트는 상단으로
+  c.comments.forEach((cm,i)=>{ if(cm.cid===undefined) cm.cid = i+1+Date.now(); });
+  const sorted = c.comments.slice().sort((a,b)=>{
+    if((a.pinned?1:0) !== (b.pinned?1:0)) return (b.pinned?1:0)-(a.pinned?1:0);
+    return 0;
+  });
   const th = document.getElementById('mr-d-thread');
-  th.innerHTML = c.comments.map(cm=>{
+  th.innerHTML = sorted.map(cm=>{
     const evCls = cm.event==='complete' ? 'event complete' : (cm.event ? 'event' : '');
     const icon = cm.event==='created' ? '＋' : cm.event==='progress' ? '▴' : cm.event==='complete' ? '●' : '';
-    return `<div class="mr-cmt ${evCls}">
+    const pinned = cm.pinned ? 'pinned' : '';
+    return `<div class="mr-cmt ${evCls} ${pinned}" data-cid="${cm.cid}">
+      <div class="cmt-actions">
+        <button class="cmt-act pin ${cm.pinned?'on':''}" onclick="mrTogglePin(${cm.cid})" title="${cm.pinned?'고정 해제':'상단 고정'}">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24z"/></svg>
+        </button>
+        <button class="cmt-act edit" onclick="mrEditComment(${cm.cid})" title="수정">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="cmt-act del" onclick="mrDeleteComment(${cm.cid})" title="삭제">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
       <div class="ctop"><span class="who">${cm.who}</span><span class="role">${cm.role}</span><span class="time">${cm.time}</span></div>
       <div class="body">${icon?`<span style="margin-right:4px">${icon}</span>`:''}${cm.body}</div>
     </div>`;
   }).join('');
   // 자동 스크롤 끝
   setTimeout(()=>{th.scrollTop = th.scrollHeight;}, 50);
+  // 마일스톤 + 사유 기록 렌더
+  mrRenderMilestones(c);
+  mrRenderRecordedReasons(c);
+  mrRenderWarningBadge(c);
   // 리스트 active
   mrRenderCases();
 }
 
+// 마감 임박 + 마일스톤 미달성 경고 배지
+function mrRenderWarningBadge(c){
+  const dh = document.querySelector('#mr-detail .dh');
+  if(!dh) return;
+  let badge = document.getElementById('mr-warn-badge');
+  mrEnsureCaseFields(c);
+  const days = c.due ? Math.floor((mrParseDT(c.due)-new Date())/(1000*60*60*24)) : null;
+  const milDone = MR_MILESTONE_KEYS.filter(k=>c.milestones[k]).length;
+  const danger = (c.status!=='완료' && c.status!=='종결' && days!==null && days<=3 && milDone<3);
+  if(danger){
+    if(!badge){
+      badge = document.createElement('div');
+      badge.id = 'mr-warn-badge';
+      badge.className = 'mr-warn-badge';
+      badge.title = '마감 임박 + 마일스톤 미달성';
+      dh.style.position = 'relative';
+      dh.appendChild(badge);
+    }
+    badge.textContent = `⚠ 임박 ${milDone}/4`;
+  } else if(badge){
+    badge.remove();
+  }
+}
+
+// 코멘트 액션 ────────────────────────────────────
+function mrTogglePin(cid){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const cm = c.comments.find(x=>x.cid===cid);
+  if(!cm) return;
+  cm.pinned = !cm.pinned;
+  mrSelectCase(c.id);
+  showToast(cm.pinned ? '코멘트 상단 고정됨' : '고정 해제됨');
+}
+
+function mrDeleteComment(cid){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const cm = c.comments.find(x=>x.cid===cid);
+  if(!cm) return;
+  if(!confirm('이 코멘트를 삭제할까요?')) return;
+  c.comments = c.comments.filter(x=>x.cid!==cid);
+  mrSelectCase(c.id);
+  mrRenderStats();
+  showToast('코멘트 삭제됨');
+}
+
+function mrEditComment(cid){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  const cm = c.comments.find(x=>x.cid===cid);
+  if(!cm) return;
+  // 카테고리 태그 [xxx]를 본문에서 분리
+  let raw = cm.body || '';
+  let cat = cm.category || null;
+  let plain = raw.replace(/<b[^>]*>\[([^\]]+)\]<\/b>\s*/, '').replace(/<[^>]+>/g,'');
+  // 본문 영역을 인라인 편집 UI로 교체
+  const cmtEl = document.querySelector(`.mr-cmt[data-cid="${cid}"]`);
+  if(!cmtEl) return;
+  const bodyEl = cmtEl.querySelector('.body');
+  if(!bodyEl) return;
+  const originalHTML = bodyEl.innerHTML;
+  const catLabel = cat ? `<span style="font-size:10px;font-weight:800;color:#c4b5fd;background:rgba(167,139,250,.18);padding:2px 7px;border-radius:4px;margin-bottom:5px;display:inline-block">[${cat}]</span>` : '';
+  bodyEl.innerHTML = `${catLabel}
+    <textarea class="cmt-edit-ta" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(167,139,250,.5);color:#fff;padding:7px 9px;border-radius:7px;font-size:12.5px;font-family:inherit;resize:vertical;min-height:50px;line-height:1.55;outline:none;margin-top:5px">${plain.replace(/</g,'&lt;')}</textarea>
+    <div style="display:flex;justify-content:flex-end;gap:5px;margin-top:6px">
+      <button class="cmt-edit-cancel" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1;padding:4px 11px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">취소</button>
+      <button class="cmt-edit-save" style="background:linear-gradient(135deg,#34d399,#10b981);border:none;color:#fff;padding:4px 13px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">저장</button>
+    </div>`;
+  const ta = bodyEl.querySelector('.cmt-edit-ta');
+  ta.focus();
+  ta.setSelectionRange(plain.length, plain.length);
+  // 저장
+  bodyEl.querySelector('.cmt-edit-save').addEventListener('click', ()=>{
+    const txt = (ta.value||'').trim();
+    if(!txt){ showToast('내용을 입력하세요'); return; }
+    const finalLabel = cat ? `<b style="color:#c4b5fd">[${cat}]</b> ` : '';
+    cm.body = finalLabel + txt.replace(/@(\S+)/g,'<span class="ment">@$1</span>');
+    cm.edited = true;
+    mrSelectCase(c.id);
+    showToast('코멘트 수정됨');
+  });
+  // 취소
+  bodyEl.querySelector('.cmt-edit-cancel').addEventListener('click', ()=>{
+    bodyEl.innerHTML = originalHTML;
+  });
+  // Esc 취소 / Ctrl+Enter 저장
+  ta.addEventListener('keydown', e=>{
+    if(e.key==='Escape'){ bodyEl.innerHTML = originalHTML; }
+    if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); bodyEl.querySelector('.cmt-edit-save').click(); }
+  });
+}
+
 // 빠른 액션 정의
 const MR_QA = {
-  'demo-done':    {label:'데모 완료',          progressDelta:+20, statusTo:'진행 중', commentText:'데모 완료'},
-  'positive':     {label:'긍정 피드백',         progressDelta:+15, commentText:'긍정 피드백 수신'},
-  'confirm-wait': {label:'컨펌 대기',           statusTo:'컨펌 대기', commentText:'컨펌 대기 상태로 전환'},
-  'delivered':    {label:'납품 완료',           progressTo:100, statusTo:'완료', commentText:'납품 완료 처리', event:'complete'},
-  'negative':     {label:'부정 피드백',         progressDelta:-10, needsReason:true, reasonType:'부정 피드백'},
-  'reject':       {label:'거절 / 종결',         statusTo:'실패', progressTo:0, needsReason:true, reasonType:'거절·종결'},
-  'competitor':   {label:'경쟁사 선택',         statusTo:'실패', needsReason:true, reasonType:'경쟁사 선택', presetReason:'경쟁사 선택'},
+  'demo-done':    {label:'데모 완료',          statusTo:'진행 중'},
+  'positive':     {label:'긍정 피드백'},
+  'confirm-wait': {label:'컨펌 대기',           statusTo:'컨펌 대기'},
+  'delivered':    {label:'납품 완료',           statusTo:'완료', event:'complete'},
+  'negative':     {label:'부정 피드백',         needsReason:true, reasonType:'부정 피드백'},
+  'reject':       {label:'거절 / 종결',         statusTo:'종결', needsReason:true, reasonType:'거절·종결'},
+  'competitor':   {label:'경쟁사 선택',         statusTo:'종결', needsReason:true, reasonType:'경쟁사 선택', presetReason:'경쟁사 선택'},
   'budget':       {label:'예산 부족',           statusTo:'보류', needsReason:true, reasonType:'예산 부족', presetReason:'가격 (예산 부족)'},
-  'noresp':       {label:'무응답 / 연락 두절', statusTo:'보류', needsReason:true, reasonType:'무응답', presetReason:'의사결정 보류'},
-  'material':     {label:'추가 자료 송부',      commentText:'추가 자료 송부 완료'},
-  'meeting':      {label:'후속 미팅 일정',      commentText:'후속 미팅 일정 잡음'},
-  'handover':     {label:'담당자 변경 요청',    commentText:'담당자 변경 요청'}
+  'noresp':       {label:'무응답 / 연락 두절', statusTo:'보류', needsReason:true, reasonType:'무응답', presetReason:'의사결정 보류'}
 };
+
+// 상태별 표시 액션 (각 상태에서 다음으로 갈 만한 액션만)
+const STATUS_NEXT_ACTIONS = {
+  '신규':      ['demo-done','negative','reject','noresp'],
+  '진행 중':    ['demo-done','positive','confirm-wait','negative','budget','reject'],
+  '컨펌 대기':  ['delivered','positive','negative','competitor','reject','noresp'],
+  '완료':      [],  // 종결
+  '보류':      ['positive','demo-done','reject'],
+  '종결':      []   // 종결
+};
+
+function mrFilterQuickActions(status){
+  const allowed = STATUS_NEXT_ACTIONS[status] || [];
+  document.querySelectorAll('.mr-qa-btn').forEach(b=>{
+    const act = b.dataset.act;
+    b.style.display = allowed.includes(act) ? '' : 'none';
+  });
+  // 섹션 헤더는 가시 버튼이 있을 때만 표시
+  document.querySelectorAll('.mr-qa-section').forEach(s=>{
+    const visible = [...s.querySelectorAll('.mr-qa-btn')].some(b=>b.style.display!=='none');
+    s.style.display = visible ? '' : 'none';
+  });
+  // 종결 상태이면 안내 메시지
+  const qaBar = document.querySelector('.mr-qa-bar');
+  let endTip = document.getElementById('mr-qa-end-tip');
+  if(allowed.length===0){
+    if(!endTip){
+      endTip = document.createElement('div');
+      endTip.id = 'mr-qa-end-tip';
+      endTip.style.cssText = 'padding:10px 14px;color:#64748b;font-size:11.5px;text-align:center;font-weight:600';
+      qaBar.appendChild(endTip);
+    }
+    endTip.textContent = status==='완료' ? '안건이 완료되었습니다 — 추가 액션 없음' : '안건이 종결되었습니다 — 추가 액션 없음';
+  } else if(endTip){
+    endTip.remove();
+  }
+}
 
 const MR_REASONS = [
   {key:'가격 (예산 부족)',    desc:'예산 부족 · 견적 차이'},
@@ -7056,7 +7319,7 @@ function mrOpenReason(def){
   const grid = document.getElementById('mr-reason-grid');
   grid.innerHTML = MR_REASONS.map(r=>`<button class="mr-rsn ${def.presetReason===r.key?'on':''}" data-r="${r.key}">${r.key}<div style="font-size:10px;color:#94a3b8;font-weight:500;margin-top:2px">${r.desc}</div></button>`).join('');
   grid.querySelectorAll('.mr-rsn').forEach(b=>b.addEventListener('click', ()=>b.classList.toggle('on')));
-  document.getElementById('mr-reason-confirm').textContent = def.statusTo==='실패' ? '실패 처리 + 사유 기록' : (def.statusTo==='보류' ? '보류 처리 + 사유 기록' : '사유 기록');
+  document.getElementById('mr-reason-confirm').textContent = def.statusTo==='종결' ? '실패 처리 + 사유 기록' : (def.statusTo==='보류' ? '보류 처리 + 사유 기록' : '사유 기록');
   box.classList.add('open');
   box.scrollIntoView({behavior:'smooth', block:'center'});
 }
@@ -7075,39 +7338,168 @@ function mrConfirmReason(){
   mrCloseReason();
 }
 
+// ─── 마일스톤 + 사유 기록 통합 ──────────────────────────────────
+const MR_MILESTONE_KEYS = ['meeting','demo','confirm','delivery'];
+const MR_MILESTONE_LABELS = {meeting:'미팅 완료', demo:'데모 완료', confirm:'컨펌 완료', delivery:'납품 완료'};
+const STATUS_PROGRESS = {'완료':100, '보류':30, '종결':0};
+
+function mrEnsureCaseFields(c){
+  if(!c.milestones) c.milestones = {meeting:null, demo:null, confirm:null, delivery:null};
+  if(!c.recordedReasons) c.recordedReasons = [];
+}
+
+function mrToggleMilestone(key){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  mrEnsureCaseFields(c);
+  if(c.milestones[key]){
+    c.milestones[key] = null;
+  } else {
+    c.milestones[key] = {date: new Date().toISOString().slice(0,10)};
+    // 납품 완료 → 상태 자동 완료
+    if(key==='delivery'){
+      c.status='완료'; c.progress=100;
+    } else {
+      // 자동 진행률 제안 적용
+      const suggest = {meeting:25, demo:50, confirm:75}[key];
+      if(suggest && c.progress < suggest) c.progress = suggest;
+    }
+  }
+  mrSelectCase(c.id);
+  mrRenderStats();
+  mrRenderCharts();
+}
+
+function mrRenderMilestones(c){
+  mrEnsureCaseFields(c);
+  const grid = document.getElementById('mr-mil-grid');
+  if(!grid) return;
+  let done = 0;
+  MR_MILESTONE_KEYS.forEach(k=>{
+    const el = grid.querySelector(`.mr-mil-item[data-key="${k}"]`);
+    if(!el) return;
+    const isDone = !!c.milestones[k];
+    if(isDone) done++;
+    el.classList.toggle('done', isDone);
+    el.onclick = ()=>mrToggleMilestone(k);
+    // 날짜 표시
+    let dateEl = el.querySelector('.mr-mil-date');
+    if(isDone){
+      if(!dateEl){
+        dateEl = document.createElement('div');
+        dateEl.className = 'mr-mil-date';
+        el.appendChild(dateEl);
+      }
+      dateEl.textContent = c.milestones[k].date;
+    } else if(dateEl){
+      dateEl.remove();
+    }
+  });
+  const total = MR_MILESTONE_KEYS.length;
+  const pct = Math.round(done/total*100);
+  document.getElementById('mr-mil-count').textContent = `${done}/${total} 달성`;
+  document.getElementById('mr-mil-pct').textContent = pct+'%';
+  document.getElementById('mr-mil-bar-fill').style.width = pct+'%';
+}
+
+function mrOpenReasonPicker(targetStatus){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c) return;
+  // 현재 상태가 보류/종결이 아니면 targetStatus 적용 의도
+  const goal = targetStatus || (c.status==='종결'?'종결':(c.status==='보류'?'보류':'보류'));
+  MR_PENDING_ACT = '__reason_record__';
+  MR_PENDING_TARGET = goal;
+  const box = document.getElementById('mr-reason');
+  document.getElementById('mr-reason-title').textContent = `${goal} — 사유 선택`;
+  document.getElementById('mr-reason-memo').value = '';
+  const grid = document.getElementById('mr-reason-grid');
+  grid.innerHTML = MR_REASONS.map(r=>`<button class="mr-rsn" data-r="${r.key}">${r.key}<div style="font-size:10px;color:#94a3b8;font-weight:500;margin-top:2px">${r.desc}</div></button>`).join('');
+  grid.querySelectorAll('.mr-rsn').forEach(b=>b.addEventListener('click', ()=>b.classList.toggle('on')));
+  document.getElementById('mr-reason-confirm').textContent = goal==='종결' ? '종결 처리 + 사유 기록' : '보류 처리 + 사유 기록';
+  box.classList.add('open');
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function mrRenderRecordedReasons(c){
+  mrEnsureCaseFields(c);
+  const showStatus = (c.status==='보류' || c.status==='종결');
+  const rrBox = document.getElementById('mr-recorded-reasons');
+  const negBox = document.getElementById('mr-neg-section');
+  if(!rrBox || !negBox) return;
+  rrBox.style.display = showStatus ? '' : 'none';
+  negBox.style.display = showStatus ? '' : 'none';
+  if(!showStatus) return;
+  document.getElementById('mr-rr-status-label').textContent = c.status+' 사유';
+  document.getElementById('mr-rr-count').textContent = c.recordedReasons.length+'건';
+  const list = document.getElementById('mr-rr-list');
+  if(c.recordedReasons.length===0){
+    list.innerHTML = `<div style="font-size:11px;color:#64748b;text-align:center;padding:8px">기록된 사유가 없습니다. 아래에서 추가하세요.</div>`;
+    return;
+  }
+  list.innerHTML = c.recordedReasons.map((r,i)=>{
+    const chipCls = r.status==='보류'?'hold':'';
+    const statCls = r.status==='보류'?'hold':'end';
+    const chips = (r.reasons||[]).map(rs=>`<span class="mr-rr-chip ${chipCls}">${rs}</span>`).join('');
+    const memo = r.memo ? `<div class="mr-rr-memo">${r.memo}</div>` : '';
+    return `<div class="mr-rr-item">
+      <div class="mr-rr-row">
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="mr-rr-stat ${statCls}">${r.status}</span>
+          <span class="mr-rr-when">${r.when}</span>
+        </div>
+        <button class="mr-rr-del" onclick="mrDeleteRecordedReason(${i})">삭제</button>
+      </div>
+      <div class="mr-rr-chips">${chips}</div>
+      ${memo}
+    </div>`;
+  }).join('');
+}
+
+function mrDeleteRecordedReason(idx){
+  const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
+  if(!c||!c.recordedReasons) return;
+  c.recordedReasons.splice(idx,1);
+  mrSelectCase(c.id);
+  showToast('사유 기록 삭제됨');
+}
+
+let MR_PENDING_TARGET = null;
+
 function mrApplyAction(actKey, reasons, memo){
   const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
   if(!c) return;
-  const def = MR_QA[actKey];
-  let bodyParts = [];
-  // 진행률
-  if(def.progressTo!==undefined){
-    bodyParts.push(`진행률 <b>${c.progress}% → ${def.progressTo}%</b>`);
-    c.progress = def.progressTo;
-  } else if(def.progressDelta){
-    const next = Math.max(0, Math.min(100, c.progress + def.progressDelta));
-    bodyParts.push(`진행률 <b>${c.progress}% → ${next}%</b>`);
-    c.progress = next;
+  mrEnsureCaseFields(c);
+  // 사유 기록 모드 (새 통합 픽커)
+  if(actKey === '__reason_record__'){
+    const target = MR_PENDING_TARGET || '보류';
+    c.status = target;
+    if(STATUS_PROGRESS[target] !== undefined) c.progress = STATUS_PROGRESS[target];
+    c.recordedReasons.push({
+      when: new Date().toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}),
+      status: target,
+      reasons: reasons || [],
+      memo: memo || ''
+    });
+    MR_PENDING_TARGET = null;
+    mrSelectCase(c.id);
+    mrRenderStats();
+    mrRenderCharts();
+    mrRenderFailAnalysis();
+    showToast(`${target} 처리 + 사유 ${reasons?.length||0}건 기록됨`);
+    if(target==='종결'||target==='보류'){
+      mrGCalDelete(c).then(deleted=>{ if(!deleted) mrGCalUpdate(c); });
+    }
+    return;
   }
-  // 상태
+  const def = MR_QA[actKey];
+  // 상태 — 좌측 상태창에만 반영 (진행률은 슬라이더로 직접 조절)
   if(def.statusTo && def.statusTo !== c.status){
-    bodyParts.push(`상태 <b>${c.status} → ${def.statusTo}</b>`);
     c.status = def.statusTo;
   }
-  // 사유 저장
+  // 실패 사유 저장 (있으면)
   if(reasons && reasons.length){
     c.reasons = (c.reasons||[]).concat(reasons.filter(r=>!(c.reasons||[]).includes(r)));
-    bodyParts.push(`사유: <b>${reasons.join(', ')}</b>`);
-  }
-  if(memo) bodyParts.push(`메모: ${memo}`);
-  const evt = def.event || (def.statusTo==='실패' ? 'fail' : (def.statusTo==='완료' ? 'complete' : 'progress'));
-  c.comments.push({
-    who:'시스템', role:'자동', time:'방금 전',
-    body: `<b>[${def.label}]</b> ${bodyParts.join(' · ') || (def.commentText||'')}`,
-    event: evt
-  });
-  if(def.commentText && !bodyParts.length){
-    // 일반 코멘트만 있는 경우 추가
+    if(memo) c.reasonMemo = memo;
   }
   mrSelectCase(c.id);
   mrRenderStats();
@@ -7115,7 +7507,7 @@ function mrApplyAction(actKey, reasons, memo){
   mrRenderFailAnalysis();
   showToast(`${def.label} 처리됨`);
   // 구글 캘린더 업데이트 (또는 실패/보류 시 삭제 옵션)
-  if(c.status==='실패' || c.status==='보류'){
+  if(c.status==='종결' || c.status==='보류'){
     mrGCalDelete(c).then(deleted=>{ if(!deleted) mrGCalUpdate(c); });
   } else {
     mrGCalUpdate(c);
@@ -7165,13 +7557,7 @@ function mrSaveNextAction(){
   const text = (document.getElementById('mr-na-text').value||'').trim();
   const date = document.getElementById('mr-na-date').value || null;
   if(!text){ showToast('다음 단계 내용을 입력하세요'); return; }
-  const oldText = c.nextAction?.text;
   c.nextAction = {text, date};
-  c.comments.push({
-    who:'시스템', role:'자동', time:'방금 전',
-    body: `▶ 다음 액션 ${oldText?'변경':'등록'}: <b>${text}</b>${date?' · '+date:''}`,
-    event: 'next'
-  });
   mrSelectCase(c.id);
 }
 
@@ -7204,8 +7590,6 @@ function mrSaveMeta(field){
   const newVal = el.value;
   const oldVal = c[field] || '';
   if(newVal !== oldVal){
-    const labels = {client:'거래처', owner:'담당자', mgr:'관리자', due:'마감일'};
-    c.comments.push({who:'시스템', role:'자동', time:'방금 전', body:`${labels[field]} 변경: <b>${oldVal||'-'} → ${newVal||'-'}</b>`, event:'progress'});
     c[field] = newVal;
   }
   mrSelectCase(c.id);
@@ -7214,7 +7598,7 @@ function mrSaveMeta(field){
 }
 
 function mrRenderFailAnalysis(){
-  const fails = MR_CASES.filter(c=>c.status==='실패');
+  const fails = MR_CASES.filter(c=>c.status==='종결');
   const total = MR_CASES.length;
   const rate = total>0 ? Math.round((fails.length/total)*100) : 0;
   const avgPg = fails.length>0 ? Math.round(fails.reduce((s,c)=>s+(c.progress||0),0)/fails.length) : 0;
@@ -7254,11 +7638,30 @@ function mrPostComment(){
   const inp = document.getElementById('mr-cmt-input');
   const text = (inp.value||'').trim();
   if(!text){ showToast('내용을 입력하세요'); return; }
-  c.comments.push({who:'정인호', role:'대리', time:'방금 전', body:text.replace(/@(\S+)/g,'<span class="ment">@$1</span>')});
+  const catEl = document.querySelector('.mr-cmt-cat.on');
+  const cat = catEl ? catEl.dataset.cat : null;
+  const catLabel = cat ? `<b style="color:#c4b5fd">[${cat}]</b> ` : '';
+  c.comments.push({
+    who:'정인호', role:'대리', time:'방금 전',
+    body: catLabel + text.replace(/@(\S+)/g,'<span class="ment">@$1</span>'),
+    category: cat
+  });
   inp.value = '';
+  // 카테고리 선택 해제
+  document.querySelectorAll('.mr-cmt-cat').forEach(b=>b.classList.remove('on'));
   mrSelectCase(c.id);
   mrRenderStats();
+  showToast('코멘트 등록됨');
 }
+
+// 카테고리 칩 토글 (DOM ready 후 위임)
+document.addEventListener('click', e=>{
+  if(e.target.classList.contains('mr-cmt-cat')){
+    const wasOn = e.target.classList.contains('on');
+    document.querySelectorAll('.mr-cmt-cat').forEach(b=>b.classList.remove('on'));
+    if(!wasOn) e.target.classList.add('on');
+  }
+});
 
 function mrSetupQuickActions(){
   document.querySelectorAll('.mr-qa-btn').forEach(b=>{
@@ -7277,22 +7680,36 @@ function mrSetupFilters(){
     });
   });
   document.getElementById('mr-search').addEventListener('input', ()=>mrRenderCases());
-  // 상태 변경 버튼
+  // 상태 변경 버튼 — 좌측 상태창에만 반영, 코멘트 자동 등록 X
   document.querySelectorAll('#mr-statbtns button').forEach(b=>{
     b.addEventListener('click', ()=>{
       if(!MR_CURRENT_ID) return;
       const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
       const newStatus = b.dataset.s;
       if(c.status === newStatus) return;
-      c.comments.push({who:'시스템', role:'자동', time:'방금 전', body:`상태 변경: <b>${c.status} → ${newStatus}</b>`, event: newStatus==='완료'?'complete':'progress'});
       c.status = newStatus;
-      if(newStatus==='완료') c.progress = 100;
+      if(STATUS_PROGRESS[newStatus] !== undefined) c.progress = STATUS_PROGRESS[newStatus];
       mrSelectCase(c.id);
       mrRenderStats();
       mrRenderCharts();
+      showToast(`상태 → ${newStatus}`);
     });
   });
-  // 진행률 슬라이더
+  // 사유 기록 버튼 (보류/종결)
+  document.querySelectorAll('.mr-neg-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      if(!MR_CURRENT_ID) return;
+      const target = b.dataset.target;
+      const preset = b.dataset.from;
+      mrOpenReasonPicker(target);
+      // preset 자동 선택
+      setTimeout(()=>{
+        const match = [...document.querySelectorAll('#mr-reason-grid .mr-rsn')].find(x=>x.dataset.r.includes(preset.split(' ')[0])||x.textContent.includes(preset));
+        if(match) match.classList.add('on');
+      }, 50);
+    });
+  });
+  // 진행률 슬라이더 — 좌측 상태창에만 반영, 코멘트 자동 등록 X
   const pg = document.getElementById('mr-d-pg');
   pg.addEventListener('input', ()=>{
     document.getElementById('mr-d-pg-val').textContent = pg.value+'%';
@@ -7300,10 +7717,8 @@ function mrSetupFilters(){
   pg.addEventListener('change', ()=>{
     if(!MR_CURRENT_ID) return;
     const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
-    const oldP = c.progress;
     const newP = parseInt(pg.value);
-    if(oldP === newP) return;
-    c.comments.push({who:'시스템', role:'자동', time:'방금 전', body:`진행률 변경: <b>${oldP}% → ${newP}%</b>`, event:'progress'});
+    if(c.progress === newP) return;
     c.progress = newP;
     mrSelectCase(c.id);
     mrRenderStats();
