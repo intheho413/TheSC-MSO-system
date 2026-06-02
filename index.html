@@ -607,9 +607,11 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-row.c2{grid-template-columns:1fr 1fr}
 .mr-row.b2{grid-template-columns:1.5fr 1fr}
 .mr-row.b3{grid-template-columns:1.4fr 1fr}
-.mr-row.b3-3col{grid-template-columns:minmax(320px,360px) minmax(0,1.5fr) minmax(320px,360px);align-items:stretch}
-@media(max-width:1400px){.mr-row.b3-3col{grid-template-columns:minmax(280px,320px) minmax(0,1.4fr) minmax(280px,330px)}}
-@media(max-width:1100px){.mr-row.b3-3col{grid-template-columns:280px minmax(0,1.3fr) 300px}}
+.mr-row.b3-3col{grid-template-columns:minmax(260px,310px) minmax(0,2.5fr) minmax(320px,360px);align-items:stretch}
+@media(max-width:1400px){.mr-row.b3-3col{grid-template-columns:minmax(240px,280px) minmax(0,2.2fr) minmax(290px,330px)}}
+@media(max-width:1100px){.mr-row.b3-3col{grid-template-columns:230px minmax(0,2fr) 290px}}
+/* MSO 리포트 페이지 폭 확장 — 3분할 레이아웃 가시성 ↑ */
+#page-mso-report.page{max-width:1500px}
 @media(max-width:960px){.mr-row.b3,.mr-row.c2,.mr-row.b2,.mr-row.b3-3col{grid-template-columns:1fr}}
 .mr-row.b3-3col > *{min-width:0}
 
@@ -767,30 +769,31 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-btn-primary{background:linear-gradient(135deg,#34d399,#10b981);color:#fff;box-shadow:0 8px 22px rgba(52,211,153,.4)}
 
 /* 안건 리스트 */
-.mr-case-list{display:flex;flex-direction:column;gap:8px}
-.mr-case{position:relative;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:13px 16px;cursor:pointer;transition:.2s}
+.mr-case-list{display:flex;flex-direction:column;gap:5px}
+.mr-case{position:relative;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:7px 10px 7px 14px;cursor:pointer;transition:.18s}
 .mr-case:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.16)}
 .mr-case.active{background:linear-gradient(160deg,rgba(167,139,250,.13),rgba(96,165,250,.06));border-color:rgba(167,139,250,.4)}
-.mr-case::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px}
+.mr-case::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:2px}
 .mr-case.k1::before{background:#60a5fa;box-shadow:0 0 10px #60a5fa}
 .mr-case.k2::before{background:#ec4899;box-shadow:0 0 10px #ec4899}
-.mr-case .crow1{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
-.mr-case .ctag{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:5px}
+.mr-case .crow1{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:nowrap}
+.mr-case .ctag{font-size:9px;font-weight:800;padding:1px 5px;border-radius:3px;flex-shrink:0}
 .mr-case.k1 .ctag{background:rgba(96,165,250,.15);color:#93c5fd}
 .mr-case.k2 .ctag{background:rgba(236,72,153,.15);color:#fbcfe8}
-.mr-case .ctitle{font-size:13.5px;font-weight:800;color:#fff;flex:1;min-width:0}
-.mr-case .stp{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:5px}
+.mr-case .ctitle{font-size:12px;font-weight:700;color:#fff;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mr-case .stp{font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:4px;flex-shrink:0}
 .mr-st-1{background:rgba(96,165,250,.15);color:#93c5fd}
 .mr-st-2{background:rgba(251,146,60,.18);color:#fdba74}
 .mr-st-3{background:rgba(245,158,11,.18);color:#fbbf24}
 .mr-st-4{background:rgba(52,211,153,.18);color:#6ee7b7}
 .mr-st-5{background:rgba(148,163,184,.18);color:#cbd5e1}
-.mr-case .crow2{display:flex;align-items:center;gap:14px;font-size:11.5px;color:#94a3b8;flex-wrap:wrap}
-.mr-case .crow2 .m{display:inline-flex;align-items:center;gap:5px}
+.mr-case .crow2{display:flex;align-items:center;gap:8px;font-size:10.5px;color:#94a3b8;flex-wrap:nowrap;overflow:hidden}
+.mr-case .crow2 .m{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .mr-case .crow2 .m b{color:#cbd5e1;font-weight:700}
 .mr-case .crow2 .m.owner{color:#a5b4fc}
 .mr-case .crow2 .m.owner b{color:#c4b5fd}
-.mr-case-del{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#64748b;font-size:14px;font-weight:700;line-height:1;cursor:pointer;font-family:inherit;display:grid;place-items:center;opacity:0;transition:.18s;z-index:3}
+.mr-case .crow2 .m.cmt-cnt,.mr-case .crow2 .m.reason{display:none}
+.mr-case-del{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#64748b;font-size:12px;font-weight:700;line-height:1;cursor:pointer;font-family:inherit;display:grid;place-items:center;opacity:0;transition:.18s;z-index:3}
 .mr-case:hover .mr-case-del{opacity:1}
 .mr-case-del:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.5);color:#fca5a5}
 
@@ -807,7 +810,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-confirm .no:hover{background:rgba(255,255,255,.1)}
 .mr-confirm .yes{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 6px 16px rgba(239,68,68,.35)}
 .mr-confirm .yes:hover{filter:brightness(1.08)}
-.mr-pg{display:inline-block;width:80px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;vertical-align:middle}
+.mr-pg{display:inline-block;width:42px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;vertical-align:middle;margin-right:3px}
 .mr-pg>i{display:block;height:100%}
 .mr-pg>i.high{background:linear-gradient(90deg,#34d399,#10b981)}
 .mr-pg>i.mid{background:linear-gradient(90deg,#fbbf24,#f59e0b)}
@@ -7128,11 +7131,10 @@ function mrRenderCases(){
         <span class="stp ${statClass}">${c.status}</span>
       </div>
       <div class="crow2">
-        <span class="m"><b>${c.client}</b></span>
-        <span class="m owner">담당 <b>${c.owner||'-'}</b></span>
-        <span class="m" ${dueStyle}>${dueLabel}</span>
-        <span class="m"><span class="mr-pg"><i class="${pgClass}" style="width:${c.progress}%"></i></span> <b>${c.progress}%</b></span>
-        <span class="m">코멘트 <b>${c.comments.length}</b></span>
+        <span class="m owner">${c.owner||'-'}</span>
+        <span class="m due" ${dueStyle}>${dueLabel}</span>
+        <span class="m pg" style="margin-left:auto"><span class="mr-pg"><i class="${pgClass}" style="width:${c.progress}%"></i></span><b>${c.progress}%</b></span>
+        <span class="m cmt-cnt">코멘트 <b>${c.comments.length}</b></span>
         ${reasonRow}
       </div>
     </div>`;
@@ -7219,6 +7221,22 @@ function mrSelectCase(id){
   mrRenderMilestones(c);
   mrRenderRecordedReasons(c);
   mrRenderWarningBadge(c);
+  // 활성 인라인 편집 복원 (같은 안건일 때만)
+  if(MR_ACTIVE_EDIT && MR_ACTIVE_EDIT.caseId===c.id){
+    try{ mrEditMeta(MR_ACTIVE_EDIT.field, true); }catch(e){}
+  }
+  // 코멘트 초안 복원 (해당 안건에 대해 작성 중이던 텍스트)
+  const ta = document.getElementById('mr-cmt-input');
+  if(ta){
+    const draft = MR_CMT_DRAFTS[c.id] || '';
+    if(ta.value !== draft) ta.value = draft;
+    if(!ta._draftBound){
+      ta.addEventListener('input', ()=>{
+        if(MR_CURRENT_ID!=null) MR_CMT_DRAFTS[MR_CURRENT_ID] = ta.value;
+      });
+      ta._draftBound = true;
+    }
+  }
   // 리스트 active
   mrRenderCases();
 }
@@ -7683,17 +7701,35 @@ function mrClearNextAction(){
 }
 
 // 인라인 편집 — 메타 필드
-function mrEditMeta(field){
+// 인라인 편집 활성 상태 추적 — 재렌더 중에도 입력값 유지
+let MR_ACTIVE_EDIT = null;   // {caseId, field, value}
+let MR_CMT_DRAFTS = {};       // caseId → 미등록 코멘트 초안
+
+function mrEditMeta(field, _restore){
   const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
   if(!c) return;
   const target = document.querySelector(`#mr-d-meta .ed[data-f="${field}"]`);
   if(!target) return;
+  const useVal = (MR_ACTIVE_EDIT && MR_ACTIVE_EDIT.caseId===c.id && MR_ACTIVE_EDIT.field===field)
+    ? MR_ACTIVE_EDIT.value : (c[field]||'');
+  MR_ACTIVE_EDIT = {caseId:c.id, field, value:useVal};
+  const v = (useVal||'').replace(/"/g,'&quot;');
   let html = '';
-  if(field==='client') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.client||'').replace(/"/g,'&quot;')}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
-  if(field==='owner') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.owner||'').replace(/"/g,'&quot;')}" placeholder="담당자명"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
-  if(field==='mgr')   html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${(c.mgr||'').replace(/"/g,'&quot;')}" placeholder="관리자명 (선택)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
-  if(field==='due')   html = `<span class="ied"><input type="datetime-local" id="mr-edit-${field}" value="${c.due||''}"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrSelectCase(${c.id})">×</button></span>`;
+  if(field==='client') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${v}" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
+  if(field==='owner') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${v}" placeholder="담당자명" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
+  if(field==='mgr')   html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${v}" placeholder="관리자명 (선택)" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
+  if(field==='due')   html = `<span class="ied"><input type="datetime-local" id="mr-edit-${field}" value="${useVal||''}" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
   target.outerHTML = html;
+  if(!_restore){ const inp = document.getElementById('mr-edit-'+field); if(inp){ inp.focus(); inp.select?.(); } }
+}
+
+function mrTrackEdit(field, val){
+  if(MR_ACTIVE_EDIT && MR_ACTIVE_EDIT.field===field) MR_ACTIVE_EDIT.value = val;
+}
+
+function mrCancelEdit(id){
+  MR_ACTIVE_EDIT = null;
+  mrSelectCase(id);
 }
 
 function mrSaveMeta(field){
@@ -7706,6 +7742,7 @@ function mrSaveMeta(field){
   if(newVal !== oldVal){
     c[field] = newVal;
   }
+  MR_ACTIVE_EDIT = null;
   mrSelectCase(c.id);
   mrRenderStats();
   if(field==='due') mrRenderCalendar?.();
@@ -7761,6 +7798,7 @@ function mrPostComment(){
     category: cat
   });
   inp.value = '';
+  MR_CMT_DRAFTS[c.id] = '';
   // 카테고리 선택 해제
   document.querySelectorAll('.mr-cmt-cat').forEach(b=>b.classList.remove('on'));
   mrSelectCase(c.id);
