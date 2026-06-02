@@ -607,9 +607,11 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-row.c2{grid-template-columns:1fr 1fr}
 .mr-row.b2{grid-template-columns:1.5fr 1fr}
 .mr-row.b3{grid-template-columns:1.4fr 1fr}
-.mr-row.b3-3col{grid-template-columns:400px minmax(0,1fr) 400px;align-items:stretch}
-@media(max-width:1280px){.mr-row.b3-3col{grid-template-columns:340px minmax(0,1fr) 360px}}
+.mr-row.b3-3col{grid-template-columns:minmax(320px,360px) minmax(0,1.5fr) minmax(320px,360px);align-items:stretch}
+@media(max-width:1400px){.mr-row.b3-3col{grid-template-columns:minmax(280px,320px) minmax(0,1.4fr) minmax(280px,330px)}}
+@media(max-width:1100px){.mr-row.b3-3col{grid-template-columns:280px minmax(0,1.3fr) 300px}}
 @media(max-width:960px){.mr-row.b3,.mr-row.c2,.mr-row.b2,.mr-row.b3-3col{grid-template-columns:1fr}}
+.mr-row.b3-3col > *{min-width:0}
 
 /* 3분할 패널 공통 */
 .mr-panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:14px;display:flex;flex-direction:column;overflow:hidden;min-height:620px}
@@ -829,7 +831,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-detail .dmeta b{color:#cbd5e1}
 .mr-statbar{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .mr-statbar .ll{font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.mr-statbtns{display:inline-flex;gap:4px;padding:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px}
+.mr-statbtns{display:inline-flex;flex-wrap:wrap;gap:4px;padding:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:9px}
 .mr-statbtns button{background:transparent;border:none;color:#94a3b8;padding:5px 11px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s}
 .mr-statbtns button.on{background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff;box-shadow:0 4px 10px rgba(251,146,60,.4)}
 .mr-statbtns button.complete.on{background:linear-gradient(135deg,#34d399,#10b981);box-shadow:0 4px 10px rgba(52,211,153,.4)}
