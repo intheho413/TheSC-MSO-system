@@ -11752,8 +11752,15 @@ function mrMobSetupSwipe(){
   if(!row || row._swipeBound) return;
   row._swipeBound = true;
   let startX=0, startY=0, startT=0, tracking=false;
+  // 스와이프 무시할 요소: 삭제 버튼, 모든 button/a, 카드 액션, 입력 요소
+  const isNoSwipeTarget = (el)=>{
+    if(!el) return false;
+    return !!el.closest('.mr-case-del, button, a, .mr-cmt .acts, .cmt-actions, [data-no-swipe], textarea, input, select');
+  };
   row.addEventListener('touchstart', e=>{
     if(!mrIsMobile()) return;
+    // 삭제 버튼 등 클릭형 요소면 스와이프 추적 시작 안 함
+    if(isNoSwipeTarget(e.target)){ tracking=false; return; }
     const t=e.touches[0];
     startX=t.clientX; startY=t.clientY; startT=Date.now();
     tracking=true;
@@ -11775,8 +11782,8 @@ function mrMobSetupSwipe(){
     const dx=t.clientX-startX, dy=t.clientY-startY, dt=Date.now()-startT;
     // 임계값: 가로 60px+ AND 세로 < 가로 AND 200ms 이상
     if(Math.abs(dx)<60 || Math.abs(dy)>Math.abs(dx) || dt>800) return;
-    // 입력 중이면 무시
-    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT') return;
+    // 입력 중·버튼·삭제 등은 스와이프 무시 (touchend 시점에 한 번 더)
+    if(isNoSwipeTarget(e.target)) return;
     mrMobSwipe(dx>0 ? 1 : -1);
   }, {passive:true});
 }
