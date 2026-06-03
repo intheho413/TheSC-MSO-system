@@ -1838,7 +1838,7 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
 .mr-emp-role button.on{background:linear-gradient(135deg,#34d399,#10b981);color:#fff;box-shadow:0 4px 10px rgba(52,211,153,.3)}
 
 .mr-emp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-.mr-emp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:11px;transition:.2s;position:relative;overflow:hidden;flex-wrap:wrap}
+.mr-emp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:11px;transition:.2s;position:relative;overflow:hidden}
 .mr-emp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
 .mr-emp-card.role-manager::before{background:#fb923c;box-shadow:0 0 10px #fb923c}
 .mr-emp-card.role-owner::before{background:#60a5fa;box-shadow:0 0 10px #60a5fa}
@@ -1846,8 +1846,9 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
 .mr-emp-avt{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0}
 .mr-emp-card.role-manager .mr-emp-avt{background:linear-gradient(135deg,#fb923c,#f59e0b);box-shadow:0 6px 16px rgba(251,146,60,.4)}
 .mr-emp-card.role-owner .mr-emp-avt{background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 6px 16px rgba(59,130,246,.4)}
-.mr-emp-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.mr-emp-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mr-emp-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.mr-emp-meta-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:1px}
+.mr-emp-name-row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .mr-emp-name{font-size:14px;font-weight:800;color:#fff;line-height:1.2}
 .mr-emp-pos{font-size:10px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;line-height:1;flex-shrink:0}
 .mr-emp-role-tag{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:4px;line-height:1;flex-shrink:0;letter-spacing:.2px}
@@ -9288,14 +9289,14 @@ function mrRenderEmployees(){
       <div class="mr-emp-check" onclick="mrEmpToggleCheck(${e.id})" title="선택"></div>
       <div class="mr-emp-avt">${first}</div>
       <div class="mr-emp-info">
-        <div class="mr-emp-name-row">
+        <div class="mr-emp-meta-row">
           ${empIdTag}
-          <span class="mr-emp-name">${e.name}</span>
-          <span class="mr-emp-pos">${e.position}</span>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px">
           <span class="mr-emp-role-tag ${e.role}">${roleLabel}</span>
           ${pwStatus}
+        </div>
+        <div class="mr-emp-name-row">
+          <span class="mr-emp-name">${e.name}</span>
+          <span class="mr-emp-pos">${e.position}</span>
         </div>
         ${emailLine}
       </div>
