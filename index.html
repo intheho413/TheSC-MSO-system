@@ -725,6 +725,46 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 
 .ap-help{margin:14px 0 6px;padding:10px 13px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:9px;font-size:11px;color:#bfdbfe;line-height:1.55}
 
+/* 관리자 패널 상단 액션 바 */
+.ap-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.ap-action-btn{background:linear-gradient(135deg,#34d399,#10b981);border:none;color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;box-shadow:0 5px 12px rgba(52,211,153,.3)}
+.ap-action-btn:hover{filter:brightness(1.08)}
+
+/* 사원 카드 액션 (관리자 패널) */
+.ap-emp-row .ap-emp-acts{display:flex;gap:4px;margin-left:auto}
+.ap-emp-row .ap-emp-acts button{width:28px;height:28px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;display:grid;place-items:center;color:#94a3b8;padding:0;transition:.12s}
+.ap-emp-row .ap-emp-acts button:hover{background:rgba(255,255,255,.1);color:#fff}
+.ap-emp-row .ap-emp-acts .ap-act-reset{color:#fdba74}
+.ap-emp-row .ap-emp-acts .ap-act-reset:hover{background:rgba(251,146,60,.15);border-color:rgba(251,146,60,.4);color:#fff}
+.ap-emp-row .ap-emp-acts .ap-act-edit:hover{background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.4);color:#bfdbfe}
+.ap-emp-row .ap-emp-acts .ap-act-del:hover{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.4);color:#fca5a5}
+.ap-emp-row .ap-emp-acts button svg{width:13px;height:13px}
+
+/* 사원 등록/수정 폼 모달 (관리자 패널 위에 띄움) */
+.ap-form-mask{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:9995;display:none;align-items:center;justify-content:center;padding:18px}
+.ap-form-mask.open{display:flex}
+.ap-form{background:linear-gradient(160deg,#0f172a,#070b14);border:1px solid rgba(52,211,153,.3);border-radius:14px;width:100%;max-width:480px;padding:22px;box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.ap-form .ap-form-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.ap-form .ap-form-ttl{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:900;color:#fff}
+.ap-form .ap-form-ttl-ic{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#34d399,#10b981);display:grid;place-items:center;color:#fff;font-size:14px;font-weight:900}
+.ap-form .ap-form-close{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;cursor:pointer;font-family:inherit;font-size:16px;display:grid;place-items:center}
+.ap-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ap-form-grid > .full{grid-column:1/-1}
+.ap-form-field{display:flex;flex-direction:column;gap:5px}
+.ap-form-field label{font-size:10.5px;font-weight:800;color:#a5b4fc;letter-spacing:.6px;text-transform:uppercase}
+.ap-form-field label .hint{font-size:9px;font-weight:600;color:#64748b;text-transform:none;letter-spacing:0;margin-left:4px}
+.ap-form-field input,.ap-form-field select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;padding:8px 11px;border-radius:7px;font-size:12.5px;font-family:inherit;outline:none}
+.ap-form-field input:focus,.ap-form-field select:focus{border-color:rgba(52,211,153,.5)}
+.ap-form-roles{display:flex;gap:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:3px}
+.ap-form-roles button{flex:1;background:transparent;border:none;color:#94a3b8;padding:7px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+.ap-form-roles button.on.manager{background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff}
+.ap-form-roles button.on.owner{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff}
+.ap-form-err{font-size:11px;color:#fca5a5;min-height:16px;margin-top:8px;padding:0 2px}
+.ap-form-acts{display:flex;gap:7px;justify-content:flex-end;margin-top:14px}
+.ap-form-acts button{padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;border:none}
+.ap-form-acts .cancel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1}
+.ap-form-acts .confirm{background:linear-gradient(135deg,#34d399,#10b981);color:#fff;box-shadow:0 5px 14px rgba(52,211,153,.35)}
+
 /* 모바일에서는 사용자 위젯 작게 */
 @media (max-width:768px){
   .home-user-widget{padding:4px 6px 4px 4px}
@@ -1701,25 +1741,75 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   </div>
 </div>
 
-<!-- 관리자 패널 (사원별 권한 관리) -->
+<!-- 관리자 패널 (사원 관리 + 권한) -->
 <div class="admin-panel-mask" id="admin-panel-mask" onclick="if(event.target===this)closeAdminPanel()">
   <div class="admin-panel">
     <div class="ap-head">
       <div class="ap-title">
         <div class="ap-title-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1l3 6 6 1-4.5 4.5L18 19l-6-3-6 3 1.5-6.5L3 8l6-1z"/></svg></div>
-        <div><h3>관리자 페이지</h3><p>사원별 시스템 접근 권한 관리</p></div>
+        <div><h3>관리자 페이지</h3><p>사원 등록·권한 설정 (기초관리와 자동 동기화)</p></div>
       </div>
       <button class="ap-close" onclick="closeAdminPanel()">×</button>
     </div>
     <div class="ap-body">
-      <div class="ap-help">
-        <b style="color:#fff">권한 시스템 안내</b><br>
-        · <b>통합 관리</b>: 영업/재고/수금/계약서 등 MSO 통합 시스템 접근<br>
-        · <b>리포트</b>: 안건 트래킹 + 캘린더 + KPI 리포트 접근<br>
-        · 관리자(본인 포함)는 항상 두 시스템 접근 가능
+      <div class="ap-actions">
+        <div class="ap-section-title" style="margin:0">사원 목록 <span id="ap-emp-count" style="font-size:10px;color:#94a3b8;font-weight:600;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:99px;margin-left:4px">0명</span></div>
+        <button class="ap-action-btn" onclick="apOpenEmpForm(null)">＋ 사원 등록</button>
       </div>
-      <div class="ap-section-title">사원별 권한 설정</div>
+      <div class="ap-help">
+        <b style="color:#fff">권한 시스템</b>
+        · <b>통합관리</b>: 영업·재고·수금·계약서
+        · <b>리포트</b>: 안건 트래킹·캘린더·KPI
+        · 관리자는 항상 모든 권한
+      </div>
       <div id="ap-emp-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 사원 등록/수정 폼 (관리자 패널 위에 띄움) -->
+<div class="ap-form-mask" id="ap-form-mask" onclick="if(event.target===this)apCloseEmpForm()">
+  <div class="ap-form">
+    <div class="ap-form-head">
+      <div class="ap-form-ttl">
+        <div class="ap-form-ttl-ic">＋</div>
+        <span id="ap-form-title">신규 사원 등록</span>
+      </div>
+      <button class="ap-form-close" onclick="apCloseEmpForm()">×</button>
+    </div>
+    <div class="ap-form-grid">
+      <div class="ap-form-field">
+        <label>고유번호 <span class="hint">(미입력 시 자동)</span></label>
+        <input type="text" id="ap-r-empno" placeholder="EMP001 / 1001 / A-01" maxlength="20">
+      </div>
+      <div class="ap-form-field">
+        <label>이름 <span class="hint">(로그인 사용 · 중복불가)</span></label>
+        <input type="text" id="ap-r-name" placeholder="예: 정인호">
+      </div>
+      <div class="ap-form-field">
+        <label>직급</label>
+        <select id="ap-r-position"></select>
+      </div>
+      <div class="ap-form-field">
+        <label>역할</label>
+        <div class="ap-form-roles" id="ap-r-role">
+          <button type="button" class="manager on" data-r="manager">관리자</button>
+          <button type="button" class="owner" data-r="owner">담당자</button>
+        </div>
+      </div>
+      <div class="ap-form-field full">
+        <label>구글 이메일 <span class="hint">(캘린더 초대용 · 선택)</span></label>
+        <input type="email" id="ap-r-email" placeholder="example@gmail.com">
+      </div>
+      <div class="ap-form-field full" id="ap-r-pw-field">
+        <label>초기 비밀번호 <span class="hint">(미입력 시 1234)</span></label>
+        <input type="text" id="ap-r-initpw" placeholder="4자 이상 또는 비워두면 1234" maxlength="20">
+      </div>
+    </div>
+    <div class="ap-form-err" id="ap-form-err"></div>
+    <div class="ap-form-acts">
+      <button class="cancel" onclick="apCloseEmpForm()">취소</button>
+      <button class="confirm" id="ap-form-submit" onclick="apSubmitEmpForm()">＋ 등록</button>
     </div>
   </div>
 </div>
@@ -7433,13 +7523,25 @@ async function sbEmpInsert(emp){
       email: emp.email||null,
       role: emp.role||'manager',
       emp_no: emp.empNo||null,
-      permissions: emp.permissions||null,
       password_hash: emp.passwordHash||null,
       must_change_password: emp.mustChangePassword!==false,
       active: emp.active!==false,
       password_changed_at: emp.passwordChangedAt||null
     };
-    const {data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single();
+    // permissions 컬럼이 DB에 있으면 포함, 없으면 자동 fallback
+    if(emp.permissions) payload.permissions = emp.permissions;
+    let {data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single();
+    // permissions 컬럼이 없을 때의 오류 처리 — permissions 빼고 재시도
+    if(error && error.message && error.message.toLowerCase().includes('permissions')){
+      delete payload.permissions;
+      ({data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single());
+    }
+    // emp_no 컬럼이 없을 때 — emp_no 빼고 재시도
+    if(error && error.message && error.message.toLowerCase().includes('emp_no')){
+      delete payload.emp_no;
+      delete payload.permissions;
+      ({data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single());
+    }
     if(error) throw error;
     return data;
   }catch(e){ console.warn('[sbEmpInsert]', e); MR_SYNC.errorCount++; return null; }
@@ -7460,7 +7562,16 @@ async function sbEmpUpdate(id, patch){
     if('mustChangePassword' in patch) payload.must_change_password = patch.mustChangePassword;
     if('active' in patch) payload.active = patch.active;
     if('passwordChangedAt' in patch) payload.password_changed_at = patch.passwordChangedAt;
-    const {data, error} = await sb.from('employees').update(payload).eq('id', id).select().single();
+    let {data, error} = await sb.from('employees').update(payload).eq('id', id).select().single();
+    if(error && error.message && error.message.toLowerCase().includes('permissions')){
+      delete payload.permissions;
+      ({data, error} = await sb.from('employees').update(payload).eq('id', id).select().single());
+    }
+    if(error && error.message && error.message.toLowerCase().includes('emp_no')){
+      delete payload.emp_no;
+      delete payload.permissions;
+      ({data, error} = await sb.from('employees').update(payload).eq('id', id).select().single());
+    }
     if(error) throw error;
     return data;
   }catch(e){ console.warn('[sbEmpUpdate]', e); MR_SYNC.errorCount++; return null; }
@@ -7914,12 +8025,15 @@ function closeAdminPanel(){
 function renderAdminPanel(){
   const list = document.getElementById('ap-emp-list');
   if(!list) return;
+  const cntEl = document.getElementById('ap-emp-count');
+  if(cntEl) cntEl.textContent = `${MR_EMPLOYEES.length}명`;
   list.innerHTML = MR_EMPLOYEES.map(e=>{
     const p = authGetPermissions(e);
     const roleLabel = e.role==='manager'?'관리자':'담당자';
     const empNo = e.empNo || authFormatEmpId(e.id);
     const first = (e.name||'?').slice(0,1);
     const isAdmin = e.role==='manager' || e.role==='admin';
+    const isSelf = e.id===CURRENT_USER?.id;
     return `<div class="ap-emp-row">
       <div class="ap-avt ${e.role}">${first}</div>
       <div class="ap-emp-info">
@@ -7938,8 +8052,138 @@ function renderAdminPanel(){
           <span class="dot"></span>리포트
         </button>
       </div>
+      <div class="ap-emp-acts">
+        <button class="ap-act-reset" onclick="apResetPw(${e.id})" title="비밀번호 재설정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button>
+        <button class="ap-act-edit" onclick="apOpenEmpForm(${e.id})" title="수정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        ${isSelf ? '' : `<button class="ap-act-del" onclick="apDelEmp(${e.id})" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></button>`}
+      </div>
     </div>`;
-  }).join('');
+  }).join('') || '<div style="text-align:center;color:#64748b;padding:30px;font-size:12px">등록된 사원이 없습니다 — 우상단 [+ 사원 등록] 버튼으로 추가하세요</div>';
+}
+
+// ═══ 관리자 패널 — 사원 등록/수정 폼 ═══
+let _apEmpEditId = null;
+function apOpenEmpForm(editId){
+  _apEmpEditId = editId;
+  const isEdit = editId !== null && editId !== undefined;
+  // 직급 옵션 채우기
+  const posSel = document.getElementById('ap-r-position');
+  if(posSel){
+    posSel.innerHTML = MR_POSITIONS.map(p=>`<option value="${p}">${p}</option>`).join('');
+  }
+  // 폼 초기화
+  document.getElementById('ap-r-empno').value = '';
+  document.getElementById('ap-r-name').value = '';
+  document.getElementById('ap-r-email').value = '';
+  document.getElementById('ap-r-initpw').value = '';
+  document.querySelectorAll('#ap-r-role button').forEach(b=>b.classList.remove('on'));
+  document.querySelector('#ap-r-role button[data-r="manager"]').classList.add('on');
+  document.getElementById('ap-form-err').textContent = '';
+  // 역할 토글 핸들러 (1회 바인딩)
+  if(!document.getElementById('ap-r-role')._bound){
+    document.querySelectorAll('#ap-r-role button').forEach(b=>{
+      b.onclick = ()=>{
+        document.querySelectorAll('#ap-r-role button').forEach(x=>x.classList.remove('on'));
+        b.classList.add('on');
+      };
+    });
+    document.getElementById('ap-r-role')._bound = true;
+  }
+  // 수정 모드: 기존 값 채우기, 비밀번호 칸 숨김
+  const pwField = document.getElementById('ap-r-pw-field');
+  if(isEdit){
+    const u = MR_EMPLOYEES.find(e=>e.id===editId);
+    if(!u){ showToast('사원을 찾을 수 없습니다'); return; }
+    document.getElementById('ap-form-title').textContent = `${u.name} · 사원 정보 수정`;
+    document.getElementById('ap-form-submit').textContent = '✓ 수정 저장';
+    document.getElementById('ap-r-empno').value = u.empNo || '';
+    document.getElementById('ap-r-name').value = u.name || '';
+    if(posSel) posSel.value = u.position || MR_POSITIONS[0];
+    document.getElementById('ap-r-email').value = u.email || '';
+    document.querySelectorAll('#ap-r-role button').forEach(b=>b.classList.remove('on'));
+    document.querySelector(`#ap-r-role button[data-r="${u.role||'manager'}"]`)?.classList.add('on');
+    pwField.style.display = 'none';
+  } else {
+    document.getElementById('ap-form-title').textContent = '신규 사원 등록';
+    document.getElementById('ap-form-submit').textContent = '＋ 등록';
+    pwField.style.display = '';
+  }
+  document.getElementById('ap-form-mask').classList.add('open');
+  setTimeout(()=>document.getElementById('ap-r-name').focus(), 50);
+}
+
+function apCloseEmpForm(){
+  document.getElementById('ap-form-mask').classList.remove('open');
+  _apEmpEditId = null;
+}
+
+async function apSubmitEmpForm(){
+  const errEl = document.getElementById('ap-form-err');
+  errEl.textContent = '';
+  const isEdit = _apEmpEditId !== null;
+  const empNo = document.getElementById('ap-r-empno').value.trim();
+  const name = document.getElementById('ap-r-name').value.trim();
+  const position = document.getElementById('ap-r-position').value;
+  const email = document.getElementById('ap-r-email').value.trim();
+  const initPw = document.getElementById('ap-r-initpw').value.trim();
+  const role = document.querySelector('#ap-r-role button.on')?.dataset.r || 'manager';
+  if(!name){ errEl.textContent = '이름을 입력하세요'; return; }
+  if(initPw && initPw.length<4){ errEl.textContent = '비밀번호는 4자 이상이어야 합니다'; return; }
+  // 중복 체크
+  const dupName = MR_EMPLOYEES.find(e=>e.name===name && (!isEdit || e.id!==_apEmpEditId));
+  if(dupName){ errEl.textContent = `이미 등록된 이름: ${name}`; return; }
+  if(empNo){
+    const dupNo = MR_EMPLOYEES.find(e=>e.empNo===empNo && (!isEdit || e.id!==_apEmpEditId));
+    if(dupNo){ errEl.textContent = `고유번호 중복: ${empNo}`; return; }
+  }
+  if(isEdit){
+    const u = MR_EMPLOYEES.find(e=>e.id===_apEmpEditId);
+    if(!u){ errEl.textContent = '사원을 찾을 수 없습니다'; return; }
+    u.empNo = empNo || u.empNo;
+    u.name = name;
+    u.position = position;
+    u.email = email;
+    u.role = role;
+    try{ await sbEmpUpdate(u.id, {empNo:u.empNo, name, position, email, role}); }catch(e){}
+    showToast(`${name} 정보 수정 완료`);
+  } else {
+    const newId = MR_EMP_NEXT_ID++;
+    const finalEmpNo = empNo || ('EMP' + String(newId).padStart(3,'0'));
+    const today = new Date().toISOString().substring(0,10);
+    const newEmp = {id:newId, empNo:finalEmpNo, name, position, email, role, createdAt:today, mustChangePassword:true, active:true};
+    if(initPw && initPw.length>=4){
+      newEmp.passwordHash = await _authHash(initPw);
+    }
+    MR_EMPLOYEES.push(newEmp);
+    try{ await sbEmpInsert(newEmp); }catch(e){}
+    showToast(`${name} 등록 완료 (최초 로그인 시 비밀번호 변경)`);
+  }
+  try{ mrSaveState(); }catch(e){}
+  // 기초관리 탭에도 자동 반영
+  try{ mrRenderEmployees(); mrRefreshEmployeePickers(); }catch(e){}
+  renderAdminPanel();
+  apCloseEmpForm();
+}
+
+async function apDelEmp(empId){
+  if(!authIsAdmin()){ showToast('관리자만 가능합니다'); return; }
+  const u = MR_EMPLOYEES.find(e=>e.id===empId);
+  if(!u){ return; }
+  if(u.id===CURRENT_USER?.id){ showToast('본인 계정은 삭제할 수 없습니다'); return; }
+  if(!confirm(`${u.name} (${u.position||'-'}) 을(를) 삭제할까요?`)) return;
+  MR_EMPLOYEES = MR_EMPLOYEES.filter(e=>e.id!==empId);
+  MR_EMP_CHECKED.delete(empId);
+  try{ await sbEmpDelete(empId); }catch(e){}
+  try{ mrSaveState(); }catch(e){}
+  // 기초관리 탭도 자동 갱신
+  try{ mrRenderEmployees(); mrRefreshEmployeePickers(); }catch(e){}
+  renderAdminPanel();
+  showToast(`${u.name} 삭제 완료`);
+}
+
+function apResetPw(empId){
+  // 기존 비밀번호 재설정 모달 재사용
+  showAdminPwResetModal(empId);
 }
 async function toggleEmpPerm(empId, permKey){
   const e = MR_EMPLOYEES.find(x=>x.id===empId);
@@ -8128,7 +8372,11 @@ async function handleAdminPwReset(){
   } else {
     showToast('임시 비밀번호 설정됨 · 사용자 변경 필요');
   }
-  mrRenderEmployees();
+  try{ mrRenderEmployees(); }catch(e){}
+  // 관리자 패널이 열려 있으면 함께 갱신
+  if(document.getElementById('admin-panel-mask')?.classList.contains('open')){
+    try{ renderAdminPanel(); }catch(e){}
+  }
 }
 
 // 내 안건 필터 토글 상태
