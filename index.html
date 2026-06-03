@@ -1976,7 +1976,6 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       <div class="mr-panel-head">안건 리스트 <span class="cnt" id="mr-list-cnt">0건</span></div>
       <div class="mr-list-search">
         <input id="mr-search" placeholder="병원명·담당자명 검색...">
-        <div class="hint">예: "분당" · "정인호" · "강남 박지연"</div>
       </div>
       <div class="mr-list-filters" id="mr-filters">
         <span class="tg-lbl">상태 필터</span>
@@ -7091,6 +7090,72 @@ let MR_EMP_NEXT_ID = 2;
 let MR_EMP_EDIT_ID = null;
 let MR_EMP_CHECKED = new Set();
 
+// ═══════════════════════════════════════════════════════════════
+// localStorage 자동 저장/복원 — 기능 추가/업데이트 후에도 데이터 보존
+// ═══════════════════════════════════════════════════════════════
+const MR_STORE_KEY = 'thesc-mso-state-v1';
+
+function mrSaveState(){
+  try{
+    const state = {
+      cases: MR_CASES,
+      employees: MR_EMPLOYEES,
+      empNextId: MR_EMP_NEXT_ID,
+      cmtDrafts: (typeof MR_CMT_DRAFTS !== 'undefined') ? MR_CMT_DRAFTS : {},
+      savedAt: new Date().toISOString(),
+      ver: 1
+    };
+    localStorage.setItem(MR_STORE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.warn('[mrSaveState] localStorage 저장 실패', e);
+  }
+}
+
+// 디바운스 — 연속 호출 시 마지막 한 번만 저장
+let _mrSaveTimer = null;
+function mrSaveStateLater(){
+  clearTimeout(_mrSaveTimer);
+  _mrSaveTimer = setTimeout(mrSaveState, 400);
+}
+
+function mrLoadState(){
+  try{
+    const raw = localStorage.getItem(MR_STORE_KEY);
+    if(!raw) return false;
+    const state = JSON.parse(raw);
+    if(!state) return false;
+    if(Array.isArray(state.cases) && state.cases.length>=0){
+      MR_CASES = state.cases;
+      // 기존 누락 필드 마이그레이션 (마일스톤·기록사유 등 새 필드 호환)
+      MR_CASES.forEach(c=>{
+        if(!c.milestones) c.milestones = {meeting:null, demo:null, confirm:null, delivery:null};
+        if(!c.recordedReasons) c.recordedReasons = [];
+        if(!c.comments) c.comments = [];
+        if(!c.reasons) c.reasons = [];
+      });
+    }
+    if(Array.isArray(state.employees)) MR_EMPLOYEES = state.employees;
+    if(typeof state.empNextId === 'number') MR_EMP_NEXT_ID = state.empNextId;
+    if(state.cmtDrafts && typeof window !== 'undefined'){
+      window.MR_CMT_DRAFTS = state.cmtDrafts;
+    }
+    return true;
+  }catch(e){
+    console.warn('[mrLoadState] 복원 실패', e);
+    return false;
+  }
+}
+
+// 즉시 복원 시도 (샘플 데이터를 사용자 저장본으로 덮어씀)
+mrLoadState();
+
+// 수동 리셋 함수 (콘솔에서 mrResetData() 실행 시 샘플로 초기화)
+function mrResetData(){
+  if(!confirm('저장된 모든 데이터를 삭제하고 샘플 데이터로 초기화하시겠습니까?\n(복구 불가)')) return;
+  localStorage.removeItem(MR_STORE_KEY);
+  location.reload();
+}
+
 function mrEmpBuildRow(prefill){
   const id = 'r'+Math.random().toString(36).slice(2,9);
   const posOpts = MR_POSITIONS.map(p=>`<option value="${p}"${prefill?.position===p?' selected':''}>${p}</option>`).join('');
@@ -7227,6 +7292,7 @@ function mrEmpDeleteSelected(){
 }
 
 function mrRenderEmployees(){
+  try{ mrSaveStateLater(); }catch(e){}
   const list = document.getElementById('mr-emp-list');
   if(!list) return;
   const total = MR_EMPLOYEES.length;
@@ -7687,6 +7753,8 @@ window.mrRenderCalendar = function(){
 };
 
 function mrRenderStats(){
+  // 상태 자동 저장 (변이 후 자연스럽게 호출되는 지점)
+  try{ mrSaveStateLater(); }catch(e){}
   const all = MR_CASES;
   const prog = all.filter(c=>c.status==='진행 중').length;
   const pend = all.filter(c=>c.status==='컨펌 대기').length;
