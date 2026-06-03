@@ -125,7 +125,7 @@ html.light .nav-clock b{color:#2563eb}
 .s-apply:hover{background:#2563eb}
 
 /* 커스터마이징 대상 토글 (시스템 선택) */
-.s-ctx-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:4px}
+.s-ctx-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px}
 .s-ctx-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:9px;cursor:pointer;font-family:inherit;text-align:left;transition:.18s}
 .s-ctx-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
 .s-ctx-btn.on{background:linear-gradient(160deg,rgba(167,139,250,.16),rgba(236,72,153,.08));border-color:rgba(167,139,250,.5);box-shadow:0 4px 12px rgba(167,139,250,.18)}
@@ -2199,17 +2199,13 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
     <div class="s-sec" data-ctx="all">
       <div class="s-sec-ttl">커스터마이징 대상</div>
       <div class="s-ctx-toggle">
-        <button class="s-ctx-btn" data-ctx="cosm" onclick="switchCustomizationCtx('cosm')">
-          <span class="s-ctx-ic" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">M1</span>
-          <span class="s-ctx-lb"><b>통합 관리</b><span>화장품</span></span>
-        </button>
-        <button class="s-ctx-btn" data-ctx="med" onclick="switchCustomizationCtx('med')">
-          <span class="s-ctx-ic" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">M2</span>
-          <span class="s-ctx-lb"><b>통합 관리</b><span>의료장비</span></span>
+        <button class="s-ctx-btn" data-ctx="main" onclick="switchCustomizationCtx('main')">
+          <span class="s-ctx-ic" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">M</span>
+          <span class="s-ctx-lb"><b>통합 관리</b><span>영업·재고·수금·계약</span></span>
         </button>
         <button class="s-ctx-btn" data-ctx="report" onclick="switchCustomizationCtx('report')">
           <span class="s-ctx-ic" style="background:linear-gradient(135deg,#a78bfa,#ec4899)">R</span>
-          <span class="s-ctx-lb"><b>MSO 리포트</b><span>안건·캘린더</span></span>
+          <span class="s-ctx-lb"><b>MSO 리포트</b><span>안건·캘린더·KPI</span></span>
         </button>
       </div>
     </div>
@@ -2223,8 +2219,8 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
       </div>
     </div>
 
-    <!-- 카테고리 이름 (MSO 통합관리 - cosm/med) -->
-    <div class="s-sec" data-ctx="cosm med">
+    <!-- 카테고리 이름 (통합관리 전용) -->
+    <div class="s-sec" data-ctx="main">
       <div class="s-sec-ttl">카테고리 이름</div>
       <div class="s-row">
         <span class="s-lbl">카테고리 1</span>
@@ -2236,22 +2232,44 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
       </div>
     </div>
 
-    <!-- 메뉴 이름 — 화장품 (cosm 전용) -->
-    <div class="s-sec" data-ctx="cosm">
-      <div class="s-sec-ttl">메뉴 이름 — 카테고리 1 (화장품)</div>
+    <!-- 메뉴 이름 — 카테고리 1 (통합관리 전용) -->
+    <div class="s-sec" data-ctx="main">
+      <div class="s-sec-ttl">메뉴 이름 — 카테고리 1</div>
       <div class="s-row"><span class="s-lbl">메뉴 1</span><input class="s-inp" id="s-cosm-0" placeholder="리포트"></div>
       <div class="s-row"><span class="s-lbl">메뉴 2</span><input class="s-inp" id="s-cosm-1" placeholder="영업 관리"></div>
       <div class="s-row"><span class="s-lbl">메뉴 3</span><input class="s-inp" id="s-cosm-2" placeholder="수금 현황"></div>
       <div class="s-row"><span class="s-lbl">메뉴 4</span><input class="s-inp" id="s-cosm-3" placeholder="기초 관리"></div>
     </div>
 
-    <!-- 메뉴 이름 — 의료장비 (med 전용) -->
-    <div class="s-sec" data-ctx="med">
-      <div class="s-sec-ttl">메뉴 이름 — 카테고리 2 (의료장비)</div>
+    <!-- 메뉴 이름 — 카테고리 2 (통합관리 전용) -->
+    <div class="s-sec" data-ctx="main">
+      <div class="s-sec-ttl">메뉴 이름 — 카테고리 2</div>
       <div class="s-row"><span class="s-lbl">메뉴 1</span><input class="s-inp" id="s-med-0" placeholder="리포트"></div>
       <div class="s-row"><span class="s-lbl">메뉴 2</span><input class="s-inp" id="s-med-1" placeholder="영업 관리"></div>
       <div class="s-row"><span class="s-lbl">메뉴 3</span><input class="s-inp" id="s-med-2" placeholder="수금 현황"></div>
       <div class="s-row"><span class="s-lbl">메뉴 4</span><input class="s-inp" id="s-med-3" placeholder="기초 관리"></div>
+    </div>
+
+    <!-- MSO 리포트 — 상단바 이름 (report 전용) -->
+    <div class="s-sec" data-ctx="report">
+      <div class="s-sec-ttl">MSO 리포트 상단바 이름</div>
+      <div class="s-row">
+        <span class="s-lbl">상단 이름</span>
+        <input class="s-inp" id="s-report-navname" placeholder="MSO 리포트" maxlength="30">
+      </div>
+      <div class="s-row">
+        <span class="s-lbl">배지 텍스트</span>
+        <input class="s-inp" id="s-report-badge" placeholder="REPORT" maxlength="10">
+      </div>
+    </div>
+
+    <!-- MSO 리포트 — 메뉴 이름 (report 전용) -->
+    <div class="s-sec" data-ctx="report">
+      <div class="s-sec-ttl">메뉴 이름 — MSO 리포트</div>
+      <div class="s-row"><span class="s-lbl">메뉴 1</span><input class="s-inp" id="s-report-0" placeholder="리포트"></div>
+      <div class="s-row"><span class="s-lbl">메뉴 2</span><input class="s-inp" id="s-report-1" placeholder="안건 관리"></div>
+      <div class="s-row"><span class="s-lbl">메뉴 3</span><input class="s-inp" id="s-report-2" placeholder="캘린더"></div>
+      <div class="s-row"><span class="s-lbl">메뉴 4</span><input class="s-inp" id="s-report-3" placeholder="기초 관리"></div>
     </div>
 
     <button class="s-apply" onclick="applySettings()">적용 및 저장</button>
@@ -7134,6 +7152,9 @@ const DEFAULT_LABELS = {
   catCosm: '화장품', catMed: '의료장비',
   cosm: ['리포트','영업 관리','수금 현황','기초 관리'],
   med:  ['리포트','영업 관리','수금 현황','기초 관리'],
+  reportNavName: 'MSO 리포트',
+  reportBadge: 'REPORT',
+  report: ['리포트','안건 관리','캘린더','기초 관리'],
 };
 
 function openSettings() {
@@ -7167,18 +7188,14 @@ function applySettingsCtx(ctx){
   const ttl = document.getElementById('s-ctx-title');
   const desc = document.getElementById('s-ctx-desc');
   if(info && ttl && desc){
-    if(ctx==='cosm'){
+    if(ctx==='main'){
       info.style.display = '';
-      ttl.textContent = 'MSO 통합 관리 — 화장품';
-      desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
-    } else if(ctx==='med'){
-      info.style.display = '';
-      ttl.textContent = 'MSO 통합 관리 — 의료장비';
+      ttl.textContent = 'MSO 통합 관리';
       desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
     } else if(ctx==='report'){
       info.style.display = '';
       ttl.textContent = 'MSO 리포트';
-      desc.textContent = '앱 이름 · 화면 테마 등 외형 설정';
+      desc.textContent = '앱 이름 · 상단바 이름 · 메뉴 이름 변경';
     } else {
       info.style.display = 'none';
     }
@@ -7192,8 +7209,9 @@ function openSettingsForContext(ctx){
     if(typeof showToast==='function') showToast('커스터마이징은 마스터 권한만 접근 가능합니다');
     return;
   }
-  // 'all'이면 첫 시스템 선택 안 했을 때 → 기본 cosm
-  const initialCtx = (ctx==='all') ? 'cosm' : ctx;
+  // 'all'/'cosm'/'med' 모두 통합관리로 매핑
+  let initialCtx = ctx;
+  if(ctx==='all' || ctx==='cosm' || ctx==='med') initialCtx = 'main';
   applySettingsCtx(initialCtx);
   // 시스템 토글 버튼 활성 표시
   document.querySelectorAll('#settings-panel .s-ctx-btn').forEach(b=>{
@@ -7207,6 +7225,15 @@ function openSettingsForContext(ctx){
   [0,1,2,3].forEach(i => {
     document.getElementById('s-cosm-'+i).value = s.cosm?.[i] || '';
     document.getElementById('s-med-'+i).value  = s.med?.[i]  || '';
+  });
+  // MSO 리포트 — 상단바 이름·배지·메뉴 이름
+  const navIn = document.getElementById('s-report-navname');
+  if(navIn) navIn.value = s.reportNavName || '';
+  const badgeIn = document.getElementById('s-report-badge');
+  if(badgeIn) badgeIn.value = s.reportBadge || '';
+  [0,1,2,3].forEach(i => {
+    const el = document.getElementById('s-report-'+i);
+    if(el) el.value = s.report?.[i] || '';
   });
   // 테마 버튼 상태
   const isDark = !document.documentElement.classList.contains('light');
@@ -7247,6 +7274,7 @@ function toggleTheme() {
 function _currentConfig() {
   const s = loadSettingsData();
   return { appname:s.appname, catCosm:s.catCosm, catMed:s.catMed, cosm:s.cosm, med:s.med,
+           reportNavName:s.reportNavName, reportBadge:s.reportBadge, report:s.report,
            theme: localStorage.getItem('thesc-theme') || 'dark' };
 }
 async function dbGetConfig() {
@@ -7278,6 +7306,19 @@ function applyLabels(s) {
     if(cl) cl.textContent = s.cosm?.[i] || D.cosm[i];
     if(ml) ml.textContent = s.med?.[i]  || D.med[i];
   });
+  // MSO 리포트 — 상단바 이름·배지·메뉴
+  const reportName = s.reportNavName || D.reportNavName;
+  const reportBadge = s.reportBadge || D.reportBadge;
+  const navReportEl = document.getElementById('nav-appname-report');
+  if(navReportEl){
+    navReportEl.innerHTML = `${reportName} <span class="nav-badge">${reportBadge}</span>`;
+  }
+  // MSO 리포트 메뉴
+  const reportMenuItems = document.querySelectorAll('#nav-menu-report .nav-item .menu-label');
+  reportMenuItems.forEach((el, i)=>{
+    if(s.report?.[i]) el.textContent = s.report[i];
+    else el.textContent = D.report[i] || el.textContent;
+  });
 }
 
 function applySettings() {
@@ -7287,6 +7328,9 @@ function applySettings() {
     catMed:  document.getElementById('s-cat-med').value.trim()  || DEFAULT_LABELS.catMed,
     cosm: [0,1,2,3].map(i => document.getElementById('s-cosm-'+i).value.trim() || DEFAULT_LABELS.cosm[i]),
     med:  [0,1,2,3].map(i => document.getElementById('s-med-'+i).value.trim()  || DEFAULT_LABELS.med[i]),
+    reportNavName: document.getElementById('s-report-navname')?.value.trim() || DEFAULT_LABELS.reportNavName,
+    reportBadge: document.getElementById('s-report-badge')?.value.trim() || DEFAULT_LABELS.reportBadge,
+    report: [0,1,2,3].map(i => document.getElementById('s-report-'+i)?.value.trim() || DEFAULT_LABELS.report[i]),
   };
   localStorage.setItem('thesc-settings', JSON.stringify(s));
   applyLabels(s);
@@ -8329,13 +8373,11 @@ function openCustomizationMenu(){
     showToast('커스터마이징은 마스터 권한만 가능합니다');
     return;
   }
-  // 현재 페이지에 따라 컨텍스트 자동 결정
-  let ctx = 'all';
+  // 현재 페이지에 따라 컨텍스트 자동 결정 (통합관리=main, 리포트=report)
+  let ctx = 'main';
   const reportPage = document.getElementById('page-mso-report');
   if(reportPage && getComputedStyle(reportPage).display !== 'none'){
     ctx = 'report';
-  } else if(typeof currentCat !== 'undefined'){
-    ctx = currentCat==='cosm' ? 'cosm' : (currentCat==='med' ? 'med' : 'all');
   }
   openSettingsForContext(ctx);
 }
