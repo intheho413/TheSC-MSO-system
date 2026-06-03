@@ -1012,6 +1012,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-list-search .hint{font-size:10px;color:#64748b;padding:0 2px;margin-top:5px}
 .mr-list-filters{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;background:rgba(255,255,255,.015);border-bottom:1px solid rgba(255,255,255,.07);align-items:center}
 .mr-list-filters .tg-lbl{font-size:9.5px;font-weight:800;color:#64748b;letter-spacing:1.1px;text-transform:uppercase;width:100%;margin-bottom:2px}
+.mr-list-filters .mr-filter-my{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:#86efac}
+.mr-list-filters .mr-filter-my:hover{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.45);color:#fff}
+.mr-list-filters .mr-filter-my.on{background:linear-gradient(135deg,#22c55e,#10b981);color:#fff;border-color:transparent;box-shadow:0 4px 10px rgba(34,197,94,.4)}
 .mr-list-tg{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:4px 9px;border-radius:7px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:.15s}
 .mr-list-tg:hover{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35)}
 .mr-list-tg.on{background:linear-gradient(135deg,#a78bfa,#ec4899);border-color:transparent;color:#fff;box-shadow:0 4px 10px rgba(167,139,250,.3)}
@@ -1485,6 +1488,13 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-emp-actions button{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#94a3b8;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;transition:.15s}
 .mr-emp-actions .edit:hover{background:rgba(96,165,250,.18);color:#bfdbfe;border-color:rgba(96,165,250,.4)}
 .mr-emp-actions .del:hover{background:rgba(239,68,68,.18);color:#fca5a5;border-color:rgba(239,68,68,.4)}
+.mr-emp-actions .reset-pw{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);color:#fdba74;width:32px;height:32px;border-radius:7px;cursor:pointer;font-family:inherit;display:grid;place-items:center;transition:.15s;padding:0}
+.mr-emp-actions .reset-pw svg{width:14px;height:14px}
+.mr-emp-actions .reset-pw:hover{background:rgba(251,146,60,.22);color:#fff;border-color:rgba(251,146,60,.45)}
+.mr-emp-id{font-size:10px;font-weight:800;color:#a5b4fc;background:rgba(167,139,250,.14);padding:2px 6px;border-radius:5px;font-family:monospace;letter-spacing:.3px}
+.mr-emp-pw-tag{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:4px}
+.mr-emp-pw-tag.default{background:rgba(251,191,36,.16);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.mr-emp-pw-tag.pending{background:rgba(251,146,60,.16);color:#fdba74;border:1px solid rgba(251,146,60,.3)}
 
 /* 복수 등록 행 */
 .mr-emp-row{display:grid;grid-template-columns:1fr 100px 1.4fr 160px 32px;gap:8px;align-items:end;margin-bottom:8px;padding:8px 10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:9px}
@@ -1590,6 +1600,27 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     <div class="pw-actions">
       <button id="pw-change-cancel" class="pw-btn-cancel" onclick="closePasswordChangeModal()">취소</button>
       <button class="pw-btn-confirm" onclick="handlePasswordChange()">변경</button>
+    </div>
+  </div>
+</div>
+
+<!-- 관리자용 비밀번호 재설정 모달 -->
+<div id="admin-pw-mask" class="pw-change-mask" style="display:none">
+  <div class="pw-change-card">
+    <div class="pw-icon" style="background:linear-gradient(135deg,#fb923c,#f59e0b)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+    </div>
+    <h3>비밀번호 재설정</h3>
+    <p>대상: <b id="admin-pw-emp-name" style="color:#c4b5fd"></b></p>
+    <input id="admin-pw-input" type="text" placeholder="새 임시 비밀번호 (비워두면 1234)" autocomplete="off" maxlength="20">
+    <div id="admin-pw-error" class="pw-error"></div>
+    <div style="font-size:11px;color:#94a3b8;text-align:left;padding:0 2px 10px;line-height:1.5">
+      · 입력하지 않으면 초기 비밀번호 <b style="color:#fbbf24">1234</b>로 재설정<br>
+      · 사용자는 다음 로그인 시 새 비밀번호로 변경해야 함
+    </div>
+    <div class="pw-actions">
+      <button class="pw-btn-cancel" onclick="closeAdminPwResetModal()">취소</button>
+      <button class="pw-btn-confirm" style="background:linear-gradient(135deg,#fb923c,#f59e0b);box-shadow:0 6px 16px rgba(251,146,60,.35)" onclick="handleAdminPwReset()">재설정</button>
     </div>
   </div>
 </div>
@@ -2076,6 +2107,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
         <button class="mr-list-tg s4" data-f="완료">완료 <span class="n" id="mr-cnt-done">0</span></button>
         <button class="mr-list-tg s5" data-f="보류">보류 <span class="n" id="mr-cnt-hold">0</span></button>
         <button class="mr-list-tg s6" data-f="종결">종결 <span class="n" id="mr-cnt-end">0</span></button>
+        <button class="mr-list-tg mr-filter-my" id="mr-filter-my" onclick="mrToggleMyOnly()" style="margin-left:auto" title="내가 담당인 안건만 보기">내 안건</button>
       </div>
       <div class="mr-panel-body">
         <div class="mr-case-list" id="mr-case-list"></div>
@@ -7422,6 +7454,102 @@ function authBootstrap(){
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Phase 2 — 권한 체크 + 비밀번호 재설정 + 본인 안건 필터
+// ═══════════════════════════════════════════════════════════════
+
+// 권한 헬퍼
+function authIsAdmin(){
+  return CURRENT_USER && (CURRENT_USER.role==='admin' || CURRENT_USER.role==='manager');
+}
+function authCanManageEmployees(){
+  // 관리자(manager 또는 admin)만 사원 관리 가능
+  return authIsAdmin();
+}
+function authCanEditCase(c){
+  // 관리자 또는 본인 담당 안건만 수정 가능
+  if(authIsAdmin()) return true;
+  if(!c || !CURRENT_USER) return false;
+  return c.owner === CURRENT_USER.name;
+}
+
+// 사번 표시 (예: EMP001)
+function authFormatEmpId(id){
+  return 'EMP' + String(id).padStart(3, '0');
+}
+
+// 비밀번호 재설정 (관리자 전용)
+async function authAdminResetPassword(empId, newPassword){
+  if(!authIsAdmin()) return {ok:false, msg:'권한이 없습니다'};
+  const u = MR_EMPLOYEES.find(e=>e.id===Number(empId));
+  if(!u) return {ok:false, msg:'사원을 찾을 수 없습니다'};
+  // 빈 비밀번호 → 초기 비밀번호로 리셋 (passwordHash 제거)
+  if(!newPassword || newPassword.trim()===''){
+    delete u.passwordHash;
+    u.mustChangePassword = true;
+    u.passwordChangedAt = new Date().toISOString();
+    try{ mrSaveState(); }catch(e){}
+    return {ok:true, defaultPw:true};
+  }
+  if(newPassword.length<4) return {ok:false, msg:'비밀번호는 4자 이상이어야 합니다'};
+  u.passwordHash = await _authHash(newPassword);
+  u.mustChangePassword = true; // 임시 비밀번호 → 강제 변경
+  u.passwordChangedAt = new Date().toISOString();
+  try{ mrSaveState(); }catch(e){}
+  return {ok:true};
+}
+
+// 사원 등록 시 초기 비밀번호 설정 (옵션)
+async function authSetInitialPassword(empId, initialPw){
+  const u = MR_EMPLOYEES.find(e=>e.id===Number(empId));
+  if(!u) return false;
+  if(initialPw && initialPw.length>=4){
+    u.passwordHash = await _authHash(initialPw);
+    u.mustChangePassword = true;
+  }
+  try{ mrSaveState(); }catch(e){}
+  return true;
+}
+
+// 관리자용 비밀번호 재설정 모달
+function showAdminPwResetModal(empId){
+  const u = MR_EMPLOYEES.find(e=>e.id===Number(empId));
+  if(!u) return;
+  document.getElementById('admin-pw-emp-name').textContent = `${u.name} (${u.position||'-'}) · ${authFormatEmpId(u.id)}`;
+  document.getElementById('admin-pw-input').value = '';
+  document.getElementById('admin-pw-error').textContent = '';
+  document.getElementById('admin-pw-mask').dataset.empId = empId;
+  document.getElementById('admin-pw-mask').style.display = 'flex';
+  setTimeout(()=>document.getElementById('admin-pw-input')?.focus(), 50);
+}
+function closeAdminPwResetModal(){
+  document.getElementById('admin-pw-mask').style.display = 'none';
+}
+async function handleAdminPwReset(){
+  const empId = document.getElementById('admin-pw-mask').dataset.empId;
+  const newPw = document.getElementById('admin-pw-input').value.trim();
+  const errEl = document.getElementById('admin-pw-error');
+  errEl.textContent = '';
+  const result = await authAdminResetPassword(empId, newPw);
+  if(!result.ok){ errEl.textContent = result.msg; return; }
+  closeAdminPwResetModal();
+  if(result.defaultPw){
+    showToast('초기 비밀번호(1234)로 재설정됨 · 다음 로그인 시 변경 필요');
+  } else {
+    showToast('임시 비밀번호 설정됨 · 사용자 변경 필요');
+  }
+  mrRenderEmployees();
+}
+
+// 내 안건 필터 토글 상태
+let MR_FILTER_MY_ONLY = false;
+function mrToggleMyOnly(){
+  MR_FILTER_MY_ONLY = !MR_FILTER_MY_ONLY;
+  const btn = document.getElementById('mr-filter-my');
+  if(btn) btn.classList.toggle('on', MR_FILTER_MY_ONLY);
+  mrRenderCases();
+}
+
 // 수동 리셋 함수 (콘솔에서 mrResetData() 실행 시 샘플로 초기화)
 function mrResetData(){
   if(!confirm('저장된 모든 데이터를 삭제하고 샘플 데이터로 초기화하시겠습니까?\n(복구 불가)')) return;
@@ -7433,6 +7561,9 @@ function mrEmpBuildRow(prefill){
   const id = 'r'+Math.random().toString(36).slice(2,9);
   const posOpts = MR_POSITIONS.map(p=>`<option value="${p}"${prefill?.position===p?' selected':''}>${p}</option>`).join('');
   const role = prefill?.role || 'manager';
+  const isEdit = !!prefill;
+  // 수정 모드에서는 비밀번호 칸 숨김 (별도 재설정 버튼으로 처리)
+  const pwField = isEdit ? '' : `<div><label>초기 비밀번호 <span style="font-size:9px;color:#475569;font-weight:500">(미입력 시 1234)</span></label><input type="text" class="r-initpw" placeholder="4자 이상 또는 비워두면 1234" maxlength="20"></div>`;
   return `<div class="mr-emp-row" data-rowid="${id}">
     <div><label>이름</label><input type="text" class="r-name" placeholder="예: 정인호" value="${(prefill?.name||'').replace(/"/g,'&quot;')}"></div>
     <div><label>직급</label><select class="r-position">${posOpts}</select></div>
@@ -7443,6 +7574,7 @@ function mrEmpBuildRow(prefill){
         <button type="button" class="owner${role==='owner'?' on':''}" data-r="owner">담당자</button>
       </div>
     </div>
+    ${pwField}
     <button type="button" class="mr-emp-row-del" onclick="mrEmpRemoveRow('${id}')" title="행 삭제">×</button>
   </div>`;
 }
@@ -7491,15 +7623,20 @@ function mrEmpRemoveRow(id){
   document.querySelector(`#mr-emp-rows [data-rowid="${id}"]`)?.remove();
 }
 
-function mrEmpSubmit(){
+async function mrEmpSubmit(){
   const rows = [...document.querySelectorAll('#mr-emp-rows .mr-emp-row')];
   const parsed = rows.map(r=>({
     name: (r.querySelector('.r-name').value||'').trim(),
     position: r.querySelector('.r-position').value,
     email: (r.querySelector('.r-email')?.value||'').trim(),
+    initPw: (r.querySelector('.r-initpw')?.value||'').trim(),
     role: r.querySelector('.mr-emp-row-role button.on')?.dataset.r || 'manager'
   })).filter(r=>r.name);
   if(parsed.length===0){ showToast('이름을 1명 이상 입력하세요'); return; }
+  // 비밀번호 길이 체크
+  for(const p of parsed){
+    if(p.initPw && p.initPw.length<4){ showToast(`비밀번호는 4자 이상: ${p.name}`); return; }
+  }
   // 중복 체크 — 폼 내부 + 기존 데이터 (수정 모드는 자기 자신 제외)
   const seen = new Set();
   for(const p of parsed){
@@ -7510,12 +7647,24 @@ function mrEmpSubmit(){
   }
   if(MR_EMP_EDIT_ID!==null){
     const emp = MR_EMPLOYEES.find(e=>e.id===MR_EMP_EDIT_ID);
-    if(emp){ Object.assign(emp, parsed[0]); }
+    if(emp){
+      // 수정 모드: 비밀번호 외 필드만 업데이트
+      const {initPw, ...editable} = parsed[0];
+      Object.assign(emp, editable);
+    }
     showToast('사원 정보 수정 완료');
   } else {
     const today = new Date().toISOString().substring(0,10);
-    parsed.forEach(p=>MR_EMPLOYEES.push({id:MR_EMP_NEXT_ID++, ...p, createdAt:today}));
-    showToast(`${parsed.length}명 등록 완료`);
+    for(const p of parsed){
+      const {initPw, ...empData} = p;
+      const newEmp = {id:MR_EMP_NEXT_ID++, ...empData, createdAt:today, mustChangePassword:true};
+      if(initPw && initPw.length>=4){
+        newEmp.passwordHash = await _authHash(initPw);
+      }
+      // initPw 없으면 passwordHash 없음 → 자동으로 초기 비밀번호 '1234' 사용 (authLogin 처리)
+      MR_EMPLOYEES.push(newEmp);
+    }
+    showToast(`${parsed.length}명 등록 완료 (최초 로그인 시 비밀번호 변경)`);
   }
   MR_EMP_EDIT_ID = null;
   mrEmpToggleForm(false);
@@ -7580,23 +7729,35 @@ function mrRenderEmployees(){
     if(MR_EMP_CHECKED.size>0){ bar.style.display='flex'; document.getElementById('mr-emp-checked-count').textContent = MR_EMP_CHECKED.size; }
     else bar.style.display='none';
   }
+  const canManage = authCanManageEmployees();
   list.innerHTML = MR_EMPLOYEES.map(e=>{
     const roleLabel = e.role==='manager' ? '관리자' : '담당자';
     const first = e.name.charAt(0);
     const checked = MR_EMP_CHECKED.has(e.id);
     const emailLine = e.email ? `<div style="font-size:10.5px;color:#94a3b8;margin-top:3px;font-family:monospace">${e.email}</div>` : '';
+    // 비밀번호 상태 표시
+    const pwStatus = !e.passwordHash
+      ? '<span class="mr-emp-pw-tag default" title="초기 비밀번호 1234 사용 중">초기 PW</span>'
+      : (e.mustChangePassword ? '<span class="mr-emp-pw-tag pending" title="다음 로그인 시 변경 필요">변경 대기</span>' : '');
+    const empIdTag = `<span class="mr-emp-id">${authFormatEmpId(e.id)}</span>`;
+    const resetBtn = canManage ? `<button class="reset-pw" onclick="showAdminPwResetModal(${e.id})" title="비밀번호 재설정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>` : '';
     return `<div class="mr-emp-card role-${e.role}${checked?' checked':''}">
       <div class="mr-emp-check" onclick="mrEmpToggleCheck(${e.id})" title="선택"></div>
       <div class="mr-emp-avt">${first}</div>
       <div class="mr-emp-info">
         <div class="mr-emp-name-row">
+          ${empIdTag}
           <span class="mr-emp-name">${e.name}</span>
           <span class="mr-emp-pos">${e.position}</span>
         </div>
-        <span class="mr-emp-role-tag ${e.role}">${roleLabel}</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px">
+          <span class="mr-emp-role-tag ${e.role}">${roleLabel}</span>
+          ${pwStatus}
+        </div>
         ${emailLine}
       </div>
       <div class="mr-emp-actions">
+        ${resetBtn}
         <button class="edit" onclick="mrEmpEdit(${e.id})" title="수정">✎</button>
         <button class="del" onclick="mrEmpDelete(${e.id})" title="삭제">×</button>
       </div>
@@ -8088,6 +8249,10 @@ function mrRenderCases(){
   const search = (document.getElementById('mr-search')?.value||'').toLowerCase();
   let list = MR_CASES.slice();
   if(MR_FILTER!=='all') list = list.filter(c=>c.status===MR_FILTER);
+  // 내 안건 필터 (관리자 아닐 시에도 활성화 가능)
+  if(MR_FILTER_MY_ONLY && CURRENT_USER){
+    list = list.filter(c=>c.owner===CURRENT_USER.name || c.mgr===CURRENT_USER.name);
+  }
   if(search){
     const terms = search.split(/\s+/).filter(t=>t);
     list = list.filter(c=>{
@@ -9227,6 +9392,17 @@ function mrToggleForm(open){
   if(f.classList.contains('open')){
     mrRefreshEmployeePickers();
     mrBuildAutoTitle();
+    // 로그인된 사용자를 담당자/관리자로 자동 선택 (role 기반)
+    if(CURRENT_USER){
+      setTimeout(()=>{
+        const pickerId = CURRENT_USER.role==='manager' ? '#mr-mgr-pick' : '#mr-owner-pick';
+        const chip = document.querySelector(`${pickerId} .mr-mbchip[data-m="${CURRENT_USER.name}"]`);
+        if(chip){
+          document.querySelectorAll(`${pickerId} .mr-mbchip`).forEach(c=>c.classList.remove('on'));
+          chip.classList.add('on');
+        }
+      }, 50);
+    }
     f.scrollIntoView({behavior:'smooth', block:'start'});
   }
 }
