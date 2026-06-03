@@ -1569,8 +1569,8 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     </div>
     <form class="login-form" onsubmit="event.preventDefault();handleLoginSubmit()">
       <label class="login-field">
-        <span class="login-lbl">사번</span>
-        <input id="login-empid" type="number" inputmode="numeric" autocomplete="username" placeholder="예: 1" required>
+        <span class="login-lbl">사원명</span>
+        <input id="login-empid" type="text" autocomplete="username" placeholder="이름을 입력하세요 (예: 정인호)" required>
       </label>
       <label class="login-field">
         <span class="login-lbl">비밀번호</span>
@@ -7308,6 +7308,7 @@ async function sbEmpInsert(emp){
       position: emp.position||null,
       email: emp.email||null,
       role: emp.role||'manager',
+      emp_no: emp.empNo||null,
       password_hash: emp.passwordHash||null,
       must_change_password: emp.mustChangePassword!==false,
       active: emp.active!==false,
@@ -7328,6 +7329,7 @@ async function sbEmpUpdate(id, patch){
     if('position' in patch) payload.position = patch.position;
     if('email' in patch) payload.email = patch.email;
     if('role' in patch) payload.role = patch.role;
+    if('empNo' in patch) payload.emp_no = patch.empNo;
     if('passwordHash' in patch) payload.password_hash = patch.passwordHash;
     if('mustChangePassword' in patch) payload.must_change_password = patch.mustChangePassword;
     if('active' in patch) payload.active = patch.active;
@@ -7356,6 +7358,7 @@ function _sbEmpToLocal(row){
     position: row.position||'',
     email: row.email||'',
     role: row.role||'manager',
+    empNo: row.emp_no || ('EMP'+String(row.id).padStart(3,'0')),
     passwordHash: row.password_hash||undefined,
     mustChangePassword: row.must_change_password!==false,
     active: row.active!==false,
@@ -7619,11 +7622,17 @@ function authLogout(){
   showLoginScreen();
 }
 
-async function authLogin(empId, password){
-  const idNum = Number(empId);
-  if(!idNum || isNaN(idNum)) return {ok:false, msg:'사번을 정확히 입력하세요'};
-  const u = MR_EMPLOYEES.find(e=>e.id===idNum);
-  if(!u) return {ok:false, msg:'존재하지 않는 사번입니다'};
+async function authLogin(loginId, password){
+  const input = (loginId||'').toString().trim();
+  if(!input) return {ok:false, msg:'사원명을 입력하세요'};
+  // 사원명 또는 사번(EMP001/숫자)으로 조회
+  const u = MR_EMPLOYEES.find(e =>
+    e.name === input
+    || e.empNo === input
+    || String(e.id) === input
+    || authFormatEmpId(e.id) === input
+  );
+  if(!u) return {ok:false, msg:'존재하지 않는 사원명입니다'};
   if(u.active===false) return {ok:false, msg:'비활성화된 계정입니다 (관리자 문의)'};
   // 비밀번호 미설정 = 초기 비밀번호 '1234'로 로그인 가능 (강제 변경)
   if(!u.passwordHash){
@@ -7685,14 +7694,33 @@ async function handleLoginSubmit(){
   const empId = empIdEl.value.trim();
   const pw = pwEl.value;
   errEl.textContent = '';
-  if(!empId || !pw){ errEl.textContent = '사번과 비밀번호를 입력하세요'; return; }
+  if(!empId || !pw){ errEl.textContent = '사원명과 비밀번호를 입력하세요'; return; }
   const result = await authLogin(empId, pw);
   if(!result.ok){ errEl.textContent = result.msg; pwEl.value=''; return; }
   showAppScreen();
   pwEl.value = '';
   if(result.mustChangePassword){
     showPasswordChangeModal(true);
+  } else {
+    // 모바일은 로그인 후 자동으로 MSO 리포트로 진입
+    if(typeof mrIsMobile==='function' && mrIsMobile()){
+      authNavigateToReport();
+    }
   }
+}
+
+// 모바일 로그인 후 자동 진입 헬퍼
+function authNavigateToReport(){
+  try{
+    const root = document.getElementById('app-root');
+    if(root && root.classList.contains('home-mode')){
+      root.classList.remove('home-mode');
+      root.setAttribute('data-dir', 'right');
+    }
+    setTimeout(()=>{
+      if(typeof navigate === 'function'){ navigate('mso-report', null); }
+    }, 100);
+  }catch(e){ console.warn('[authNavigateToReport]', e); }
 }
 
 function showPasswordChangeModal(forced){
@@ -7731,6 +7759,10 @@ function authBootstrap(){
   const user = authLoadSession();
   if(user){
     showAppScreen();
+    // 모바일은 세션 복원 시에도 자동으로 MSO 리포트
+    if(typeof mrIsMobile==='function' && mrIsMobile()){
+      authNavigateToReport();
+    }
   } else {
     showLoginScreen();
   }
@@ -7801,7 +7833,7 @@ async function authSetInitialPassword(empId, initialPw){
 function showAdminPwResetModal(empId){
   const u = MR_EMPLOYEES.find(e=>e.id===Number(empId));
   if(!u) return;
-  document.getElementById('admin-pw-emp-name').textContent = `${u.name} (${u.position||'-'}) · ${authFormatEmpId(u.id)}`;
+  document.getElementById('admin-pw-emp-name').textContent = `${u.name} (${u.position||'-'}) · ${u.empNo || authFormatEmpId(u.id)}`;
   document.getElementById('admin-pw-input').value = '';
   document.getElementById('admin-pw-error').textContent = '';
   document.getElementById('admin-pw-mask').dataset.empId = empId;
@@ -7938,8 +7970,10 @@ function mrEmpBuildRow(prefill){
   const isEdit = !!prefill;
   // 수정 모드에서는 비밀번호 칸 숨김 (별도 재설정 버튼으로 처리)
   const pwField = isEdit ? '' : `<div><label>초기 비밀번호 <span style="font-size:9px;color:#475569;font-weight:500">(미입력 시 1234)</span></label><input type="text" class="r-initpw" placeholder="4자 이상 또는 비워두면 1234" maxlength="20"></div>`;
+  const empNoVal = prefill?.empNo || '';
   return `<div class="mr-emp-row" data-rowid="${id}">
-    <div><label>이름</label><input type="text" class="r-name" placeholder="예: 정인호" value="${(prefill?.name||'').replace(/"/g,'&quot;')}"></div>
+    <div><label>고유번호 <span style="font-size:9px;color:#475569;font-weight:500">(미입력 시 자동 생성)</span></label><input type="text" class="r-empno" placeholder="예: EMP001 / 1001 / A-01" value="${empNoVal.replace(/"/g,'&quot;')}" maxlength="20"></div>
+    <div><label>이름 <span style="font-size:9px;color:#fca5a5;font-weight:500">(로그인 사용 · 중복불가)</span></label><input type="text" class="r-name" placeholder="예: 정인호" value="${(prefill?.name||'').replace(/"/g,'&quot;')}"></div>
     <div><label>직급</label><select class="r-position">${posOpts}</select></div>
     <div><label>구글 이메일 <span style="font-size:9px;color:#475569;font-weight:500">(캘린더 초대용)</span></label><input type="email" class="r-email" placeholder="example@gmail.com" value="${(prefill?.email||'').replace(/"/g,'&quot;')}"></div>
     <div><label>역할</label>
@@ -8004,6 +8038,7 @@ function mrEmpRemoveRow(id){
 async function mrEmpSubmit(){
   const rows = [...document.querySelectorAll('#mr-emp-rows .mr-emp-row')];
   const parsed = rows.map(r=>({
+    empNo: (r.querySelector('.r-empno')?.value||'').trim(),
     name: (r.querySelector('.r-name').value||'').trim(),
     position: r.querySelector('.r-position').value,
     email: (r.querySelector('.r-email')?.value||'').trim(),
@@ -8011,6 +8046,13 @@ async function mrEmpSubmit(){
     role: r.querySelector('.mr-emp-row-role button.on')?.dataset.r || 'manager'
   })).filter(r=>r.name);
   if(parsed.length===0){ showToast('이름을 1명 이상 입력하세요'); return; }
+  // 고유번호 중복 체크
+  for(const p of parsed){
+    if(p.empNo){
+      const dup = MR_EMPLOYEES.find(e=>e.empNo===p.empNo && (MR_EMP_EDIT_ID===null || e.id!==MR_EMP_EDIT_ID));
+      if(dup){ showToast(`고유번호 중복: ${p.empNo}`); return; }
+    }
+  }
   // 비밀번호 길이 체크
   for(const p of parsed){
     if(p.initPw && p.initPw.length<4){ showToast(`비밀번호는 4자 이상: ${p.name}`); return; }
@@ -8037,7 +8079,10 @@ async function mrEmpSubmit(){
     const today = new Date().toISOString().substring(0,10);
     for(const p of parsed){
       const {initPw, ...empData} = p;
-      const newEmp = {id:MR_EMP_NEXT_ID++, ...empData, createdAt:today, mustChangePassword:true};
+      const newId = MR_EMP_NEXT_ID++;
+      // 고유번호 미입력 시 자동 생성 (EMP001 형식)
+      if(!empData.empNo) empData.empNo = 'EMP' + String(newId).padStart(3,'0');
+      const newEmp = {id:newId, ...empData, createdAt:today, mustChangePassword:true};
       if(initPw && initPw.length>=4){
         newEmp.passwordHash = await _authHash(initPw);
       }
@@ -8125,7 +8170,8 @@ function mrRenderEmployees(){
     const pwStatus = !e.passwordHash
       ? '<span class="mr-emp-pw-tag default" title="초기 비밀번호 1234 사용 중">초기 PW</span>'
       : (e.mustChangePassword ? '<span class="mr-emp-pw-tag pending" title="다음 로그인 시 변경 필요">변경 대기</span>' : '');
-    const empIdTag = `<span class="mr-emp-id">${authFormatEmpId(e.id)}</span>`;
+    const displayId = e.empNo || authFormatEmpId(e.id);
+    const empIdTag = `<span class="mr-emp-id">${displayId}</span>`;
     const resetBtn = canManage ? `<button class="reset-pw" onclick="showAdminPwResetModal(${e.id})" title="비밀번호 재설정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>` : '';
     return `<div class="mr-emp-card role-${e.role}${checked?' checked':''}">
       <div class="mr-emp-check" onclick="mrEmpToggleCheck(${e.id})" title="선택"></div>
