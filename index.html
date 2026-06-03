@@ -124,6 +124,30 @@ html.light .nav-clock b{color:#2563eb}
          cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s}
 .s-apply:hover{background:#2563eb}
 
+/* 커스터마이징 대상 토글 (시스템 선택) */
+.s-ctx-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:4px}
+.s-ctx-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:9px;cursor:pointer;font-family:inherit;text-align:left;transition:.18s}
+.s-ctx-btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
+.s-ctx-btn.on{background:linear-gradient(160deg,rgba(167,139,250,.16),rgba(236,72,153,.08));border-color:rgba(167,139,250,.5);box-shadow:0 4px 12px rgba(167,139,250,.18)}
+.s-ctx-btn .s-ctx-ic{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:900;flex-shrink:0;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.s-ctx-btn .s-ctx-lb{display:flex;flex-direction:column;gap:1px;line-height:1.15;min-width:0;flex:1}
+.s-ctx-btn .s-ctx-lb b{font-size:11px;font-weight:800;color:#fff;letter-spacing:.2px}
+.s-ctx-btn .s-ctx-lb span{font-size:9.5px;font-weight:600;color:#94a3b8}
+.s-ctx-btn.on .s-ctx-lb b{color:#c4b5fd}
+.s-ctx-btn.on .s-ctx-lb span{color:#a5b4fc}
+@media(max-width:480px){
+  .s-ctx-toggle{grid-template-columns:1fr}
+}
+
+/* 라이트 모드 토글 */
+html.light .s-ctx-btn{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
+html.light .s-ctx-btn:hover{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.14)}
+html.light .s-ctx-btn.on{background:linear-gradient(160deg,rgba(124,58,237,.12),rgba(219,39,119,.05));border-color:rgba(124,58,237,.45)}
+html.light .s-ctx-btn .s-ctx-lb b{color:#0f172a}
+html.light .s-ctx-btn .s-ctx-lb span{color:#64748b}
+html.light .s-ctx-btn.on .s-ctx-lb b{color:#5b21b6}
+html.light .s-ctx-btn.on .s-ctx-lb span{color:#7c3aed}
+
 /* ── Light Mode (글래스) ── */
 html.light,html.light body{color:#1e293b}
 html.light body{background:
@@ -2168,6 +2192,25 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
           <button class="tog-btn active" id="theme-dark-btn" onclick="applyTheme('dark',this)">다크</button>
           <button class="tog-btn" id="theme-light-btn" onclick="applyTheme('light',this)">라이트</button>
         </div>
+      </div>
+    </div>
+
+    <!-- 시스템 선택 토글 — 어떤 시스템 커스터마이징할지 -->
+    <div class="s-sec" data-ctx="all">
+      <div class="s-sec-ttl">커스터마이징 대상</div>
+      <div class="s-ctx-toggle">
+        <button class="s-ctx-btn" data-ctx="cosm" onclick="switchCustomizationCtx('cosm')">
+          <span class="s-ctx-ic" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">M1</span>
+          <span class="s-ctx-lb"><b>통합 관리</b><span>화장품</span></span>
+        </button>
+        <button class="s-ctx-btn" data-ctx="med" onclick="switchCustomizationCtx('med')">
+          <span class="s-ctx-ic" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">M2</span>
+          <span class="s-ctx-lb"><b>통합 관리</b><span>의료장비</span></span>
+        </button>
+        <button class="s-ctx-btn" data-ctx="report" onclick="switchCustomizationCtx('report')">
+          <span class="s-ctx-ic" style="background:linear-gradient(135deg,#a78bfa,#ec4899)">R</span>
+          <span class="s-ctx-lb"><b>MSO 리포트</b><span>안건·캘린더</span></span>
+        </button>
       </div>
     </div>
 
@@ -7097,6 +7140,51 @@ function openSettings() {
   return openSettingsForContext('all');
 }
 
+// 현재 활성 컨텍스트 추적
+let _currentSettingsCtx = 'all';
+
+// 컨텍스트 전환 (패널 내부에서 호출)
+function switchCustomizationCtx(ctx){
+  applySettingsCtx(ctx);
+  // 토글 버튼 동기화
+  document.querySelectorAll('#settings-panel .s-ctx-btn').forEach(b=>{
+    b.classList.toggle('on', b.dataset.ctx===ctx);
+  });
+}
+
+// 섹션 필터링 + 안내 박스 갱신 (UI만)
+function applySettingsCtx(ctx){
+  _currentSettingsCtx = ctx;
+  // 시스템 선택 토글 자체는 항상 표시 (all + 시스템 선택 후에도 유지)
+  document.querySelectorAll('#settings-panel .s-sec[data-ctx]').forEach(sec=>{
+    const ctxs = (sec.dataset.ctx||'').split(/\s+/);
+    // "all" 섹션(테마, 앱이름, 시스템 토글)은 항상 표시
+    // 그 외는 매칭된 ctx만 표시
+    sec.style.display = (ctxs.includes('all') || ctxs.includes(ctx)) ? '' : 'none';
+  });
+  // 안내 박스
+  const info = document.getElementById('s-ctx-info');
+  const ttl = document.getElementById('s-ctx-title');
+  const desc = document.getElementById('s-ctx-desc');
+  if(info && ttl && desc){
+    if(ctx==='cosm'){
+      info.style.display = '';
+      ttl.textContent = 'MSO 통합 관리 — 화장품';
+      desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
+    } else if(ctx==='med'){
+      info.style.display = '';
+      ttl.textContent = 'MSO 통합 관리 — 의료장비';
+      desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
+    } else if(ctx==='report'){
+      info.style.display = '';
+      ttl.textContent = 'MSO 리포트';
+      desc.textContent = '앱 이름 · 화면 테마 등 외형 설정';
+    } else {
+      info.style.display = 'none';
+    }
+  }
+}
+
 // 컨텍스트별 설정 패널 (cosm/med/report/all)
 function openSettingsForContext(ctx){
   // 마스터 전용
@@ -7104,32 +7192,13 @@ function openSettingsForContext(ctx){
     if(typeof showToast==='function') showToast('커스터마이징은 마스터 권한만 접근 가능합니다');
     return;
   }
-  // 섹션 필터링 — data-ctx 속성에 매칭
-  document.querySelectorAll('#settings-panel .s-sec[data-ctx]').forEach(sec=>{
-    const ctxs = (sec.dataset.ctx||'').split(/\s+/);
-    sec.style.display = (ctx==='all' || ctxs.includes('all') || ctxs.includes(ctx)) ? '' : 'none';
+  // 'all'이면 첫 시스템 선택 안 했을 때 → 기본 cosm
+  const initialCtx = (ctx==='all') ? 'cosm' : ctx;
+  applySettingsCtx(initialCtx);
+  // 시스템 토글 버튼 활성 표시
+  document.querySelectorAll('#settings-panel .s-ctx-btn').forEach(b=>{
+    b.classList.toggle('on', b.dataset.ctx===initialCtx);
   });
-  // 컨텍스트 안내 박스
-  const info = document.getElementById('s-ctx-info');
-  const ttl = document.getElementById('s-ctx-title');
-  const desc = document.getElementById('s-ctx-desc');
-  if(info && ttl && desc){
-    if(ctx==='cosm'){
-      info.style.display = '';
-      ttl.textContent = 'MSO 통합 관리 — 카테고리 1 (화장품) 커스터마이징';
-      desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
-    } else if(ctx==='med'){
-      info.style.display = '';
-      ttl.textContent = 'MSO 통합 관리 — 카테고리 2 (의료장비) 커스터마이징';
-      desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
-    } else if(ctx==='report'){
-      info.style.display = '';
-      ttl.textContent = 'MSO 리포트 커스터마이징';
-      desc.textContent = '앱 이름 · 화면 테마 등 외형 설정';
-    } else {
-      info.style.display = 'none';
-    }
-  }
   // 현재 값 설정 input에 채우기
   const s = loadSettingsData();
   document.getElementById('s-appname').value  = s.appname  || '';
