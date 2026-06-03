@@ -139,6 +139,21 @@ html.light .nav-clock b{color:#2563eb}
   .s-ctx-toggle{grid-template-columns:1fr}
 }
 
+/* 설정 패널 체크박스 (자동 동기화 옵션) */
+.s-check{display:flex;align-items:center;gap:8px;padding:6px 2px;cursor:pointer;font-size:12px;color:#cbd5e1}
+.s-check input{accent-color:#a78bfa;cursor:pointer}
+.s-check:hover{color:#fff}
+html.light .s-check{color:#475569}
+html.light .s-check:hover{color:#0f172a}
+/* 색상 매핑 행 */
+.s-gcal-color-row{display:flex;align-items:center;gap:8px;padding:5px 2px;font-size:11.5px;color:#cbd5e1}
+.s-gcal-color-row i{display:inline-block;width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+.s-gcal-color-row .lb{font-weight:700;color:#fff;min-width:90px}
+.s-gcal-color-row .cn{color:#64748b;font-size:10.5px;font-style:italic}
+html.light .s-gcal-color-row{color:#475569}
+html.light .s-gcal-color-row .lb{color:#0f172a}
+html.light .s-gcal-color-row .cn{color:#94a3b8}
+
 /* 라이트 모드 토글 */
 html.light .s-ctx-btn{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
 html.light .s-ctx-btn:hover{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.14)}
@@ -815,6 +830,19 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 @keyframes mrFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes mrFadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 @keyframes mrShine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes mrChartReveal{
+  0%{opacity:0;transform:translateY(8px) scale(.98);filter:blur(4px)}
+  60%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+}
+/* Plotly 차트 컨테이너에 등장 애니메이션 */
+.mr-chart{animation:mrChartReveal .8s cubic-bezier(.2,.8,.2,1) both}
+/* Plotly 차트의 trace에 들어가는 막대·선 등도 약간 늦게 등장 */
+#mr-tab-report.mr-tab-anim #mr-chart-trend{animation-delay:.55s}
+#mr-tab-report.mr-tab-anim #mr-chart-donut{animation-delay:.65s}
+#mr-tab-report.mr-tab-anim #mr-chart-funnel{animation-delay:.8s}
+#mr-tab-report.mr-tab-anim #mr-chart-weekstack{animation-delay:.9s}
+#mr-tab-report.mr-tab-anim #mr-chart-reason{animation-delay:1s}
 .mr-fade-in{animation:mrFadeUp .55s cubic-bezier(.2,.8,.2,1) both}
 #mr-tab-report.mr-tab-anim .mr-kpi{animation:mrFadeUp .6s cubic-bezier(.2,.8,.2,1) both}
 #mr-tab-report.mr-tab-anim .mr-kpi:nth-child(1){animation-delay:.05s}
@@ -2292,6 +2320,33 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
       <div class="s-row"><span class="s-lbl">메뉴 4</span><input class="s-inp" id="s-report-3" placeholder="기초 관리"></div>
     </div>
 
+    <!-- 구글 캘린더 — 공유 캘린더 ID (report 전용) -->
+    <div class="s-sec" data-ctx="report">
+      <div class="s-sec-ttl">구글 캘린더 — 공유 캘린더 ID</div>
+      <div class="s-row" style="align-items:flex-start;flex-direction:column;gap:5px">
+        <span class="s-lbl" style="font-size:10.5px">공유 캘린더 ID</span>
+        <input class="s-inp" id="s-gcal-calendar-id" placeholder="example@group.calendar.google.com" style="width:100%" autocomplete="off">
+      </div>
+    </div>
+
+    <!-- 구글 캘린더 — 자동 동기화 옵션 (report 전용) -->
+    <div class="s-sec" data-ctx="report">
+      <div class="s-sec-ttl">자동 동기화 옵션</div>
+      <label class="s-check"><input type="checkbox" id="s-gcal-opt-create" checked><span>안건 등록 시 캘린더에 추가</span></label>
+      <label class="s-check"><input type="checkbox" id="s-gcal-opt-update" checked><span>상태/진행률 변경 시 캘린더 이벤트 업데이트</span></label>
+      <label class="s-check"><input type="checkbox" id="s-gcal-opt-delete"><span>실패/보류 처리 시 캘린더 이벤트 삭제</span></label>
+      <label class="s-check"><input type="checkbox" id="s-gcal-opt-attendees" checked><span>담당자·관리자 이메일을 참석자로 추가</span></label>
+    </div>
+
+    <!-- 구글 캘린더 — 제품별 색상 매핑 (report 전용) -->
+    <div class="s-sec" data-ctx="report">
+      <div class="s-sec-ttl">제품별 색상 매핑 (캘린더 이벤트)</div>
+      <div class="s-gcal-color-row"><i style="background:#3f51b5"></i><span class="lb">시너젯</span><span class="cn">블루베리</span></div>
+      <div class="s-gcal-color-row"><i style="background:#f5511d"></i><span class="lb">써마지</span><span class="cn">탠저린</span></div>
+      <div class="s-gcal-color-row"><i style="background:#0b8043"></i><span class="lb">인텐스울트라</span><span class="cn">바질</span></div>
+      <div class="s-gcal-color-row"><i style="background:#8e24aa"></i><span class="lb">기타 제품</span><span class="cn">그레이프</span></div>
+    </div>
+
     <button class="s-apply" onclick="applySettings()">적용 및 저장</button>
     <button class="s-apply" style="margin-top:8px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1)" onclick="resetSettings()">초기화</button>
   </div>
@@ -2721,6 +2776,27 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
 
   <!-- ── 캘린더 탭 ── -->
   <div id="mr-tab-calendar" class="mr-tab" style="display:none">
+
+    <!-- Google 캘린더 연동 (이전 기초관리에서 이동) -->
+    <div class="mr-gcal-card mr-gcal-card-mini" style="margin-bottom:14px;padding:14px 18px">
+      <div class="mr-gcal-status-row" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
+        <div class="mr-gcal-status" id="mr-gcal-status">
+          <span class="mr-gcal-dot disconnected"></span>
+          <span class="mr-gcal-status-text">연결되지 않음 — Google 로그인 필요</span>
+        </div>
+        <div class="mr-gcal-actions">
+          <button class="mr-gcal-btn-login" id="mr-gcal-btn-login" onclick="mrGCalLogin()">Google 로그인</button>
+          <button class="mr-gcal-btn-logout" id="mr-gcal-btn-logout" onclick="mrGCalLogout()" style="display:none">로그아웃</button>
+          <button class="mr-gcal-btn-test" id="mr-gcal-btn-test" onclick="mrGCalTest()" style="display:none">연동 테스트</button>
+          <button class="mr-gcal-btn-syncall" id="mr-gcal-btn-syncall" onclick="mrGCalSyncAll()" style="display:none">전체 동기화</button>
+        </div>
+      </div>
+      <div class="mr-gcal-info" id="mr-gcal-info" style="margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.07)">
+        <div>마지막 동기화: <b id="mr-gcal-last-sync">없음</b></div>
+        <div>등록된 이벤트: <b id="mr-gcal-event-count">0</b>건</div>
+      </div>
+    </div>
+
     <!-- 모바일 뷰 토글 -->
     <div class="mob-cal-view" id="mob-cal-view">
       <button class="on" data-v="month" onclick="mobCalSetView('month')">월간</button>
@@ -2795,58 +2871,22 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
     </div>
     <div class="mr-emp-list" id="mr-emp-list"></div>
 
-    <!-- 구글 캘린더 연동 -->
-    <div class="mr-sec" style="margin-top:30px">구글 캘린더 연동 · 공유 캘린더 자동 동기화</div>
-    <div class="mr-gcal-card">
-      <div class="mr-gcal-status-row">
-        <div class="mr-gcal-status" id="mr-gcal-status">
-          <span class="mr-gcal-dot disconnected"></span>
-          <span class="mr-gcal-status-text">연결되지 않음 — 로그인 필요</span>
-        </div>
-        <div class="mr-gcal-actions">
-          <button class="mr-gcal-btn-login" id="mr-gcal-btn-login" onclick="mrGCalLogin()">Google 로그인</button>
-          <button class="mr-gcal-btn-logout" id="mr-gcal-btn-logout" onclick="mrGCalLogout()" style="display:none">로그아웃</button>
-          <button class="mr-gcal-btn-test" id="mr-gcal-btn-test" onclick="mrGCalTest()" style="display:none">연동 테스트</button>
-          <button class="mr-gcal-btn-syncall" id="mr-gcal-btn-syncall" onclick="mrGCalSyncAll()" style="display:none">전체 동기화</button>
-        </div>
-      </div>
-
+    <!-- 구글 캘린더 OAuth Client ID (인증 정보만 — 동기화 옵션·캘린더 ID는 홈 커스터마이징으로 이동) -->
+    <div class="mr-sec" style="margin-top:30px">구글 캘린더 OAuth 인증 ID</div>
+    <div class="mr-gcal-card" style="padding:18px 20px">
       <div class="mr-gcal-fields">
         <div class="mr-fg">
           <label>OAuth 클라이언트 ID <span class="req">*</span><span class="hint">Google Cloud Console → Credentials</span></label>
           <input type="text" id="mr-gcal-client-id" placeholder="예: 1234567890-abc.apps.googleusercontent.com" autocomplete="off">
         </div>
-        <div class="mr-fg">
-          <label>공유 캘린더 ID <span class="req">*</span><span class="hint">Google Calendar 설정 → 캘린더 통합</span></label>
-          <input type="text" id="mr-gcal-calendar-id" autocomplete="off">
-        </div>
-        <div style="display:flex;justify-content:flex-end;gap:8px">
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
           <button class="mr-btn mr-btn-ghost" onclick="mrGCalReset()">초기화</button>
-          <button class="mr-btn mr-btn-primary" onclick="mrGCalSaveConfig()">설정 저장</button>
+          <button class="mr-btn mr-btn-primary" onclick="mrGCalSaveConfig()">저장</button>
         </div>
-      </div>
-
-      <div class="mr-gcal-options" id="mr-gcal-options">
-        <div class="mr-gcal-opt-title">자동 동기화 옵션</div>
-        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-create" checked><span>안건 등록 시 캘린더에 추가</span></label>
-        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-update" checked><span>상태/진행률 변경 시 캘린더 이벤트 업데이트</span></label>
-        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-delete"><span>실패/보류 처리 시 캘린더 이벤트 삭제</span></label>
-        <label class="mr-alert"><input type="checkbox" id="mr-gcal-opt-attendees" checked><span>담당자·관리자 이메일을 참석자로 추가 (자동 알림)</span></label>
-      </div>
-
-      <div class="mr-gcal-colormap">
-        <div class="mr-gcal-opt-title">제품별 색상 매핑 (캘린더 이벤트)</div>
-        <div class="mr-gcal-colors">
-          <div class="mr-gcal-color"><i style="background:#3f51b5"></i>시너젯 — 블루베리</div>
-          <div class="mr-gcal-color"><i style="background:#f5511d"></i>써마지 — 탠저린</div>
-          <div class="mr-gcal-color"><i style="background:#0b8043"></i>인텐스울트라 — 바질</div>
-          <div class="mr-gcal-color"><i style="background:#8e24aa"></i>기타 제품 — 그레이프</div>
+        <div style="margin-top:12px;padding:9px 12px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:8px;font-size:11px;color:#bfdbfe;line-height:1.55">
+          캘린더 ID·자동 동기화 옵션·색상 매핑은 <b>커스터마이징 → 홈페이지 설정</b>에서 변경할 수 있습니다.<br>
+          연동 상태와 Google 로그인은 <b>캘린더 탭</b> 상단에서 관리합니다.
         </div>
-      </div>
-
-      <div class="mr-gcal-info" id="mr-gcal-info">
-        <div>마지막 동기화: <b id="mr-gcal-last-sync">없음</b></div>
-        <div>등록된 이벤트: <b id="mr-gcal-event-count">0</b>건</div>
       </div>
     </div>
   </div>
@@ -7255,6 +7295,8 @@ function openSettingsForContext(ctx){
     const el = document.getElementById('s-report-'+i);
     if(el) el.value = s.report?.[i] || '';
   });
+  // 구글 캘린더 설정도 채우기 (이전 위치 → 홈 설정으로 이동된 항목)
+  try{ if(typeof mrGCalLoadConfig==='function') mrGCalLoadConfig(); }catch(e){}
   // 테마 버튼 상태
   const isDark = !document.documentElement.classList.contains('light');
   document.getElementById('theme-dark-btn').classList.toggle('active', isDark);
@@ -7355,6 +7397,10 @@ function applySettings() {
   localStorage.setItem('thesc-settings', JSON.stringify(s));
   applyLabels(s);
   dbSaveConfig({settings:_currentConfig()});
+  // 구글 캘린더 설정도 같이 저장 (홈 설정 패널에 있는 칸이 채워져 있으면)
+  if(document.getElementById('s-gcal-calendar-id')){
+    try{ mrGCalSaveConfig(); }catch(e){}
+  }
   closeSettings();
   showToast('설정이 저장되었습니다');
 }
@@ -7491,11 +7537,20 @@ function mrGCalLoadConfig(){
       MR_GCAL_TOKEN_CLIENT = null;
       setTimeout(()=>{ if(typeof google!=='undefined') mrGCalInitGIS(); }, 200);
     }
-    document.getElementById('mr-gcal-client-id').value = cfg.clientId || MR_GCAL_DEFAULT_CLIENT_ID;
-    document.getElementById('mr-gcal-calendar-id').value = cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR;
+    const clientEl = document.getElementById('mr-gcal-client-id');
+    if(clientEl) clientEl.value = cfg.clientId || MR_GCAL_DEFAULT_CLIENT_ID;
+    // 캘린더 ID / 옵션은 홈 설정에도 동일하게 채움
+    const calEl = document.getElementById('mr-gcal-calendar-id');
+    if(calEl) calEl.value = cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR;
+    const calSettingsEl = document.getElementById('s-gcal-calendar-id');
+    if(calSettingsEl) calSettingsEl.value = cfg.calendarId || MR_GCAL_DEFAULT_CALENDAR;
     ['create','update','delete','attendees'].forEach(k=>{
       const el = document.getElementById('mr-gcal-opt-'+k);
-      if(el && cfg.opts && k in cfg.opts) el.checked = !!cfg.opts[k];
+      const sEl = document.getElementById('s-gcal-opt-'+k);
+      if(cfg.opts && k in cfg.opts){
+        if(el) el.checked = !!cfg.opts[k];
+        if(sEl) sEl.checked = !!cfg.opts[k];
+      }
     });
     MR_GCAL_LAST_SYNC = cfg.lastSync || '없음';
     MR_GCAL_EVENT_COUNT = cfg.eventCount || 0;
@@ -7509,13 +7564,26 @@ function mrGCalSaveConfig(){
     showToast('캘린더 연동 설정은 마스터 권한만 변경 가능합니다');
     return;
   }
-  const clientId = document.getElementById('mr-gcal-client-id').value.trim();
-  const calendarId = document.getElementById('mr-gcal-calendar-id').value.trim() || MR_GCAL_DEFAULT_CALENDAR;
+  // OAuth Client ID는 기초관리 칸에서 가져옴
+  const clientId = (document.getElementById('mr-gcal-client-id')?.value||'').trim();
+  // 캘린더 ID는 홈 설정 칸 우선, 없으면 기초관리 칸, 그것도 없으면 기본값
+  const calendarId =
+    (document.getElementById('s-gcal-calendar-id')?.value||'').trim() ||
+    (document.getElementById('mr-gcal-calendar-id')?.value||'').trim() ||
+    MR_GCAL_DEFAULT_CALENDAR;
+  // 자동 동기화 옵션: 홈 설정 우선
+  const optVal = (homeId, masterId)=>{
+    const h = document.getElementById(homeId);
+    const m = document.getElementById(masterId);
+    if(h) return h.checked;
+    if(m) return m.checked;
+    return false;
+  };
   const opts = {
-    create: document.getElementById('mr-gcal-opt-create').checked,
-    update: document.getElementById('mr-gcal-opt-update').checked,
-    delete: document.getElementById('mr-gcal-opt-delete').checked,
-    attendees: document.getElementById('mr-gcal-opt-attendees').checked
+    create: optVal('s-gcal-opt-create', 'mr-gcal-opt-create'),
+    update: optVal('s-gcal-opt-update', 'mr-gcal-opt-update'),
+    delete: optVal('s-gcal-opt-delete', 'mr-gcal-opt-delete'),
+    attendees: optVal('s-gcal-opt-attendees', 'mr-gcal-opt-attendees')
   };
   const cur = JSON.parse(localStorage.getItem('mr_gcal_cfg')||'{}');
   localStorage.setItem('mr_gcal_cfg', JSON.stringify({...cur, clientId, calendarId, opts}));
