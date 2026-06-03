@@ -11044,11 +11044,11 @@ function enterApp(mode, tileEl){
     // 리포트로 진입: 전용 MSO 리포트 페이지
     setTimeout(()=>navigate('mso-report', null), 200);
   } else {
-    // 통합 관리로 진입: 화장품 영업 관리
+    // 통합 관리로 진입: 리포트(대시보드) 화면
     if(currentCat!=='cosm'){
       switchCat('cosm', document.getElementById('cat-btn-cosm'));
     }
-    navigate('stock', document.querySelectorAll('#nav-menu-cosm .nav-item')[1]);
+    navigate('dashboard', document.querySelectorAll('#nav-menu-cosm .nav-item')[0]);
   }
 }
 function goHome(){
