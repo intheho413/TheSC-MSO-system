@@ -12133,41 +12133,46 @@ window.addEventListener('DOMContentLoaded', async ()=>{
       <div id="howTo-ios-safari" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#a7f3d0;line-height:1.5">
         ✅ <b style="color:#fff">Safari에서 열렸습니다.</b> 아래 단계대로 진행하세요.
       </div>
-      <div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#fde68a;line-height:1.6">
-        💡 <b style="color:#fff">공유 버튼이 안 보인다면?</b><br>
-        Safari는 스크롤하면 하단 툴바가 사라집니다. 아래 방법 중 하나로 다시 표시하세요:<br><br>
-        • <b>화면 맨 위로 스크롤</b> (또는 상태바 영역 탭)<br>
-        • <b>주소창(URL) 한 번 탭</b><br>
-        • <b>화면 하단 끝 영역 살짝 탭</b>
+      <div style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.4);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#fde68a;line-height:1.6">
+        ⚠️ <b style="color:#fff">iOS 15+ 하단 주소창 모드인가요?</b><br>
+        주소창이 화면 <b>하단</b>에 있으면 공유 버튼이 <b>"⋯"(더보기) 메뉴</b> 안에 숨겨져 있습니다. 아래 단계대로 진행하세요.
       </div>
       <div class="how-step">
         <div class="how-n">1</div>
         <div>
-          <div class="how-t">주소창을 <b>한 번 탭</b></div>
-          <div class="how-d">주소창이 확장되면서 하단에 공유 버튼이 표시됩니다</div>
-          <div style="margin-top:8px;background:#f3f4f6;border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;color:#374151;font-size:11px">
-            <span style="font-weight:700">𝐀A</span>
-            <span style="flex:1;color:#9ca3af">intheho413.github.io</span>
-            <span style="opacity:.7">⟳</span>
+          <div class="how-t">우측 하단 <b>"⋯" (더보기) 버튼</b> 탭</div>
+          <div class="how-d">화면 가장 우측 하단의 점 3개 아이콘</div>
+          <div style="margin-top:8px;background:#1f2937;border-radius:18px;padding:10px;display:flex;align-items:center;justify-content:space-around;color:#fff;font-size:11px">
+            <span style="opacity:.4;background:#374151;padding:8px 10px;border-radius:50%">◁</span>
+            <span style="opacity:.4;background:#374151;padding:8px 10px;border-radius:50%">□</span>
+            <span style="opacity:.5;background:#fff;color:#000;padding:8px 16px;border-radius:18px;font-size:10px">github.io</span>
+            <span style="opacity:.4;background:#374151;padding:8px 10px;border-radius:50%">⟳</span>
+            <span style="background:linear-gradient(135deg,#a78bfa,#6366f1);padding:10px 14px;border-radius:50%;border:2px solid #fbbf24;animation:pulse 1.5s infinite;font-weight:800">⋯</span>
           </div>
+          <style>@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.6)}50%{box-shadow:0 0 0 8px rgba(251,191,36,0)}}</style>
         </div>
       </div>
       <div class="how-step">
         <div class="how-n">2</div>
         <div>
-          <div class="how-t">하단 <b>공유 버튼 (□↑)</b> 탭</div>
-          <div class="how-d">화면 하단 툴바 중앙에 있는 네모+위화살표 아이콘</div>
-          <div style="margin-top:8px;background:#1f2937;border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:space-around;color:#fff;font-size:10px">
-            <span style="opacity:.4">◁</span>
-            <span style="opacity:.4">▷</span>
-            <span style="background:linear-gradient(135deg,#a78bfa,#6366f1);padding:8px 12px;border-radius:8px;border:2px solid #fbbf24;animation:pulse 1.5s infinite">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:middle"><path d="M12 3v13M8 7l4-4 4 4"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
-              <span style="margin-left:4px">공유</span>
-            </span>
-            <span style="opacity:.4">□</span>
-            <span style="opacity:.4">⎘</span>
+          <div class="how-t">메뉴에서 <b>"공유"</b> 탭</div>
+          <div class="how-d">팝업된 목록 상단에 공유 항목 (□↑ 아이콘)</div>
+          <div style="margin-top:8px;background:#374151;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:2px;font-size:11px;color:#fff">
+            <div style="background:linear-gradient(90deg,rgba(167,139,250,.3),transparent);padding:8px 10px;border-radius:8px;border-left:3px solid #fbbf24;display:flex;align-items:center;gap:8px">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M8 7l4-4 4 4"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+              <b>공유</b>
+            </div>
+            <div style="padding:6px 10px;opacity:.6">새 탭에서 열기</div>
+            <div style="padding:6px 10px;opacity:.6">새로고침</div>
+            <div style="padding:6px 10px;opacity:.6">즐겨찾기에 추가</div>
           </div>
-          <style>@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.6)}50%{box-shadow:0 0 0 8px rgba(251,191,36,0)}}</style>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">2-B</div>
+        <div>
+          <div class="how-t"><span style="color:#fbbf24">또는</span> 주소창 상단 이동 (간편)</div>
+          <div class="how-d">주소창 좌측 <b>"𝐀A" 버튼</b> 탭 → "<b>상단 탭 막대 표시</b>" 선택<br>→ 주소창이 위로 이동 + 하단에 공유버튼(□↑) 직접 표시됨</div>
         </div>
       </div>
       <div class="how-step">
