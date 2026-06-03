@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>앱 아이콘 시안 — The SC(MSO)</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Pretendard','Segoe UI',sans-serif;background:linear-gradient(135deg,#0a0e1a 0%,#1e1b4b 100%);color:#e9e7ff;min-height:100vh;padding:32px 20px 80px}
+  h1{font-size:24px;margin:0 0 4px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+  .sub{color:#a0a0c8;font-size:13px;margin-bottom:32px}
+  h2{font-size:15px;color:#cbc8e6;margin:36px 0 14px;display:flex;align-items:center;gap:8px}
+  h2::before{content:'';width:3px;height:14px;background:linear-gradient(180deg,#a78bfa,#6366f1);border-radius:2px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+  .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;text-align:center;transition:.2s;cursor:pointer}
+  .card:hover{transform:translateY(-3px);border-color:rgba(167,139,250,.4);box-shadow:0 12px 28px rgba(0,0,0,.3)}
+  .iconrow{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin-bottom:12px}
+  .icon-lg{width:96px;height:96px;border-radius:22px;box-shadow:0 8px 22px rgba(0,0,0,.5)}
+  .icon-md{width:56px;height:56px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+  .icon-sm{width:36px;height:36px;border-radius:10px}
+  .name{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px}
+  .desc{font-size:11.5px;color:#a8a4c8;line-height:1.5}
+  .tag{display:inline-block;font-size:10px;background:rgba(167,139,250,.15);color:#cbc8e6;padding:2px 8px;border-radius:10px;margin-top:8px}
+
+  /* lockscreen preview row */
+  .lockrow{background:linear-gradient(160deg,#2a2540,#1a1a2e);border-radius:18px;padding:18px;margin:14px 0;max-width:420px}
+  .notif{background:rgba(40,40,55,.78);backdrop-filter:blur(20px);border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(255,255,255,.05)}
+  .notif img{width:36px;height:36px;border-radius:10px;flex-shrink:0}
+  .nbody{flex:1;color:#fff;min-width:0}
+  .napp{font-size:11px;color:#bbb;font-weight:500}
+  .ntitle{font-size:13.5px;font-weight:600;line-height:1.3;margin:2px 0}
+  .ntext{font-size:12px;color:#cfcfdc}
+
+  .ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:14px}
+  .ctxcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px}
+  .ctxhdr{font-size:11px;color:#9890c0;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+
+  .reco{background:rgba(99,102,241,.12);border-left:3px solid #a78bfa;border-radius:10px;padding:14px 16px;margin-top:24px;font-size:13px;line-height:1.7;color:#dcd5ff}
+  .reco b{color:#fff}
+  .reco code{background:rgba(0,0,0,.25);padding:1px 6px;border-radius:4px;font-size:12px;color:#fde68a}
+</style>
+</head>
+<body>
+
+<h1>앱 아이콘 시안 6종</h1>
+<div class="sub">PWA / 홈 화면 / 푸시 알림에 표시될 아이콘 후보 — 클릭해서 잠금화면 미리보기 확인</div>
+
+<h2>① 시안 후보 (대 · 중 · 소 비교)</h2>
+<div class="grid">
+
+  <div class="card" onclick="preview('opt1')">
+    <div class="iconrow">
+      <img src="icons/options/opt1-text-logo.png" class="icon-lg">
+      <img src="icons/options/opt1-text-logo.png" class="icon-md">
+      <img src="icons/options/opt1-text-logo.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 1 · 텍스트 로고</div>
+    <div class="desc">원형 그라데이션 뱃지 + "TheSC / MSO" 텍스트. 브랜드명 명확.</div>
+    <div class="tag">브랜드 인식 ↑</div>
+  </div>
+
+  <div class="card" onclick="preview('opt2')">
+    <div class="iconrow">
+      <img src="icons/options/opt2-monogram-sc.png" class="icon-lg">
+      <img src="icons/options/opt2-monogram-sc.png" class="icon-md">
+      <img src="icons/options/opt2-monogram-sc.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 2 · 모노그램 "SC"</div>
+    <div class="desc">진보라 그라데이션 + 큰 SC 글자. 작은 사이즈에서도 또렷.</div>
+    <div class="tag">가독성 ★★★</div>
+  </div>
+
+  <div class="card" onclick="preview('opt3')">
+    <div class="iconrow">
+      <img src="icons/options/opt3-chart.png" class="icon-lg">
+      <img src="icons/options/opt3-chart.png" class="icon-md">
+      <img src="icons/options/opt3-chart.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 3 · 차트 + 상승선</div>
+    <div class="desc">막대그래프와 황금색 상승 화살표. 영업·리포트 직관 강조.</div>
+    <div class="tag">도메인 표현</div>
+  </div>
+
+  <div class="card" onclick="preview('opt4')">
+    <div class="iconrow">
+      <img src="icons/options/opt4-minimal-light.png" class="icon-lg">
+      <img src="icons/options/opt4-minimal-light.png" class="icon-md">
+      <img src="icons/options/opt4-minimal-light.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 4 · 미니멀 (화이트)</div>
+    <div class="desc">흰 배경에 보라색 M + 언더라인. iOS와 잘 어울리는 라이트톤.</div>
+    <div class="tag">라이트 모드 친화</div>
+  </div>
+
+  <div class="card" onclick="preview('opt5')">
+    <div class="iconrow">
+      <img src="icons/options/opt5-diamond.png" class="icon-lg">
+      <img src="icons/options/opt5-diamond.png" class="icon-md">
+      <img src="icons/options/opt5-diamond.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 5 · 다이아몬드 (프리미엄)</div>
+    <div class="desc">네이비 배경 + 골드 다이아. 고급 영업 툴 이미지.</div>
+    <div class="tag">럭셔리 톤</div>
+  </div>
+
+  <div class="card" onclick="preview('opt6')">
+    <div class="iconrow">
+      <img src="icons/options/opt6-medplus.png" class="icon-lg">
+      <img src="icons/options/opt6-medplus.png" class="icon-md">
+      <img src="icons/options/opt6-medplus.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 6 · 의료 십자 + M</div>
+    <div class="desc">의료장비 도메인을 직접 표현. 시안색 배경에 흰 + 표시.</div>
+    <div class="tag">의료 특화</div>
+  </div>
+
+</div>
+
+<h2>② 선택한 아이콘 — 잠금화면 미리보기</h2>
+<div id="preview-area">
+  <div class="lockrow">
+    <div class="notif">
+      <img id="prev-icon" src="icons/options/opt2-monogram-sc.png">
+      <div class="nbody">
+        <div class="napp">The SC(MSO) · 지금</div>
+        <div class="ntitle">💬 강남성형외과 — 새 코멘트</div>
+        <div class="ntext">김부장: 데모 일정 다음 주 화요일로 변경 가능할까요?</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>③ 사용 컨텍스트별 표시</h2>
+<div class="ctx">
+  <div class="ctxcard">
+    <div class="ctxhdr">홈 화면 아이콘 (192px)</div>
+    <div style="display:flex;justify-content:center;padding:20px 0">
+      <img id="ctx1" src="icons/options/opt2-monogram-sc.png" style="width:88px;height:88px;border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,.5)">
+    </div>
+    <div class="desc" style="text-align:center">Android · iOS 홈 화면 아이콘</div>
+  </div>
+  <div class="ctxcard">
+    <div class="ctxhdr">스플래시 / 설치 배너 (512px)</div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:20px 0">
+      <img id="ctx2" src="icons/options/opt2-monogram-sc.png" style="width:48px;height:48px;border-radius:12px">
+      <div style="text-align:left">
+        <div style="font-weight:700;color:#fff">The SC(MSO)</div>
+        <div style="font-size:11px;color:#a0a0c8">앱으로 설치</div>
+      </div>
+    </div>
+  </div>
+  <div class="ctxcard">
+    <div class="ctxhdr">파비콘 (브라우저 탭)</div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:8px;padding:20px 0;background:rgba(255,255,255,.06);border-radius:8px">
+      <img id="ctx3" src="icons/options/opt2-monogram-sc.png" style="width:16px;height:16px;border-radius:3px">
+      <span style="font-size:12px;color:#cbc8e6">The SC(MSO) Platform</span>
+    </div>
+  </div>
+</div>
+
+<div class="reco">
+  <b>추천 ▸ 옵션 2 (모노그램 SC) 또는 옵션 4 (미니멀 화이트)</b><br>
+  실제 푸시 알림은 36~40px 크기로 작게 표시되므로, <b>작은 사이즈에서도 또렷한 시안</b>이 유리합니다.
+  옵션 3·5는 멋있지만 디테일이 많아 16~36px에서 뭉개질 수 있어요.<br><br>
+  결정하시면 <code>icons/icon-192.png</code>, <code>icons/icon-512.png</code>로 자동 교체해 드릴게요.
+</div>
+
+<script>
+  function preview(name){
+    const path = `icons/options/${name}-${({opt1:'text-logo',opt2:'monogram-sc',opt3:'chart',opt4:'minimal-light',opt5:'diamond',opt6:'medplus'})[name]}.png`;
+    document.getElementById('prev-icon').src = path;
+    document.getElementById('ctx1').src = path;
+    document.getElementById('ctx2').src = path;
+    document.getElementById('ctx3').src = path;
+    document.getElementById('preview-area').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+</script>
+
+</body>
+</html>

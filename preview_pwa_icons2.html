@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>아이콘 시안 V2 — 모던 · 세련된 톤</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Pretendard','Segoe UI',sans-serif;background:#0a0a0f;color:#e9e7ff;min-height:100vh;padding:32px 20px 80px}
+  h1{font-size:24px;margin:0 0 4px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+  .sub{color:#71717a;font-size:13px;margin-bottom:36px}
+  h2{font-size:14px;color:#a1a1aa;margin:36px 0 14px;display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:.02em}
+  h2::before{content:'';width:3px;height:14px;background:linear-gradient(180deg,#a78bfa,#6366f1);border-radius:2px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+  .card{background:#111118;border:1px solid #27272a;border-radius:18px;padding:22px;text-align:center;transition:.25s;cursor:pointer;position:relative;overflow:hidden}
+  .card:hover{transform:translateY(-4px);border-color:#52525b;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  .card.reco::after{content:'추천';position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#a78bfa,#6366f1);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px}
+  .iconrow{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin-bottom:14px}
+  .icon-lg{width:104px;height:104px;border-radius:24px;box-shadow:0 10px 26px rgba(0,0,0,.6)}
+  .icon-md{width:60px;height:60px;border-radius:14px;box-shadow:0 5px 14px rgba(0,0,0,.5)}
+  .icon-sm{width:38px;height:38px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .name{font-size:14.5px;font-weight:700;color:#fafafa;margin-bottom:5px}
+  .desc{font-size:11.5px;color:#71717a;line-height:1.55}
+  .meta{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .chip{font-size:10px;background:#1f1f29;color:#a1a1aa;padding:3px 8px;border-radius:10px;border:1px solid #2a2a36}
+
+  /* lockscreen */
+  .lockrow{background:linear-gradient(160deg,#1a1a2e,#0f0f1a);border-radius:20px;padding:20px;margin:14px 0;max-width:440px;border:1px solid #1f1f2e}
+  .notif{background:rgba(28,28,40,.85);backdrop-filter:blur(20px);border-radius:14px;padding:11px 13px;display:flex;gap:11px;align-items:flex-start;border:1px solid #2a2a36}
+  .notif img{width:38px;height:38px;border-radius:11px;flex-shrink:0}
+  .nbody{flex:1;color:#fff;min-width:0}
+  .napp{font-size:11px;color:#a1a1aa;font-weight:500}
+  .ntitle{font-size:13.5px;font-weight:600;line-height:1.3;margin:2px 0}
+  .ntext{font-size:12px;color:#cfcfdc}
+
+  .ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px}
+  .ctxcard{background:#111118;border:1px solid #27272a;border-radius:14px;padding:16px}
+  .ctxhdr{font-size:10px;color:#71717a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600}
+
+  .reco-box{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(59,130,246,.12));border:1px solid #3f3f5e;border-radius:14px;padding:18px 20px;margin-top:28px;font-size:13px;line-height:1.7;color:#d4d4d8}
+  .reco-box b{color:#fafafa}
+  .reco-box code{background:rgba(0,0,0,.4);padding:2px 7px;border-radius:5px;font-size:12px;color:#fde68a;font-family:'JetBrains Mono',monospace}
+
+  .compare{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;justify-content:center;font-size:10px;color:#71717a}
+  .compare span{display:flex;align-items:center;gap:4px}
+</style>
+</head>
+<body>
+
+<h1>아이콘 시안 V2 — 모던 · 세련된 톤</h1>
+<div class="sub">캐주얼한 느낌을 제거하고 Linear · Stripe · Vercel · Apple 스타일을 참고한 6종 신규 시안 · 카드 클릭해서 미리보기</div>
+
+<h2>① 모던 시안 후보</h2>
+<div class="grid">
+
+  <div class="card reco" onclick="preview('opt7')">
+    <div class="iconrow">
+      <img src="icons/options/opt7-mesh.png" class="icon-lg">
+      <img src="icons/options/opt7-mesh.png" class="icon-md">
+      <img src="icons/options/opt7-mesh.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 7 · Mesh Gradient Orb</div>
+    <div class="desc">Linear · Arc 스타일. 추상 색감만으로 표현하는 가장 세련된 톤. 로고 없이 인상적.</div>
+    <div class="meta"><span class="chip">Linear-inspired</span><span class="chip">Abstract</span></div>
+  </div>
+
+  <div class="card reco" onclick="preview('opt8')">
+    <div class="iconrow">
+      <img src="icons/options/opt8-sharp-s.png" class="icon-lg">
+      <img src="icons/options/opt8-sharp-s.png" class="icon-md">
+      <img src="icons/options/opt8-sharp-s.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 8 · Sharp Monogram "S"</div>
+    <div class="desc">Apple 시스템 앱 스타일. 다크 메탈 그라데이션 + Hairline border + Light weight 타이포.</div>
+    <div class="meta"><span class="chip">Apple-style</span><span class="chip">Metallic</span></div>
+  </div>
+
+  <div class="card" onclick="preview('opt9')">
+    <div class="iconrow">
+      <img src="icons/options/opt9-arc.png" class="icon-lg">
+      <img src="icons/options/opt9-arc.png" class="icon-md">
+      <img src="icons/options/opt9-arc.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 9 · Geometric Arc</div>
+    <div class="desc">Stripe · Vercel 풍 지오메트릭. 원형 + 90도 아크 + 중심 도트. 미니멀하면서 균형감.</div>
+    <div class="meta"><span class="chip">Stripe-style</span><span class="chip">Minimal</span></div>
+  </div>
+
+  <div class="card" onclick="preview('opt10')">
+    <div class="iconrow">
+      <img src="icons/options/opt10-wordmark.png" class="icon-lg">
+      <img src="icons/options/opt10-wordmark.png" class="icon-md">
+      <img src="icons/options/opt10-wordmark.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 10 · Wordmark "the·sc"</div>
+    <div class="desc">소문자 워드마크 + 하단 컬러 액센트 바. 에디토리얼 디자인 풍. 라이트 톤이 인상적.</div>
+    <div class="meta"><span class="chip">Editorial</span><span class="chip">Light</span></div>
+  </div>
+
+  <div class="card" onclick="preview('opt11')">
+    <div class="iconrow">
+      <img src="icons/options/opt11-abstract-m.png" class="icon-lg">
+      <img src="icons/options/opt11-abstract-m.png" class="icon-md">
+      <img src="icons/options/opt11-abstract-m.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 11 · Abstract "M" Lines</div>
+    <div class="desc">두꺼운 라인 4개로 구성된 추상 M. Bauhaus 풍 기하학. 듀얼 컬러 강조.</div>
+    <div class="meta"><span class="chip">Bauhaus</span><span class="chip">Architectural</span></div>
+  </div>
+
+  <div class="card" onclick="preview('opt12')">
+    <div class="iconrow">
+      <img src="icons/options/opt12-orb.png" class="icon-lg">
+      <img src="icons/options/opt12-orb.png" class="icon-md">
+      <img src="icons/options/opt12-orb.png" class="icon-sm">
+    </div>
+    <div class="name">옵션 12 · Glass Orb</div>
+    <div class="desc">3D 글래스 구체 + Halo 글로우 + Highlight. 프리미엄 SaaS 톤. 시각 임팩트 ★★★.</div>
+    <div class="meta"><span class="chip">Premium</span><span class="chip">3D Glass</span></div>
+  </div>
+
+</div>
+
+<h2>② 잠금화면 미리보기 (선택한 아이콘 적용)</h2>
+<div id="preview-area">
+  <div class="lockrow">
+    <div class="notif">
+      <img id="prev-icon" src="icons/options/opt7-mesh.png">
+      <div class="nbody">
+        <div class="napp">The SC(MSO) · 지금</div>
+        <div class="ntitle">💬 강남성형외과 — 새 코멘트</div>
+        <div class="ntext">김부장: 데모 일정 다음 주 화요일로 변경 가능할까요?</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>③ 컨텍스트별 표시</h2>
+<div class="ctx">
+  <div class="ctxcard">
+    <div class="ctxhdr">홈 화면 아이콘</div>
+    <div style="display:flex;justify-content:center;padding:18px 0">
+      <img id="ctx1" src="icons/options/opt7-mesh.png" style="width:92px;height:92px;border-radius:22px;box-shadow:0 10px 24px rgba(0,0,0,.6)">
+    </div>
+  </div>
+  <div class="ctxcard">
+    <div class="ctxhdr">설치 배너</div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:18px 0">
+      <img id="ctx2" src="icons/options/opt7-mesh.png" style="width:48px;height:48px;border-radius:12px">
+      <div style="text-align:left">
+        <div style="font-weight:700;color:#fafafa">The SC(MSO)</div>
+        <div style="font-size:11px;color:#71717a">앱으로 설치</div>
+      </div>
+    </div>
+  </div>
+  <div class="ctxcard">
+    <div class="ctxhdr">파비콘 (탭)</div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:8px;padding:18px 0;background:#1a1a24;border-radius:8px">
+      <img id="ctx3" src="icons/options/opt7-mesh.png" style="width:16px;height:16px;border-radius:3px">
+      <span style="font-size:12px;color:#cbc8e6">The SC(MSO)</span>
+    </div>
+  </div>
+</div>
+
+<h2>④ V1 시안과 직접 비교</h2>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">
+  <div class="card">
+    <div class="iconrow"><img src="icons/options/opt2-monogram-sc.png" class="icon-lg"></div>
+    <div class="name" style="font-size:13px">V1 — 옵션 2</div>
+    <div class="desc" style="font-size:11px">두꺼운 SC · 캐주얼</div>
+  </div>
+  <div class="card" style="border-color:#7c3aed">
+    <div class="iconrow"><img src="icons/options/opt8-sharp-s.png" class="icon-lg"></div>
+    <div class="name" style="font-size:13px">V2 — 옵션 8</div>
+    <div class="desc" style="font-size:11px">얇은 S · Apple 톤</div>
+  </div>
+  <div class="card">
+    <div class="iconrow"><img src="icons/options/opt1-text-logo.png" class="icon-lg"></div>
+    <div class="name" style="font-size:13px">V1 — 옵션 1</div>
+    <div class="desc" style="font-size:11px">텍스트 로고 · 정보 많음</div>
+  </div>
+  <div class="card" style="border-color:#7c3aed">
+    <div class="iconrow"><img src="icons/options/opt10-wordmark.png" class="icon-lg"></div>
+    <div class="name" style="font-size:13px">V2 — 옵션 10</div>
+    <div class="desc" style="font-size:11px">에디토리얼 워드마크</div>
+  </div>
+</div>
+
+<div class="reco-box">
+  <b>🎯 추천 ▸ 옵션 7 (Mesh) 또는 옵션 8 (Sharp S)</b><br>
+  • <b>옵션 7</b> — Linear · Arc 같은 최신 SaaS 트렌드. 로고 없이 색감만으로 표현해서 시간이 지나도 안 질림. 작은 사이즈에서도 추상이라 뭉개지지 않음.<br>
+  • <b>옵션 8</b> — Apple 시스템 앱(메모, 설정 등) 스타일. 다크 메탈 + 얇은 타이포가 가장 "엔터프라이즈"한 인상.<br>
+  • <b>옵션 12</b> — 가장 화려하지만 작아질수록 디테일 약화. 마케팅 자료에 좋음.<br><br>
+  결정하시면 <code>icons/icon-192.png</code>, <code>icons/icon-512.png</code>로 자동 교체해 드릴게요.
+</div>
+
+<script>
+  const map = {opt7:'mesh',opt8:'sharp-s',opt9:'arc',opt10:'wordmark',opt11:'abstract-m',opt12:'orb'};
+  function preview(name){
+    const path = `icons/options/${name}-${map[name]}.png`;
+    document.getElementById('prev-icon').src = path;
+    document.getElementById('ctx1').src = path;
+    document.getElementById('ctx2').src = path;
+    document.getElementById('ctx3').src = path;
+    document.getElementById('preview-area').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+</script>
+
+</body>
+</html>

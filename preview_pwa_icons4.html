@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>메쉬 그라데이션 시안 V2 — 10종</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Pretendard','Segoe UI',sans-serif;background:#0a0a0f;color:#e9e7ff;min-height:100vh;padding:32px 20px 80px}
+  h1{font-size:24px;margin:0 0 4px;background:linear-gradient(135deg,#a78bfa,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+  .sub{color:#71717a;font-size:13px;margin-bottom:32px}
+  h2{font-size:14px;color:#a1a1aa;margin:36px 0 14px;display:flex;align-items:center;gap:8px;font-weight:600}
+  h2::before{content:'';width:3px;height:14px;background:linear-gradient(180deg,#a78bfa,#6366f1);border-radius:2px}
+
+  .ref{display:flex;align-items:center;gap:18px;background:#111118;border:1px solid #27272a;border-radius:14px;padding:16px;margin-bottom:20px}
+  .ref img{width:80px;height:80px;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+  .ref .t{font-size:13px;color:#cbc8e6;line-height:1.6}
+  .ref .t b{color:#fff}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  .card{background:#111118;border:1px solid #27272a;border-radius:18px;padding:22px;text-align:center;transition:.25s;cursor:pointer;position:relative;overflow:hidden}
+  .card:hover{transform:translateY(-4px);border-color:#52525b;box-shadow:0 16px 40px rgba(0,0,0,.5)}
+  .card.reco::after{content:'추천';position:absolute;top:12px;right:12px;background:linear-gradient(135deg,#a78bfa,#6366f1);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px}
+  .iconrow{display:flex;justify-content:center;align-items:flex-end;gap:14px;margin-bottom:14px}
+  .icon-lg{width:120px;height:120px;border-radius:26px;box-shadow:0 12px 30px rgba(0,0,0,.6)}
+  .icon-md{width:60px;height:60px;border-radius:14px;box-shadow:0 5px 14px rgba(0,0,0,.5)}
+  .icon-sm{width:38px;height:38px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .name{font-size:14.5px;font-weight:700;color:#fafafa;margin-bottom:5px}
+  .desc{font-size:11.5px;color:#71717a;line-height:1.55}
+  .chip{display:inline-block;font-size:10px;background:#1f1f29;color:#a1a1aa;padding:3px 8px;border-radius:10px;border:1px solid #2a2a36;margin-top:8px}
+
+  .lockrow{background:linear-gradient(160deg,#1a1a2e,#0f0f1a);border-radius:20px;padding:20px;margin:14px 0;max-width:440px;border:1px solid #1f1f2e}
+  .notif{background:rgba(28,28,40,.85);backdrop-filter:blur(20px);border-radius:14px;padding:11px 13px;display:flex;gap:11px;align-items:flex-start;border:1px solid #2a2a36}
+  .notif img{width:38px;height:38px;border-radius:11px;flex-shrink:0}
+  .nbody{flex:1;color:#fff;min-width:0}
+  .napp{font-size:11px;color:#a1a1aa;font-weight:500}
+  .ntitle{font-size:13.5px;font-weight:600;line-height:1.3;margin:2px 0}
+  .ntext{font-size:12px;color:#cfcfdc}
+
+  .ctx{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px}
+  .ctxcard{background:#111118;border:1px solid #27272a;border-radius:14px;padding:16px}
+  .ctxhdr{font-size:10px;color:#71717a;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600}
+
+  .reco-box{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(59,130,246,.12));border:1px solid #3f3f5e;border-radius:14px;padding:18px 20px;margin-top:28px;font-size:13px;line-height:1.7;color:#d4d4d8}
+  .reco-box b{color:#fafafa}
+</style>
+</head>
+<body>
+
+<h1>메쉬 그라데이션 시안 V2 — 10종</h1>
+<div class="sub">10번 메쉬 디자인 기반 컬러·구성 변형 · 카드 클릭하면 미리보기 적용</div>
+
+<div class="ref">
+  <img src="icons/options/logo10-mesh.png" alt="이전 10번">
+  <div class="t">
+    <b>이전 마음에 든 시안 — 옵션 ⑩ (퍼플·블루·시안 메쉬)</b><br>
+    이 톤을 기반으로 컬러 팔레트 · 블롭 배치 · 텍스처 변주
+  </div>
+</div>
+
+<h2>① 메쉬 변주 시안 10종</h2>
+<div class="grid">
+
+  <div class="card" onclick="preview('mesh1-sunset')">
+    <div class="iconrow">
+      <img src="icons/options/mesh1-sunset.png" class="icon-lg">
+      <img src="icons/options/mesh1-sunset.png" class="icon-md">
+      <img src="icons/options/mesh1-sunset.png" class="icon-sm">
+    </div>
+    <div class="name">M1 · Sunset</div>
+    <div class="desc">오렌지 → 핑크 → 퍼플. 따뜻하고 감각적인 톤.</div>
+    <div class="chip">Warm</div>
+  </div>
+
+  <div class="card" onclick="preview('mesh2-aurora')">
+    <div class="iconrow">
+      <img src="icons/options/mesh2-aurora.png" class="icon-lg">
+      <img src="icons/options/mesh2-aurora.png" class="icon-md">
+      <img src="icons/options/mesh2-aurora.png" class="icon-sm">
+    </div>
+    <div class="name">M2 · Aurora</div>
+    <div class="desc">에메랄드 → 시안 → 인디고. 오로라 느낌 · 신선함.</div>
+    <div class="chip">Fresh</div>
+  </div>
+
+  <div class="card reco" onclick="preview('mesh3-vapor')">
+    <div class="iconrow">
+      <img src="icons/options/mesh3-vapor.png" class="icon-lg">
+      <img src="icons/options/mesh3-vapor.png" class="icon-md">
+      <img src="icons/options/mesh3-vapor.png" class="icon-sm">
+    </div>
+    <div class="name">M3 · Vaporwave</div>
+    <div class="desc">핫핑크 + 시안 + 퍼플. Y2K 레트로 모던 · 가장 임팩트.</div>
+    <div class="chip">Y2K · Bold</div>
+  </div>
+
+  <div class="card" onclick="preview('mesh4-purple')">
+    <div class="iconrow">
+      <img src="icons/options/mesh4-purple.png" class="icon-lg">
+      <img src="icons/options/mesh4-purple.png" class="icon-md">
+      <img src="icons/options/mesh4-purple.png" class="icon-sm">
+    </div>
+    <div class="name">M4 · Deep Purple</div>
+    <div class="desc">4개 보라 블롭 밀집 배치. 풍부하고 무게감 있는 톤.</div>
+    <div class="chip">Rich</div>
+  </div>
+
+  <div class="card" onclick="preview('mesh5-pastel')">
+    <div class="iconrow">
+      <img src="icons/options/mesh5-pastel.png" class="icon-lg">
+      <img src="icons/options/mesh5-pastel.png" class="icon-md">
+      <img src="icons/options/mesh5-pastel.png" class="icon-sm">
+    </div>
+    <div class="name">M5 · Pastel Light</div>
+    <div class="desc">라이트 톤 파스텔 + 다크 심볼. iOS 라이트모드와 어울림.</div>
+    <div class="chip">Light</div>
+  </div>
+
+  <div class="card reco" onclick="preview('mesh6-grain')">
+    <div class="iconrow">
+      <img src="icons/options/mesh6-grain.png" class="icon-lg">
+      <img src="icons/options/mesh6-grain.png" class="icon-md">
+      <img src="icons/options/mesh6-grain.png" class="icon-sm">
+    </div>
+    <div class="name">M6 · Grain Texture</div>
+    <div class="desc">메쉬 + 미세 노이즈 그레인. 필름 같은 질감 · 인디 SaaS 톤.</div>
+    <div class="chip">Textured</div>
+  </div>
+
+  <div class="card" onclick="preview('mesh7-asym')">
+    <div class="iconrow">
+      <img src="icons/options/mesh7-asym.png" class="icon-lg">
+      <img src="icons/options/mesh7-asym.png" class="icon-md">
+      <img src="icons/options/mesh7-asym.png" class="icon-sm">
+    </div>
+    <div class="name">M7 · Asymmetric</div>
+    <div class="desc">큰 블롭 1개 좌상단 + 작은 보조. 비대칭 다이내믹.</div>
+    <div class="chip">Dynamic</div>
+  </div>
+
+  <div class="card reco" onclick="preview('mesh8-blues')">
+    <div class="iconrow">
+      <img src="icons/options/mesh8-blues.png" class="icon-lg">
+      <img src="icons/options/mesh8-blues.png" class="icon-md">
+      <img src="icons/options/mesh8-blues.png" class="icon-sm">
+    </div>
+    <div class="name">M8 · Cool Blues</div>
+    <div class="desc">시안·블루·인디고 단색계. 원본 로고 컬러와 가장 조화.</div>
+    <div class="chip">Brand-aligned</div>
+  </div>
+
+  <div class="card" onclick="preview('mesh9-ring')">
+    <div class="iconrow">
+      <img src="icons/options/mesh9-ring.png" class="icon-lg">
+      <img src="icons/options/mesh9-ring.png" class="icon-md">
+      <img src="icons/options/mesh9-ring.png" class="icon-sm">
+    </div>
+    <div class="name">M9 · Ring Border</div>
+    <div class="desc">메쉬 + 얇은 화이트 테두리. 카드 같은 정돈된 느낌.</div>
+    <div class="chip">Framed</div>
+  </div>
+
+  <div class="card" onclick="preview('mesh10-halo')">
+    <div class="iconrow">
+      <img src="icons/options/mesh10-halo.png" class="icon-lg">
+      <img src="icons/options/mesh10-halo.png" class="icon-md">
+      <img src="icons/options/mesh10-halo.png" class="icon-sm">
+    </div>
+    <div class="name">M10 · Centered Halo</div>
+    <div class="desc">딥 블루 배경 + 중앙 광원 글로우 → 심볼이 빛나 보임.</div>
+    <div class="chip">Spotlit</div>
+  </div>
+
+</div>
+
+<h2>② 잠금화면 미리보기</h2>
+<div id="preview-area">
+  <div class="lockrow">
+    <div class="notif">
+      <img id="prev-icon" src="icons/options/mesh3-vapor.png">
+      <div class="nbody">
+        <div class="napp">The SC(MSO) · 지금</div>
+        <div class="ntitle">💬 강남성형외과 — 새 코멘트</div>
+        <div class="ntext">김부장: 데모 일정 다음 주 화요일로 변경 가능할까요?</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>③ 컨텍스트별 표시</h2>
+<div class="ctx">
+  <div class="ctxcard">
+    <div class="ctxhdr">홈 화면 아이콘</div>
+    <div style="display:flex;justify-content:center;padding:18px 0">
+      <img id="ctx1" src="icons/options/mesh3-vapor.png" style="width:92px;height:92px;border-radius:22px;box-shadow:0 10px 24px rgba(0,0,0,.6)">
+    </div>
+  </div>
+  <div class="ctxcard">
+    <div class="ctxhdr">설치 배너</div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:12px;padding:18px 0">
+      <img id="ctx2" src="icons/options/mesh3-vapor.png" style="width:48px;height:48px;border-radius:12px">
+      <div style="text-align:left">
+        <div style="font-weight:700;color:#fafafa">The SC(MSO)</div>
+        <div style="font-size:11px;color:#71717a">앱으로 설치</div>
+      </div>
+    </div>
+  </div>
+  <div class="ctxcard">
+    <div class="ctxhdr">파비콘</div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:8px;padding:18px 0;background:#1a1a24;border-radius:8px">
+      <img id="ctx3" src="icons/options/mesh3-vapor.png" style="width:16px;height:16px;border-radius:3px">
+      <span style="font-size:12px;color:#cbc8e6">The SC(MSO)</span>
+    </div>
+  </div>
+</div>
+
+<h2>④ 이전 ⑩번과 직접 비교</h2>
+<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
+  <div class="card" style="padding:14px">
+    <div class="iconrow"><img src="icons/options/logo10-mesh.png" class="icon-lg" style="width:90px;height:90px"></div>
+    <div class="name" style="font-size:12px">이전 ⑩ (Purple/Cyan)</div>
+  </div>
+  <div class="card" style="padding:14px;border-color:#7c3aed">
+    <div class="iconrow"><img src="icons/options/mesh3-vapor.png" class="icon-lg" style="width:90px;height:90px"></div>
+    <div class="name" style="font-size:12px">M3 · Vapor</div>
+  </div>
+  <div class="card" style="padding:14px;border-color:#7c3aed">
+    <div class="iconrow"><img src="icons/options/mesh6-grain.png" class="icon-lg" style="width:90px;height:90px"></div>
+    <div class="name" style="font-size:12px">M6 · Grain</div>
+  </div>
+  <div class="card" style="padding:14px;border-color:#7c3aed">
+    <div class="iconrow"><img src="icons/options/mesh8-blues.png" class="icon-lg" style="width:90px;height:90px"></div>
+    <div class="name" style="font-size:12px">M8 · Blues</div>
+  </div>
+</div>
+
+<div class="reco-box">
+  <b>🎯 추천 Top 3</b><br>
+  • <b>M3 (Vaporwave)</b> — 가장 임팩트 강함. 트렌디한 핑크+시안 콤보, Y2K 모던.<br>
+  • <b>M8 (Cool Blues)</b> — 원본 로고의 블루와 가장 자연스럽게 조화. 안정적·엔터프라이즈.<br>
+  • <b>M6 (Grain)</b> — 메쉬 + 그레인 텍스처. 인디 SaaS 감성, 디테일 풍부.<br><br>
+  마음에 드는 번호 알려주시면 메인 아이콘으로 자동 적용합니다.
+</div>
+
+<script>
+  function preview(name){
+    const path = `icons/options/${name}.png`;
+    document.getElementById('prev-icon').src = path;
+    document.getElementById('ctx1').src = path;
+    document.getElementById('ctx2').src = path;
+    document.getElementById('ctx3').src = path;
+    document.getElementById('preview-area').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+</script>
+
+</body>
+</html>

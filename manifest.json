@@ -1,0 +1,44 @@
+{
+  "name": "The SC(MSO)",
+  "short_name": "The SC(MSO)",
+  "description": "MSO 통합 관리 시스템 + MSO 리포트 — 영업·재고·수금·계약·안건 트래킹",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0e1a",
+  "theme_color": "#a78bfa",
+  "lang": "ko",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "MSO 리포트",
+      "short_name": "리포트",
+      "description": "안건 트래킹 + 캘린더 + KPI",
+      "url": "./index.html#report",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "안건 관리",
+      "short_name": "안건",
+      "description": "영업 안건 목록 및 코멘트",
+      "url": "./index.html#cases",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
