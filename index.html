@@ -613,6 +613,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 /* MSO 리포트 페이지 폭 확장 — 3분할 레이아웃 가시성 ↑ */
 #page-mso-report.page{max-width:1500px}
 
+/* 모바일 전용 요소 — 기본 숨김 */
+.mob-cal-view,.mob-cal-week,.mob-cal-list,.mob-cal-day-panel{display:none}
+
 /* ═════════════════════════════════════════════════════════════
    📱 MOBILE — 1단계 (기반) + 2단계 (리포트)
    ═════════════════════════════════════════════════════════════ */
@@ -804,6 +807,73 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 
   /* 코멘트 멘션 하이라이트 */
   .mr-cmt .ment{color:#c4b5fd;font-weight:700;background:rgba(167,139,250,.15);padding:0 4px;border-radius:3px}
+
+  /* ═══════════════════════
+     4단계 — 캘린더 모바일
+     ═══════════════════════ */
+  /* 캘린더 헤더 컴팩트 */
+  #mr-tab-calendar .mr-cal-head{flex-direction:column;align-items:stretch;gap:8px;padding:0 4px 8px}
+  #mr-tab-calendar .mr-cal-nav{justify-content:center}
+  #mr-tab-calendar .mr-cal-month{font-size:14.5px;font-weight:900;min-width:auto;color:#fff}
+  #mr-tab-calendar .mr-cal-btn{width:34px;height:34px;font-size:18px}
+  #mr-tab-calendar .mr-cal-today{padding:6px 14px;font-size:11.5px}
+  #mr-tab-calendar .mr-cal-legend{justify-content:center;font-size:10.5px}
+
+  /* 뷰 토글 [월간/주간/리스트] */
+  .mob-cal-view{display:flex;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:3px;margin:0 0 10px 0;gap:2px}
+  .mob-cal-view button{flex:1;background:transparent;border:none;color:#94a3b8;padding:7px 8px;border-radius:6px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+  .mob-cal-view button.on{background:linear-gradient(135deg,#a78bfa,#ec4899);color:#fff;box-shadow:0 3px 8px rgba(167,139,250,.3)}
+
+  /* 월간 미니 — 셀 압축 */
+  .mr-cal-grid{gap:1px}
+  .mr-cal-dh{padding:6px 2px;font-size:9.5px}
+  .mr-cal-cell{min-height:48px;padding:4px 3px;gap:2px;cursor:pointer}
+  .mr-cal-cell.today{box-shadow:inset 0 0 0 2px rgba(167,139,250,.55)}
+  .mr-cal-cell.selected{background:linear-gradient(160deg,rgba(167,139,250,.28),rgba(167,139,250,.1));box-shadow:inset 0 0 0 2px #a78bfa}
+  .mr-cal-date{font-size:12px;font-weight:700;text-align:center}
+  /* 모바일 — 이벤트 텍스트 숨김, 점 표시만 */
+  .mr-cal-cell .mr-cal-item,.mr-cal-cell .mr-cal-more{display:none}
+  .mr-cal-cell.has-events::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:#34d399;box-shadow:0 0 5px #34d399}
+  .mr-cal-cell.has-events.multi::after{box-shadow:0 0 5px #34d399,7px 0 0 -1px #fbbf24,-7px 0 0 -1px #60a5fa}
+
+  /* 선택 일자 이벤트 패널 */
+  .mob-cal-day-panel{margin-top:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:12px;display:none}
+  .mob-cal-day-panel.open{display:block}
+  .mob-cal-day-panel .h{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+  .mob-cal-day-panel .h .d{font-size:14px;font-weight:900;color:#fff}
+  .mob-cal-day-panel .h .s{font-size:10.5px;color:#94a3b8;font-weight:600}
+  .mob-cal-evt{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-left:3px solid #60a5fa;border-radius:9px;padding:10px 12px;margin-bottom:6px;cursor:pointer}
+  .mob-cal-evt:active{background:rgba(167,139,250,.1)}
+  .mob-cal-evt .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+  .mob-cal-evt .lbl{font-size:9.5px;font-weight:800;background:rgba(96,165,250,.18);color:#bfdbfe;padding:1px 6px;border-radius:3px}
+  .mob-cal-evt .lbl.end{background:rgba(239,68,68,.18);color:#fca5a5}
+  .mob-cal-evt .lbl.mid{background:rgba(148,163,184,.2);color:#cbd5e1}
+  .mob-cal-evt .tm{font-size:10.5px;color:#fbbf24;font-weight:700}
+  .mob-cal-evt .ttl{font-size:12.5px;font-weight:700;color:#fff;margin-bottom:2px}
+  .mob-cal-evt .meta{font-size:10.5px;color:#94a3b8}
+  .mob-cal-day-panel .empty{text-align:center;padding:14px 8px;font-size:11.5px;color:#64748b}
+
+  /* 주간 뷰 — 가로 카드 */
+  .mob-cal-week{display:none;gap:5px;padding:6px 0;overflow-x:auto}
+  .mob-cal-week.open{display:flex}
+  .mob-cal-week .day{flex-shrink:0;width:46px;text-align:center;padding:8px 4px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:9px;cursor:pointer;position:relative}
+  .mob-cal-week .day.today{background:linear-gradient(160deg,rgba(167,139,250,.18),rgba(167,139,250,.04));border-color:rgba(167,139,250,.5)}
+  .mob-cal-week .day.selected{background:linear-gradient(160deg,rgba(167,139,250,.3),rgba(167,139,250,.1));border-color:#a78bfa}
+  .mob-cal-week .day .dn{font-size:9.5px;color:#94a3b8;font-weight:700}
+  .mob-cal-week .day .dt{font-size:14px;color:#fff;font-weight:800;margin-top:2px}
+  .mob-cal-week .day.today .dn{color:#c4b5fd}
+  .mob-cal-week .day.sun .dn{color:#fca5a5}
+  .mob-cal-week .day.sat .dn{color:#93c5fd}
+  .mob-cal-week .day.has::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:#34d399}
+
+  /* 리스트 뷰 — 전체 일정 시간순 */
+  .mob-cal-list{display:none}
+  .mob-cal-list.open{display:block}
+  .mob-cal-list-day{margin-bottom:16px}
+  .mob-cal-list-day .dh{font-size:12px;font-weight:800;color:#a5b4fc;letter-spacing:.5px;padding:6px 4px;display:flex;align-items:baseline;gap:6px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:8px}
+  .mob-cal-list-day .dh .dt{font-size:13px;color:#fff;font-weight:900}
+  .mob-cal-list-day .dh .ds{font-size:10.5px;color:#64748b;font-weight:600;margin-left:auto}
+  .mob-cal-empty{text-align:center;padding:30px 16px;color:#64748b;font-size:12px}
 }
 
 /* 더 작은 폰 (480px 이하) — 추가 압축 */
@@ -2021,6 +2091,13 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 
   <!-- ── 캘린더 탭 ── -->
   <div id="mr-tab-calendar" class="mr-tab" style="display:none">
+    <!-- 모바일 뷰 토글 -->
+    <div class="mob-cal-view" id="mob-cal-view">
+      <button class="on" data-v="month" onclick="mobCalSetView('month')">월간</button>
+      <button data-v="week" onclick="mobCalSetView('week')">주간</button>
+      <button data-v="list" onclick="mobCalSetView('list')">리스트</button>
+    </div>
+
     <div class="mr-cal-head">
       <div class="mr-cal-nav">
         <button class="mr-cal-btn" onclick="mrCalNav(-1)">‹</button>
@@ -2032,7 +2109,24 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
         <span class="mr-cal-lg"><i style="background:#60a5fa"></i>의료장비</span>
       </div>
     </div>
+
+    <!-- 월간 그리드 -->
     <div class="mr-cal-grid" id="mr-cal-grid"></div>
+
+    <!-- 모바일 주간 가로 스트립 -->
+    <div class="mob-cal-week" id="mob-cal-week"></div>
+
+    <!-- 모바일 리스트 뷰 -->
+    <div class="mob-cal-list" id="mob-cal-list"></div>
+
+    <!-- 선택 일자 이벤트 패널 (월간/주간 공통) -->
+    <div class="mob-cal-day-panel" id="mob-cal-day-panel">
+      <div class="h">
+        <span class="d" id="mob-cal-day-title">날짜를 탭하세요</span>
+        <span class="s" id="mob-cal-day-sub"></span>
+      </div>
+      <div id="mob-cal-day-events"></div>
+    </div>
   </div>
 
   <!-- ── 기초 관리 탭 ── -->
@@ -7337,6 +7431,220 @@ function mrCalSelect(id){
   mrSwitchTab('cases', document.querySelectorAll('#nav-menu-report .nav-item')[1]);
   mrSelectCase(id);
 }
+
+// ═══ 📱 4단계 — 캘린더 모바일 ═══
+let MOB_CAL_VIEW = 'month';
+let MOB_CAL_SELECTED = null; // {y,m,d}
+
+function _mrCalCollectByDate(){
+  // 안건들을 일자별로 그룹화 (mrRenderCalendar 로직과 동일)
+  const byDate = {};
+  MR_CASES.forEach(c=>{
+    if(!c.due && !c.startDate) return;
+    const startDT = mrParseDT(c.startDate || c.due);
+    const endDT = mrParseDT(c.due || c.startDate);
+    if(!startDT || !endDT) return;
+    const s = startDT <= endDT ? startDT : endDT;
+    const e = startDT <= endDT ? endDT : startDT;
+    const sKey = mrDateKey(s);
+    const eKey = mrDateKey(e);
+    const startHasTime = mrHasTime(c.startDate || c.due);
+    const endHasTime = mrHasTime(c.due || c.startDate);
+    const isSingleDay = (sKey === eKey);
+    (byDate[sKey] = byDate[sKey]||[]).push({...c, _start:true, _end:isSingleDay, _label:'시작', _time: startHasTime ? mrFmtTime(s) : ''});
+    if(!isSingleDay){
+      (byDate[eKey] = byDate[eKey]||[]).push({...c, _end:true, _label:'철수', _time: endHasTime ? mrFmtTime(e) : ''});
+      const dayMs = 24*60*60*1000;
+      const sMid = new Date(s.getFullYear(), s.getMonth(), s.getDate()+1);
+      const eMid = new Date(e.getFullYear(), e.getMonth(), e.getDate());
+      const diff = Math.floor((eMid-sMid)/dayMs);
+      if(diff <= 60){
+        for(let d = sMid; d < eMid; d = new Date(d.getTime()+dayMs)){
+          (byDate[mrDateKey(d)] = byDate[mrDateKey(d)]||[]).push({...c, _mid:true});
+        }
+      }
+    }
+  });
+  return byDate;
+}
+
+function mobCalSetView(view){
+  MOB_CAL_VIEW = view;
+  document.querySelectorAll('#mob-cal-view button').forEach(b=>b.classList.toggle('on', b.dataset.v===view));
+  // 뷰별 토글
+  const grid = document.getElementById('mr-cal-grid');
+  const week = document.getElementById('mob-cal-week');
+  const list = document.getElementById('mob-cal-list');
+  const panel = document.getElementById('mob-cal-day-panel');
+  if(view==='month'){
+    grid.style.display = 'grid';
+    week.classList.remove('open');
+    list.classList.remove('open');
+    panel.classList.add('open');
+    mobCalRenderMonthCells();
+  } else if(view==='week'){
+    grid.style.display = 'none';
+    week.classList.add('open');
+    list.classList.remove('open');
+    panel.classList.add('open');
+    mobCalRenderWeek();
+  } else {
+    grid.style.display = 'none';
+    week.classList.remove('open');
+    list.classList.add('open');
+    panel.classList.remove('open');
+    mobCalRenderList();
+  }
+}
+
+function mobCalRenderMonthCells(){
+  // 셀에 has-events 클래스 + 클릭 핸들러 부여
+  const byDate = _mrCalCollectByDate();
+  const y = MR_CAL_VIEW.getFullYear();
+  const m = MR_CAL_VIEW.getMonth();
+  const cells = document.querySelectorAll('#mr-cal-grid .mr-cal-cell');
+  let dayIdx = 0;
+  cells.forEach(cell=>{
+    if(cell.classList.contains('other')){ cell.onclick = null; return; }
+    dayIdx++;
+    const key = `${y}-${m}-${dayIdx}`;
+    const items = byDate[key] || [];
+    cell.classList.toggle('has-events', items.length>0);
+    cell.classList.toggle('multi', items.length>=2);
+    if(MOB_CAL_SELECTED && MOB_CAL_SELECTED.y===y && MOB_CAL_SELECTED.m===m && MOB_CAL_SELECTED.d===dayIdx){
+      cell.classList.add('selected');
+    }
+    cell.onclick = (e)=>{
+      e.stopPropagation();
+      if(!mrIsMobile()) return; // 데스크탑은 기존 동작 유지
+      mobCalSelectDay(y, m, dayIdx);
+    };
+  });
+}
+
+function mobCalSelectDay(y, m, d){
+  MOB_CAL_SELECTED = {y, m, d};
+  // 셀 selected 토글
+  document.querySelectorAll('#mr-cal-grid .mr-cal-cell').forEach(c=>c.classList.remove('selected'));
+  let dayIdx = 0;
+  document.querySelectorAll('#mr-cal-grid .mr-cal-cell').forEach(cell=>{
+    if(cell.classList.contains('other')) return;
+    dayIdx++;
+    if(dayIdx===d) cell.classList.add('selected');
+  });
+  // 주간 selected 토글
+  document.querySelectorAll('#mob-cal-week .day').forEach(el=>el.classList.toggle('selected', el.dataset.d==String(d)));
+  // 일정 패널 렌더
+  const byDate = _mrCalCollectByDate();
+  const key = `${y}-${m}-${d}`;
+  const items = byDate[key] || [];
+  const dt = new Date(y, m, d);
+  const dow = ['일','월','화','수','목','금','토'][dt.getDay()];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const isToday = dt.getTime()===today.getTime();
+  document.getElementById('mob-cal-day-title').textContent = `${m+1}월 ${d}일 (${dow})`;
+  document.getElementById('mob-cal-day-sub').textContent = (isToday?'오늘 · ':'') + items.length + '건';
+  const evWrap = document.getElementById('mob-cal-day-events');
+  if(items.length===0){
+    evWrap.innerHTML = `<div class="empty">등록된 일정이 없습니다</div>`;
+  } else {
+    evWrap.innerHTML = items.map(c=>{
+      const lbl = c._mid ? '진행' : (c._end && !c._start ? '철수' : '시작');
+      const lblCls = c._mid?'mid':(c._end&&!c._start?'end':'');
+      return `<div class="mob-cal-evt" onclick="mrCalSelect(${c.id})">
+        <div class="row"><span class="lbl ${lblCls}">${lbl}</span>${c._time?`<span class="tm">${c._time}</span>`:''}</div>
+        <div class="ttl">${c.client} · ${c.prod} ${c.type}</div>
+        <div class="meta">담당 ${c.owner||'-'} · ${c.status||''}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function mobCalRenderWeek(){
+  // 오늘 기준 주간 표시
+  const t = new Date();
+  const day = t.getDay(); // 0=일
+  const monOff = day===0 ? -6 : 1-day;
+  const start = new Date(t); start.setDate(t.getDate()+monOff);
+  const byDate = _mrCalCollectByDate();
+  let html = '';
+  for(let i=0;i<7;i++){
+    const dt = new Date(start); dt.setDate(start.getDate()+i);
+    const y=dt.getFullYear(), m=dt.getMonth(), d=dt.getDate();
+    const key = `${y}-${m}-${d}`;
+    const has = (byDate[key]||[]).length>0;
+    const isToday = (new Date(dt)).setHours(0,0,0,0)===(new Date()).setHours(0,0,0,0);
+    const dow = ['일','월','화','수','목','금','토'][dt.getDay()];
+    const cls = ['day', dt.getDay()===0?'sun':(dt.getDay()===6?'sat':''), isToday?'today':'', has?'has':''].join(' ');
+    html += `<div class="${cls}" data-d="${d}" onclick="mobCalSelectDay(${y},${m},${d})"><div class="dn">${dow}</div><div class="dt">${d}</div></div>`;
+  }
+  document.getElementById('mob-cal-week').innerHTML = html;
+  // 오늘 자동 선택
+  const todayObj = {y:t.getFullYear(), m:t.getMonth(), d:t.getDate()};
+  mobCalSelectDay(todayObj.y, todayObj.m, todayObj.d);
+}
+
+function mobCalRenderList(){
+  const byDate = _mrCalCollectByDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  // 오늘 이후 30일 + 오늘 이전 7일 표시
+  const days = [];
+  for(let i=-7;i<=30;i++){
+    const dt = new Date(today); dt.setDate(today.getDate()+i);
+    const key = `${dt.getFullYear()}-${dt.getMonth()}-${dt.getDate()}`;
+    const items = byDate[key] || [];
+    if(items.length>0) days.push({dt, items});
+  }
+  const wrap = document.getElementById('mob-cal-list');
+  if(days.length===0){
+    wrap.innerHTML = `<div class="mob-cal-empty">등록된 일정이 없습니다</div>`;
+    return;
+  }
+  wrap.innerHTML = days.map(({dt, items})=>{
+    const dow = ['일','월','화','수','목','금','토'][dt.getDay()];
+    const isToday = dt.getTime()===today.getTime();
+    const diff = Math.round((dt-today)/(86400000));
+    const dLbl = isToday ? '오늘' : (diff>0?`D-${diff}`:`경과 ${-diff}일`);
+    return `<div class="mob-cal-list-day">
+      <div class="dh"><span class="dt">${dt.getMonth()+1}월 ${dt.getDate()}일 (${dow})</span><span class="ds">${dLbl} · ${items.length}건</span></div>
+      ${items.map(c=>{
+        const lbl = c._mid ? '진행' : (c._end && !c._start ? '철수' : '시작');
+        const lblCls = c._mid?'mid':(c._end&&!c._start?'end':'');
+        return `<div class="mob-cal-evt" onclick="mrCalSelect(${c.id})">
+          <div class="row"><span class="lbl ${lblCls}">${lbl}</span>${c._time?`<span class="tm">${c._time}</span>`:''}</div>
+          <div class="ttl">${c.client} · ${c.prod} ${c.type}</div>
+          <div class="meta">담당 ${c.owner||'-'} · ${c.status||''}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+// 캘린더 진입 시 모바일 초기화
+const _orig_mrRenderCalendar = window.mrRenderCalendar;
+window.mrRenderCalendar = function(){
+  if(typeof _orig_mrRenderCalendar==='function') _orig_mrRenderCalendar.apply(this, arguments);
+  if(!mrIsMobile()){
+    // 데스크탑: 모바일에서 변경된 인라인 스타일 리셋
+    const grid = document.getElementById('mr-cal-grid');
+    if(grid) grid.style.display = '';
+  }
+  if(mrIsMobile()){
+    // 현재 뷰 적용 (월간/주간/리스트 + 패널 표시 일관성)
+    setTimeout(()=>{
+      mobCalSetView(MOB_CAL_VIEW||'month');
+      // 오늘 자동 선택 (월간/주간 뷰에서만)
+      if(MOB_CAL_VIEW!=='list'){
+        const t = new Date();
+        const y = MR_CAL_VIEW.getFullYear();
+        const m = MR_CAL_VIEW.getMonth();
+        if(t.getFullYear()===y && t.getMonth()===m){
+          mobCalSelectDay(y, m, t.getDate());
+        }
+      }
+    }, 50);
+  }
+};
 
 function mrRenderStats(){
   const all = MR_CASES;
