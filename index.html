@@ -729,13 +729,24 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   /* 실패 분석 g2/g3 풀폭 */
   .mr-g2,.mr-g3{grid-template-columns:1fr !important}
 
-  /* PPT 다운로드 한 줄 — 모바일 컴팩트 */
-  .mr-ppt-bar{flex-wrap:wrap;justify-content:stretch;gap:6px;margin-bottom:10px}
-  .mr-ppt-range{flex:1;min-width:0;padding:6px 9px}
-  .mr-ppt-range input{width:auto;flex:1;min-width:0}
-  .mr-ppt-preset-wrap{order:2}
-  .mr-ppt-dl{flex:1;justify-content:center;padding:7px 12px}
-  .mr-ppt-pop{width:280px}
+  /* PPT 다운로드 — 모바일 2줄 깔끔 레이아웃
+     1행: [📅 시작 ~ 종료]  (날짜 범위 입력 풀폭)
+     2행: [이번 달 ▾]      [⬇ PPT 다운로드]
+  */
+  .mr-ppt-bar{display:grid !important;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:7px;margin-bottom:12px;padding:10px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:11px}
+  .mr-ppt-range{grid-column:1/-1;width:100%;padding:8px 12px;justify-content:space-between;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;position:relative}
+  .mr-ppt-range::before{content:"📅";font-size:13px;margin-right:2px}
+  .mr-ppt-range input{flex:1;min-width:0;width:auto;font-size:13px !important;padding:0;color:#fff;text-align:center;background:transparent;border:none;font-family:inherit;letter-spacing:.2px}
+  .mr-ppt-range input::-webkit-calendar-picker-indicator{filter:invert(.65);cursor:pointer;width:14px;height:14px;padding:0;margin:0 0 0 4px}
+  .mr-ppt-range input::-webkit-datetime-edit{color:#fff;padding:0}
+  .mr-ppt-range .sep{color:#64748b;font-weight:700;flex-shrink:0}
+  /* 이번 달 토글 — 좌측 절반 */
+  .mr-ppt-preset-wrap{grid-column:1;width:100%}
+  .mr-ppt-preset{width:100%;justify-content:center;padding:9px 12px;font-size:12.5px;background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)}
+  /* PPT 다운로드 — 우측 절반 */
+  .mr-ppt-dl{grid-column:2;width:100%;justify-content:center;padding:9px 12px;font-size:12.5px}
+  /* 드롭다운 — 화면 폭 안에 들어오게 */
+  .mr-ppt-pop{width:calc(100vw - 40px);max-width:340px;left:auto;right:0}
 
   /* MSO 리포트 탭 내비게이션은 하단 탭바가 대체하므로 숨김 */
   .topnav .nav-menu{display:none}
