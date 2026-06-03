@@ -597,6 +597,58 @@ html.light .t2 .home-tile-title{background:linear-gradient(135deg,#7c3aed,#be185
 html.light .t1 .home-feat{color:#1e40af;border-color:rgba(59,130,246,.4);background:rgba(59,130,246,.08)}
 html.light .t2 .home-feat{color:#7c3aed;border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.08)}
 .home-hint{margin-top:32px;text-align:center;font-size:12px;color:#475569;font-weight:500}
+
+/* ── 모바일 앱 설치 링크 받기 ── */
+.home-install-row{margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.home-install-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(99,102,241,.12));border:1px solid rgba(167,139,250,.35);color:#cbc8e6;padding:10px 18px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;transition:.2s;backdrop-filter:blur(8px)}
+.home-install-btn:hover{background:linear-gradient(135deg,rgba(167,139,250,.22),rgba(99,102,241,.22));border-color:#a78bfa;color:#fff;transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.3)}
+.home-install-btn svg{width:16px;height:16px}
+.home-install-hint{font-size:11px;color:#64748b}
+body.light-mode .home-install-btn{color:#4338ca;border-color:rgba(99,102,241,.3)}
+body.light-mode .home-install-hint{color:#94a3b8}
+
+.install-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:99999;align-items:center;justify-content:center;padding:20px}
+.install-modal-bg.show{display:flex}
+.install-modal{background:linear-gradient(160deg,#1a1a2e,#0f0f1a);border:1px solid #2a2a40;border-radius:20px;padding:28px;max-width:440px;width:100%;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.6);animation:installPop .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes installPop{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:none}}
+.install-modal-close{position:absolute;top:14px;right:16px;background:transparent;border:0;color:#cbc8e6;font-size:26px;cursor:pointer;line-height:1;padding:4px 10px;border-radius:8px}
+.install-modal-close:hover{background:rgba(255,255,255,.08);color:#fff}
+.install-modal-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+.install-modal-icon img{width:56px;height:56px;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+.install-modal-head h3{margin:0;font-size:16px;color:#fff;font-weight:700}
+.install-modal-head p{margin:3px 0 0;font-size:12px;color:#94a3b8}
+
+.install-modal-tabs{display:flex;gap:4px;background:rgba(0,0,0,.3);border-radius:10px;padding:4px;margin-bottom:18px}
+.install-tab{flex:1;background:transparent;border:0;color:#94a3b8;padding:8px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
+.install-tab.active{background:linear-gradient(135deg,#a78bfa,#6366f1);color:#fff}
+.install-tab:not(.active):hover{background:rgba(255,255,255,.06);color:#cbc8e6}
+
+.install-tab-body{min-height:240px}
+.install-qr-box{background:#fff;padding:14px;border-radius:14px;display:flex;justify-content:center;margin-bottom:12px}
+.install-qr-box img{display:block}
+.install-hint{font-size:12px;color:#94a3b8;text-align:center;line-height:1.6}
+
+.install-url-box{display:flex;gap:8px;margin-bottom:12px}
+.install-url-box input{flex:1;background:rgba(0,0,0,.4);border:1px solid #2a2a40;color:#cbc8e6;padding:11px 14px;border-radius:10px;font-size:12px;font-family:'JetBrains Mono',monospace;min-width:0}
+.install-url-box button{background:linear-gradient(135deg,#a78bfa,#6366f1);border:0;color:#fff;font-weight:700;padding:0 18px;border-radius:10px;cursor:pointer;font-size:13px;flex-shrink:0}
+.install-url-box button:hover{filter:brightness(1.15)}
+.install-url-box button.copied{background:linear-gradient(135deg,#10b981,#059669)}
+
+.install-share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.install-share-btn{display:flex;align-items:center;gap:10px;background:var(--c);color:var(--ct);border:0;padding:14px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.install-share-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.3)}
+.install-share-btn .ic{font-size:18px}
+
+.install-modal-steps{display:flex;gap:8px;margin-top:18px;padding-top:18px;border-top:1px solid #2a2a40}
+.install-modal-steps .step{flex:1;font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:6px;line-height:1.4}
+.install-modal-steps .n{width:20px;height:20px;background:linear-gradient(135deg,#a78bfa,#6366f1);color:#fff;font-weight:700;border-radius:50%;display:grid;place-items:center;font-size:11px;flex-shrink:0}
+
+@media(max-width:480px){
+  .install-modal{padding:22px}
+  .install-modal-head h3{font-size:15px}
+  .install-qr-box img{width:180px;height:180px}
+  .install-modal-steps{flex-direction:column;gap:6px}
+}
 .home-kbd{display:inline-block;font-size:10.5px;font-weight:700;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:2px 7px;border-radius:5px;color:#cbd5e1;margin:0 3px}
 
 /* MSO 리포트 모드 — 카테고리/메뉴 교체 */
@@ -2176,6 +2228,72 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
       </div>
     </div>
     <div class="home-hint">카드 클릭으로 진입 · <span class="home-kbd">1</span> 통합 관리 · <span class="home-kbd">2</span> 리포트 · <span class="home-kbd">ESC</span> 홈으로</div>
+    <div class="home-install-row">
+      <button class="home-install-btn" onclick="openInstallModal()" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
+        모바일 앱 설치 링크 받기
+      </button>
+      <span class="home-install-hint">데스크탑에서는 QR · 모바일에서는 바로 설치</span>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 모바일 앱 설치 링크 모달 ── -->
+<div class="install-modal-bg" id="install-modal-bg" onclick="if(event.target===this)closeInstallModal()">
+  <div class="install-modal">
+    <button class="install-modal-close" onclick="closeInstallModal()" aria-label="닫기">×</button>
+    <div class="install-modal-head">
+      <div class="install-modal-icon"><img src="icons/icon-192.png" alt=""></div>
+      <div>
+        <h3>The SC(MSO) 앱 설치</h3>
+        <p>모바일에서 홈 화면에 바로 설치하세요</p>
+      </div>
+    </div>
+
+    <div class="install-modal-tabs">
+      <button class="install-tab active" data-tab="qr" onclick="installSwitchTab('qr')">📱 QR 코드</button>
+      <button class="install-tab" data-tab="link" onclick="installSwitchTab('link')">🔗 링크 복사</button>
+      <button class="install-tab" data-tab="share" onclick="installSwitchTab('share')">✉️ 보내기</button>
+    </div>
+
+    <div class="install-tab-body" id="install-tab-qr">
+      <div class="install-qr-box">
+        <img id="install-qr-img" alt="설치 QR" width="220" height="220">
+      </div>
+      <div class="install-hint">모바일 카메라로 스캔 → 사이트 열기 → "앱으로 설치" 배너 탭</div>
+    </div>
+
+    <div class="install-tab-body" id="install-tab-link" style="display:none">
+      <div class="install-url-box">
+        <input type="text" id="install-url-input" readonly>
+        <button onclick="installCopyUrl()" id="install-copy-btn">복사</button>
+      </div>
+      <div class="install-hint">링크를 카카오톡·메모·SMS 등으로 모바일에 보내세요</div>
+    </div>
+
+    <div class="install-tab-body" id="install-tab-share" style="display:none">
+      <div class="install-share-grid">
+        <button class="install-share-btn" onclick="installShareKakao()" style="--c:#fee500;--ct:#181600">
+          <span class="ic">💬</span><span>카카오톡</span>
+        </button>
+        <button class="install-share-btn" onclick="installShareSMS()" style="--c:#22c55e;--ct:#fff">
+          <span class="ic">📱</span><span>SMS</span>
+        </button>
+        <button class="install-share-btn" onclick="installShareEmail()" style="--c:#3b82f6;--ct:#fff">
+          <span class="ic">✉️</span><span>이메일</span>
+        </button>
+        <button class="install-share-btn" onclick="installShareNative()" style="--c:#a78bfa;--ct:#fff">
+          <span class="ic">📤</span><span>시스템 공유</span>
+        </button>
+      </div>
+      <div class="install-hint">기기에 설정된 앱으로 링크를 전송합니다</div>
+    </div>
+
+    <div class="install-modal-steps">
+      <div class="step"><span class="n">1</span>모바일에서 링크 열기</div>
+      <div class="step"><span class="n">2</span>하단 "앱으로 설치" 탭</div>
+      <div class="step"><span class="n">3</span>홈 화면에서 실행 ✨</div>
     </div>
   </div>
 </div>
@@ -12003,6 +12121,89 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     bar.style.display = 'none';
     deferredPrompt = null;
     console.log('[PWA] 앱이 설치되었습니다.');
+  });
+
+  // ── 모바일 앱 설치 링크 모달 (홈 화면 "링크 받기" 버튼) ─────────────
+  function getInstallUrl(){
+    // GitHub Pages 라이브 URL을 우선, 로컬이면 현재 origin
+    const host = location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || host.startsWith('192.168.')) {
+      return 'https://intheho413.github.io/TheSC-MSO-system/';
+    }
+    return location.origin + location.pathname.replace(/[^/]*$/, '');
+  }
+  window.openInstallModal = function(){
+    const url = getInstallUrl();
+    const bg = document.getElementById('install-modal-bg');
+    document.getElementById('install-url-input').value = url;
+    const qr = document.getElementById('install-qr-img');
+    qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=440x440&margin=8&color=1e1b4b&bgcolor=ffffff&data=${encodeURIComponent(url)}`;
+    bg.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeInstallModal = function(){
+    document.getElementById('install-modal-bg').classList.remove('show');
+    document.body.style.overflow = '';
+  };
+  window.installSwitchTab = function(tab){
+    document.querySelectorAll('.install-tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+    document.querySelectorAll('.install-tab-body').forEach(el=>el.style.display='none');
+    document.getElementById('install-tab-'+tab).style.display='block';
+  };
+  window.installCopyUrl = async function(){
+    const url = document.getElementById('install-url-input').value;
+    const btn = document.getElementById('install-copy-btn');
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = '복사됨 ✓';
+      btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent='복사'; btn.classList.remove('copied'); }, 2000);
+    } catch(e) {
+      // fallback
+      const inp = document.getElementById('install-url-input');
+      inp.select(); document.execCommand('copy');
+      btn.textContent = '복사됨 ✓'; btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent='복사'; btn.classList.remove('copied'); }, 2000);
+    }
+  };
+  window.installShareKakao = function(){
+    const url = document.getElementById('install-url-input').value;
+    const msg = encodeURIComponent(`The SC(MSO) 앱 설치 링크\n${url}`);
+    // 카카오톡은 SDK 없이 직접 호출 어려움 → 클립보드 복사 후 안내
+    navigator.clipboard.writeText(`The SC(MSO) 앱 설치 링크\n${url}`).then(()=>{
+      alert('링크가 복사되었습니다.\n카카오톡을 열어 채팅창에 붙여넣기 하세요.');
+    });
+  };
+  window.installShareSMS = function(){
+    const url = document.getElementById('install-url-input').value;
+    const body = encodeURIComponent(`The SC(MSO) 앱 설치: ${url}`);
+    location.href = `sms:?body=${body}`;
+  };
+  window.installShareEmail = function(){
+    const url = document.getElementById('install-url-input').value;
+    const subject = encodeURIComponent('The SC(MSO) 앱 설치 링크');
+    const body = encodeURIComponent(`아래 링크를 모바일에서 열어주세요:\n\n${url}\n\n링크 열기 → 하단 "앱으로 설치" 탭 → 홈 화면에 추가`);
+    location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+  window.installShareNative = async function(){
+    const url = document.getElementById('install-url-input').value;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'The SC(MSO) 앱 설치',
+          text: 'The SC(MSO) 앱을 홈 화면에 설치하세요',
+          url
+        });
+      } catch(_){}
+    } else {
+      alert('이 브라우저는 시스템 공유를 지원하지 않습니다.\n링크 복사 탭을 이용하세요.');
+    }
+  };
+  // ESC로 닫기
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'Escape' && document.getElementById('install-modal-bg').classList.contains('show')) {
+      closeInstallModal();
+    }
   });
 
   // ── 알림 권한 + 트리거 (Phase 5-B: PWA-only) ─────────────────────────
