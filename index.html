@@ -674,10 +674,22 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   .mr-case-del,.cmt-actions,.mr-cmt .acts,.cmt-act{opacity:1 !important}
   .mr-case .pen,.mr-detail .pen{opacity:.7 !important}
 
-  /* 1단계 — 터치 타깃 확대 */
-  .mr-case-del{width:32px !important;height:32px !important;font-size:18px !important}
-  .cmt-act{width:28px !important;height:28px !important}
-  .mr-case{padding:11px 12px 11px 16px !important}
+  /* 1단계 — 터치 타깃 확대 + 겹침 방지 */
+  /* 안건 카드 — 삭제 버튼 작게(20px), 우측 패딩 확보 */
+  .mr-case-del{width:20px !important;height:20px !important;min-height:20px !important;font-size:13px !important;top:5px !important;right:5px !important;background:rgba(239,68,68,.08) !important;border-color:rgba(239,68,68,.18) !important;color:#fca5a5 !important;opacity:1 !important;line-height:1}
+  .mr-case-del:active{background:rgba(239,68,68,.25) !important;color:#fff !important}
+  .mr-case{padding:10px 30px 10px 16px !important}
+  .mr-case .crow1{padding-right:0 !important;gap:5px !important;flex-wrap:wrap}
+  .mr-case .stp{margin-right:0;font-size:9px !important;padding:1px 5px !important;flex-shrink:0}
+  .mr-case .ctitle{font-size:11.5px !important}
+  /* 코멘트 카드 — 액션 버튼 작게 + 시간/이름 영역 우측 여백 확보 */
+  .mr-cmt{padding:10px 12px !important}
+  .mr-cmt .cmt-actions{top:5px !important;right:5px !important;gap:3px !important}
+  .mr-cmt .cmt-act{width:20px !important;height:20px !important;min-height:20px !important;background:rgba(0,0,0,.4) !important;border-radius:5px !important;line-height:1;padding:0 !important}
+  .mr-cmt .cmt-act svg{width:10px;height:10px}
+  .mr-cmt .ctop{padding-right:78px !important;flex-wrap:wrap}
+  .mr-cmt .time{font-size:9.5px !important}
+  .mr-cmt .body{font-size:12px !important;line-height:1.5}
   .mr-cal-btn,.mr-cal-today{min-height:36px;min-width:36px}
   button{min-height:32px}
 
@@ -805,11 +817,11 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   /* 코멘트 멘션 하이라이트 */
   .mr-cmt .ment{color:#c4b5fd;font-weight:700;background:rgba(167,139,250,.15);padding:0 4px;border-radius:3px}
 
-  /* 도트 인디케이터 (하단 페이지 표시 + 탭 가능) */
-  .mob-page-dots{position:fixed;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:9px;z-index:60;pointer-events:none}
-  .mob-page-dots .dot{pointer-events:auto;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);border:none;cursor:pointer;padding:0;font-family:inherit;transition:.3s;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-  .mob-page-dots .dot.on{background:linear-gradient(135deg,#a78bfa,#ec4899);width:24px;border-radius:99px;box-shadow:0 2px 12px rgba(167,139,250,.6)}
-  .mob-page-dots .dot:active{transform:scale(.85)}
+  /* 도트 인디케이터 — 작고 심플한 원형 */
+  .mob-page-dots{position:fixed;bottom:14px;left:0;right:0;display:flex;justify-content:center;gap:7px;z-index:60;pointer-events:none}
+  .mob-page-dots .dot{pointer-events:auto;width:6px !important;height:6px !important;min-height:6px !important;border-radius:50%;background:rgba(255,255,255,.22);border:none;cursor:pointer;padding:0;font-family:inherit;transition:.2s;line-height:0}
+  .mob-page-dots .dot.on{background:#c4b5fd;box-shadow:0 0 6px rgba(167,139,250,.6)}
+  .mob-page-dots .dot:active{transform:scale(.7)}
 
   /* 좌우 스와이프 컨테이너 — 부드러운 페이드 + 트랜지션 */
   .mr-row.b3-3col > *{transition:opacity .22s ease-out}
