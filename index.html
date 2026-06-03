@@ -12080,14 +12080,24 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 
     <!-- iOS Safari 안내 -->
     <div id="howTo-ios" style="display:none">
-      <div style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#cbc8e6;line-height:1.5">
-        ⚠️ <b style="color:#fff">Safari 브라우저</b>에서만 가능합니다.<br>다른 브라우저(Chrome 등)는 Safari로 다시 열어주세요.
+      <div id="howTo-ios-inapp" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:14px;margin-bottom:14px;font-size:12.5px;color:#fecaca;line-height:1.6">
+        🚫 <b style="color:#fff">현재 다른 앱(카카오톡·네이트온·인스타 등)에서 열린 화면입니다.</b><br>
+        이 화면에서는 홈 화면 추가가 <b>불가능</b>합니다.<br><br>
+        <b style="color:#fff">해결 방법 :</b><br>
+        ① 화면 <b>우측 하단 '⋯' 또는 '공유' 버튼</b> 탭<br>
+        ② "<b>Safari로 열기</b>" 또는 "<b>다른 브라우저로 열기</b>" 선택<br>
+        ③ Safari 앱이 열리면 아래 단계 진행<br><br>
+        또는 Safari 앱을 직접 열고 주소창에 URL 붙여넣기:<br>
+        <button onclick="installCopyHomeUrl(this)" style="margin-top:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-weight:600">📋 URL 복사하기</button>
+      </div>
+      <div id="howTo-ios-safari" style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#a7f3d0;line-height:1.5">
+        ✅ <b style="color:#fff">Safari에서 열렸습니다.</b> 아래 단계대로 진행하세요.
       </div>
       <div class="how-step">
         <div class="how-n">1</div>
         <div>
           <div class="how-t">하단 <b>공유 버튼</b> 탭</div>
-          <div class="how-d">화면 맨 아래 가운데 □↑ 모양 아이콘</div>
+          <div class="how-d">화면 맨 아래 가운데 □↑ 모양 아이콘<br>(주소창 옆 또는 화면 하단 가운데)</div>
           <div style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:#e5e7eb;color:#1f2937;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v13M7 7l5-5 5 5M5 21h14a2 2 0 0 0 2-2v-7"/></svg>
             공유
@@ -12112,6 +12122,14 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 
     <!-- Android Chrome 안내 -->
     <div id="howTo-android" style="display:none">
+      <div id="howTo-android-inapp" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:14px;margin-bottom:14px;font-size:12.5px;color:#fecaca;line-height:1.6">
+        🚫 <b style="color:#fff">현재 다른 앱(카카오톡·네이트온 등)의 인앱 브라우저입니다.</b><br>
+        앱 설치는 <b>Chrome 앱</b>에서만 가능합니다.<br><br>
+        <b style="color:#fff">해결 방법 :</b><br>
+        ① 우측 상단 <b>'⋮' 또는 '공유' 메뉴</b> 탭<br>
+        ② "<b>다른 브라우저로 열기</b>" 또는 "<b>Chrome으로 열기</b>" 선택<br><br>
+        <button onclick="installCopyHomeUrl(this)" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 12px;border-radius:8px;font-size:11px;cursor:pointer;font-weight:600">📋 URL 복사 (Chrome에 붙여넣기)</button>
+      </div>
       <div class="how-step">
         <div class="how-n">1</div>
         <div>
@@ -12459,22 +12477,62 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     }
   }
 
+  // In-app browser 감지 (카카오톡·네이트온·인스타·페북 등)
+  function detectInAppBrowser(){
+    const ua = navigator.userAgent;
+    const patterns = ['KAKAOTALK','NAVER','Nate','Daum','Instagram','FBAN','FBAV','FB_IAB','Line','wv','WebView','everytimeapp','TwitterAndroid','Snapchat'];
+    for (const p of patterns) { if (ua.includes(p)) return p; }
+    // iOS Safari (실제)에는 'Version/' 토큰이 있음. 인앱 WebView에는 없는 경우 多
+    const iOS = /iPad|iPhone|iPod/.test(ua);
+    if (iOS && !/Version\//.test(ua)) return 'iOS-InApp';
+    return null;
+  }
+
+  window.installCopyHomeUrl = async function(btn){
+    const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = '✓ 복사 완료 — Safari에 붙여넣기';
+      btn.style.background = 'rgba(34,197,94,.3)';
+    } catch(_) {
+      const ta = document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      btn.textContent = '✓ 복사 완료';
+    }
+  };
+
   // 4) 설치 방법 가이드 모달
   window.openHowToInstall = function(){
     const ua = navigator.userAgent;
     const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
     const Android = /Android/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua) && /Version\//.test(ua);
     const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
+    const inApp = detectInAppBrowser();
 
     let osText = '';
     let showId = 'howTo-other';
     if (iOS) {
-      if (isSafari) { osText = 'iPhone · Safari'; showId = 'howTo-ios'; }
-      else { osText = 'iPhone · ' + (/CriOS/.test(ua)?'Chrome':'기타 브라우저'); showId = 'howTo-ios'; }
+      if (inApp || !isSafari) {
+        osText = 'iPhone · ' + (inApp ? `다른 앱 (${inApp})` : '기타 브라우저');
+      } else {
+        osText = 'iPhone · Safari';
+      }
+      showId = 'howTo-ios';
+      // 인앱/비Safari → 빨강 경고, 진짜 Safari → 초록 안내
+      const inappWarn = document.getElementById('howTo-ios-inapp');
+      const safariOK  = document.getElementById('howTo-ios-safari');
+      if (inApp || !isSafari) {
+        inappWarn.style.display = 'block';
+        safariOK.style.display = 'none';
+      } else {
+        inappWarn.style.display = 'none';
+        safariOK.style.display = 'block';
+      }
     } else if (Android) {
-      osText = 'Android · ' + (isChrome?'Chrome':'기타 브라우저');
+      osText = 'Android · ' + (inApp ? `다른 앱 (${inApp})` : (isChrome?'Chrome':'기타 브라우저'));
       showId = 'howTo-android';
+      const aInapp = document.getElementById('howTo-android-inapp');
+      if (aInapp) aInapp.style.display = (inApp || !isChrome) ? 'block' : 'none';
     } else {
       osText = '데스크탑';
       showId = 'howTo-other';
