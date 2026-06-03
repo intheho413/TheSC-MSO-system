@@ -811,6 +811,26 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 /* 모바일 전용 요소 — 기본 숨김 */
 .mob-cal-view,.mob-cal-week,.mob-cal-list,.mob-cal-day-panel{display:none}
 
+/* MSO 리포트 — 등장 애니메이션 */
+@keyframes mrFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes mrFadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes mrShine{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.mr-fade-in{animation:mrFadeUp .55s cubic-bezier(.2,.8,.2,1) both}
+#mr-tab-report.mr-tab-anim .mr-kpi{animation:mrFadeUp .6s cubic-bezier(.2,.8,.2,1) both}
+#mr-tab-report.mr-tab-anim .mr-kpi:nth-child(1){animation-delay:.05s}
+#mr-tab-report.mr-tab-anim .mr-kpi:nth-child(2){animation-delay:.12s}
+#mr-tab-report.mr-tab-anim .mr-kpi:nth-child(3){animation-delay:.19s}
+#mr-tab-report.mr-tab-anim .mr-kpi:nth-child(4){animation-delay:.26s}
+#mr-tab-report.mr-tab-anim .mr-kpi:nth-child(5){animation-delay:.33s}
+#mr-tab-report.mr-tab-anim .mr-row.b2 .mr-card{animation:mrFadeUp .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:.4s}
+#mr-tab-report.mr-tab-anim .mr-row.b2 .mr-card:last-child{animation-delay:.5s}
+#mr-tab-report.mr-tab-anim > .mr-card{animation:mrFadeUp .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:.55s}
+#mr-tab-report.mr-tab-anim .mr-row.c2 .mr-card{animation:mrFadeUp .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:.65s}
+#mr-tab-report.mr-tab-anim .mr-row.c2 .mr-card:last-child{animation-delay:.75s}
+/* 카운트업 동안 살짝 글로우 */
+.mr-kpi .v{transition:filter .25s}
+.mr-kpi.counting .v{filter:drop-shadow(0 0 8px currentColor) brightness(1.15)}
+
 /* ═══════════════════════════════════
    라이트 모드 가독성 보강
    ═══════════════════════════════════ */
@@ -9234,6 +9254,15 @@ function mrSwitchTab(tab, el){
     const div = document.getElementById('mr-tab-'+t);
     if(div) div.style.display = (t===tab) ? '' : 'none';
   });
+  // 리포트 탭 진입 시 등장 애니메이션 트리거
+  if(tab==='report'){
+    const rt = document.getElementById('mr-tab-report');
+    if(rt){
+      rt.classList.remove('mr-tab-anim');
+      void rt.offsetWidth; // reflow
+      rt.classList.add('mr-tab-anim');
+    }
+  }
   if(tab==='master'){ mrRenderEmployees(); mrGCalLoadConfig(); mrGCalUpdateStatus(); }
   // nav-menu-report 메뉴 active 토글
   document.querySelectorAll('#nav-menu-report .nav-item').forEach(i=>i.classList.remove('active'));
@@ -9579,6 +9608,41 @@ window.mrRenderCalendar = function(){
   }
 };
 
+// 숫자 카운트업 애니메이션 (0 → 타겟, easeOutCubic)
+const _mrAnimState = new WeakMap();
+function _mrAnimateNumber(elId, target, opts){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const duration = opts?.duration || 900;
+  const isPercent = opts?.percent || false;
+  const suffix = opts?.suffix || '';
+  // 이전 애니메이션 취소
+  const prev = _mrAnimState.get(el);
+  if(prev) cancelAnimationFrame(prev.raf);
+  // 시작값 = 현재 표시값(숫자만 추출)
+  const cur = parseInt(String(el.textContent).replace(/[^\d-]/g,''),10) || 0;
+  if(cur===target){
+    el.textContent = isPercent ? target+'%' : target+suffix;
+    return;
+  }
+  const start = performance.now();
+  const ease = t => 1 - Math.pow(1-t, 3);
+  const tick = (now)=>{
+    const t = Math.min(1, (now-start)/duration);
+    const v = Math.round(cur + (target-cur)*ease(t));
+    el.textContent = isPercent ? v+'%' : v+suffix;
+    if(t<1){
+      const raf = requestAnimationFrame(tick);
+      _mrAnimState.set(el, {raf});
+    } else {
+      el.textContent = isPercent ? target+'%' : target+suffix;
+      _mrAnimState.delete(el);
+    }
+  };
+  const raf = requestAnimationFrame(tick);
+  _mrAnimState.set(el, {raf});
+}
+
 function mrRenderStats(){
   // 상태 자동 저장 (변이 후 자연스럽게 호출되는 지점)
   try{ mrSaveStateLater(); }catch(e){}
@@ -9591,12 +9655,12 @@ function mrRenderStats(){
   const hold = all.filter(c=>c.status==='보류').length;
   const now = new Date();
   const soon = all.filter(c=>{ if(!c.due||c.status==='완료')return false; const d=Math.floor((new Date(c.due)-now)/(1000*60*60*24)); return d>=0 && d<=30; }).length;
-  document.getElementById('mr-k-total').textContent = all.length;
+  _mrAnimateNumber('mr-k-total', all.length);
   document.getElementById('mr-k-total-sub').textContent = `진행 중 ${prog} · 완료 ${done}`;
-  document.getElementById('mr-k-progress').textContent = prog;
-  document.getElementById('mr-k-pending').textContent = pend;
-  document.getElementById('mr-k-done').textContent = done;
-  document.getElementById('mr-k-soon').textContent = soon;
+  _mrAnimateNumber('mr-k-progress', prog);
+  _mrAnimateNumber('mr-k-pending', pend);
+  _mrAnimateNumber('mr-k-done', done);
+  _mrAnimateNumber('mr-k-soon', soon);
   // 필터 뱃지
   const news = all.filter(c=>c.status==='신규').length;
   const ends = all.filter(c=>c.status==='종결').length;
@@ -9631,13 +9695,38 @@ function mrRenderStats(){
     const ip = list.filter(c=>c.status==='진행 중').length;
     const soonC = list.filter(c=>{ if(!c.due||c.status==='완료')return false; const d=Math.floor((new Date(c.due)-now)/(1000*60*60*24)); return d>=0 && d<=30; }).length;
     const cls = colorClasses[idx % colorClasses.length];
-    return `<div class="mr-cat ${cls}">
+    const animDelay = idx * 80; // 카드 등장 stagger
+    return `<div class="mr-cat ${cls} mr-fade-in" data-avg="${avg}" data-idx="${idx}" style="animation-delay:${animDelay}ms">
       <div class="name">${prod} <span class="cnt">${list.length}건</span></div>
-      <div class="stat"><div class="num">${avg}%</div><div class="lbl">평균 진행률</div></div>
-      <div class="bar"><i style="width:${avg}%"></i></div>
+      <div class="stat"><div class="num" data-num-target="${avg}">0%</div><div class="lbl">평균 진행률</div></div>
+      <div class="bar"><i style="width:0%" data-bar-target="${avg}"></i></div>
       <div class="sub-stat"><span>진행 중 ${ip}</span><span>완료 ${dn}</span><span>D-30 ${soonC}</span></div>
     </div>`;
   }).join('');
+  // 카드 등장 후 숫자·진행률 바 애니메이션
+  setTimeout(()=>{
+    document.querySelectorAll('#mr-catgrid .mr-cat').forEach((card, i)=>{
+      const delay = i * 80 + 200;
+      setTimeout(()=>{
+        const num = card.querySelector('.num');
+        const bar = card.querySelector('.bar i');
+        const t = parseInt(num?.dataset.numTarget||'0',10);
+        if(num){
+          // 직접 카운트업 (id 없는 요소에 대응)
+          const start = performance.now();
+          const ease = x=>1-Math.pow(1-x,3);
+          const tick = (now)=>{
+            const p = Math.min(1, (now-start)/700);
+            num.textContent = Math.round(t*ease(p))+'%';
+            if(p<1) requestAnimationFrame(tick);
+            else num.textContent = t+'%';
+          };
+          requestAnimationFrame(tick);
+        }
+        if(bar){ bar.style.transition='width .9s cubic-bezier(.2,.8,.2,1)'; bar.style.width = t+'%'; }
+      }, delay);
+    });
+  }, 30);
 }
 
 function mrRenderCases(){
