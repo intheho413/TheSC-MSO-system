@@ -1989,7 +1989,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   <div class="nav-right">
     <span id="nav-clock" class="nav-clock"></span>
     <button class="nav-icon-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="테마 전환"></button>
-    <button class="nav-icon-btn" onclick="openSettings()" title="설정">
+    <button class="nav-icon-btn" id="nav-settings-btn" onclick="openSettings()" title="설정 (마스터 전용)">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
   </div>
@@ -5681,8 +5681,12 @@ async function deletePayment(id) {
 }
 function _checkedPayIds(){ return [...document.querySelectorAll('#ledger-tbody input.pay-chk:checked')].map(c=>c.dataset.id); }
 function toggleAllLedger(cb){ document.querySelectorAll('#ledger-tbody input.ledger-chk').forEach(c=>c.checked=cb.checked); updateLedgerCount(); }
-// 선택 항목 엑셀 내보내기 (출고+수금 모두)
+// 선택 항목 엑셀 내보내기 (출고+수금 모두) — 일반 사원 차단
 function exportLedgerSelected(){
+  if(typeof authCanDownload==='function' && !authCanDownload()){
+    showToast('엑셀 다운로드 권한이 없습니다 (마스터/매니저 권한 필요)');
+    return;
+  }
   if(typeof XLSX === 'undefined'){ showToast('엑셀 라이브러리 로딩 중입니다. 잠시 후 다시 시도하세요'); return; }
   const checked = [...document.querySelectorAll('#ledger-tbody input.ledger-chk:checked')];
   if(!checked.length){ showToast('내보낼 항목을 선택하세요'); return; }
@@ -6346,6 +6350,10 @@ function buildSheet(header, rows, widths, fmtMap) {
 }
 
 async function downloadReport(type) {
+  if(typeof authCanDownload==='function' && !authCanDownload()){
+    showToast('엑셀 다운로드 권한이 없습니다 (마스터/매니저 권한 필요)');
+    return;
+  }
   if(typeof XLSX === 'undefined') { showToast('엑셀 라이브러리 로딩 중입니다. 잠시 후 다시 시도하세요'); return; }
   const isMed = type === 'med';
   const from = document.getElementById(isMed?'med-rpt-from':'rpt-from')?.value;
@@ -6931,6 +6939,11 @@ const DEFAULT_LABELS = {
 };
 
 function openSettings() {
+  // 마스터 전용 (앱 이름·로고·메뉴명 등 시스템 설정)
+  if(typeof authIsMaster==='function' && !authIsMaster()){
+    if(typeof showToast==='function') showToast('시스템 설정은 마스터 권한만 접근 가능합니다');
+    return;
+  }
   // 현재 값 설정 input에 채우기
   const s = loadSettingsData();
   document.getElementById('s-appname').value  = s.appname  || '';
@@ -7173,6 +7186,10 @@ function mrGCalLoadConfig(){
 }
 
 function mrGCalSaveConfig(){
+  if(typeof authIsMaster==='function' && !authIsMaster()){
+    showToast('캘린더 연동 설정은 마스터 권한만 변경 가능합니다');
+    return;
+  }
   const clientId = document.getElementById('mr-gcal-client-id').value.trim();
   const calendarId = document.getElementById('mr-gcal-calendar-id').value.trim() || MR_GCAL_DEFAULT_CALENDAR;
   const opts = {
@@ -8334,6 +8351,24 @@ function authIsAdmin(){
   const lvl = u.authLevel || u.role;
   return lvl==='master' || lvl==='manager' || lvl==='admin';
 }
+// 마스터 전용 권한 (최상위)
+function authIsMaster(){
+  if(!CURRENT_USER) return false;
+  const u = MR_EMPLOYEES.find(e=>e.id===CURRENT_USER.id) || CURRENT_USER;
+  const lvl = u.authLevel || u.role;
+  return lvl==='master' || lvl==='admin';
+}
+// 일반 사원 여부 (마스터/매니저가 아님)
+function authIsStaff(){
+  if(!CURRENT_USER) return false;
+  const u = MR_EMPLOYEES.find(e=>e.id===CURRENT_USER.id) || CURRENT_USER;
+  const lvl = u.authLevel || u.role;
+  return !(lvl==='master' || lvl==='manager' || lvl==='admin');
+}
+// 다운로드 권한 (일반에게 차단)
+function authCanDownload(){
+  return !authIsStaff();
+}
 function authCanManageEmployees(){
   // 관리자(manager 또는 admin)만 사원 관리 가능
   return authIsAdmin();
@@ -8448,6 +8483,16 @@ function authCanAccessMaster(){
 // 권한 가드: 메뉴 표시 토글
 function authApplyMenuGuards(){
   if(!CURRENT_USER) return;
+  // 마스터 전용 — 시스템 설정 아이콘
+  const settingsBtn = document.getElementById('nav-settings-btn');
+  if(settingsBtn) settingsBtn.style.display = authIsMaster() ? '' : 'none';
+  // 다운로드 권한 — 일반 차단 (PPT 다운로드 영역)
+  const pptBar = document.querySelector('.mr-ppt-bar');
+  if(pptBar) pptBar.style.display = authCanDownload() ? '' : 'none';
+  // 화장품/의료장비 엑셀 다운로드 버튼 — 일반 차단
+  document.querySelectorAll('[onclick*="downloadReport"],[onclick*="downloadExcel"],[onclick*="exportExcel"]').forEach(btn=>{
+    btn.style.display = authCanDownload() ? '' : 'none';
+  });
   const showMaster = authCanAccessMaster();
   // 데스크탑 사이드바 - 기초 관리 메뉴
   document.querySelectorAll('#nav-menu-report .nav-item').forEach((it,idx)=>{
@@ -8518,8 +8563,12 @@ function mrApplyEditGuards(c){
   }
 }
 
-// 수동 리셋 함수 (콘솔에서 mrResetData() 실행 시 샘플로 초기화)
+// 수동 리셋 함수 (콘솔에서 mrResetData() 실행 시 샘플로 초기화) — 마스터만
 function mrResetData(){
+  if(typeof authIsMaster==='function' && !authIsMaster()){
+    if(typeof showToast==='function') showToast('데이터 초기화는 마스터 권한만 가능합니다');
+    return;
+  }
   if(!confirm('저장된 모든 데이터를 삭제하고 샘플 데이터로 초기화하시겠습니까?\n(복구 불가)')) return;
   localStorage.removeItem(MR_STORE_KEY);
   location.reload();
@@ -10032,6 +10081,11 @@ function mrPptSetupPresets(){
   mrPptApply('month','이번 달');
 }
 function mrPptDownload(){
+  // 다운로드 권한 가드
+  if(typeof authCanDownload==='function' && !authCanDownload()){
+    showToast('PPT 다운로드 권한이 없습니다 (마스터/매니저 권한 필요)');
+    return;
+  }
   const from=new Date(document.getElementById('mr-ppt-from').value);
   const to=new Date(document.getElementById('mr-ppt-to').value);
   if(isNaN(from)||isNaN(to)||from>to){ showToast('기간을 확인해주세요'); return; }
