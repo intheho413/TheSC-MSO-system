@@ -12467,7 +12467,8 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    if (bar && shouldShow()) bar.style.display = 'flex';
+    // 자동 배너 노출 비활성화 — 사용자는 햄버거 메뉴 "앱 설치"로 직접 진입
+    // if (bar && shouldShow()) bar.style.display = 'flex';
   });
 
   if (btn) btn.addEventListener('click', async () => {
@@ -12717,18 +12718,11 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') dueCheckOnce(); });
   window.pwaDueCheckOnce = dueCheckOnce;
 
-  // 3) iOS Safari hint (no beforeinstallprompt support)
+  // 3) iOS Safari hint — 자동 노출 비활성화
+  // 사용자는 햄버거 메뉴 "📥 앱 설치" 버튼으로 직접 진입
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  if (isIOS && !isStandalone && shouldShow()) {
-    const iosBar = bar;
-    if (iosBar) {
-      iosBar.querySelector('div').innerHTML = '<b style="color:#fff">홈 화면에 추가</b><br><span style="opacity:.75;font-size:11px">탭해서 설치 방법 보기</span>';
-      btn.textContent = '방법';
-      // 버튼 표시 유지 — 클릭 시 가이드 모달
-      iosBar.style.display = 'flex';
-    }
-  }
+  // (자동 배너 노출 코드 제거됨)
 
   // In-app browser 감지 (카카오톡·네이트온·인스타·페북 등)
   function detectInAppBrowser(){

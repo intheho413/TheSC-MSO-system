@@ -5,7 +5,7 @@
 //  - 3rd-party CDN scripts: stale-while-revalidate
 // Bump CACHE_VERSION on each release to invalidate old caches.
 
-const CACHE_VERSION = 'mso-v6';
+const CACHE_VERSION = 'mso-v7';
 const CORE_CACHE  = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
