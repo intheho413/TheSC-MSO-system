@@ -614,6 +614,49 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 /* MSO 리포트 페이지 폭 확장 — 3분할 레이아웃 가시성 ↑ */
 #page-mso-report.page{max-width:1500px}
 
+/* ═══════════════════════════════════
+   로그인 화면
+   ═══════════════════════════════════ */
+.login-screen{position:fixed;inset:0;z-index:99999;background:radial-gradient(ellipse at top,#1a2238 0%,#0a0e1a 60%);display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Pretendard','Segoe UI',sans-serif}
+.login-card{width:100%;max-width:420px;background:linear-gradient(160deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:32px 28px;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.login-brand-row{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.login-logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#a78bfa,#ec4899);display:grid;place-items:center;color:#fff;font-size:22px;font-weight:900;box-shadow:0 10px 24px rgba(167,139,250,.45)}
+.login-title{font-size:18px;font-weight:900;color:#fff;letter-spacing:-.3px;line-height:1.2}
+.login-sub{font-size:11.5px;color:#94a3b8;font-weight:500;margin-top:3px}
+.login-form{display:flex;flex-direction:column;gap:12px}
+.login-field{display:flex;flex-direction:column;gap:6px}
+.login-lbl{font-size:11px;font-weight:800;color:#a5b4fc;letter-spacing:1.1px;text-transform:uppercase;padding-left:2px}
+.login-form input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;padding:11px 14px;border-radius:9px;font-size:14px;outline:none;font-family:inherit;transition:.15s}
+.login-form input:focus{border-color:rgba(167,139,250,.5);background:rgba(255,255,255,.06)}
+.login-btn{background:linear-gradient(135deg,#a78bfa,#ec4899);border:none;color:#fff;padding:12px 18px;border-radius:9px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 8px 22px rgba(167,139,250,.35);margin-top:6px;letter-spacing:.5px}
+.login-btn:hover{filter:brightness(1.08)}
+.login-btn:active{transform:translateY(1px)}
+.login-error{font-size:11.5px;color:#fca5a5;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);padding:8px 12px;border-radius:8px;margin-top:14px;min-height:18px;line-height:1.4;display:none}
+.login-error:not(:empty){display:block}
+.login-help{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#64748b;line-height:1.7}
+.login-help b{color:#c4b5fd;font-weight:800}
+
+/* ═══ 비밀번호 변경 모달 ═══ */
+.pw-change-mask{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:99998;display:flex;align-items:center;justify-content:center;padding:20px}
+.pw-change-card{background:linear-gradient(160deg,#1a2238,#0f172a);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:24px 22px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.6);text-align:center}
+.pw-change-card .pw-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#a78bfa,#ec4899);display:grid;place-items:center;color:#fff;margin:0 auto 14px;box-shadow:0 8px 22px rgba(167,139,250,.45)}
+.pw-change-card .pw-icon svg{width:22px;height:22px}
+.pw-change-card h3{margin:0 0 6px 0;font-size:16px;font-weight:900;color:#fff}
+.pw-change-card p{margin:0 0 18px 0;font-size:12px;color:#cbd5e1;line-height:1.55}
+.pw-change-card input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;padding:10px 13px;border-radius:8px;font-size:13.5px;outline:none;font-family:inherit;margin-bottom:8px}
+.pw-change-card input:focus{border-color:rgba(167,139,250,.5)}
+.pw-error{font-size:11px;color:#fca5a5;min-height:16px;margin-bottom:10px;text-align:left;padding-left:2px}
+.pw-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:6px}
+.pw-actions button{padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;border:none}
+.pw-btn-cancel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1}
+.pw-btn-confirm{background:linear-gradient(135deg,#a78bfa,#ec4899);color:#fff;box-shadow:0 6px 16px rgba(167,139,250,.35)}
+
+/* 모바일 로그인 카드 */
+@media (max-width:480px){
+  .login-card{padding:24px 20px;border-radius:14px}
+  .login-title{font-size:16px}
+}
+
 /* 모바일 전용 요소 — 기본 숨김 */
 .mob-cal-view,.mob-cal-week,.mob-cal-list,.mob-cal-day-panel{display:none}
 
@@ -1504,6 +1547,53 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 </style>
 </head>
 <body>
+<!-- ═══ 로그인 화면 (인증 전 노출) ═══ -->
+<div id="login-screen" class="login-screen" style="display:none">
+  <div class="login-card">
+    <div class="login-brand-row">
+      <div class="login-logo">M</div>
+      <div>
+        <div class="login-title">MSO 통합 관리</div>
+        <div class="login-sub">사번과 비밀번호로 로그인하세요</div>
+      </div>
+    </div>
+    <form class="login-form" onsubmit="event.preventDefault();handleLoginSubmit()">
+      <label class="login-field">
+        <span class="login-lbl">사번</span>
+        <input id="login-empid" type="number" inputmode="numeric" autocomplete="username" placeholder="예: 1" required>
+      </label>
+      <label class="login-field">
+        <span class="login-lbl">비밀번호</span>
+        <input id="login-pw" type="password" autocomplete="current-password" placeholder="비밀번호" required>
+      </label>
+      <button type="submit" class="login-btn">로그인</button>
+    </form>
+    <div id="login-error" class="login-error"></div>
+    <div class="login-help">
+      <div>초기 비밀번호: <b>1234</b> (최초 로그인 시 변경)</div>
+      <div>비밀번호 분실 시 관리자에게 문의</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 비밀번호 변경 모달 ═══ -->
+<div id="pw-change-mask" class="pw-change-mask" style="display:none">
+  <div class="pw-change-card">
+    <div class="pw-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <h3>비밀번호 변경</h3>
+    <p id="pw-change-forced">최초 로그인입니다. 비밀번호를 변경해주세요.</p>
+    <input id="pw-new" type="password" placeholder="새 비밀번호 (4자 이상)" autocomplete="new-password">
+    <input id="pw-new-confirm" type="password" placeholder="비밀번호 확인" autocomplete="new-password">
+    <div id="pw-error" class="pw-error"></div>
+    <div class="pw-actions">
+      <button id="pw-change-cancel" class="pw-btn-cancel" onclick="closePasswordChangeModal()">취소</button>
+      <button class="pw-btn-confirm" onclick="handlePasswordChange()">변경</button>
+    </div>
+  </div>
+</div>
+
 <div class="app home-mode" id="app-root" data-dir="right">
 
 <!-- ── 홈 랜딩 ── -->
@@ -7149,6 +7239,189 @@ function mrLoadState(){
 // 즉시 복원 시도 (샘플 데이터를 사용자 저장본으로 덮어씀)
 mrLoadState();
 
+// ═══════════════════════════════════════════════════════════════
+// 로그인 시스템 — 자체 사번/비밀번호 인증
+// ═══════════════════════════════════════════════════════════════
+const AUTH_SESSION_KEY = 'thesc-mso-session-v1';
+const AUTH_SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24시간
+const AUTH_DEFAULT_PW = '1234'; // 초기 비밀번호
+
+let CURRENT_USER = null; // {id, name, position, role}
+
+// SHA-256 + 랜덤 솔트 해싱 (Web Crypto API)
+async function _authHash(password, saltB64){
+  let salt;
+  if(saltB64){
+    salt = new Uint8Array(atob(saltB64).split('').map(c=>c.charCodeAt(0)));
+  } else {
+    salt = crypto.getRandomValues(new Uint8Array(16));
+  }
+  const enc = new TextEncoder().encode(password);
+  const combined = new Uint8Array(salt.length + enc.length);
+  combined.set(salt);
+  combined.set(enc, salt.length);
+  const hashBuf = await crypto.subtle.digest('SHA-256', combined);
+  const hashArr = new Uint8Array(hashBuf);
+  const saltStr = btoa(String.fromCharCode(...salt));
+  const hashStr = btoa(String.fromCharCode(...hashArr));
+  return `${saltStr}.${hashStr}`;
+}
+
+async function _authVerify(password, storedHash){
+  if(!storedHash || !storedHash.includes('.')) return false;
+  const [saltStr] = storedHash.split('.');
+  const newHash = await _authHash(password, saltStr);
+  return newHash === storedHash;
+}
+
+function _authSaveSession(user){
+  const session = {
+    userId: user.id,
+    token: (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
+    expiresAt: Date.now() + AUTH_SESSION_DURATION_MS
+  };
+  localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+  CURRENT_USER = {id:user.id, name:user.name, position:user.position||'', role:user.role||'staff'};
+}
+
+function authLoadSession(){
+  try{
+    const raw = localStorage.getItem(AUTH_SESSION_KEY);
+    if(!raw) return null;
+    const session = JSON.parse(raw);
+    if(!session || Date.now() > session.expiresAt){
+      localStorage.removeItem(AUTH_SESSION_KEY);
+      return null;
+    }
+    const u = MR_EMPLOYEES.find(e=>e.id===session.userId);
+    if(!u || u.active===false){
+      localStorage.removeItem(AUTH_SESSION_KEY);
+      return null;
+    }
+    CURRENT_USER = {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'};
+    return CURRENT_USER;
+  }catch(e){ return null; }
+}
+
+function authLogout(){
+  localStorage.removeItem(AUTH_SESSION_KEY);
+  CURRENT_USER = null;
+  showLoginScreen();
+}
+
+async function authLogin(empId, password){
+  const idNum = Number(empId);
+  if(!idNum || isNaN(idNum)) return {ok:false, msg:'사번을 정확히 입력하세요'};
+  const u = MR_EMPLOYEES.find(e=>e.id===idNum);
+  if(!u) return {ok:false, msg:'존재하지 않는 사번입니다'};
+  if(u.active===false) return {ok:false, msg:'비활성화된 계정입니다 (관리자 문의)'};
+  // 비밀번호 미설정 = 초기 비밀번호 '1234'로 로그인 가능 (강제 변경)
+  if(!u.passwordHash){
+    if(password !== AUTH_DEFAULT_PW){
+      return {ok:false, msg:`초기 비밀번호는 ${AUTH_DEFAULT_PW} 입니다`};
+    }
+    _authSaveSession(u);
+    return {ok:true, mustChangePassword:true};
+  }
+  const valid = await _authVerify(password, u.passwordHash);
+  if(!valid) return {ok:false, msg:'비밀번호가 일치하지 않습니다'};
+  _authSaveSession(u);
+  return {ok:true, mustChangePassword: u.mustChangePassword===true};
+}
+
+async function authChangePassword(newPassword){
+  if(!CURRENT_USER) return {ok:false, msg:'로그인이 필요합니다'};
+  if(!newPassword || newPassword.length<4) return {ok:false, msg:'비밀번호는 4자 이상이어야 합니다'};
+  const u = MR_EMPLOYEES.find(e=>e.id===CURRENT_USER.id);
+  if(!u) return {ok:false, msg:'사용자 정보 오류'};
+  u.passwordHash = await _authHash(newPassword);
+  u.mustChangePassword = false;
+  u.passwordChangedAt = new Date().toISOString();
+  try{ mrSaveState(); }catch(e){}
+  return {ok:true};
+}
+
+// 로그인 화면 / 앱 화면 전환
+function showLoginScreen(){
+  const login = document.getElementById('login-screen');
+  const appShell = document.querySelector('.app-shell');
+  if(login) login.style.display = 'flex';
+  if(appShell) appShell.style.display = 'none';
+  document.body.style.overflow = 'hidden';
+  // 입력 초기화
+  setTimeout(()=>{
+    const empIn = document.getElementById('login-empid');
+    if(empIn) empIn.focus();
+  }, 100);
+}
+function showAppScreen(){
+  const login = document.getElementById('login-screen');
+  const appShell = document.querySelector('.app-shell');
+  if(login) login.style.display = 'none';
+  if(appShell) appShell.style.display = '';
+  document.body.style.overflow = '';
+  // 햄버거 사용자 정보 갱신
+  try{ mobUpdateUserInfo(); }catch(e){}
+}
+
+async function handleLoginSubmit(){
+  const empIdEl = document.getElementById('login-empid');
+  const pwEl = document.getElementById('login-pw');
+  const errEl = document.getElementById('login-error');
+  const empId = empIdEl.value.trim();
+  const pw = pwEl.value;
+  errEl.textContent = '';
+  if(!empId || !pw){ errEl.textContent = '사번과 비밀번호를 입력하세요'; return; }
+  const result = await authLogin(empId, pw);
+  if(!result.ok){ errEl.textContent = result.msg; pwEl.value=''; return; }
+  showAppScreen();
+  pwEl.value = '';
+  if(result.mustChangePassword){
+    showPasswordChangeModal(true);
+  }
+}
+
+function showPasswordChangeModal(forced){
+  const mask = document.getElementById('pw-change-mask');
+  if(mask){
+    mask.style.display = 'flex';
+    document.getElementById('pw-change-forced').textContent = forced ? '최초 로그인입니다. 비밀번호를 변경해주세요.' : '비밀번호를 변경합니다.';
+    document.getElementById('pw-change-cancel').style.display = forced ? 'none' : 'inline-block';
+    setTimeout(()=>document.getElementById('pw-new')?.focus(), 50);
+  }
+}
+function closePasswordChangeModal(){
+  const mask = document.getElementById('pw-change-mask');
+  if(mask){
+    mask.style.display = 'none';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-new-confirm').value = '';
+    document.getElementById('pw-error').textContent = '';
+  }
+}
+
+async function handlePasswordChange(){
+  const pw1 = document.getElementById('pw-new').value;
+  const pw2 = document.getElementById('pw-new-confirm').value;
+  const errEl = document.getElementById('pw-error');
+  errEl.textContent = '';
+  if(pw1 !== pw2){ errEl.textContent = '두 비밀번호가 일치하지 않습니다'; return; }
+  const result = await authChangePassword(pw1);
+  if(!result.ok){ errEl.textContent = result.msg; return; }
+  closePasswordChangeModal();
+  showToast('비밀번호가 변경되었습니다');
+}
+
+// 페이지 로드 시 인증 체크
+function authBootstrap(){
+  const user = authLoadSession();
+  if(user){
+    showAppScreen();
+  } else {
+    showLoginScreen();
+  }
+}
+
 // 수동 리셋 함수 (콘솔에서 mrResetData() 실행 시 샘플로 초기화)
 function mrResetData(){
   if(!confirm('저장된 모든 데이터를 삭제하고 샘플 데이터로 초기화하시겠습니까?\n(복구 불가)')) return;
@@ -8512,8 +8785,9 @@ function mrPostComment(){
   const catEl = document.querySelector('.mr-cmt-cat.on');
   const cat = catEl ? catEl.dataset.cat : null;
   const catLabel = cat ? `<b style="color:#c4b5fd">[${cat}]</b> ` : '';
+  const author = CURRENT_USER || {name:'사용자', position:''};
   c.comments.push({
-    who:'정인호', role:'대리', time:'방금 전',
+    who: author.name, role: author.position||'', time:'방금 전',
     body: catLabel + text.replace(/@(\S+)/g,'<span class="ment">@$1</span>'),
     category: cat
   });
@@ -9637,10 +9911,9 @@ window.addEventListener('DOMContentLoaded', ()=>{
   }, 300);
 });
 
-// ═══ 📱 사용자 정보 (로그인 도입 전 임시) ═══
+// ═══ 사용자 정보 (로그인 연동) ═══
 function mobUpdateUserInfo(){
-  // 로그인 시스템 도입 전: 현재 첫 사원 정보로 표시 (placeholder)
-  const u = (typeof MR_EMPLOYEES!=='undefined' && MR_EMPLOYEES.length>0) ? MR_EMPLOYEES[0] : null;
+  const u = CURRENT_USER;
   const nm = document.getElementById('mob-user-name');
   const ps = document.getElementById('mob-user-pos');
   if(!nm || !ps) return;
@@ -9653,10 +9926,9 @@ function mobUpdateUserInfo(){
   }
 }
 function mobLogout(){
-  // 로그인 시스템 도입 후 실제 로그아웃 처리
   if(!confirm('로그아웃 하시겠습니까?')) return;
-  showToast('로그인 기능 도입 후 활성화됩니다');
   mobMenuToggle(false);
+  authLogout();
 }
 
 // ═══ 📱 모바일 네비게이션 함수 ═══
@@ -9721,6 +9993,11 @@ function mobSyncTabs(activeTab){
 // 페이지 로드 시 초기 동기화
 window.addEventListener('DOMContentLoaded', ()=>{
   setTimeout(()=>mobSyncTabs('report'), 100);
+});
+
+// 인증 부트스트랩 — 페이지 로드 시 세션 체크 → 로그인 화면 or 앱 화면
+window.addEventListener('DOMContentLoaded', ()=>{
+  try{ authBootstrap(); }catch(e){ console.warn('[authBootstrap]', e); }
 });
 </script>
 <!-- ═══ 📱 모바일 — 햄버거 메뉴 + 하단 탭바 ═══ -->
