@@ -7657,8 +7657,17 @@ async function sbBootstrapEmployees(){
     }
     console.log('[sbBootstrap] employees 마이그레이션 완료', MR_EMPLOYEES.length, '명');
   } else {
-    // DB에 데이터 있음 → 로컬 덮어쓰기
-    MR_EMPLOYEES = remote.map(_sbEmpToLocal);
+    // DB에 데이터 있음 → 로컬 덮어쓰기 (단, 로컬 전용 필드는 보존)
+    const oldMap = new Map(MR_EMPLOYEES.map(e=>[e.id, e]));
+    MR_EMPLOYEES = remote.map(row=>{
+      const local = _sbEmpToLocal(row);
+      const prev = oldMap.get(row.id);
+      if(prev){
+        if(!local.authLevel && prev.authLevel) local.authLevel = prev.authLevel;
+        if(!local.permissions && prev.permissions) local.permissions = prev.permissions;
+      }
+      return local;
+    });
     MR_EMP_NEXT_ID = Math.max(...MR_EMPLOYEES.map(e=>e.id), 0) + 1;
     console.log('[sbBootstrap] employees DB → 로컬 동기화', remote.length, '명');
   }
@@ -7671,11 +7680,23 @@ function sbSubscribeEmployees(){
   if(_empRealtimeChannel) return;
   _empRealtimeChannel = sb.channel('emp-realtime')
     .on('postgres_changes', {event:'*', schema:'public', table:'employees'}, payload=>{
-      // 본인이 일으킨 변경은 건너뛰기 위해 짧은 디바운스
+      // 본인 쓰기 echo 무시 (cases와 동일)
+      if(Date.now() < _sbSelfWriteUntil) return;
       setTimeout(async ()=>{
+        if(Date.now() < _sbSelfWriteUntil) return;
         const remote = await sbEmpFetchAll();
         if(remote){
-          MR_EMPLOYEES = remote.map(_sbEmpToLocal);
+          // DB에 없는 로컬 전용 필드(authLevel, permissions) 보존
+          const oldMap = new Map(MR_EMPLOYEES.map(e=>[e.id, e]));
+          MR_EMPLOYEES = remote.map(row=>{
+            const local = _sbEmpToLocal(row);
+            const prev = oldMap.get(row.id);
+            if(prev){
+              if(!local.authLevel && prev.authLevel) local.authLevel = prev.authLevel;
+              if(!local.permissions && prev.permissions) local.permissions = prev.permissions;
+            }
+            return local;
+          });
           MR_EMP_NEXT_ID = Math.max(...MR_EMPLOYEES.map(e=>e.id), 0) + 1;
           if(document.getElementById('mr-tab-master')?.style.display !== 'none') mrRenderEmployees();
           mrRefreshEmployeePickers();
