@@ -12654,21 +12654,57 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
 </style>
 <script>
 (function(){
-  // 1) Service Worker registration
+  // 1) Service Worker registration + 강력한 자동 갱신
   if ('serviceWorker' in navigator) {
+    // controllerchange = 새 SW가 활성화됨 → 즉시 새로고침
+    let _reloadOnce = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (_reloadOnce) return;
+      _reloadOnce = true;
+      console.log('[PWA] 새 SW 활성화 — 새로고침');
+      location.reload();
+    });
+
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').then((reg) => {
-        // Listen for updates → notify user (lightweight: console only for now)
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+        // 새 버전 즉시 적용
         reg.addEventListener('updatefound', () => {
           const sw = reg.installing;
           if (!sw) return;
           sw.addEventListener('statechange', () => {
             if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('[PWA] 새 버전이 준비되었습니다. 새로고침하면 적용됩니다.');
+              console.log('[PWA] 새 버전 발견 — SKIP_WAITING 메시지 전송');
+              try { sw.postMessage('SKIP_WAITING'); } catch(_) {}
             }
           });
         });
+        // 페이지 로드마다 SW 업데이트 확인
+        try { reg.update(); } catch(_) {}
+        // 탭이 다시 활성화될 때도 업데이트 체크
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            try { reg.update(); } catch(_) {}
+          }
+        });
       }).catch((err) => console.warn('[PWA] SW 등록 실패:', err));
+
+      // standalone 모드(PWA) — 5분 이상 백그라운드 후 복귀하면 강제 새로고침
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      if (isStandalone) {
+        let _lastActive = Date.now();
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            const gap = Date.now() - _lastActive;
+            if (gap > 5 * 60 * 1000) { // 5분 이상
+              console.log('[PWA] 백그라운드 5분+ → 새로고침');
+              location.reload();
+            }
+            _lastActive = Date.now();
+          } else {
+            _lastActive = Date.now();
+          }
+        });
+      }
     });
   }
 

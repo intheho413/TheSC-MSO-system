@@ -5,7 +5,7 @@
 //  - 3rd-party CDN scripts: stale-while-revalidate
 // Bump CACHE_VERSION on each release to invalidate old caches.
 
-const CACHE_VERSION = 'mso-v9';
+const CACHE_VERSION = 'mso-v10';
 const CORE_CACHE  = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -33,12 +33,16 @@ self.addEventListener('activate', (event) => {
   })());
 });
 
-// Helper: network-first with cache fallback
+// Helper: network-first with cache fallback (네트워크 우선 + 캐시 백업)
 async function networkFirst(request) {
   try {
-    const fresh = await fetch(request);
-    const cache = await caches.open(RUNTIME_CACHE);
-    cache.put(request, fresh.clone());
+    // PWA navigation은 캐시 우회 강제 (HTML 항상 최신)
+    const isNav = request.mode === 'navigate';
+    const fresh = await fetch(request, isNav ? { cache: 'no-store' } : {});
+    if (fresh && fresh.ok) {
+      const cache = await caches.open(RUNTIME_CACHE);
+      cache.put(request, fresh.clone());
+    }
     return fresh;
   } catch (err) {
     const cached = await caches.match(request);
