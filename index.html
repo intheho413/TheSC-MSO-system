@@ -714,7 +714,11 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .ap-emp-row .ap-emp-no{font-size:9.5px;font-weight:700;color:#a5b4fc;background:rgba(167,139,250,.14);padding:1px 6px;border-radius:4px;font-family:monospace}
 .ap-emp-row .ap-emp-role{font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:4px;margin-top:3px;display:inline-block}
 .ap-emp-row .ap-emp-role.manager{background:rgba(251,146,60,.16);color:#fdba74}
+.ap-emp-row .ap-emp-role.master{background:rgba(167,139,250,.18);color:#c4b5fd;border:1px solid rgba(167,139,250,.35)}
+.ap-emp-row .ap-emp-role.staff{background:rgba(96,165,250,.16);color:#93c5fd}
 .ap-emp-row .ap-emp-role.owner{background:rgba(96,165,250,.16);color:#93c5fd}
+.ap-emp-row .ap-avt.master{background:linear-gradient(135deg,#a78bfa,#7c3aed)}
+.ap-emp-row .ap-avt.staff{background:linear-gradient(135deg,#3b82f6,#6366f1)}
 
 .ap-perms{display:flex;gap:5px;flex-wrap:wrap}
 .ap-perm-toggle{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:5px 10px;border-radius:7px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:.15s}
@@ -755,9 +759,16 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .ap-form-field label .hint{font-size:9px;font-weight:600;color:#64748b;text-transform:none;letter-spacing:0;margin-left:4px}
 .ap-form-field input,.ap-form-field select{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;padding:8px 11px;border-radius:7px;font-size:12.5px;font-family:inherit;outline:none}
 .ap-form-field input:focus,.ap-form-field select:focus{border-color:rgba(52,211,153,.5)}
-.ap-form-roles{display:flex;gap:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:3px}
-.ap-form-roles button{flex:1;background:transparent;border:none;color:#94a3b8;padding:7px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+/* 드롭다운 옵션 다크 테마 텍스트 가시성 */
+.ap-form-field select{color:#fff;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a5b4fc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 11px center;background-size:12px;padding-right:34px}
+.ap-form-field select option{background:#0f172a;color:#fff;padding:8px}
+.ap-form-roles{display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:3px}
+.ap-form-roles button{flex:1;background:transparent;border:none;color:#94a3b8;padding:7px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
+.ap-form-roles button:hover{color:#fff}
+.ap-form-roles button.on.master{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
 .ap-form-roles button.on.manager{background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff}
+.ap-form-roles button.on.staff{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff}
+/* 기존 (호환용) */
 .ap-form-roles button.on.owner{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff}
 .ap-form-err{font-size:11px;color:#fca5a5;min-height:16px;margin-top:8px;padding:0 2px}
 .ap-form-acts{display:flex;gap:7px;justify-content:flex-end;margin-top:14px}
@@ -1618,6 +1629,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .mr-emp-row label{font-size:10.5px;font-weight:700;color:#94a3b8;letter-spacing:.3px;display:block;margin-bottom:3px}
 .mr-emp-row input,.mr-emp-row select{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;padding:7px 10px;border-radius:7px;font-size:12px;font-family:inherit;transition:.15s}
 .mr-emp-row input:focus,.mr-emp-row select:focus{outline:none;border-color:rgba(52,211,153,.5)}
+/* 다크 테마 드롭다운 옵션 텍스트 가시성 */
+.mr-emp-row select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a5b4fc' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 11px center;background-size:12px;padding-right:30px}
+.mr-emp-row select option{background:#0f172a;color:#fff;padding:8px}
 .mr-emp-row-role{display:flex;gap:3px;padding:2px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:7px}
 .mr-emp-row-role button{flex:1;background:transparent;border:none;color:#94a3b8;padding:5px 6px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s}
 .mr-emp-row-role button.on.manager{background:linear-gradient(135deg,#fb923c,#f59e0b);color:#fff;box-shadow:0 3px 8px rgba(251,146,60,.3)}
@@ -1791,10 +1805,11 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
         <select id="ap-r-position"></select>
       </div>
       <div class="ap-form-field">
-        <label>역할</label>
+        <label>권한</label>
         <div class="ap-form-roles" id="ap-r-role">
-          <button type="button" class="manager on" data-r="manager">관리자</button>
-          <button type="button" class="owner" data-r="owner">담당자</button>
+          <button type="button" class="master" data-r="master" title="모든 권한">마스터</button>
+          <button type="button" class="manager on" data-r="manager" title="관리자 권한">매니저</button>
+          <button type="button" class="staff" data-r="staff" title="일반 사원">일반</button>
         </div>
       </div>
       <div class="ap-form-field full">
@@ -7418,7 +7433,7 @@ window.addEventListener('load', ()=>{
 });
 
 // 사원 마스터 데이터 (관리자/담당자 단일 역할)
-const MR_POSITIONS = ['사원','주임','대리','과장','차장','부장','본부장'];
+const MR_POSITIONS = ['사원','주임','대리','과장','차장','부장','본부장','이사'];
 let MR_EMPLOYEES = [
   {id:1, name:'정인호', position:'대리', role:'manager', createdAt:'2026-04-27'}
 ];
@@ -7528,19 +7543,22 @@ async function sbEmpInsert(emp){
       active: emp.active!==false,
       password_changed_at: emp.passwordChangedAt||null
     };
-    // permissions 컬럼이 DB에 있으면 포함, 없으면 자동 fallback
+    // permissions / authLevel 컬럼이 DB에 있으면 포함
     if(emp.permissions) payload.permissions = emp.permissions;
+    if(emp.authLevel) payload.auth_level = emp.authLevel;
     let {data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single();
-    // permissions 컬럼이 없을 때의 오류 처리 — permissions 빼고 재시도
-    if(error && error.message && error.message.toLowerCase().includes('permissions')){
-      delete payload.permissions;
-      ({data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single());
+    // 컬럼 부재 오류 fallback (단계적 제외)
+    if(error && error.message){
+      const msg = error.message.toLowerCase();
+      if(msg.includes('auth_level')){ delete payload.auth_level; ({data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single()); }
     }
-    // emp_no 컬럼이 없을 때 — emp_no 빼고 재시도
-    if(error && error.message && error.message.toLowerCase().includes('emp_no')){
-      delete payload.emp_no;
-      delete payload.permissions;
-      ({data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single());
+    if(error && error.message){
+      const msg = error.message.toLowerCase();
+      if(msg.includes('permissions')){ delete payload.permissions; ({data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single()); }
+    }
+    if(error && error.message){
+      const msg = error.message.toLowerCase();
+      if(msg.includes('emp_no')){ delete payload.emp_no; delete payload.permissions; delete payload.auth_level; ({data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single()); }
     }
     if(error) throw error;
     return data;
@@ -7558,19 +7576,24 @@ async function sbEmpUpdate(id, patch){
     if('role' in patch) payload.role = patch.role;
     if('empNo' in patch) payload.emp_no = patch.empNo;
     if('permissions' in patch) payload.permissions = patch.permissions;
+    if('authLevel' in patch) payload.auth_level = patch.authLevel;
     if('passwordHash' in patch) payload.password_hash = patch.passwordHash;
     if('mustChangePassword' in patch) payload.must_change_password = patch.mustChangePassword;
     if('active' in patch) payload.active = patch.active;
     if('passwordChangedAt' in patch) payload.password_changed_at = patch.passwordChangedAt;
     let {data, error} = await sb.from('employees').update(payload).eq('id', id).select().single();
-    if(error && error.message && error.message.toLowerCase().includes('permissions')){
-      delete payload.permissions;
-      ({data, error} = await sb.from('employees').update(payload).eq('id', id).select().single());
+    // 컬럼 없음 오류 fallback
+    if(error && error.message){
+      const msg = error.message.toLowerCase();
+      if(msg.includes('auth_level')){ delete payload.auth_level; ({data, error} = await sb.from('employees').update(payload).eq('id', id).select().single()); }
     }
-    if(error && error.message && error.message.toLowerCase().includes('emp_no')){
-      delete payload.emp_no;
-      delete payload.permissions;
-      ({data, error} = await sb.from('employees').update(payload).eq('id', id).select().single());
+    if(error && error.message){
+      const msg = error.message.toLowerCase();
+      if(msg.includes('permissions')){ delete payload.permissions; ({data, error} = await sb.from('employees').update(payload).eq('id', id).select().single()); }
+    }
+    if(error && error.message){
+      const msg = error.message.toLowerCase();
+      if(msg.includes('emp_no')){ delete payload.emp_no; delete payload.permissions; delete payload.auth_level; ({data, error} = await sb.from('employees').update(payload).eq('id', id).select().single()); }
     }
     if(error) throw error;
     return data;
@@ -7597,6 +7620,7 @@ function _sbEmpToLocal(row){
     role: row.role||'manager',
     empNo: row.emp_no || ('EMP'+String(row.id).padStart(3,'0')),
     permissions: row.permissions || undefined,
+    authLevel: row.auth_level || undefined,
     passwordHash: row.password_hash||undefined,
     mustChangePassword: row.must_change_password!==false,
     active: row.active!==false,
@@ -7930,11 +7954,13 @@ function showAppScreen(){
 }
 
 // ═══ 권한 시스템 ═══
-// 기본 권한: manager는 둘 다, owner는 mso_report만
+// 기본 권한: master/manager는 둘 다, staff/owner는 mso_report만
 function authGetPermissions(user){
   if(!user) return {mso_main:false, mso_report:false};
-  // 관리자는 모든 권한
-  if(user.role==='manager' || user.role==='admin'){
+  // authLevel 우선, 없으면 role
+  const lvl = user.authLevel || user.role;
+  const isPrivileged = (lvl==='master' || lvl==='manager' || lvl==='admin');
+  if(isPrivileged){
     if(user.permissions){
       return {
         mso_main: user.permissions.mso_main!==false,
@@ -7943,7 +7969,7 @@ function authGetPermissions(user){
     }
     return {mso_main:true, mso_report:true};
   }
-  // 사원 — 기본 mso_report만
+  // 일반 사원(staff/owner) — 기본 mso_report만
   if(user.permissions){
     return {
       mso_main: user.permissions.mso_main===true,
@@ -7993,9 +8019,11 @@ function updateHomeUserWidget(){
   document.getElementById('uw-avt').textContent = (u.name||'?').slice(0,1);
   document.getElementById('uw-name').textContent = u.name||'사용자';
   document.getElementById('uw-pos').textContent = u.position||'';
-  // 관리자만 관리자 페이지 메뉴 노출
+  // 관리자만 관리자 페이지 메뉴 노출 (authLevel 우선)
   const adminMi = document.getElementById('uw-mi-admin');
-  if(adminMi) adminMi.style.display = (u.role==='manager' || u.role==='admin') ? '' : 'none';
+  const lvl = u.authLevel || u.role;
+  const isPrivileged = (lvl==='master' || lvl==='manager' || lvl==='admin');
+  if(adminMi) adminMi.style.display = isPrivileged ? '' : 'none';
 }
 
 function toggleUserMenu(e){
@@ -8029,20 +8057,23 @@ function renderAdminPanel(){
   if(cntEl) cntEl.textContent = `${MR_EMPLOYEES.length}명`;
   list.innerHTML = MR_EMPLOYEES.map(e=>{
     const p = authGetPermissions(e);
-    const roleLabel = e.role==='manager'?'관리자':'담당자';
+    // authLevel(마스터/매니저/일반) 우선, 없으면 role 매핑
+    const lvl = e.authLevel || (e.role==='manager' ? 'manager' : 'staff');
+    const lvlLabel = lvl==='master' ? '마스터' : (lvl==='manager' ? '매니저' : '일반');
+    const lvlCls = lvl; // master / manager / staff
     const empNo = e.empNo || authFormatEmpId(e.id);
     const first = (e.name||'?').slice(0,1);
-    const isAdmin = e.role==='manager' || e.role==='admin';
+    const isAdmin = lvl==='master' || lvl==='manager' || e.role==='admin';
     const isSelf = e.id===CURRENT_USER?.id;
     return `<div class="ap-emp-row">
-      <div class="ap-avt ${e.role}">${first}</div>
+      <div class="ap-avt ${lvlCls}">${first}</div>
       <div class="ap-emp-info">
         <div class="ap-emp-name">
           <span>${e.name}</span>
           <span class="ap-emp-pos">${e.position||''}</span>
           <span class="ap-emp-no">${empNo}</span>
         </div>
-        <span class="ap-emp-role ${e.role}">${roleLabel}</span>
+        <span class="ap-emp-role ${lvlCls}">${lvlLabel}</span>
       </div>
       <div class="ap-perms">
         <button class="ap-perm-toggle ${p.mso_main?'on':''}" onclick="toggleEmpPerm(${e.id},'mso_main')" ${isAdmin?'disabled style="opacity:.6;cursor:default" title="관리자는 항상 접근"':''}>
@@ -8077,7 +8108,7 @@ function apOpenEmpForm(editId){
   document.getElementById('ap-r-email').value = '';
   document.getElementById('ap-r-initpw').value = '';
   document.querySelectorAll('#ap-r-role button').forEach(b=>b.classList.remove('on'));
-  document.querySelector('#ap-r-role button[data-r="manager"]').classList.add('on');
+  document.querySelector('#ap-r-role button[data-r="manager"]').classList.add('on'); // 기본: 매니저
   document.getElementById('ap-form-err').textContent = '';
   // 역할 토글 핸들러 (1회 바인딩)
   if(!document.getElementById('ap-r-role')._bound){
@@ -8101,7 +8132,9 @@ function apOpenEmpForm(editId){
     if(posSel) posSel.value = u.position || MR_POSITIONS[0];
     document.getElementById('ap-r-email').value = u.email || '';
     document.querySelectorAll('#ap-r-role button').forEach(b=>b.classList.remove('on'));
-    document.querySelector(`#ap-r-role button[data-r="${u.role||'manager'}"]`)?.classList.add('on');
+    // 기존 데이터 매핑: authLevel 우선, 없으면 role에서 추론
+    const lvl = u.authLevel || (u.role==='manager' ? 'manager' : (u.role==='owner' ? 'staff' : 'manager'));
+    document.querySelector(`#ap-r-role button[data-r="${lvl}"]`)?.classList.add('on');
     pwField.style.display = 'none';
   } else {
     document.getElementById('ap-form-title').textContent = '신규 사원 등록';
@@ -8126,7 +8159,10 @@ async function apSubmitEmpForm(){
   const position = document.getElementById('ap-r-position').value;
   const email = document.getElementById('ap-r-email').value.trim();
   const initPw = document.getElementById('ap-r-initpw').value.trim();
-  const role = document.querySelector('#ap-r-role button.on')?.dataset.r || 'manager';
+  // 권한 (master/manager/staff) — MSO 리포트 사원관리의 role(관리자/담당자)와는 별개
+  const authLevel = document.querySelector('#ap-r-role button.on')?.dataset.r || 'manager';
+  // 기존 role(MSO 리포트 폼에서 사용) 자동 매핑: master/manager → 'manager', staff → 'owner'
+  const role = (authLevel==='master' || authLevel==='manager') ? 'manager' : 'owner';
   if(!name){ errEl.textContent = '이름을 입력하세요'; return; }
   if(initPw && initPw.length<4){ errEl.textContent = '비밀번호는 4자 이상이어야 합니다'; return; }
   // 중복 체크
@@ -8144,13 +8180,14 @@ async function apSubmitEmpForm(){
     u.position = position;
     u.email = email;
     u.role = role;
-    try{ await sbEmpUpdate(u.id, {empNo:u.empNo, name, position, email, role}); }catch(e){}
+    u.authLevel = authLevel;
+    try{ await sbEmpUpdate(u.id, {empNo:u.empNo, name, position, email, role, authLevel}); }catch(e){}
     showToast(`${name} 정보 수정 완료`);
   } else {
     const newId = MR_EMP_NEXT_ID++;
     const finalEmpNo = empNo || ('EMP' + String(newId).padStart(3,'0'));
     const today = new Date().toISOString().substring(0,10);
-    const newEmp = {id:newId, empNo:finalEmpNo, name, position, email, role, createdAt:today, mustChangePassword:true, active:true};
+    const newEmp = {id:newId, empNo:finalEmpNo, name, position, email, role, authLevel, createdAt:today, mustChangePassword:true, active:true};
     if(initPw && initPw.length>=4){
       newEmp.passwordHash = await _authHash(initPw);
     }
@@ -8188,8 +8225,9 @@ function apResetPw(empId){
 async function toggleEmpPerm(empId, permKey){
   const e = MR_EMPLOYEES.find(x=>x.id===empId);
   if(!e) return;
-  if(e.role==='manager' || e.role==='admin'){
-    showToast('관리자는 항상 모든 권한 보유');
+  const lvl = e.authLevel || e.role;
+  if(lvl==='master' || lvl==='manager' || lvl==='admin'){
+    showToast('마스터/매니저는 항상 모든 권한 보유');
     return;
   }
   if(!e.permissions) e.permissions = authGetPermissions(e);
@@ -8290,7 +8328,11 @@ function authBootstrap(){
 
 // 권한 헬퍼
 function authIsAdmin(){
-  return CURRENT_USER && (CURRENT_USER.role==='admin' || CURRENT_USER.role==='manager');
+  if(!CURRENT_USER) return false;
+  // 최신 사원 정보 조회 (authLevel 우선)
+  const u = MR_EMPLOYEES.find(e=>e.id===CURRENT_USER.id) || CURRENT_USER;
+  const lvl = u.authLevel || u.role;
+  return lvl==='master' || lvl==='manager' || lvl==='admin';
 }
 function authCanManageEmployees(){
   // 관리자(manager 또는 admin)만 사원 관리 가능
