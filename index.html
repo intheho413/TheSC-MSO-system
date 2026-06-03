@@ -2295,6 +2295,9 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
       <div class="step"><span class="n">2</span>하단 "앱으로 설치" 탭</div>
       <div class="step"><span class="n">3</span>홈 화면에서 실행 ✨</div>
     </div>
+    <button onclick="closeInstallModal();openHowToInstall()" style="margin-top:12px;width:100%;background:rgba(255,255,255,.05);border:1px solid #2a2a40;color:#cbc8e6;padding:10px;border-radius:10px;font-size:12px;cursor:pointer;transition:.2s" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.05)'">
+      📲 설치 방법 자세히 보기 (iOS / Android)
+    </button>
   </div>
 </div>
 
@@ -12062,6 +12065,98 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   <button id="pwaInstallBtn" style="margin-left:6px;background:linear-gradient(135deg,#a78bfa,#6366f1);border:0;color:#fff;font-weight:700;padding:7px 12px;border-radius:9px;cursor:pointer;font-size:12px">설치</button>
   <button id="pwaInstallClose" style="background:transparent;border:0;color:#cbc8e6;cursor:pointer;font-size:18px;padding:2px 6px;line-height:1">×</button>
 </div>
+
+<!-- ── 홈 화면 추가 가이드 모달 (수동 설치) ── -->
+<div id="howToInstallBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:100000;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeHowToInstall()">
+  <div style="background:linear-gradient(160deg,#1a1a2e,#0f0f1a);border:1px solid #2a2a40;border-radius:18px;max-width:420px;width:100%;padding:24px;position:relative;color:#e9e7ff;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+    <button onclick="closeHowToInstall()" style="position:absolute;top:12px;right:14px;background:transparent;border:0;color:#cbc8e6;font-size:26px;cursor:pointer;line-height:1">×</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <img src="icons/icon-192.png" style="width:48px;height:48px;border-radius:12px">
+      <div>
+        <h3 style="margin:0;font-size:16px;color:#fff">홈 화면에 추가하기</h3>
+        <p id="howToOS" style="margin:3px 0 0;font-size:12px;color:#94a3b8">기기 감지 중...</p>
+      </div>
+    </div>
+
+    <!-- iOS Safari 안내 -->
+    <div id="howTo-ios" style="display:none">
+      <div style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#cbc8e6;line-height:1.5">
+        ⚠️ <b style="color:#fff">Safari 브라우저</b>에서만 가능합니다.<br>다른 브라우저(Chrome 등)는 Safari로 다시 열어주세요.
+      </div>
+      <div class="how-step">
+        <div class="how-n">1</div>
+        <div>
+          <div class="how-t">하단 <b>공유 버튼</b> 탭</div>
+          <div class="how-d">화면 맨 아래 가운데 □↑ 모양 아이콘</div>
+          <div style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:#e5e7eb;color:#1f2937;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v13M7 7l5-5 5 5M5 21h14a2 2 0 0 0 2-2v-7"/></svg>
+            공유
+          </div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">2</div>
+        <div>
+          <div class="how-t">"<b>홈 화면에 추가</b>" 항목 탭</div>
+          <div class="how-d">목록을 아래로 스크롤하면 ⊕ 아이콘 옆에 있음</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">3</div>
+        <div>
+          <div class="how-t">우측 상단 <b>"추가"</b> 탭</div>
+          <div class="how-d">홈 화면에 The SC(MSO) 아이콘이 생성됩니다 ✨</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Android Chrome 안내 -->
+    <div id="howTo-android" style="display:none">
+      <div class="how-step">
+        <div class="how-n">1</div>
+        <div>
+          <div class="how-t">우측 상단 <b>⋮ (메뉴) 버튼</b> 탭</div>
+          <div class="how-d">주소창 옆 세로 점 3개 아이콘</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">2</div>
+        <div>
+          <div class="how-t">"<b>앱 설치</b>" 또는 "<b>홈 화면에 추가</b>" 탭</div>
+          <div class="how-d">Chrome은 "앱 설치", 삼성 인터넷은 "현재 페이지 추가"</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">3</div>
+        <div>
+          <div class="how-t">팝업에서 <b>"설치"</b> 또는 <b>"추가"</b> 탭</div>
+          <div class="how-d">홈 화면에 The SC(MSO) 아이콘이 생성됩니다 ✨</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding:10px 12px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:10px;font-size:12px;color:#a7f3d0;line-height:1.5">
+        💡 Chrome에서 자동 설치 버튼이 뜨면 더 간단합니다 — 페이지 하단 보라색 배너의 "설치" 버튼을 탭하세요.
+      </div>
+    </div>
+
+    <!-- 기타 브라우저 -->
+    <div id="howTo-other" style="display:none">
+      <div style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:10px;padding:14px;font-size:13px;color:#fed7aa;line-height:1.6">
+        현재 사용 중인 브라우저는 PWA 설치를 지원하지 않을 수 있습니다.<br><br>
+        <b>iPhone</b>이면 <b>Safari</b>로,<br>
+        <b>Android</b>면 <b>Chrome</b>으로 다시 열어보세요.
+      </div>
+    </div>
+
+    <button onclick="closeHowToInstall()" style="margin-top:18px;width:100%;background:linear-gradient(135deg,#a78bfa,#6366f1);border:0;color:#fff;font-weight:700;padding:12px;border-radius:10px;font-size:14px;cursor:pointer">확인</button>
+  </div>
+</div>
+<style>
+.how-step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #2a2a40}
+.how-step:last-of-type{border-bottom:0}
+.how-n{width:28px;height:28px;background:linear-gradient(135deg,#a78bfa,#6366f1);color:#fff;font-weight:700;border-radius:50%;display:grid;place-items:center;font-size:13px;flex-shrink:0}
+.how-t{font-size:13.5px;color:#fff;font-weight:600;line-height:1.4}
+.how-d{font-size:12px;color:#94a3b8;margin-top:3px;line-height:1.5}
+</style>
 <script>
 (function(){
   // 1) Service Worker registration
@@ -12105,7 +12200,12 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   });
 
   if (btn) btn.addEventListener('click', async () => {
-    if (!deferredPrompt) { bar.style.display = 'none'; return; }
+    if (!deferredPrompt) {
+      // 자동 설치 불가 → 수동 가이드 표시
+      bar.style.display = 'none';
+      openHowToInstall();
+      return;
+    }
     bar.style.display = 'none';
     deferredPrompt.prompt();
     try { await deferredPrompt.userChoice; } catch(_){}
@@ -12352,11 +12452,45 @@ window.addEventListener('DOMContentLoaded', async ()=>{
   if (isIOS && !isStandalone && shouldShow()) {
     const iosBar = bar;
     if (iosBar) {
-      iosBar.querySelector('div').innerHTML = '<b style="color:#fff">홈 화면에 추가</b><br><span style="opacity:.75;font-size:11px">공유 → "홈 화면에 추가"</span>';
-      btn.style.display = 'none';
+      iosBar.querySelector('div').innerHTML = '<b style="color:#fff">홈 화면에 추가</b><br><span style="opacity:.75;font-size:11px">탭해서 설치 방법 보기</span>';
+      btn.textContent = '방법';
+      // 버튼 표시 유지 — 클릭 시 가이드 모달
       iosBar.style.display = 'flex';
     }
   }
+
+  // 4) 설치 방법 가이드 모달
+  window.openHowToInstall = function(){
+    const ua = navigator.userAgent;
+    const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const Android = /Android/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua);
+    const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
+
+    let osText = '';
+    let showId = 'howTo-other';
+    if (iOS) {
+      if (isSafari) { osText = 'iPhone · Safari'; showId = 'howTo-ios'; }
+      else { osText = 'iPhone · ' + (/CriOS/.test(ua)?'Chrome':'기타 브라우저'); showId = 'howTo-ios'; }
+    } else if (Android) {
+      osText = 'Android · ' + (isChrome?'Chrome':'기타 브라우저');
+      showId = 'howTo-android';
+    } else {
+      osText = '데스크탑';
+      showId = 'howTo-other';
+    }
+    document.getElementById('howToOS').textContent = osText;
+    ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
+      document.getElementById(id).style.display = (id===showId)?'block':'none';
+    });
+    const bgEl = document.getElementById('howToInstallBg');
+    bgEl.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeHowToInstall = function(){
+    document.getElementById('howToInstallBg').style.display = 'none';
+    document.body.style.overflow = '';
+  };
 })();
 </script>
 
