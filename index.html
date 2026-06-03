@@ -657,6 +657,82 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   .login-title{font-size:16px}
 }
 
+/* ═══════════════════════════════════
+   홈 화면 사용자 위젯 + 설정 메뉴
+   ═══════════════════════════════════ */
+.home-user-widget{position:relative;display:inline-flex;align-items:center;gap:10px;padding:6px 10px 6px 6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:99px;margin-left:12px}
+.home-user-widget .uw-avt{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#ec4899);display:grid;place-items:center;color:#fff;font-size:13px;font-weight:900;box-shadow:0 4px 10px rgba(167,139,250,.35);flex-shrink:0}
+.home-user-widget .uw-info{display:flex;align-items:baseline;gap:5px;line-height:1}
+.home-user-widget .uw-name{font-size:12.5px;font-weight:800;color:#fff;white-space:nowrap}
+.home-user-widget .uw-pos{font-size:10.5px;font-weight:600;color:#94a3b8;white-space:nowrap}
+.home-user-widget .uw-gear{width:30px;height:30px;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:50%;color:#cbd5e1;cursor:pointer;font-family:inherit;padding:0;margin-left:4px;transition:.15s}
+.home-user-widget .uw-gear:hover{background:rgba(167,139,250,.18);color:#fff;border-color:rgba(167,139,250,.4)}
+.home-user-widget .uw-gear svg{width:14px;height:14px}
+
+.uw-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:200px;background:#0f172a;border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:6px;box-shadow:0 16px 36px rgba(0,0,0,.5);display:none;flex-direction:column;gap:2px;z-index:100}
+.uw-menu.open{display:flex}
+.uw-menu .uw-mi{padding:10px 12px;border-radius:7px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#cbd5e1;background:transparent;border:none;cursor:pointer;font-family:inherit;text-align:left;font-weight:600;transition:.12s}
+.uw-menu .uw-mi:hover{background:rgba(167,139,250,.12);color:#fff}
+.uw-menu .uw-mi .ic{width:18px;color:#a5b4fc;display:grid;place-items:center}
+.uw-menu .uw-mi .ic svg{width:14px;height:14px}
+.uw-menu .uw-mi.danger{color:#fca5a5}
+.uw-menu .uw-mi.danger .ic{color:#fca5a5}
+.uw-menu .uw-mi.danger:hover{background:rgba(239,68,68,.15);color:#fff}
+.uw-menu .uw-divider{height:1px;background:rgba(255,255,255,.07);margin:4px 6px}
+
+/* 잠긴 카드 */
+.home-tile.locked{position:relative;opacity:.55;cursor:not-allowed}
+.home-tile.locked::after{content:"";position:absolute;inset:0;border-radius:inherit;background:repeating-linear-gradient(135deg,transparent,transparent 14px,rgba(0,0,0,.18) 14px,rgba(0,0,0,.18) 28px);pointer-events:none}
+.home-tile-lock{position:absolute;top:12px;right:12px;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fca5a5;padding:4px 10px;border-radius:99px;font-size:10.5px;font-weight:800;display:inline-flex;align-items:center;gap:5px;z-index:5}
+.home-tile-lock svg{width:11px;height:11px}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ═══════════════════════════════════
+   관리자 패널 (사원 권한 관리)
+   ═══════════════════════════════════ */
+.admin-panel-mask{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9990;display:none;align-items:center;justify-content:center;padding:20px}
+.admin-panel-mask.open{display:flex}
+.admin-panel{background:linear-gradient(160deg,#0f172a,#070b14);border:1px solid rgba(255,255,255,.1);border-radius:16px;width:100%;max-width:680px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(0,0,0,.6);overflow:hidden}
+.admin-panel .ap-head{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.02)}
+.admin-panel .ap-title{display:flex;align-items:center;gap:10px}
+.admin-panel .ap-title-ic{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#fb923c,#f59e0b);display:grid;place-items:center;color:#fff;font-size:14px;box-shadow:0 6px 14px rgba(251,146,60,.35)}
+.admin-panel .ap-title-ic svg{width:16px;height:16px}
+.admin-panel .ap-title h3{margin:0;font-size:15px;font-weight:900;color:#fff}
+.admin-panel .ap-title p{margin:2px 0 0;font-size:10.5px;color:#94a3b8}
+.admin-panel .ap-close{width:30px;height:30px;display:grid;place-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#cbd5e1;cursor:pointer;font-family:inherit;font-size:16px}
+.admin-panel .ap-body{flex:1;overflow-y:auto;padding:14px 18px}
+.admin-panel .ap-section-title{font-size:11px;font-weight:800;color:#a5b4fc;letter-spacing:1.2px;text-transform:uppercase;margin:6px 0 9px;display:flex;align-items:center;gap:7px}
+.admin-panel .ap-section-title::before{content:"";display:inline-block;width:3px;height:11px;border-radius:2px;background:linear-gradient(180deg,#a78bfa,#ec4899)}
+
+.ap-emp-row{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.ap-emp-row .ap-avt{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:900;flex-shrink:0}
+.ap-emp-row .ap-avt.manager{background:linear-gradient(135deg,#fb923c,#f59e0b)}
+.ap-emp-row .ap-avt.owner{background:linear-gradient(135deg,#3b82f6,#6366f1)}
+.ap-emp-row .ap-emp-info{flex:1;min-width:140px}
+.ap-emp-row .ap-emp-name{font-size:13px;font-weight:800;color:#fff;display:flex;align-items:baseline;gap:6px}
+.ap-emp-row .ap-emp-pos{font-size:10.5px;font-weight:600;color:#94a3b8}
+.ap-emp-row .ap-emp-no{font-size:9.5px;font-weight:700;color:#a5b4fc;background:rgba(167,139,250,.14);padding:1px 6px;border-radius:4px;font-family:monospace}
+.ap-emp-row .ap-emp-role{font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:4px;margin-top:3px;display:inline-block}
+.ap-emp-row .ap-emp-role.manager{background:rgba(251,146,60,.16);color:#fdba74}
+.ap-emp-row .ap-emp-role.owner{background:rgba(96,165,250,.16);color:#93c5fd}
+
+.ap-perms{display:flex;gap:5px;flex-wrap:wrap}
+.ap-perm-toggle{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:5px 10px;border-radius:7px;font-size:10.5px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:5px;transition:.15s}
+.ap-perm-toggle:hover{border-color:rgba(167,139,250,.4)}
+.ap-perm-toggle.on{background:linear-gradient(135deg,#a78bfa,#ec4899);color:#fff;border-color:transparent;box-shadow:0 4px 10px rgba(167,139,250,.3)}
+.ap-perm-toggle .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25)}
+.ap-perm-toggle.on .dot{background:#fff;box-shadow:0 0 4px #fff}
+
+.ap-help{margin:14px 0 6px;padding:10px 13px;background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.2);border-radius:9px;font-size:11px;color:#bfdbfe;line-height:1.55}
+
+/* 모바일에서는 사용자 위젯 작게 */
+@media (max-width:768px){
+  .home-user-widget{padding:4px 6px 4px 4px}
+  .home-user-widget .uw-avt{width:26px;height:26px;font-size:11.5px}
+  .home-user-widget .uw-pos{display:none}
+  .admin-panel{max-width:100%;max-height:90vh}
+}
+
 /* 모바일 전용 요소 — 기본 숨김 */
 .mob-cal-view,.mob-cal-week,.mob-cal-list,.mob-cal-day-panel{display:none}
 
@@ -1625,6 +1701,29 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   </div>
 </div>
 
+<!-- 관리자 패널 (사원별 권한 관리) -->
+<div class="admin-panel-mask" id="admin-panel-mask" onclick="if(event.target===this)closeAdminPanel()">
+  <div class="admin-panel">
+    <div class="ap-head">
+      <div class="ap-title">
+        <div class="ap-title-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1l3 6 6 1-4.5 4.5L18 19l-6-3-6 3 1.5-6.5L3 8l6-1z"/></svg></div>
+        <div><h3>관리자 페이지</h3><p>사원별 시스템 접근 권한 관리</p></div>
+      </div>
+      <button class="ap-close" onclick="closeAdminPanel()">×</button>
+    </div>
+    <div class="ap-body">
+      <div class="ap-help">
+        <b style="color:#fff">권한 시스템 안내</b><br>
+        · <b>통합 관리</b>: 영업/재고/수금/계약서 등 MSO 통합 시스템 접근<br>
+        · <b>리포트</b>: 안건 트래킹 + 캘린더 + KPI 리포트 접근<br>
+        · 관리자(본인 포함)는 항상 두 시스템 접근 가능
+      </div>
+      <div class="ap-section-title">사원별 권한 설정</div>
+      <div id="ap-emp-list"></div>
+    </div>
+  </div>
+</div>
+
 <div class="app home-mode" id="app-root" data-dir="right">
 
 <!-- ── 홈 랜딩 ── -->
@@ -1641,6 +1740,31 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       <div class="home-meta">
         <span><span class="ldot"></span> 정상 운영 중</span>
         <span id="home-clock"></span>
+        <div class="home-user-widget" id="home-user-widget" style="display:none">
+          <div class="uw-avt" id="uw-avt">?</div>
+          <div class="uw-info">
+            <span class="uw-name" id="uw-name">사용자</span>
+            <span class="uw-pos" id="uw-pos"></span>
+          </div>
+          <button class="uw-gear" onclick="toggleUserMenu(event)" aria-label="설정">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.65 1.65 0 0 0-1.8-.3 1.65 1.65 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.65 1.65 0 0 0-1-1.5 1.65 1.65 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.65 1.65 0 0 0 .3-1.8 1.65 1.65 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.65 1.65 0 0 0 1.5-1 1.65 1.65 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.65 1.65 0 0 0 1.8.3h0a1.65 1.65 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.65 1.65 0 0 0 1 1.5h0a1.65 1.65 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.65 1.65 0 0 0-.3 1.8v0a1.65 1.65 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.65 1.65 0 0 0-1.5 1z"/></svg>
+          </button>
+          <div class="uw-menu" id="uw-menu">
+            <button class="uw-mi" id="uw-mi-admin" onclick="openAdminPanel()" style="display:none">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1l3 6 6 1-4.5 4.5L18 19l-6-3-6 3 1.5-6.5L3 8l6-1z"/></svg></span>
+              관리자 페이지
+            </button>
+            <button class="uw-mi" onclick="closeUserMenu();showPasswordChangeModal(false)">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+              비밀번호 변경
+            </button>
+            <div class="uw-divider"></div>
+            <button class="uw-mi danger" onclick="closeUserMenu();authLogout()">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+              로그아웃
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="home-grid-wrap">
@@ -7309,6 +7433,7 @@ async function sbEmpInsert(emp){
       email: emp.email||null,
       role: emp.role||'manager',
       emp_no: emp.empNo||null,
+      permissions: emp.permissions||null,
       password_hash: emp.passwordHash||null,
       must_change_password: emp.mustChangePassword!==false,
       active: emp.active!==false,
@@ -7330,6 +7455,7 @@ async function sbEmpUpdate(id, patch){
     if('email' in patch) payload.email = patch.email;
     if('role' in patch) payload.role = patch.role;
     if('empNo' in patch) payload.emp_no = patch.empNo;
+    if('permissions' in patch) payload.permissions = patch.permissions;
     if('passwordHash' in patch) payload.password_hash = patch.passwordHash;
     if('mustChangePassword' in patch) payload.must_change_password = patch.mustChangePassword;
     if('active' in patch) payload.active = patch.active;
@@ -7359,6 +7485,7 @@ function _sbEmpToLocal(row){
     email: row.email||'',
     role: row.role||'manager',
     empNo: row.emp_no || ('EMP'+String(row.id).padStart(3,'0')),
+    permissions: row.permissions || undefined,
     passwordHash: row.password_hash||undefined,
     mustChangePassword: row.must_change_password!==false,
     active: row.active!==false,
@@ -7685,6 +7812,151 @@ function showAppScreen(){
   try{ mobUpdateUserInfo(); }catch(e){}
   // 권한별 메뉴 가드 적용
   try{ authApplyMenuGuards(); }catch(e){}
+  // 홈 사용자 위젯 갱신
+  try{ updateHomeUserWidget(); }catch(e){}
+  // 카드 권한 잠금 적용
+  try{ applyHomeTilePermissions(); }catch(e){}
+}
+
+// ═══ 권한 시스템 ═══
+// 기본 권한: manager는 둘 다, owner는 mso_report만
+function authGetPermissions(user){
+  if(!user) return {mso_main:false, mso_report:false};
+  // 관리자는 모든 권한
+  if(user.role==='manager' || user.role==='admin'){
+    if(user.permissions){
+      return {
+        mso_main: user.permissions.mso_main!==false,
+        mso_report: user.permissions.mso_report!==false
+      };
+    }
+    return {mso_main:true, mso_report:true};
+  }
+  // 사원 — 기본 mso_report만
+  if(user.permissions){
+    return {
+      mso_main: user.permissions.mso_main===true,
+      mso_report: user.permissions.mso_report!==false
+    };
+  }
+  return {mso_main:false, mso_report:true};
+}
+
+function authCanAccessApp(appKey){
+  const u = MR_EMPLOYEES.find(e=>e.id===CURRENT_USER?.id) || CURRENT_USER;
+  const p = authGetPermissions(u);
+  return p[appKey]===true;
+}
+
+// 홈 카드 권한 잠금 표시
+function applyHomeTilePermissions(){
+  if(!CURRENT_USER) return;
+  const canMain = authCanAccessApp('mso_main');
+  const canReport = authCanAccessApp('mso_report');
+  const tileMso = document.getElementById('home-tile-mso');
+  const tileReport = document.getElementById('home-tile-report');
+  [{el:tileMso, can:canMain},{el:tileReport, can:canReport}].forEach(({el, can})=>{
+    if(!el) return;
+    el.classList.toggle('locked', !can);
+    // 잠금 배지 처리
+    let lock = el.querySelector('.home-tile-lock');
+    if(!can){
+      if(!lock){
+        lock = document.createElement('div');
+        lock.className = 'home-tile-lock';
+        lock.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> 권한 없음';
+        el.appendChild(lock);
+      }
+    } else if(lock){
+      lock.remove();
+    }
+  });
+}
+
+// 홈 사용자 위젯 정보 갱신
+function updateHomeUserWidget(){
+  const w = document.getElementById('home-user-widget');
+  if(!w || !CURRENT_USER) { if(w) w.style.display = 'none'; return; }
+  w.style.display = '';
+  const u = MR_EMPLOYEES.find(e=>e.id===CURRENT_USER.id) || CURRENT_USER;
+  document.getElementById('uw-avt').textContent = (u.name||'?').slice(0,1);
+  document.getElementById('uw-name').textContent = u.name||'사용자';
+  document.getElementById('uw-pos').textContent = u.position||'';
+  // 관리자만 관리자 페이지 메뉴 노출
+  const adminMi = document.getElementById('uw-mi-admin');
+  if(adminMi) adminMi.style.display = (u.role==='manager' || u.role==='admin') ? '' : 'none';
+}
+
+function toggleUserMenu(e){
+  if(e) e.stopPropagation();
+  document.getElementById('uw-menu')?.classList.toggle('open');
+}
+function closeUserMenu(){
+  document.getElementById('uw-menu')?.classList.remove('open');
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#home-user-widget')) closeUserMenu();
+});
+
+// ═══ 관리자 패널 ═══
+function openAdminPanel(){
+  closeUserMenu();
+  if(!authIsAdmin()){
+    showToast('관리자만 접근 가능합니다');
+    return;
+  }
+  renderAdminPanel();
+  document.getElementById('admin-panel-mask').classList.add('open');
+}
+function closeAdminPanel(){
+  document.getElementById('admin-panel-mask').classList.remove('open');
+}
+function renderAdminPanel(){
+  const list = document.getElementById('ap-emp-list');
+  if(!list) return;
+  list.innerHTML = MR_EMPLOYEES.map(e=>{
+    const p = authGetPermissions(e);
+    const roleLabel = e.role==='manager'?'관리자':'담당자';
+    const empNo = e.empNo || authFormatEmpId(e.id);
+    const first = (e.name||'?').slice(0,1);
+    const isAdmin = e.role==='manager' || e.role==='admin';
+    return `<div class="ap-emp-row">
+      <div class="ap-avt ${e.role}">${first}</div>
+      <div class="ap-emp-info">
+        <div class="ap-emp-name">
+          <span>${e.name}</span>
+          <span class="ap-emp-pos">${e.position||''}</span>
+          <span class="ap-emp-no">${empNo}</span>
+        </div>
+        <span class="ap-emp-role ${e.role}">${roleLabel}</span>
+      </div>
+      <div class="ap-perms">
+        <button class="ap-perm-toggle ${p.mso_main?'on':''}" onclick="toggleEmpPerm(${e.id},'mso_main')" ${isAdmin?'disabled style="opacity:.6;cursor:default" title="관리자는 항상 접근"':''}>
+          <span class="dot"></span>통합관리
+        </button>
+        <button class="ap-perm-toggle ${p.mso_report?'on':''}" onclick="toggleEmpPerm(${e.id},'mso_report')" ${isAdmin?'disabled style="opacity:.6;cursor:default" title="관리자는 항상 접근"':''}>
+          <span class="dot"></span>리포트
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function toggleEmpPerm(empId, permKey){
+  const e = MR_EMPLOYEES.find(x=>x.id===empId);
+  if(!e) return;
+  if(e.role==='manager' || e.role==='admin'){
+    showToast('관리자는 항상 모든 권한 보유');
+    return;
+  }
+  if(!e.permissions) e.permissions = authGetPermissions(e);
+  e.permissions[permKey] = !e.permissions[permKey];
+  // DB 동기화 — 권한은 별도 컬럼이 없으면 패스 (그래도 로컬에서 동작)
+  try{ await sbEmpUpdate(empId, {permissions: e.permissions}); }catch(err){}
+  try{ mrSaveState(); }catch(err){}
+  renderAdminPanel();
+  // 본인 권한이 변경되면 홈 카드 즉시 업데이트
+  if(empId===CURRENT_USER?.id) applyHomeTilePermissions();
+  showToast(`${e.name} · ${permKey==='mso_main'?'통합관리':'리포트'} 권한 ${e.permissions[permKey]?'허용':'차단'}`);
 }
 
 async function handleLoginSubmit(){
@@ -10042,6 +10314,16 @@ function mrRenderCharts(){
 
 // ── 홈 랜딩 진입/복귀 ────────────────────────────
 function enterApp(mode, tileEl){
+  // 권한 체크 — 카드 클릭 시
+  const requiredPerm = mode==='mso' ? 'mso_main' : 'mso_report';
+  if(CURRENT_USER && !authCanAccessApp(requiredPerm)){
+    showToast('이 시스템에 접근 권한이 없습니다 (관리자 문의)');
+    if(tileEl){
+      tileEl.style.animation = 'shake .4s';
+      setTimeout(()=>tileEl.style.animation='', 400);
+    }
+    return;
+  }
   const root = document.getElementById('app-root');
   const shell = document.querySelector('.app-shell');
   // 카드 data-dir → app data-dir 로 복사 (Slide 방향 결정)
