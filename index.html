@@ -12090,6 +12090,36 @@ window.addEventListener('DOMContentLoaded', async ()=>{
 
     <!-- iOS Safari 안내 -->
     <div id="howTo-ios" style="display:none">
+
+      <!-- 🆕 자동 설치 (Configuration Profile) — 가장 권장 -->
+      <div style="background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(16,185,129,.15));border:1px solid rgba(34,197,94,.4);border-radius:14px;padding:16px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:22px">⚡️</span>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:#fff">자동 설치 (권장 ★)</div>
+            <div style="font-size:11px;color:#a7f3d0">공유 버튼 없이 한 번에 홈 화면 추가</div>
+          </div>
+        </div>
+        <button onclick="downloadIOSConfig(this)" style="width:100%;background:linear-gradient(135deg,#22c55e,#10b981);border:0;color:#fff;font-weight:800;padding:14px;border-radius:11px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 6px 20px rgba(16,185,129,.35)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          홈 화면에 아이콘 생성하기
+        </button>
+        <div style="margin-top:12px;font-size:11.5px;color:#cbc8e6;line-height:1.7">
+          <div><b style="color:#fff">① 위 버튼 탭</b> → "허용" → 프로파일 다운로드</div>
+          <div><b style="color:#fff">② 알림</b>: "프로파일이 다운로드됨" 확인</div>
+          <div><b style="color:#fff">③ 설정 앱 열기</b> → 맨 위에 <b>"다운로드된 프로파일"</b> 탭</div>
+          <div style="color:#94a3b8;margin-left:14px">(또는 설정 → 일반 → VPN 및 기기 관리)</div>
+          <div><b style="color:#fff">④ 우측 상단 "설치"</b> → 암호 입력 → "설치"</div>
+          <div><b style="color:#fff">⑤ 홈 화면에 The SC(MSO) 아이콘 생성</b> ✨</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin:14px 0;color:#64748b;font-size:11px;display:flex;align-items:center;gap:10px">
+        <div style="flex:1;height:1px;background:#2a2a40"></div>
+        <span>또는 수동으로</span>
+        <div style="flex:1;height:1px;background:#2a2a40"></div>
+      </div>
+
       <div id="howTo-ios-inapp" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:14px;margin-bottom:14px;font-size:12.5px;color:#fecaca;line-height:1.6">
         🚫 <b style="color:#fff">현재 다른 앱(카카오톡·네이트온·인스타 등)에서 열린 화면입니다.</b><br>
         이 화면에서는 홈 화면 추가가 <b>불가능</b>합니다.<br><br>
@@ -12531,6 +12561,99 @@ window.addEventListener('DOMContentLoaded', async ()=>{
     if (iOS && !/Version\//.test(ua)) return 'iOS-InApp';
     return null;
   }
+
+  // iOS Configuration Profile (.mobileconfig) 다운로드 — 가장 확실한 설치 방법
+  window.downloadIOSConfig = async function(btn){
+    const origLabel = btn.innerHTML;
+    btn.innerHTML = '⏳ 준비 중...';
+    btn.disabled = true;
+    try {
+      const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : 'https://intheho413.github.io/TheSC-MSO-system/';
+      // 아이콘을 base64로 인코딩
+      const iconResp = await fetch('icons/icon-192.png', {cache:'force-cache'});
+      const iconBlob = await iconResp.blob();
+      const iconBase64 = await new Promise((resolve, reject)=>{
+        const fr = new FileReader();
+        fr.onload = ()=> resolve(fr.result.split(',')[1]);
+        fr.onerror = reject;
+        fr.readAsDataURL(iconBlob);
+      });
+      // 64자마다 줄바꿈 (plist data 형식)
+      const iconB64Lines = iconBase64.match(/.{1,52}/g).join('\n\t\t\t\t');
+      const uuid1 = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)+'-'+Date.now());
+      const uuid2 = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)+'-'+Date.now()+1);
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+\t<key>PayloadContent</key>
+\t<array>
+\t\t<dict>
+\t\t\t<key>FullScreen</key>
+\t\t\t<true/>
+\t\t\t<key>Icon</key>
+\t\t\t<data>
+\t\t\t\t${iconB64Lines}
+\t\t\t</data>
+\t\t\t<key>IsRemovable</key>
+\t\t\t<true/>
+\t\t\t<key>Label</key>
+\t\t\t<string>The SC(MSO)</string>
+\t\t\t<key>PayloadDescription</key>
+\t\t\t<string>Web Clip</string>
+\t\t\t<key>PayloadDisplayName</key>
+\t\t\t<string>The SC(MSO)</string>
+\t\t\t<key>PayloadIdentifier</key>
+\t\t\t<string>com.thesc.mso.webclip</string>
+\t\t\t<key>PayloadType</key>
+\t\t\t<string>com.apple.webClip.managed</string>
+\t\t\t<key>PayloadUUID</key>
+\t\t\t<string>${uuid1}</string>
+\t\t\t<key>PayloadVersion</key>
+\t\t\t<integer>1</integer>
+\t\t\t<key>Precomposed</key>
+\t\t\t<false/>
+\t\t\t<key>URL</key>
+\t\t\t<string>${url}</string>
+\t\t</dict>
+\t</array>
+\t<key>PayloadDescription</key>
+\t<string>The SC(MSO) — 홈 화면 아이콘 설치</string>
+\t<key>PayloadDisplayName</key>
+\t<string>The SC(MSO)</string>
+\t<key>PayloadIdentifier</key>
+\t<string>com.thesc.mso.config</string>
+\t<key>PayloadOrganization</key>
+\t<string>The SC</string>
+\t<key>PayloadRemovalDisallowed</key>
+\t<false/>
+\t<key>PayloadType</key>
+\t<string>Configuration</string>
+\t<key>PayloadUUID</key>
+\t<string>${uuid2}</string>
+\t<key>PayloadVersion</key>
+\t<integer>1</integer>
+</dict>
+</plist>`;
+      const blob = new Blob([xml], {type: 'application/x-apple-aspen-config; charset=utf-8'});
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = 'TheSC-MSO.mobileconfig';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
+      btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
+      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+    } catch(e) {
+      console.error(e);
+      btn.innerHTML = '❌ 다운로드 실패 — 다시 시도';
+      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+      btn.disabled = false;
+      setTimeout(()=>{ btn.innerHTML = origLabel; btn.style.background=''; }, 3000);
+    }
+  };
 
   window.installCopyHomeUrl = async function(btn){
     const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
