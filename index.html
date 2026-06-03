@@ -787,6 +787,12 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 /* 모바일 전용 요소 — 기본 숨김 */
 .mob-cal-view,.mob-cal-week,.mob-cal-list,.mob-cal-day-panel{display:none}
 
+/* 커스터마이징 메뉴 항목 — 우측 정렬, 톱니바퀴 아이콘 prefix */
+.nav-customize{margin-left:auto !important;color:rgba(255,255,255,.45) !important;font-size:11.5px !important;letter-spacing:.3px}
+.nav-customize:hover{color:rgba(255,255,255,.85) !important}
+.nav-customize::before{content:"";display:inline-block;width:13px;height:13px;margin-right:5px;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a5b4fc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z'/></svg>") no-repeat center / contain;vertical-align:middle;opacity:.8}
+.nav-customize.active::before{filter:brightness(1.4)}
+
 /* ═════════════════════════════════════════════════════════════
    📱 MOBILE — 1단계 (기반) + 2단계 (리포트)
    ═════════════════════════════════════════════════════════════ */
@@ -1951,6 +1957,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     <div class="nav-item" onclick="navigate('master',this)">
       <span class="menu-label" id="menu-cosm-3">기초 관리</span>
     </div>
+    <div class="nav-item nav-customize" onclick="openSettingsForContext('cosm')" data-master-only="1" title="커스터마이징 (마스터 전용)">
+      <span class="menu-label">커스터마이징</span>
+    </div>
   </div>
 
   <!-- 의료장비 메뉴 -->
@@ -1967,6 +1976,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     <div class="nav-item" onclick="navigate('med-master',this)">
       <span class="menu-label" id="menu-med-3">기초 관리</span>
     </div>
+    <div class="nav-item nav-customize" onclick="openSettingsForContext('med')" data-master-only="1" title="커스터마이징 (마스터 전용)">
+      <span class="menu-label">커스터마이징</span>
+    </div>
   </div>
 
   <!-- MSO 리포트 전용 메뉴 (mso-report 페이지 진입 시에만 표시) -->
@@ -1982,6 +1994,9 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
     </div>
     <div class="nav-item" onclick="mrSwitchTab('master',this)">
       <span class="menu-label">기초 관리</span>
+    </div>
+    <div class="nav-item nav-customize" onclick="openSettingsForContext('report')" data-master-only="1" title="커스터마이징 (마스터 전용)">
+      <span class="menu-label">커스터마이징</span>
     </div>
   </div>
 
@@ -2004,8 +2019,14 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   </div>
   <div class="settings-body">
 
-    <!-- 테마 -->
-    <div class="s-sec">
+    <!-- 컨텍스트 안내 (어떤 시스템 커스터마이징인지) -->
+    <div class="s-sec" id="s-ctx-info" style="background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:9px;padding:10px 13px;margin-bottom:14px;font-size:11.5px;color:#c4b5fd;display:none">
+      <b id="s-ctx-title">커스터마이징</b>
+      <div id="s-ctx-desc" style="font-size:10.5px;color:#94a3b8;margin-top:3px;font-weight:600">시스템 외형 및 메뉴 이름 변경</div>
+    </div>
+
+    <!-- 테마 (모든 컨텍스트) -->
+    <div class="s-sec" data-ctx="all">
       <div class="s-sec-ttl">화면 테마</div>
       <div class="s-row">
         <span class="s-lbl">모드</span>
@@ -2016,8 +2037,8 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       </div>
     </div>
 
-    <!-- 앱 이름 -->
-    <div class="s-sec">
+    <!-- 앱 이름 (모든 컨텍스트) -->
+    <div class="s-sec" data-ctx="all">
       <div class="s-sec-ttl">앱 이름</div>
       <div class="s-row">
         <span class="s-lbl">이름</span>
@@ -2025,8 +2046,8 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       </div>
     </div>
 
-    <!-- 카테고리 이름 -->
-    <div class="s-sec">
+    <!-- 카테고리 이름 (MSO 통합관리 - cosm/med) -->
+    <div class="s-sec" data-ctx="cosm med">
       <div class="s-sec-ttl">카테고리 이름</div>
       <div class="s-row">
         <span class="s-lbl">카테고리 1</span>
@@ -2038,18 +2059,18 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
       </div>
     </div>
 
-    <!-- 메뉴 이름 — 화장품 -->
-    <div class="s-sec">
-      <div class="s-sec-ttl">메뉴 이름 — 카테고리 1</div>
+    <!-- 메뉴 이름 — 화장품 (cosm 전용) -->
+    <div class="s-sec" data-ctx="cosm">
+      <div class="s-sec-ttl">메뉴 이름 — 카테고리 1 (화장품)</div>
       <div class="s-row"><span class="s-lbl">메뉴 1</span><input class="s-inp" id="s-cosm-0" placeholder="리포트"></div>
       <div class="s-row"><span class="s-lbl">메뉴 2</span><input class="s-inp" id="s-cosm-1" placeholder="영업 관리"></div>
       <div class="s-row"><span class="s-lbl">메뉴 3</span><input class="s-inp" id="s-cosm-2" placeholder="수금 현황"></div>
       <div class="s-row"><span class="s-lbl">메뉴 4</span><input class="s-inp" id="s-cosm-3" placeholder="기초 관리"></div>
     </div>
 
-    <!-- 메뉴 이름 — 의료장비 -->
-    <div class="s-sec">
-      <div class="s-sec-ttl">메뉴 이름 — 카테고리 2</div>
+    <!-- 메뉴 이름 — 의료장비 (med 전용) -->
+    <div class="s-sec" data-ctx="med">
+      <div class="s-sec-ttl">메뉴 이름 — 카테고리 2 (의료장비)</div>
       <div class="s-row"><span class="s-lbl">메뉴 1</span><input class="s-inp" id="s-med-0" placeholder="리포트"></div>
       <div class="s-row"><span class="s-lbl">메뉴 2</span><input class="s-inp" id="s-med-1" placeholder="영업 관리"></div>
       <div class="s-row"><span class="s-lbl">메뉴 3</span><input class="s-inp" id="s-med-2" placeholder="수금 현황"></div>
@@ -6939,10 +6960,41 @@ const DEFAULT_LABELS = {
 };
 
 function openSettings() {
-  // 마스터 전용 (앱 이름·로고·메뉴명 등 시스템 설정)
+  return openSettingsForContext('all');
+}
+
+// 컨텍스트별 설정 패널 (cosm/med/report/all)
+function openSettingsForContext(ctx){
+  // 마스터 전용
   if(typeof authIsMaster==='function' && !authIsMaster()){
-    if(typeof showToast==='function') showToast('시스템 설정은 마스터 권한만 접근 가능합니다');
+    if(typeof showToast==='function') showToast('커스터마이징은 마스터 권한만 접근 가능합니다');
     return;
+  }
+  // 섹션 필터링 — data-ctx 속성에 매칭
+  document.querySelectorAll('#settings-panel .s-sec[data-ctx]').forEach(sec=>{
+    const ctxs = (sec.dataset.ctx||'').split(/\s+/);
+    sec.style.display = (ctx==='all' || ctxs.includes('all') || ctxs.includes(ctx)) ? '' : 'none';
+  });
+  // 컨텍스트 안내 박스
+  const info = document.getElementById('s-ctx-info');
+  const ttl = document.getElementById('s-ctx-title');
+  const desc = document.getElementById('s-ctx-desc');
+  if(info && ttl && desc){
+    if(ctx==='cosm'){
+      info.style.display = '';
+      ttl.textContent = 'MSO 통합 관리 — 카테고리 1 (화장품) 커스터마이징';
+      desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
+    } else if(ctx==='med'){
+      info.style.display = '';
+      ttl.textContent = 'MSO 통합 관리 — 카테고리 2 (의료장비) 커스터마이징';
+      desc.textContent = '앱 이름 · 카테고리명 · 메뉴 이름 변경';
+    } else if(ctx==='report'){
+      info.style.display = '';
+      ttl.textContent = 'MSO 리포트 커스터마이징';
+      desc.textContent = '앱 이름 · 화면 테마 등 외형 설정';
+    } else {
+      info.style.display = 'none';
+    }
   }
   // 현재 값 설정 input에 채우기
   const s = loadSettingsData();
@@ -8504,9 +8556,13 @@ function authCanAccessMaster(){
 // 권한 가드: 메뉴 표시 토글
 function authApplyMenuGuards(){
   if(!CURRENT_USER) return;
-  // 마스터 전용 — 시스템 설정 아이콘
+  // 상단 톱니바퀴 아이콘은 완전 제거 (드릴다운 내부 커스터마이징으로 이전)
   const settingsBtn = document.getElementById('nav-settings-btn');
-  if(settingsBtn) settingsBtn.style.display = authIsMaster() ? '' : 'none';
+  if(settingsBtn) settingsBtn.style.display = 'none';
+  // 커스터마이징 메뉴 — 마스터만 표시
+  document.querySelectorAll('.nav-customize[data-master-only]').forEach(el=>{
+    el.style.display = authIsMaster() ? '' : 'none';
+  });
   // 다운로드 권한 — 일반 차단 (PPT 다운로드 영역)
   const pptBar = document.querySelector('.mr-ppt-bar');
   if(pptBar) pptBar.style.display = authCanDownload() ? '' : 'none';
