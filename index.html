@@ -7272,6 +7272,135 @@ function mrLoadState(){
 mrLoadState();
 
 // ═══════════════════════════════════════════════════════════════
+// Phase 4 — Supabase 클라우드 동기화 (employees / cases)
+// ═══════════════════════════════════════════════════════════════
+
+// 동기화 상태 추적
+const MR_SYNC = {
+  enabled: true,            // 클라우드 동기화 활성화
+  initialized: false,       // 초기 로드 완료 여부
+  lastSyncAt: null,
+  pendingOps: 0,            // 진행 중인 동기화 작업 수
+  errorCount: 0
+};
+
+// ─── employees CRUD ───────────────────────────────
+async function sbEmpFetchAll(){
+  if(!MR_SYNC.enabled) return null;
+  try{
+    const {data, error} = await sb.from('employees').select('*').order('id');
+    if(error) throw error;
+    return data;
+  }catch(e){
+    console.warn('[sbEmpFetchAll]', e);
+    MR_SYNC.errorCount++;
+    return null;
+  }
+}
+
+async function sbEmpInsert(emp){
+  if(!MR_SYNC.enabled) return null;
+  try{
+    const payload = {
+      id: emp.id,
+      name: emp.name,
+      position: emp.position||null,
+      email: emp.email||null,
+      role: emp.role||'manager',
+      password_hash: emp.passwordHash||null,
+      must_change_password: emp.mustChangePassword!==false,
+      active: emp.active!==false,
+      password_changed_at: emp.passwordChangedAt||null
+    };
+    const {data, error} = await sb.from('employees').upsert(payload, {onConflict:'id'}).select().single();
+    if(error) throw error;
+    return data;
+  }catch(e){ console.warn('[sbEmpInsert]', e); MR_SYNC.errorCount++; return null; }
+}
+
+async function sbEmpUpdate(id, patch){
+  if(!MR_SYNC.enabled) return null;
+  try{
+    const payload = {};
+    if('name' in patch) payload.name = patch.name;
+    if('position' in patch) payload.position = patch.position;
+    if('email' in patch) payload.email = patch.email;
+    if('role' in patch) payload.role = patch.role;
+    if('passwordHash' in patch) payload.password_hash = patch.passwordHash;
+    if('mustChangePassword' in patch) payload.must_change_password = patch.mustChangePassword;
+    if('active' in patch) payload.active = patch.active;
+    if('passwordChangedAt' in patch) payload.password_changed_at = patch.passwordChangedAt;
+    const {data, error} = await sb.from('employees').update(payload).eq('id', id).select().single();
+    if(error) throw error;
+    return data;
+  }catch(e){ console.warn('[sbEmpUpdate]', e); MR_SYNC.errorCount++; return null; }
+}
+
+async function sbEmpDelete(id){
+  if(!MR_SYNC.enabled) return false;
+  try{
+    const {error} = await sb.from('employees').delete().eq('id', id);
+    if(error) throw error;
+    return true;
+  }catch(e){ console.warn('[sbEmpDelete]', e); MR_SYNC.errorCount++; return false; }
+}
+
+// 로컬 ↔ DB 형식 변환 (snake_case ↔ camelCase)
+function _sbEmpToLocal(row){
+  return {
+    id: row.id,
+    name: row.name,
+    position: row.position||'',
+    email: row.email||'',
+    role: row.role||'manager',
+    passwordHash: row.password_hash||undefined,
+    mustChangePassword: row.must_change_password!==false,
+    active: row.active!==false,
+    createdAt: row.created_at ? row.created_at.substring(0,10) : '',
+    passwordChangedAt: row.password_changed_at||undefined
+  };
+}
+
+// 초기 부트스트랩 — DB에서 사원 목록 가져와서 로컬 캐시 갱신
+async function sbBootstrapEmployees(){
+  const remote = await sbEmpFetchAll();
+  if(!remote) return false; // 네트워크 실패 시 로컬 캐시 유지
+  if(remote.length === 0){
+    // DB가 비어있음 → 로컬 데이터를 DB로 푸시 (첫 마이그레이션)
+    for(const e of MR_EMPLOYEES){
+      await sbEmpInsert(e);
+    }
+    console.log('[sbBootstrap] employees 마이그레이션 완료', MR_EMPLOYEES.length, '명');
+  } else {
+    // DB에 데이터 있음 → 로컬 덮어쓰기
+    MR_EMPLOYEES = remote.map(_sbEmpToLocal);
+    MR_EMP_NEXT_ID = Math.max(...MR_EMPLOYEES.map(e=>e.id), 0) + 1;
+    console.log('[sbBootstrap] employees DB → 로컬 동기화', remote.length, '명');
+  }
+  return true;
+}
+
+// 실시간 구독 (다른 기기 변경 감지)
+let _empRealtimeChannel = null;
+function sbSubscribeEmployees(){
+  if(_empRealtimeChannel) return;
+  _empRealtimeChannel = sb.channel('emp-realtime')
+    .on('postgres_changes', {event:'*', schema:'public', table:'employees'}, payload=>{
+      // 본인이 일으킨 변경은 건너뛰기 위해 짧은 디바운스
+      setTimeout(async ()=>{
+        const remote = await sbEmpFetchAll();
+        if(remote){
+          MR_EMPLOYEES = remote.map(_sbEmpToLocal);
+          MR_EMP_NEXT_ID = Math.max(...MR_EMPLOYEES.map(e=>e.id), 0) + 1;
+          if(document.getElementById('mr-tab-master')?.style.display !== 'none') mrRenderEmployees();
+          mrRefreshEmployeePickers();
+        }
+      }, 200);
+    })
+    .subscribe();
+}
+
+// ═══════════════════════════════════════════════════════════════
 // 로그인 시스템 — 자체 사번/비밀번호 인증
 // ═══════════════════════════════════════════════════════════════
 const AUTH_SESSION_KEY = 'thesc-mso-session-v1';
@@ -7370,6 +7499,8 @@ async function authChangePassword(newPassword){
   u.mustChangePassword = false;
   u.passwordChangedAt = new Date().toISOString();
   try{ mrSaveState(); }catch(e){}
+  // 클라우드 동기화
+  try{ await sbEmpUpdate(u.id, {passwordHash:u.passwordHash, mustChangePassword:false, passwordChangedAt:u.passwordChangedAt}); }catch(e){}
   return {ok:true};
 }
 
@@ -7491,6 +7622,8 @@ async function authAdminResetPassword(empId, newPassword){
     u.mustChangePassword = true;
     u.passwordChangedAt = new Date().toISOString();
     try{ mrSaveState(); }catch(e){}
+    // 클라우드 동기화 (null로 명시적 설정)
+    try{ await sbEmpUpdate(u.id, {passwordHash:null, mustChangePassword:true, passwordChangedAt:u.passwordChangedAt}); }catch(e){}
     return {ok:true, defaultPw:true};
   }
   if(newPassword.length<4) return {ok:false, msg:'비밀번호는 4자 이상이어야 합니다'};
@@ -7498,6 +7631,8 @@ async function authAdminResetPassword(empId, newPassword){
   u.mustChangePassword = true; // 임시 비밀번호 → 강제 변경
   u.passwordChangedAt = new Date().toISOString();
   try{ mrSaveState(); }catch(e){}
+  // 클라우드 동기화
+  try{ await sbEmpUpdate(u.id, {passwordHash:u.passwordHash, mustChangePassword:true, passwordChangedAt:u.passwordChangedAt}); }catch(e){}
   return {ok:true};
 }
 
@@ -7745,6 +7880,8 @@ async function mrEmpSubmit(){
       // 수정 모드: 비밀번호 외 필드만 업데이트
       const {initPw, ...editable} = parsed[0];
       Object.assign(emp, editable);
+      // 클라우드 동기화
+      try{ await sbEmpUpdate(emp.id, editable); }catch(e){}
     }
     showToast('사원 정보 수정 완료');
   } else {
@@ -7757,6 +7894,8 @@ async function mrEmpSubmit(){
       }
       // initPw 없으면 passwordHash 없음 → 자동으로 초기 비밀번호 '1234' 사용 (authLogin 처리)
       MR_EMPLOYEES.push(newEmp);
+      // 클라우드 동기화
+      try{ await sbEmpInsert(newEmp); }catch(e){}
     }
     showToast(`${parsed.length}명 등록 완료 (최초 로그인 시 비밀번호 변경)`);
   }
@@ -7773,7 +7912,7 @@ function mrEmpEdit(id){
   mrEmpToggleForm(true);
 }
 
-function mrEmpDelete(id){
+async function mrEmpDelete(id){
   if(!authCanManageEmployees()){ showToast('관리자만 사원을 삭제할 수 있습니다'); return; }
   const emp = MR_EMPLOYEES.find(e=>e.id===id);
   if(!emp) return;
@@ -7783,6 +7922,8 @@ function mrEmpDelete(id){
   MR_EMP_CHECKED.delete(id);
   mrRenderEmployees();
   mrRefreshEmployeePickers();
+  // 클라우드 동기화
+  try{ await sbEmpDelete(id); }catch(e){}
   showToast('사원 삭제 완료');
 }
 
@@ -10280,7 +10421,13 @@ window.addEventListener('DOMContentLoaded', ()=>{
 });
 
 // 인증 부트스트랩 — 페이지 로드 시 세션 체크 → 로그인 화면 or 앱 화면
-window.addEventListener('DOMContentLoaded', ()=>{
+window.addEventListener('DOMContentLoaded', async ()=>{
+  // Supabase에서 사원 데이터 우선 동기화 (네트워크 실패 시 로컬 유지)
+  try{
+    await sbBootstrapEmployees();
+    sbSubscribeEmployees(); // 실시간 구독
+  }catch(e){ console.warn('[sbBootstrap]', e); }
+  // 인증 체크 (DB에 최신 사원 정보 반영된 후)
   try{ authBootstrap(); }catch(e){ console.warn('[authBootstrap]', e); }
 });
 </script>
