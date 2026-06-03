@@ -815,6 +815,31 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .ap-form-acts .cancel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#cbd5e1}
 .ap-form-acts .confirm{background:linear-gradient(135deg,#34d399,#10b981);color:#fff;box-shadow:0 5px 14px rgba(52,211,153,.35)}
 
+/* 사원 등록 폼 — 열람 페이지 선택 체크박스 */
+.ap-perm-pick{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:2px}
+.ap-perm-chk{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;transition:.15s;font-family:inherit}
+.ap-perm-chk:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+.ap-perm-chk input{accent-color:#a78bfa;cursor:pointer;flex-shrink:0}
+.ap-perm-chk:has(input:checked){background:linear-gradient(160deg,rgba(167,139,250,.16),rgba(236,72,153,.06));border-color:rgba(167,139,250,.45)}
+.ap-perm-chk .ic{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:900;flex-shrink:0}
+.ap-perm-chk .lb{display:flex;flex-direction:column;gap:1px;line-height:1.2;min-width:0;flex:1}
+.ap-perm-chk .lb b{font-size:11.5px;font-weight:800;color:#fff}
+.ap-perm-chk .lb span{font-size:9.5px;font-weight:600;color:#94a3b8}
+html.light .ap-perm-chk{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
+html.light .ap-perm-chk:has(input:checked){background:linear-gradient(160deg,rgba(124,58,237,.1),rgba(219,39,119,.04));border-color:rgba(124,58,237,.4)}
+html.light .ap-perm-chk .lb b{color:#0f172a}
+html.light .ap-perm-chk .lb span{color:#64748b}
+@media(max-width:480px){.ap-perm-pick{grid-template-columns:1fr}}
+
+/* 사원 목록 접기/펼치기 토글 */
+.ap-list-toggle{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;width:28px;height:28px;border-radius:7px;cursor:pointer;font-family:inherit;display:grid;place-items:center;transition:.18s;padding:0;margin-left:auto}
+.ap-list-toggle:hover{background:rgba(167,139,250,.15);color:#fff;border-color:rgba(167,139,250,.4)}
+.ap-list-toggle svg{width:14px;height:14px;transition:transform .25s cubic-bezier(.4,0,.2,1)}
+.ap-list-toggle.collapsed svg{transform:rotate(-90deg)}
+.ap-emp-list-wrap{overflow:hidden;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.ap-emp-list-wrap.collapsed{max-height:0 !important}
+.ap-emp-list-wrap.collapsed #ap-emp-list{padding-bottom:0}
+
 /* 모바일에서는 사용자 위젯 작게 */
 @media (max-width:768px){
   .home-user-widget{padding:4px 6px 4px 4px}
@@ -1813,7 +1838,7 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
 .mr-emp-role button.on{background:linear-gradient(135deg,#34d399,#10b981);color:#fff;box-shadow:0 4px 10px rgba(52,211,153,.3)}
 
 .mr-emp-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-.mr-emp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:.2s;position:relative;overflow:hidden}
+.mr-emp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px 14px;display:flex;align-items:center;gap:11px;transition:.2s;position:relative;overflow:hidden;flex-wrap:wrap}
 .mr-emp-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
 .mr-emp-card.role-manager::before{background:#fb923c;box-shadow:0 0 10px #fb923c}
 .mr-emp-card.role-owner::before{background:#60a5fa;box-shadow:0 0 10px #60a5fa}
@@ -1821,11 +1846,11 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
 .mr-emp-avt{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;flex-shrink:0}
 .mr-emp-card.role-manager .mr-emp-avt{background:linear-gradient(135deg,#fb923c,#f59e0b);box-shadow:0 6px 16px rgba(251,146,60,.4)}
 .mr-emp-card.role-owner .mr-emp-avt{background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 6px 16px rgba(59,130,246,.4)}
-.mr-emp-info{flex:1;min-width:0}
-.mr-emp-name-row{display:flex;align-items:center;gap:7px;margin-bottom:3px}
-.mr-emp-name{font-size:14px;font-weight:800;color:#fff}
-.mr-emp-pos{font-size:10.5px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:5px}
-.mr-emp-role-tag{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px}
+.mr-emp-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.mr-emp-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mr-emp-name{font-size:14px;font-weight:800;color:#fff;line-height:1.2}
+.mr-emp-pos{font-size:10px;font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;line-height:1;flex-shrink:0}
+.mr-emp-role-tag{display:inline-flex;align-items:center;gap:5px;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:4px;line-height:1;flex-shrink:0;letter-spacing:.2px}
 .mr-emp-role-tag.manager{background:rgba(251,146,60,.18);color:#fdba74}
 .mr-emp-role-tag.owner{background:rgba(96,165,250,.18);color:#93c5fd}
 .mr-emp-actions{display:flex;gap:5px;flex-shrink:0}
@@ -1835,8 +1860,8 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
 .mr-emp-actions .reset-pw{background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.25);color:#fdba74;width:32px;height:32px;border-radius:7px;cursor:pointer;font-family:inherit;display:grid;place-items:center;transition:.15s;padding:0}
 .mr-emp-actions .reset-pw svg{width:14px;height:14px}
 .mr-emp-actions .reset-pw:hover{background:rgba(251,146,60,.22);color:#fff;border-color:rgba(251,146,60,.45)}
-.mr-emp-id{font-size:10px;font-weight:800;color:#a5b4fc;background:rgba(167,139,250,.14);padding:2px 6px;border-radius:5px;font-family:monospace;letter-spacing:.3px}
-.mr-emp-pw-tag{font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:4px}
+.mr-emp-id{font-size:9.5px;font-weight:800;color:#a5b4fc;background:rgba(167,139,250,.14);padding:2px 6px;border-radius:4px;font-family:monospace;letter-spacing:.3px;line-height:1;flex-shrink:0}
+.mr-emp-pw-tag{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;line-height:1}
 .mr-emp-pw-tag.default{background:rgba(251,191,36,.16);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
 .mr-emp-pw-tag.pending{background:rgba(251,146,60,.16);color:#fdba74;border:1px solid rgba(251,146,60,.3)}
 
@@ -1984,16 +2009,24 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
     </div>
     <div class="ap-body">
       <div class="ap-actions">
-        <div class="ap-section-title" style="margin:0">사원 목록 <span id="ap-emp-count" style="font-size:10px;color:#94a3b8;font-weight:600;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:99px;margin-left:4px">0명</span></div>
+        <div class="ap-section-title" style="margin:0;display:flex;align-items:center;gap:8px">
+          사원 목록
+          <span id="ap-emp-count" style="font-size:10px;color:#94a3b8;font-weight:600;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:99px">0명</span>
+          <button class="ap-list-toggle" id="ap-list-toggle" onclick="apToggleEmpList()" title="목록 접기/펼치기" aria-label="목록 접기/펼치기">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
         <button class="ap-action-btn" onclick="apOpenEmpForm(null)">＋ 사원 등록</button>
       </div>
       <div class="ap-help">
         <b style="color:#fff">권한 시스템</b>
         · <b>통합관리</b>: 영업·재고·수금·계약서
         · <b>리포트</b>: 안건 트래킹·캘린더·KPI
-        · 관리자는 항상 모든 권한
+        · 마스터·매니저는 항상 모든 권한
       </div>
-      <div id="ap-emp-list"></div>
+      <div class="ap-emp-list-wrap" id="ap-emp-list-wrap">
+        <div id="ap-emp-list"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -2036,6 +2069,21 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
       <div class="ap-form-field full" id="ap-r-pw-field">
         <label>초기 비밀번호 <span class="hint">(미입력 시 1234)</span></label>
         <input type="text" id="ap-r-initpw" placeholder="4자 이상 또는 비워두면 1234" maxlength="20">
+      </div>
+      <div class="ap-form-field full">
+        <label>열람 페이지 <span class="hint">(복수 선택 가능 · 마스터·매니저는 항상 모든 페이지)</span></label>
+        <div class="ap-perm-pick">
+          <label class="ap-perm-chk">
+            <input type="checkbox" id="ap-r-perm-main" checked>
+            <span class="ic" style="background:linear-gradient(135deg,#3b82f6,#6366f1)">M</span>
+            <span class="lb"><b>MSO 통합 관리</b><span>영업·재고·수금·계약</span></span>
+          </label>
+          <label class="ap-perm-chk">
+            <input type="checkbox" id="ap-r-perm-report" checked>
+            <span class="ic" style="background:linear-gradient(135deg,#a78bfa,#ec4899)">R</span>
+            <span class="lb"><b>MSO 리포트</b><span>안건·캘린더·KPI</span></span>
+          </label>
+        </div>
       </div>
     </div>
     <div class="ap-form-err" id="ap-form-err"></div>
@@ -8534,6 +8582,11 @@ function apOpenEmpForm(editId){
   document.getElementById('ap-r-initpw').value = '';
   document.querySelectorAll('#ap-r-role button').forEach(b=>b.classList.remove('on'));
   document.querySelector('#ap-r-role button[data-r="manager"]').classList.add('on'); // 기본: 매니저
+  // 열람 권한 체크박스 기본값
+  const permMainEl = document.getElementById('ap-r-perm-main');
+  const permReportEl = document.getElementById('ap-r-perm-report');
+  if(permMainEl) permMainEl.checked = true;
+  if(permReportEl) permReportEl.checked = true;
   document.getElementById('ap-form-err').textContent = '';
   // 역할 토글 핸들러 (1회 바인딩)
   if(!document.getElementById('ap-r-role')._bound){
@@ -8560,6 +8613,10 @@ function apOpenEmpForm(editId){
     // 기존 데이터 매핑: authLevel 우선, 없으면 role에서 추론
     const lvl = u.authLevel || (u.role==='manager' ? 'manager' : (u.role==='owner' ? 'staff' : 'manager'));
     document.querySelector(`#ap-r-role button[data-r="${lvl}"]`)?.classList.add('on');
+    // 열람 권한 체크박스 — 기존 값 또는 기본값 매핑
+    const curPerm = authGetPermissions(u);
+    if(permMainEl) permMainEl.checked = curPerm.mso_main;
+    if(permReportEl) permReportEl.checked = curPerm.mso_report;
     pwField.style.display = 'none';
   } else {
     document.getElementById('ap-form-title').textContent = '신규 사원 등록';
@@ -8588,6 +8645,12 @@ async function apSubmitEmpForm(){
   const authLevel = document.querySelector('#ap-r-role button.on')?.dataset.r || 'manager';
   // 기존 role(MSO 리포트 폼에서 사용) 자동 매핑: master/manager → 'manager', staff → 'owner'
   const role = (authLevel==='master' || authLevel==='manager') ? 'manager' : 'owner';
+  // 열람 권한 체크박스 값
+  const permMain = !!document.getElementById('ap-r-perm-main')?.checked;
+  const permReport = !!document.getElementById('ap-r-perm-report')?.checked;
+  // 마스터·매니저는 항상 모든 권한 (체크박스 무관)
+  const isPrivileged = (authLevel==='master' || authLevel==='manager');
+  const permissions = isPrivileged ? null : {mso_main: permMain, mso_report: permReport};
   if(!name){ errEl.textContent = '이름을 입력하세요'; return; }
   if(initPw && initPw.length<4){ errEl.textContent = '비밀번호는 4자 이상이어야 합니다'; return; }
   // 중복 체크
@@ -8606,13 +8669,16 @@ async function apSubmitEmpForm(){
     u.email = email;
     u.role = role;
     u.authLevel = authLevel;
-    try{ await sbEmpUpdate(u.id, {empNo:u.empNo, name, position, email, role, authLevel}); }catch(e){}
+    if(isPrivileged) delete u.permissions;
+    else u.permissions = permissions;
+    try{ await sbEmpUpdate(u.id, {empNo:u.empNo, name, position, email, role, authLevel, permissions:u.permissions||null}); }catch(e){}
     showToast(`${name} 정보 수정 완료`);
   } else {
     const newId = MR_EMP_NEXT_ID++;
     const finalEmpNo = empNo || ('EMP' + String(newId).padStart(3,'0'));
     const today = new Date().toISOString().substring(0,10);
     const newEmp = {id:newId, empNo:finalEmpNo, name, position, email, role, authLevel, createdAt:today, mustChangePassword:true, active:true};
+    if(!isPrivileged) newEmp.permissions = permissions;
     if(initPw && initPw.length>=4){
       newEmp.passwordHash = await _authHash(initPw);
     }
@@ -8646,6 +8712,28 @@ async function apDelEmp(empId){
 function apResetPw(empId){
   // 기존 비밀번호 재설정 모달 재사용
   showAdminPwResetModal(empId);
+}
+
+// 사원 목록 접기/펼치기
+function apToggleEmpList(){
+  const wrap = document.getElementById('ap-emp-list-wrap');
+  const btn = document.getElementById('ap-list-toggle');
+  if(!wrap || !btn) return;
+  const isCollapsed = wrap.classList.contains('collapsed');
+  if(isCollapsed){
+    // 펼치기
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
+    wrap.classList.remove('collapsed');
+    btn.classList.remove('collapsed');
+    setTimeout(()=>{ wrap.style.maxHeight = ''; }, 380); // 트랜지션 끝나면 해제
+  } else {
+    // 접기
+    wrap.style.maxHeight = wrap.scrollHeight + 'px';
+    void wrap.offsetWidth; // reflow
+    wrap.style.maxHeight = '0px';
+    wrap.classList.add('collapsed');
+    btn.classList.add('collapsed');
+  }
 }
 async function toggleEmpPerm(empId, permKey){
   const e = MR_EMPLOYEES.find(x=>x.id===empId);
@@ -9188,7 +9276,7 @@ function mrRenderEmployees(){
     const roleLabel = e.role==='manager' ? '관리자' : '담당자';
     const first = e.name.charAt(0);
     const checked = MR_EMP_CHECKED.has(e.id);
-    const emailLine = e.email ? `<div style="font-size:10.5px;color:#94a3b8;margin-top:3px;font-family:monospace">${e.email}</div>` : '';
+    const emailLine = e.email ? `<div style="font-size:10px;color:#94a3b8;margin-top:1px;font-family:monospace;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">${e.email}</div>` : '';
     // 비밀번호 상태 표시
     const pwStatus = !e.passwordHash
       ? '<span class="mr-emp-pw-tag default" title="초기 비밀번호 1234 사용 중">초기 PW</span>'
@@ -11094,10 +11182,19 @@ function mrRenderCharts(){
   const trendAvg = [50,55,50,35,45];
   const baseLayout = {paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)', font:{family:'Inter',color:'#94a3b8',size:11.5}, margin:{l:46,r:14,t:10,b:40}, xaxis:{gridcolor:'rgba(255,255,255,.06)',color:'#64748b'}, yaxis:{gridcolor:'rgba(255,255,255,.06)',color:'#64748b'}, showlegend:false};
   const cfg = {displayModeBar:false, responsive:true};
+  const trendLayout = {...baseLayout, yaxis:{...baseLayout.yaxis,title:{text:'건수',font:{color:'#60a5fa',size:11}},range:[0,6]}, yaxis2:{overlaying:'y',side:'right',ticksuffix:'%',color:'#a78bfa',gridcolor:'transparent',range:[0,100],title:{text:'진행률',font:{color:'#a78bfa',size:11}}}, showlegend:true, legend:{orientation:'h',y:-.18,font:{color:'#cbd5e1',size:11},x:.5,xanchor:'center'}, margin:{l:50,r:55,t:20,b:55}};
+  // 초기 렌더 — y값 0으로 시작
   Plotly.newPlot('mr-chart-trend', [
-    {x:weeks, y:trendCounts, type:'bar', name:'건수', marker:{color:'rgba(96,165,250,.55)',line:{width:1,color:'#60a5fa'}}, yaxis:'y', text:trendCounts, textposition:'outside', textfont:{color:'#93c5fd',size:11}},
-    {x:weeks, y:trendAvg, type:'scatter', mode:'lines+markers', name:'평균 진행률(%)', line:{color:'#a78bfa',width:3.5,shape:'spline'}, marker:{size:9,color:'#a78bfa',line:{color:'#fff',width:2}}, yaxis:'y2', fill:'tozeroy', fillcolor:'rgba(167,139,250,.08)'}
-  ], {...baseLayout, yaxis:{...baseLayout.yaxis,title:{text:'건수',font:{color:'#60a5fa',size:11}},range:[0,6]}, yaxis2:{overlaying:'y',side:'right',ticksuffix:'%',color:'#a78bfa',gridcolor:'transparent',range:[0,100],title:{text:'진행률',font:{color:'#a78bfa',size:11}}}, showlegend:true, legend:{orientation:'h',y:-.18,font:{color:'#cbd5e1',size:11},x:.5,xanchor:'center'}, margin:{l:50,r:55,t:20,b:55}}, cfg);
+    {x:weeks, y:weeks.map(()=>0), type:'bar', name:'건수', marker:{color:'rgba(96,165,250,.55)',line:{width:1,color:'#60a5fa'}}, yaxis:'y', text:trendCounts, textposition:'outside', textfont:{color:'#93c5fd',size:11}},
+    {x:weeks, y:weeks.map(()=>0), type:'scatter', mode:'lines+markers', name:'평균 진행률(%)', line:{color:'#a78bfa',width:3.5,shape:'spline'}, marker:{size:9,color:'#a78bfa',line:{color:'#fff',width:2}}, yaxis:'y2', fill:'tozeroy', fillcolor:'rgba(167,139,250,.08)'}
+  ], trendLayout, cfg);
+  // 등장 stagger 후 실제값으로 애니메이트
+  setTimeout(()=>{
+    Plotly.animate('mr-chart-trend', {
+      data: [{y:trendCounts}, {y:trendAvg}],
+      traces: [0,1]
+    }, {transition:{duration:900, easing:'cubic-out'}, frame:{duration:900, redraw:false}});
+  }, 600);
 
   // 제품별 도넛
   const prodCount = {};
@@ -11111,11 +11208,21 @@ function mrRenderCharts(){
     return a.localeCompare(b,'ko');
   });
   const donutColors = ['#60a5fa','#fb923c','#34d399','#a78bfa','#fbbf24','#ec4899'];
+  const donutValues = sortedProds.map(p=>prodCount[p]);
+  const donutLayout = {...baseLayout, margin:{l:10,r:10,t:20,b:10}, annotations:[{text:`<b>${MR_CASES.length}</b><br><span style="font-size:11px;color:#64748b">전체 안건</span>`, showarrow:false, font:{size:22,color:'#fff'}, x:.5, y:.5}]};
+  // 초기 렌더 — 균등 분할 (각 segment 동일 크기)
+  const equalSeed = sortedProds.map(()=>1);
   Plotly.newPlot('mr-chart-donut', [{
-    values:sortedProds.map(p=>prodCount[p]), labels:sortedProds, type:'pie', hole:.6,
+    values:equalSeed, labels:sortedProds, type:'pie', hole:.6,
     marker:{colors:donutColors.slice(0,sortedProds.length), line:{color:'#0a0f1d',width:2}},
     textinfo:'label+value', textfont:{size:12,color:'#fff',weight:700}, textposition:'inside', sort:false
-  }], {...baseLayout, margin:{l:10,r:10,t:20,b:10}, annotations:[{text:`<b>${MR_CASES.length}</b><br><span style="font-size:11px;color:#64748b">전체 안건</span>`, showarrow:false, font:{size:22,color:'#fff'}, x:.5, y:.5}]}, cfg);
+  }], donutLayout, cfg);
+  setTimeout(()=>{
+    Plotly.animate('mr-chart-donut', {
+      data: [{values:donutValues}],
+      traces: [0]
+    }, {transition:{duration:900, easing:'cubic-out'}, frame:{duration:900, redraw:false}});
+  }, 700);
 
   // 진행률 단계 퍼널
   const stages = {
@@ -11124,17 +11231,32 @@ function mrRenderCharts(){
     '컨펌/긍정 (70~90%)': MR_CASES.filter(c=>c.progress>=70 && c.progress<100).length,
     '완료 (100%)': MR_CASES.filter(c=>c.progress===100).length
   };
+  // 퍼널 — x값 0으로 시작
+  const stageKeys = Object.keys(stages);
+  const stageVals = Object.values(stages);
   Plotly.newPlot('mr-chart-funnel', [{
-    type:'funnel', y:Object.keys(stages), x:Object.values(stages), textinfo:'value', textfont:{size:14,color:'#fff'},
+    type:'funnel', y:stageKeys, x:stageKeys.map(()=>0), textinfo:'value', textfont:{size:14,color:'#fff'},
     marker:{color:['#60a5fa','#fb923c','#fbbf24','#34d399']},
     connector:{line:{color:'rgba(255,255,255,.08)',width:1}}
   }], {...baseLayout, margin:{l:160,r:30,t:10,b:30}}, cfg);
+  setTimeout(()=>{
+    Plotly.animate('mr-chart-funnel', {
+      data: [{x:stageVals}], traces:[0]
+    }, {transition:{duration:900, easing:'cubic-out'}, frame:{duration:900, redraw:false}});
+  }, 850);
 
-  // 주차별 완료 vs 신규 (mock)
+  // 주차별 완료 vs 신규 — 0으로 시작 후 애니메이션
+  const wsDone = [1,2,0,1,0];
+  const wsNew = [2,2,2,3,3];
   Plotly.newPlot('mr-chart-weekstack', [
-    {x:weeks, y:[1,2,0,1,0], type:'bar', name:'완료', marker:{color:'#34d399'}, text:[1,2,0,1,0], textposition:'outside', textfont:{color:'#6ee7b7'}},
-    {x:weeks, y:[2,2,2,3,3], type:'bar', name:'신규 등록', marker:{color:'#a78bfa'}, text:[2,2,2,3,3], textposition:'outside', textfont:{color:'#c4b5fd'}}
+    {x:weeks, y:weeks.map(()=>0), type:'bar', name:'완료', marker:{color:'#34d399'}, text:wsDone, textposition:'outside', textfont:{color:'#6ee7b7'}},
+    {x:weeks, y:weeks.map(()=>0), type:'bar', name:'신규 등록', marker:{color:'#a78bfa'}, text:wsNew, textposition:'outside', textfont:{color:'#c4b5fd'}}
   ], {...baseLayout, barmode:'group', showlegend:true, legend:{orientation:'h',y:-.18,font:{color:'#cbd5e1',size:11},x:.5,xanchor:'center'}, margin:{l:40,r:14,t:20,b:55}}, cfg);
+  setTimeout(()=>{
+    Plotly.animate('mr-chart-weekstack', {
+      data: [{y:wsDone}, {y:wsNew}], traces:[0,1]
+    }, {transition:{duration:900, easing:'cubic-out'}, frame:{duration:900, redraw:false}});
+  }, 950);
 }
 
 // ── 홈 랜딩 진입/복귀 ────────────────────────────
