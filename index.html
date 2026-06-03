@@ -7300,6 +7300,7 @@ async function sbEmpFetchAll(){
 
 async function sbEmpInsert(emp){
   if(!MR_SYNC.enabled) return null;
+  _sbMarkSelfWrite();
   try{
     const payload = {
       id: emp.id,
@@ -7320,6 +7321,7 @@ async function sbEmpInsert(emp){
 
 async function sbEmpUpdate(id, patch){
   if(!MR_SYNC.enabled) return null;
+  _sbMarkSelfWrite();
   try{
     const payload = {};
     if('name' in patch) payload.name = patch.name;
@@ -7338,6 +7340,7 @@ async function sbEmpUpdate(id, patch){
 
 async function sbEmpDelete(id){
   if(!MR_SYNC.enabled) return false;
+  _sbMarkSelfWrite();
   try{
     const {error} = await sb.from('employees').delete().eq('id', id);
     if(error) throw error;
@@ -7394,6 +7397,152 @@ function sbSubscribeEmployees(){
           MR_EMP_NEXT_ID = Math.max(...MR_EMPLOYEES.map(e=>e.id), 0) + 1;
           if(document.getElementById('mr-tab-master')?.style.display !== 'none') mrRenderEmployees();
           mrRefreshEmployeePickers();
+        }
+      }, 200);
+    })
+    .subscribe();
+}
+
+// ─── cases CRUD ────────────────────────────────
+function _sbCaseFromLocal(c){
+  return {
+    id: c.id,
+    cat: c.cat||'med',
+    client: c.client||null,
+    prod: c.prod||null,
+    type: c.type||null,
+    owner: c.owner||null,
+    mgr: c.mgr||null,
+    start_date: c.startDate||null,
+    due: c.due||null,
+    status: c.status||'신규',
+    progress: typeof c.progress==='number' ? c.progress : 0,
+    comments: c.comments||[],
+    milestones: c.milestones||{meeting:null,demo:null,confirm:null,delivery:null},
+    recorded_reasons: c.recordedReasons||[],
+    reasons: c.reasons||[],
+    tags: c.tags||[],
+    reason_memo: c.reasonMemo||null,
+    desc_text: c.desc||null,
+    next_action: c.nextAction||null
+  };
+}
+function _sbCaseToLocal(row){
+  return {
+    id: row.id,
+    cat: row.cat||'med',
+    client: row.client||'',
+    prod: row.prod||'',
+    type: row.type||'',
+    owner: row.owner||'',
+    mgr: row.mgr||'',
+    startDate: row.start_date||'',
+    due: row.due||'',
+    status: row.status||'신규',
+    progress: typeof row.progress==='number' ? row.progress : 0,
+    comments: Array.isArray(row.comments) ? row.comments : [],
+    milestones: row.milestones || {meeting:null,demo:null,confirm:null,delivery:null},
+    recordedReasons: Array.isArray(row.recorded_reasons) ? row.recorded_reasons : [],
+    reasons: Array.isArray(row.reasons) ? row.reasons : [],
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    reasonMemo: row.reason_memo||'',
+    desc: row.desc_text||'',
+    nextAction: row.next_action||null
+  };
+}
+
+async function sbCaseFetchAll(){
+  if(!MR_SYNC.enabled) return null;
+  try{
+    const {data, error} = await sb.from('cases').select('*').order('id');
+    if(error) throw error;
+    return data;
+  }catch(e){ console.warn('[sbCaseFetchAll]', e); MR_SYNC.errorCount++; return null; }
+}
+
+async function sbCaseUpsert(c){
+  if(!MR_SYNC.enabled) return null;
+  _sbMarkSelfWrite();
+  try{
+    const payload = _sbCaseFromLocal(c);
+    const {data, error} = await sb.from('cases').upsert(payload, {onConflict:'id'}).select().single();
+    if(error) throw error;
+    return data;
+  }catch(e){ console.warn('[sbCaseUpsert]', e); MR_SYNC.errorCount++; return null; }
+}
+
+async function sbCaseDelete(id){
+  if(!MR_SYNC.enabled) return false;
+  _sbMarkSelfWrite();
+  try{
+    const {error} = await sb.from('cases').delete().eq('id', id);
+    if(error) throw error;
+    return true;
+  }catch(e){ console.warn('[sbCaseDelete]', e); MR_SYNC.errorCount++; return false; }
+}
+
+// 디바운스된 안건 저장 (변경 후 자동 동기화)
+const _caseDebounce = new Map();
+function sbCaseSaveLater(caseId){
+  if(_caseDebounce.has(caseId)) clearTimeout(_caseDebounce.get(caseId));
+  const t = setTimeout(async ()=>{
+    _caseDebounce.delete(caseId);
+    const c = MR_CASES.find(x=>x.id===caseId);
+    if(c) await sbCaseUpsert(c);
+  }, 500);
+  _caseDebounce.set(caseId, t);
+}
+
+// 초기 부트스트랩 — DB에서 안건 가져와서 로컬 동기화
+async function sbBootstrapCases(){
+  const remote = await sbCaseFetchAll();
+  if(!remote) return false; // 네트워크 실패 시 로컬 캐시 유지
+  if(remote.length === 0){
+    // DB가 비어있음 → 로컬 안건들을 DB로 푸시 (첫 마이그레이션)
+    for(const c of MR_CASES){
+      await sbCaseUpsert(c);
+    }
+    console.log('[sbBootstrap] cases 마이그레이션 완료', MR_CASES.length, '건');
+  } else {
+    // DB에 데이터 있음 → 로컬 덮어쓰기
+    MR_CASES = remote.map(_sbCaseToLocal);
+    console.log('[sbBootstrap] cases DB → 로컬 동기화', remote.length, '건');
+  }
+  return true;
+}
+
+// cases 실시간 구독
+let _caseRealtimeChannel = null;
+// 본인 쓰기 직후 잠시 실시간 무시 (echo 방지)
+let _sbSelfWriteUntil = 0;
+function _sbMarkSelfWrite(){ _sbSelfWriteUntil = Date.now() + 1500; }
+
+function sbSubscribeCases(){
+  if(_caseRealtimeChannel) return;
+  _caseRealtimeChannel = sb.channel('case-realtime')
+    .on('postgres_changes', {event:'*', schema:'public', table:'cases'}, payload=>{
+      // 본인 쓰기 echo 무시
+      if(Date.now() < _sbSelfWriteUntil) return;
+      setTimeout(async ()=>{
+        if(Date.now() < _sbSelfWriteUntil) return;
+        const remote = await sbCaseFetchAll();
+        if(remote){
+          MR_CASES = remote.map(_sbCaseToLocal);
+          // 현재 열려있는 화면 갱신
+          if(document.getElementById('mr-tab-cases')?.style.display !== 'none'){
+            mrRenderCases();
+            if(MR_CURRENT_ID){
+              const stillExists = MR_CASES.find(c=>c.id===MR_CURRENT_ID);
+              if(stillExists) mrSelectCase(MR_CURRENT_ID);
+            }
+          }
+          if(document.getElementById('mr-tab-report')?.style.display !== 'none'){
+            mrRenderStats();
+            try{ mrRenderCharts(); }catch(e){}
+          }
+          if(document.getElementById('mr-tab-calendar')?.style.display !== 'none'){
+            try{ mrRenderCalendar(); }catch(e){}
+          }
         }
       }, 200);
     })
@@ -8433,6 +8582,8 @@ window.mrRenderCalendar = function(){
 function mrRenderStats(){
   // 상태 자동 저장 (변이 후 자연스럽게 호출되는 지점)
   try{ mrSaveStateLater(); }catch(e){}
+  // 현재 선택된 안건 클라우드 동기화 (변이 후)
+  try{ if(MR_CURRENT_ID) sbCaseSaveLater(MR_CURRENT_ID); }catch(e){}
   const all = MR_CASES;
   const prog = all.filter(c=>c.status==='진행 중').length;
   const pend = all.filter(c=>c.status==='컨펌 대기').length;
@@ -8978,6 +9129,8 @@ function mrExecuteDelete(){
   // 구글 캘린더 이벤트도 삭제 시도
   if(c && typeof mrGCalDelete==='function'){ try{ mrGCalDelete(c); }catch(e){} }
   MR_CASES = MR_CASES.filter(x=>x.id!==id);
+  // 클라우드 삭제
+  try{ sbCaseDelete(id); }catch(e){}
   if(MR_CURRENT_ID===id){
     MR_CURRENT_ID = MR_CASES.length ? MR_CASES[0].id : null;
   }
@@ -9771,6 +9924,8 @@ function mrSubmitCase(){
   };
   if(desc) newCase.comments.push({who:owner, role:'담당', time:'방금 전', body:desc});
   MR_CASES.unshift(newCase);
+  // 클라우드 저장 (즉시)
+  try{ sbCaseUpsert(newCase); }catch(e){}
   // 폼 초기화
   document.getElementById('mr-client').value = '';
   document.getElementById('mr-prod-name').value = '';
@@ -10422,12 +10577,13 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
 // 인증 부트스트랩 — 페이지 로드 시 세션 체크 → 로그인 화면 or 앱 화면
 window.addEventListener('DOMContentLoaded', async ()=>{
-  // Supabase에서 사원 데이터 우선 동기화 (네트워크 실패 시 로컬 유지)
+  // Supabase에서 사원 + 안건 데이터 동기화 (병렬, 네트워크 실패 시 로컬 유지)
   try{
-    await sbBootstrapEmployees();
+    await Promise.all([sbBootstrapEmployees(), sbBootstrapCases()]);
     sbSubscribeEmployees(); // 실시간 구독
+    sbSubscribeCases();
   }catch(e){ console.warn('[sbBootstrap]', e); }
-  // 인증 체크 (DB에 최신 사원 정보 반영된 후)
+  // 인증 체크 (DB에 최신 정보 반영된 후)
   try{ authBootstrap(); }catch(e){ console.warn('[authBootstrap]', e); }
 });
 </script>
