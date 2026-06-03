@@ -13,6 +13,7 @@
 <script src="https://apis.google.com/js/api.js" async defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.50.0/build/docxtemplater.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -8478,18 +8479,306 @@ function mrPptDownload(){
   const from=new Date(document.getElementById('mr-ppt-from').value);
   const to=new Date(document.getElementById('mr-ppt-to').value);
   if(isNaN(from)||isNaN(to)||from>to){ showToast('기간을 확인해주세요'); return; }
-  // 기간 필터링된 안건
+  if(typeof PptxGenJS === 'undefined'){ showToast('PPT 라이브러리 로드 실패 (네트워크 확인)'); return; }
+  // 기간 내 안건 (시작일 OR 마감일이 기간에 걸치는 안건 포함)
   const inRange = MR_CASES.filter(c=>{
-    const d = c.startDate||c.due; if(!d) return false;
-    const t = new Date(d); return t>=from && t<=to;
+    const sd = c.startDate ? new Date(c.startDate) : null;
+    const ed = c.due ? new Date(c.due) : null;
+    if(!sd && !ed) return false;
+    const s = sd || ed, e = ed || sd;
+    return (s<=to && e>=from);
   });
-  showToast(`PPT 생성 중... (${inRange.length}건 포함)`);
-  // 실제 .pptx 생성은 추후 PptxGenJS 라이브러리로 구현
-  // 현재는 데이터 요약을 콘솔에 출력 + 안내 토스트
-  setTimeout(()=>{
-    showToast('✓ PPT 다운로드 준비됨 (실제 .pptx 생성은 다음 단계)');
-    console.log('[PPT] 기간:', _mrFmt(from), '~', _mrFmt(to), '/ 안건:', inRange.length);
-  }, 1200);
+  if(inRange.length===0){ showToast('해당 기간에 안건이 없습니다'); return; }
+  showToast(`PPT 생성 중... (${inRange.length}건)`);
+  setTimeout(()=>_mrPptBuild(from, to, inRange), 100);
+}
+
+function _mrPptBuild(from, to, cases){
+  try{
+    const pres = new PptxGenJS();
+    pres.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5 inch
+    pres.title = 'MSO 영업 리포트';
+    pres.author = '정인호';
+    pres.company = 'TheSC-MSO';
+
+    // 컬러 팔레트
+    const C = {
+      bgDark:'0A0E1A', bgDark2:'1E1B4B', bgDark3:'581C87',
+      white:'FFFFFF', gray500:'94A3B8', gray400:'CBD5E1', gray700:'374151', gray900:'111827',
+      purple:'A78BFA', purpleDark:'7C3AED', pink:'EC4899', pinkDark:'DB2777',
+      blue:'0EA5E9', green:'10B981', amber:'F59E0B', red:'EF4444',
+      bgLight:'FAFBFC', borderLight:'E5E7EB'
+    };
+    const periodStr = `${_mrFmt(from)} — ${_mrFmt(to)}`;
+    const todayStr = _mrFmt(new Date());
+    // 기간 라벨 자동
+    let periodLabel = '기간';
+    const fY=from.getFullYear(), tY=to.getFullYear(), fM=from.getMonth(), tM=to.getMonth(), fD=from.getDate(), tD=to.getDate();
+    if(fY===tY){
+      if(fM===tM){
+        // 같은 달
+        periodLabel = `${fY}년 ${fM+1}월`;
+      } else if(fM===0&&fD===1&&tM===5&&tD===30) periodLabel = `${fY}년 상반기`;
+      else if(fM===6&&fD===1&&tM===11&&tD===31) periodLabel = `${fY}년 하반기`;
+      else if(fM===0&&fD===1&&tM===11&&tD===31) periodLabel = `${fY}년`;
+      else if(fD===1 && tD===new Date(fY,tM+1,0).getDate() && (tM-fM)===2){
+        const q = Math.floor(fM/3)+1; periodLabel = `${fY}년 ${q}분기`;
+      } else periodLabel = `${_mrFmt(from)} ~ ${_mrFmt(to)}`;
+    } else periodLabel = `${_mrFmt(from)} ~ ${_mrFmt(to)}`;
+
+    // 통계 집계
+    const total = cases.length;
+    const byStat = {신규:0,'진행 중':0,'컨펌 대기':0,완료:0,보류:0,종결:0};
+    cases.forEach(c=>{ if(byStat[c.status]!==undefined) byStat[c.status]++; });
+    const done = byStat['완료'];
+    const prog = byStat['진행 중'];
+    const pend = byStat['컨펌 대기'];
+    const news = byStat['신규'];
+    const hold = byStat['보류'];
+    const ends = byStat['종결'];
+    const avgProg = total ? Math.round(cases.reduce((s,c)=>s+(c.progress||0),0)/total) : 0;
+    const fails = cases.filter(c=>c.status==='종결');
+    // 사유 집계
+    const reasonCount = {};
+    cases.forEach(c=>{
+      (c.recordedReasons||[]).forEach(r=>(r.reasons||[]).forEach(rs=>{reasonCount[rs]=(reasonCount[rs]||0)+1;}));
+      (c.reasons||[]).forEach(rs=>{reasonCount[rs]=(reasonCount[rs]||0)+1;});
+    });
+    const sortedReasons = Object.entries(reasonCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    // 제품별
+    const byProd = {};
+    cases.forEach(c=>{ if(c.prod){ byProd[c.prod] = (byProd[c.prod]||0)+1; } });
+    const topProds = Object.entries(byProd).sort((a,b)=>b[1]-a[1]).slice(0,4).map(p=>p[0]);
+    // TOP 5 안건 (마감 가까운 순)
+    const top5 = [...cases].sort((a,b)=>{
+      const da = a.due ? new Date(a.due) : new Date('2099-01-01');
+      const db = b.due ? new Date(b.due) : new Date('2099-01-01');
+      return da - db;
+    }).slice(0,5);
+
+    // ─── 슬라이드 1: 표지 ───
+    const s1 = pres.addSlide();
+    s1.background = {color:C.bgDark};
+    // 다이아고날 그라데이션 박스 (전경)
+    s1.addShape('rect',{x:0,y:0,w:13.333,h:7.5,fill:{type:'solid',color:C.bgDark2}});
+    s1.addShape('ellipse',{x:9,y:-2,w:7,h:7,fill:{color:C.purple,transparency:75},line:{type:'none'}});
+    s1.addShape('ellipse',{x:-1,y:5,w:5,h:5,fill:{color:C.pink,transparency:85},line:{type:'none'}});
+    // 좌측 컬러 바
+    s1.addShape('rect',{x:0,y:0,w:0.1,h:7.5,fill:{color:C.purple}});
+    // "MSO" 그라데이션
+    s1.addText('MSO', {x:0.7,y:2.6,w:6,h:1.2,fontSize:72,bold:true,color:C.purple,fontFace:'Pretendard'});
+    s1.addText('영업 리포트', {x:0.7,y:3.7,w:8,h:1.2,fontSize:64,bold:true,color:C.pink,fontFace:'Pretendard'});
+    // 기간 배지
+    s1.addShape('roundRect',{x:0.7,y:5.2,w:5.5,h:0.55,fill:{color:'FFFFFF',transparency:90},line:{color:C.purple,width:1},rectRadius:0.27});
+    s1.addText(`📅  ${periodLabel}  (${_mrFmt(from)} — ${_mrFmt(to)})`, {x:0.85,y:5.2,w:5.3,h:0.55,fontSize:13,color:C.white,fontFace:'Pretendard',valign:'middle'});
+    // 분류 (오른쪽 하단)
+    s1.addText('분류', {x:10.5,y:6.4,w:2,h:0.3,fontSize:9,bold:true,color:C.purple,fontFace:'Pretendard',align:'right'});
+    s1.addText('내부 영업 보고서', {x:10.5,y:6.7,w:2,h:0.4,fontSize:12,bold:true,color:C.white,fontFace:'Pretendard',align:'right'});
+
+    // ─── 슬라이드 2: 핵심 요약 ───
+    const s2 = pres.addSlide();
+    s2.background = {color:C.bgLight};
+    _pptHeader(s2, '02', '핵심 지표 요약', `${periodLabel} 주요 성과 지표`, '2 / 6', C);
+    // KPI 4개
+    const kpis = [
+      {l:'총 안건', v:total+'건', c:C.purpleDark},
+      {l:'완료 안건', v:done+'건', c:C.blue},
+      {l:'진행 중', v:prog+'건', c:C.green},
+      {l:'평균 진행률', v:avgProg+'%', c:C.amber}
+    ];
+    kpis.forEach((k,i)=>{
+      const x = 0.5 + i*3.15;
+      s2.addShape('roundRect',{x,y:1.6,w:3,h:1.5,fill:{color:'FFFFFF'},line:{color:C.borderLight,width:1},rectRadius:0.1});
+      s2.addShape('rect',{x,y:1.6,w:0.1,h:1.5,fill:{color:k.c}});
+      s2.addText(k.l, {x:x+0.2,y:1.7,w:2.7,h:0.3,fontSize:10,bold:true,color:'6B7280',fontFace:'Pretendard'});
+      s2.addText(k.v, {x:x+0.2,y:2.0,w:2.7,h:0.8,fontSize:30,bold:true,color:C.gray900,fontFace:'Pretendard'});
+    });
+    // 하이라이트 박스
+    const highlights = [
+      `총 ${total}건 중 완료 ${done}건 (${total?Math.round(done/total*100):0}%)`,
+      `진행 중 ${prog}건 · 컨펌 대기 ${pend}건`,
+      `평균 진행률 ${avgProg}% · 종결 ${ends}건`,
+      sortedReasons.length ? `주요 종결 사유: ${sortedReasons.slice(0,2).map(r=>r[0]).join(', ')}` : '종결 사유 데이터 없음'
+    ];
+    s2.addShape('roundRect',{x:0.5,y:3.4,w:8,h:3.5,fill:{color:'F5F3FF'},line:{color:'DDD6FE',width:1},rectRadius:0.1});
+    s2.addText('주요 하이라이트', {x:0.7,y:3.5,w:7,h:0.4,fontSize:11,bold:true,color:C.purpleDark,fontFace:'Pretendard'});
+    highlights.forEach((h,i)=>{
+      s2.addText(`▸  ${h}`, {x:0.7,y:4.0+i*0.55,w:7.5,h:0.45,fontSize:13,color:'374151',fontFace:'Pretendard'});
+    });
+    // 상태 분포 미니 (오른쪽)
+    s2.addShape('roundRect',{x:8.8,y:3.4,w:4.1,h:3.5,fill:{color:'EFF6FF'},line:{color:'BFDBFE',width:1},rectRadius:0.1});
+    s2.addText('상태 분포', {x:9,y:3.5,w:3.7,h:0.4,fontSize:11,bold:true,color:'0369A1',fontFace:'Pretendard'});
+    const statItems = [
+      {n:'신규',v:news,c:C.purple},
+      {n:'진행 중',v:prog,c:'FB923C'},
+      {n:'컨펌 대기',v:pend,c:C.amber},
+      {n:'완료',v:done,c:C.green},
+      {n:'보류',v:hold,c:'94A3B8'},
+      {n:'종결',v:ends,c:C.red}
+    ];
+    statItems.forEach((s,i)=>{
+      s2.addShape('roundRect',{x:9+(i%2)*1.95,y:4.0+Math.floor(i/2)*0.95,w:1.85,h:0.85,fill:{color:'FFFFFF'},line:{color:'BFDBFE',width:0.5},rectRadius:0.05});
+      s2.addShape('rect',{x:9+(i%2)*1.95,y:4.0+Math.floor(i/2)*0.95,w:0.07,h:0.85,fill:{color:s.c}});
+      s2.addText(s.n, {x:9.1+(i%2)*1.95,y:4.05+Math.floor(i/2)*0.95,w:1.7,h:0.3,fontSize:9,color:'6B7280',fontFace:'Pretendard'});
+      s2.addText(String(s.v), {x:9.1+(i%2)*1.95,y:4.3+Math.floor(i/2)*0.95,w:1.7,h:0.55,fontSize:20,bold:true,color:C.gray900,fontFace:'Pretendard'});
+    });
+    _pptFoot(s2, todayStr, C);
+
+    // ─── 슬라이드 3: 의료장비 부문 ───
+    const s3 = pres.addSlide();
+    s3.background = {color:C.bgLight};
+    _pptHeader(s3, '03', '의료장비 부문 성과', `${periodLabel} 의료장비 사업부 종합 지표`, '3 / 6', C);
+    s3.addShape('roundRect',{x:0.5,y:1.6,w:12.3,h:5.2,fill:{color:'FFFFFF'},line:{color:C.borderLight,width:1},rectRadius:0.15});
+    s3.addShape('rect',{x:0.5,y:1.6,w:12.3,h:0.15,fill:{color:C.blue}});
+    s3.addShape('roundRect',{x:0.85,y:1.95,w:0.7,h:0.7,fill:{color:C.blue},line:{type:'none'},rectRadius:0.1});
+    s3.addText('⚕', {x:0.85,y:1.95,w:0.7,h:0.7,fontSize:24,bold:true,color:C.white,fontFace:'Pretendard',align:'center',valign:'middle'});
+    s3.addText('의료장비', {x:1.7,y:1.95,w:6,h:0.5,fontSize:22,bold:true,color:C.gray900,fontFace:'Pretendard'});
+    s3.addText('Medical Equipment', {x:1.7,y:2.4,w:6,h:0.3,fontSize:11,color:'6B7280',fontFace:'Pretendard'});
+    // 4 stat boxes
+    const m3 = [
+      {l:'안건 수', v:total+'건'},
+      {l:'완료', v:done+'건'},
+      {l:'평균 진행률', v:avgProg+'%'},
+      {l:'완료율', v:(total?Math.round(done/total*100):0)+'%'}
+    ];
+    m3.forEach((s,i)=>{
+      s3.addShape('roundRect',{x:0.85+i*2.95,y:3.0,w:2.75,h:1.2,fill:{color:'F9FAFB'},line:{type:'none'},rectRadius:0.07});
+      s3.addText(s.l, {x:0.95+i*2.95,y:3.1,w:2.5,h:0.3,fontSize:10,bold:true,color:'6B7280',fontFace:'Pretendard'});
+      s3.addText(s.v, {x:0.95+i*2.95,y:3.4,w:2.5,h:0.7,fontSize:24,bold:true,color:C.gray900,fontFace:'Pretendard'});
+    });
+    // 주요 제품
+    s3.addText('📦  주요 제품', {x:0.85,y:4.5,w:11,h:0.4,fontSize:12,bold:true,color:C.gray700,fontFace:'Pretendard'});
+    s3.addText(topProds.length ? topProds.join(' · ') : '제품 데이터 없음', {x:0.85,y:4.9,w:11,h:0.5,fontSize:14,bold:true,color:C.gray900,fontFace:'Pretendard'});
+    s3.addText(`총 ${cases.filter(c=>c.prod).length}건의 안건 · 제품 ${Object.keys(byProd).length}종 등록`, {x:0.85,y:5.6,w:11,h:0.4,fontSize:11,color:'6B7280',fontFace:'Pretendard'});
+    _pptFoot(s3, todayStr, C);
+
+    // ─── 슬라이드 4: 안건 상태 + TOP 5 ───
+    const s4 = pres.addSlide();
+    s4.background = {color:C.white};
+    _pptHeader(s4, '04', '안건 상태 분포', `${periodLabel} 전체 ${total}건의 상태별 현황 + 주요 안건 TOP 5`, '4 / 6', C);
+    // 상태 6 카드
+    statItems.forEach((s,i)=>{
+      const x = 0.5 + i*2.1;
+      s4.addShape('roundRect',{x,y:1.5,w:1.95,h:1.4,fill:{color:'F9FAFB'},line:{type:'none'},rectRadius:0.1});
+      s4.addShape('rect',{x,y:2.78,w:1.95,h:0.12,fill:{color:s.c}});
+      s4.addText(s.n, {x:x+0.1,y:1.55,w:1.75,h:0.3,fontSize:10,bold:true,color:'6B7280',fontFace:'Pretendard',align:'center'});
+      s4.addText(String(s.v), {x:x+0.1,y:1.85,w:1.75,h:0.7,fontSize:32,bold:true,color:C.gray900,fontFace:'Pretendard',align:'center'});
+      s4.addText(total?Math.round(s.v/total*100)+'%':'0%', {x:x+0.1,y:2.55,w:1.75,h:0.25,fontSize:10,color:'9CA3AF',fontFace:'Pretendard',align:'center'});
+    });
+    // TOP 5 표
+    const tableRows = [[
+      {text:'병원',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
+      {text:'제품·유형',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
+      {text:'담당',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
+      {text:'상태',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
+      {text:'진행률',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
+      {text:'마감',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}}
+    ]];
+    top5.forEach(c=>{
+      const dueStr = c.due ? c.due.slice(5,10) : '—';
+      tableRows.push([
+        {text:c.client||'-',options:{fontSize:11,color:'1F2937',bold:true}},
+        {text:`${c.prod||''} ${c.type||''}`,options:{fontSize:10,color:'374151'}},
+        {text:c.owner||'-',options:{fontSize:10,color:'374151'}},
+        {text:c.status||'-',options:{fontSize:10,color:'374151'}},
+        {text:(c.progress||0)+'%',options:{fontSize:11,color:C.purpleDark,bold:true}},
+        {text:dueStr,options:{fontSize:10,color:'374151'}}
+      ]);
+    });
+    s4.addTable(tableRows, {x:0.5,y:3.2,w:12.3,colW:[3,3.5,1.3,1.8,1.4,1.3],fontFace:'Pretendard',border:{type:'solid',color:'F3F4F6',pt:1}});
+    _pptFoot(s4, todayStr, C);
+
+    // ─── 슬라이드 5: 실패 분석 ───
+    const s5 = pres.addSlide();
+    s5.background = {color:'FFFBFB'};
+    _pptHeader(s5, '05', '종결 / 보류 사유 분석', `${periodLabel} 종결 ${fails.length}건 인사이트`, '5 / 6', C);
+    // 도넛 (좌측)
+    if(sortedReasons.length){
+      const donutData = sortedReasons.map(([k,v])=>({name:k,labels:[k],values:[v]}));
+      s5.addChart(pres.ChartType.doughnut, [{
+        name:'종결 사유',
+        labels: sortedReasons.map(r=>r[0]),
+        values: sortedReasons.map(r=>r[1])
+      }], {
+        x:0.5,y:1.6,w:5.5,h:5,
+        chartColors:['EF4444','FB923C','FBBF24','A78BFA','9CA3AF'],
+        chartColorsOpacity:90,
+        showLegend:true, legendPos:'b', legendFontSize:9, legendFontFace:'Pretendard',
+        showTitle:true, title:'사유별 분포', titleFontSize:13, titleFontFace:'Pretendard', titleColor:'C2410C',
+        holeSize:55, dataLabelFontSize:10
+      });
+    } else {
+      s5.addShape('roundRect',{x:0.5,y:1.6,w:5.5,h:5,fill:{color:'FFFFFF'},line:{color:'FED7AA',width:1},rectRadius:0.1});
+      s5.addText('아직 종결된 안건이 없습니다', {x:0.5,y:3.8,w:5.5,h:0.6,fontSize:14,color:'9CA3AF',fontFace:'Pretendard',align:'center'});
+      s5.addText(`종결 ${fails.length}건`, {x:0.5,y:4.4,w:5.5,h:0.5,fontSize:24,bold:true,color:C.green,fontFace:'Pretendard',align:'center'});
+    }
+    // 인사이트 박스 (우측)
+    s5.addShape('roundRect',{x:6.5,y:1.6,w:6.3,h:5,fill:{color:'FFFFFF'},line:{color:'FED7AA',width:1},rectRadius:0.15});
+    s5.addText('⚠  핵심 인사이트', {x:6.7,y:1.75,w:6,h:0.4,fontSize:12,bold:true,color:'C2410C',fontFace:'Pretendard'});
+    const failAvgProg = fails.length ? Math.round(fails.reduce((s,c)=>s+(c.progress||0),0)/fails.length) : 0;
+    const insights = [
+      {k:'전체 종결 안건', v:fails.length+'건'},
+      {k:'종결 평균 진행률', v:failAvgProg+'%'},
+      {k:'주요 종결 사유', v:sortedReasons.length?sortedReasons[0][0]:'데이터 없음'},
+      {k:'분석 기간', v:`${_mrFmt(from)} ~ ${_mrFmt(to)}`}
+    ];
+    insights.forEach((it,i)=>{
+      s5.addText(it.k, {x:6.7,y:2.4+i*0.7,w:3,h:0.5,fontSize:12,bold:true,color:'374151',fontFace:'Pretendard'});
+      s5.addText(it.v, {x:9.7,y:2.4+i*0.7,w:3,h:0.5,fontSize:13,bold:true,color:C.red,fontFace:'Pretendard',align:'right'});
+    });
+    s5.addShape('roundRect',{x:6.7,y:5.5,w:5.9,h:0.95,fill:{color:'FEF3C7'},line:{type:'none'},rectRadius:0.05});
+    s5.addShape('rect',{x:6.7,y:5.5,w:0.07,h:0.95,fill:{color:C.amber}});
+    s5.addText('💡 제안: 컨펌 대기 단계 전환율 개선 위해 경쟁사 견적 대비 강점 제안서 별도 제작 권장', {x:6.85,y:5.55,w:5.7,h:0.85,fontSize:11,color:'78350F',fontFace:'Pretendard',valign:'middle'});
+    _pptFoot(s5, todayStr, C);
+
+    // ─── 슬라이드 6: 마무리 ───
+    const s6 = pres.addSlide();
+    s6.background = {color:C.bgDark3};
+    s6.addShape('rect',{x:0,y:0,w:13.333,h:7.5,fill:{type:'solid',color:C.bgDark2}});
+    s6.addShape('ellipse',{x:8,y:-2,w:7,h:7,fill:{color:C.purple,transparency:75},line:{type:'none'}});
+    s6.addText('Thank You.', {x:0.5,y:2.8,w:12.3,h:1.5,fontSize:72,bold:true,color:C.white,fontFace:'Pretendard',align:'center'});
+    s6.addText(`발행일 · ${todayStr}`, {x:0.5,y:4.5,w:12.3,h:0.6,fontSize:18,color:C.gray400,fontFace:'Pretendard',align:'center'});
+
+    // 다운로드 — Blob 방식 (더 안정적, iframe/모바일 호환)
+    const fname = `MSO_영업리포트_${_mrFmt(from).replace(/\./g,'')}-${_mrFmt(to).replace(/\./g,'')}.pptx`;
+    pres.write({outputType:'blob'}).then(blob=>{
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fname;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 1000);
+      showToast(`✓ ${fname} 다운로드 완료`);
+    }).catch(err=>{
+      console.error('[PPT write 오류]', err);
+      showToast('PPT 생성 실패: '+(err?.message||err));
+    });
+  } catch(err){
+    console.error('[PPT 생성 오류]', err);
+    showToast('PPT 생성 오류: '+err.message);
+  }
+}
+
+// 슬라이드 공통 헤더
+function _pptHeader(slide, num, title, sub, page, C){
+  slide.addShape('rect',{x:0,y:0,w:0.15,h:7.5,fill:{color:C.purpleDark}});
+  slide.addShape('roundRect',{x:0.6,y:0.6,w:0.7,h:0.35,fill:{color:'EDE9FE'},line:{type:'none'},rectRadius:0.05});
+  slide.addText(num, {x:0.6,y:0.6,w:0.7,h:0.35,fontSize:11,bold:true,color:C.purpleDark,fontFace:'Pretendard',align:'center',valign:'middle'});
+  slide.addText(title, {x:1.4,y:0.5,w:8,h:0.55,fontSize:24,bold:true,color:C.gray900,fontFace:'Pretendard'});
+  slide.addText(sub, {x:1.4,y:1.05,w:10,h:0.35,fontSize:11,color:'6B7280',fontFace:'Pretendard'});
+  slide.addText(page, {x:11.5,y:0.6,w:1.5,h:0.35,fontSize:11,color:'9CA3AF',fontFace:'Pretendard',align:'right',bold:true});
+  slide.addShape('rect',{x:0.5,y:1.4,w:12.5,h:0.03,fill:{color:'F3F4F6'}});
+  slide.addShape('rect',{x:0.5,y:1.4,w:1,h:0.03,fill:{color:C.purpleDark}});
+}
+function _pptFoot(slide, date, C){
+  slide.addShape('rect',{x:0.5,y:7.1,w:12.3,h:0.03,fill:{color:'F3F4F6'}});
+  slide.addText('MSO 통합 관리', {x:0.5,y:7.15,w:6,h:0.3,fontSize:9,color:'9CA3AF',fontFace:'Pretendard',bold:true});
+  slide.addText(date + ' · 정인호', {x:6.5,y:7.15,w:6.3,h:0.3,fontSize:9,color:'9CA3AF',fontFace:'Pretendard',align:'right'});
 }
 
 // 카테고리 칩 토글 (DOM ready 후 위임)
