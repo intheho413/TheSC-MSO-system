@@ -81,6 +81,32 @@ html.light .app{background:#f1f5f9}
 .nav-item.active{color:#93c5fd;border-bottom-color:#60a5fa;font-weight:600;
                  text-shadow:0 0 16px rgba(96,165,250,0.45)}
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+/* 우측 상단 사용자 위젯 (드릴다운 화면 전용) */
+.nav-user-widget{display:flex;align-items:center;gap:9px;background:linear-gradient(135deg,rgba(167,139,250,.12),rgba(99,102,241,.12));border:1px solid rgba(167,139,250,.3);padding:5px 12px 5px 5px;border-radius:22px;cursor:pointer;position:relative;transition:.2s}
+.nav-user-widget:hover{background:linear-gradient(135deg,rgba(167,139,250,.22),rgba(99,102,241,.22));border-color:rgba(167,139,250,.5);box-shadow:0 4px 14px rgba(99,102,241,.25)}
+.nav-user-widget .nav-user-avt{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#a78bfa,#6366f1);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0;box-shadow:0 2px 6px rgba(99,102,241,.3)}
+.nav-user-widget .nav-user-info{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.nav-user-widget .nav-user-name{font-size:12.5px;font-weight:800;color:#fff;white-space:nowrap}
+.nav-user-widget .nav-user-pos{font-size:10.5px;color:#a8a4c8;font-weight:600;white-space:nowrap}
+html.light .nav-user-widget .nav-user-name{color:#1e293b}
+html.light .nav-user-widget .nav-user-pos{color:#64748b}
+.nav-user-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:180px;background:linear-gradient(160deg,#1a1a2e,#0f0f1a);border:1px solid #2a2a40;border-radius:12px;padding:6px;box-shadow:0 16px 40px rgba(0,0,0,.5);display:none;flex-direction:column;gap:2px;z-index:100}
+.nav-user-widget.open .nav-user-menu{display:flex;animation:nuwFadeIn .18s ease}
+@keyframes nuwFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.nav-user-menu .nuw-mi{background:transparent;border:0;color:#cbc8e6;padding:9px 12px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;font-family:inherit;transition:.12s}
+.nav-user-menu .nuw-mi:hover{background:rgba(167,139,250,.12);color:#fff}
+.nav-user-menu .nuw-mi.danger{color:#fca5a5}
+.nav-user-menu .nuw-mi.danger:hover{background:rgba(239,68,68,.12);color:#fff}
+.nav-user-menu .nuw-mi .ic{font-size:13px;width:16px;text-align:center}
+.nav-user-menu .nuw-divider{height:1px;background:#2a2a40;margin:4px 0}
+html.light .nav-user-menu{background:#fff;border-color:#e2e8f0;box-shadow:0 16px 40px rgba(0,0,0,.15)}
+html.light .nav-user-menu .nuw-mi{color:#475569}
+html.light .nav-user-menu .nuw-mi:hover{background:#f1f5f9;color:#1e293b}
+html.light .nav-user-menu .nuw-divider{background:#e2e8f0}
+@media(max-width:768px){
+  .nav-user-widget{display:none !important}
+}
 .nav-clock{font-size:12px;font-weight:600;color:rgba(255,255,255,0.62);
            letter-spacing:.2px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .nav-clock b{color:#93c5fd;font-weight:700}
@@ -2442,6 +2468,26 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
 
   <!-- 우측 아이콘 영역 -->
   <div class="nav-right">
+    <!-- 사용자 위젯 (드릴다운 진입 시 표시) -->
+    <div class="nav-user-widget" id="nav-user-widget" style="display:none" onclick="toggleNavUserMenu(event)">
+      <div class="nav-user-avt" id="nav-user-avt">?</div>
+      <div class="nav-user-info">
+        <span class="nav-user-name" id="nav-user-name">사용자</span>
+        <span class="nav-user-pos" id="nav-user-pos"></span>
+      </div>
+      <div class="nav-user-menu" id="nav-user-menu">
+        <button class="nuw-mi" onclick="event.stopPropagation();closeNavUserMenu();goHome()">
+          <span class="ic">⌂</span> 홈으로
+        </button>
+        <button class="nuw-mi" onclick="event.stopPropagation();closeNavUserMenu();showPasswordChangeModal(false)">
+          <span class="ic">🔒</span> 비밀번호 변경
+        </button>
+        <div class="nuw-divider"></div>
+        <button class="nuw-mi danger" onclick="event.stopPropagation();closeNavUserMenu();authLogout()">
+          <span class="ic">→</span> 로그아웃
+        </button>
+      </div>
+    </div>
     <span id="nav-clock" class="nav-clock"></span>
     <button class="nav-icon-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="테마 전환"></button>
     <button class="nav-icon-btn" id="nav-settings-btn" onclick="openSettings()" title="설정 (마스터 전용)">
@@ -8620,6 +8666,8 @@ function showAppScreen(){
   try{ authApplyMenuGuards(); }catch(e){}
   // 홈 사용자 위젯 갱신
   try{ updateHomeUserWidget(); }catch(e){}
+  // nav 우측 상단 사용자 위젯 갱신 (드릴다운 진입 시 표시됨)
+  try{ updateNavUserWidget(); }catch(e){}
   // 카드 권한 잠금 적용
   try{ applyHomeTilePermissions(); }catch(e){}
 }
@@ -8680,6 +8728,44 @@ function applyHomeTilePermissions(){
     }
   });
 }
+
+// 우측 상단 nav 사용자 위젯 — 드릴다운 진입 시 표시
+function updateNavUserWidget(){
+  const w = document.getElementById('nav-user-widget');
+  if(!w) return;
+  if(!CURRENT_USER){ w.style.display = 'none'; return; }
+  // 홈 모드일 때는 숨김
+  const root = document.getElementById('app-root');
+  const inHome = root && root.classList.contains('home-mode');
+  if(inHome){ w.style.display = 'none'; return; }
+  w.style.display = '';
+  const u = (Array.isArray(MR_EMPLOYEES) ? MR_EMPLOYEES.find(e=>e.id===CURRENT_USER.id) : null) || CURRENT_USER;
+  const nameEl = document.getElementById('nav-user-name');
+  const posEl = document.getElementById('nav-user-pos');
+  const avtEl = document.getElementById('nav-user-avt');
+  if(nameEl) nameEl.textContent = u.name || '사용자';
+  if(posEl) posEl.textContent = u.position || '';
+  if(avtEl) avtEl.textContent = (u.name||'?').slice(0,1);
+}
+window.updateNavUserWidget = updateNavUserWidget;
+window.toggleNavUserMenu = function(e){
+  if(e) e.stopPropagation();
+  const w = document.getElementById('nav-user-widget');
+  if(!w) return;
+  w.classList.toggle('open');
+  if(w.classList.contains('open')){
+    setTimeout(()=>{
+      const close = (ev)=>{
+        if(!w.contains(ev.target)){ w.classList.remove('open'); document.removeEventListener('click', close); }
+      };
+      document.addEventListener('click', close);
+    }, 0);
+  }
+};
+window.closeNavUserMenu = function(){
+  const w = document.getElementById('nav-user-widget');
+  if(w) w.classList.remove('open');
+};
 
 // 홈 사용자 위젯 정보 갱신
 function updateHomeUserWidget(){
@@ -8985,12 +9071,8 @@ async function handleLoginSubmit(){
   pwEl.value = '';
   if(result.mustChangePassword){
     showPasswordChangeModal(true);
-  } else {
-    // 모바일은 로그인 후 자동으로 MSO 리포트로 진입
-    if(typeof mrIsMobile==='function' && mrIsMobile()){
-      authNavigateToReport();
-    }
   }
+  // 로그인 후 항상 홈 화면 유지 — 사용자가 직접 두 드릴다운 카드 중 선택
 }
 
 // 모바일 로그인 후 자동 진입 헬퍼
@@ -11599,7 +11681,7 @@ function enterApp(mode, tileEl){
     }, 220);
   }
   // 프레스 종료(0.18s)에 맞춰 슬라이드 시작 → 끊김 없이 빠르게
-  setTimeout(()=>root.classList.remove('home-mode'), 180);
+  setTimeout(()=>{ root.classList.remove('home-mode'); try{ updateNavUserWidget(); }catch(e){} }, 180);
   // mso 카드 → 화장품 영업 관리 / report 카드 → MSO 리포트(안건 트래킹)
   if(mode==='report'){
     // 리포트로 진입: 전용 MSO 리포트 페이지
@@ -11615,6 +11697,7 @@ function enterApp(mode, tileEl){
 function goHome(){
   document.getElementById('app-root').classList.add('home-mode');
   updateHomeClock();
+  try{ updateNavUserWidget(); }catch(e){}
 }
 function homeBurst(x,y,color){
   for(let i=0;i<14;i++){
