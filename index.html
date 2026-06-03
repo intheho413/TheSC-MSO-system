@@ -660,6 +660,13 @@ body.light-mode .home-install-hint{color:#94a3b8}
 .topnav.report-mode #nav-appname-report{display:inline-flex !important;align-items:center;gap:8px}
 .topnav.report-mode .nav-sep:nth-of-type(2){display:none}
 .nav-appname-report{font-size:14px;font-weight:800;color:#fff;letter-spacing:.2px;align-items:center;gap:8px}
+.nav-refresh-btn{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.35);color:#c4b5fd;width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:6px;transition:.2s;padding:0;vertical-align:middle;flex-shrink:0}
+.nav-refresh-btn svg{width:14px;height:14px}
+.nav-refresh-btn:hover{background:rgba(167,139,250,.28);color:#fff;transform:rotate(60deg)}
+.nav-refresh-btn:active{transform:rotate(180deg) scale(.92)}
+.nav-refresh-btn.spinning svg{animation:nrSpin .8s linear infinite}
+@keyframes nrSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+html.light .nav-refresh-btn{color:#6366f1;border-color:rgba(99,102,241,.3)}
 .nav-badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:1.2px;color:#a5b4fc;background:rgba(99,102,241,.22);padding:2px 7px;border-radius:5px;text-transform:uppercase}
 html.light .nav-appname-report{color:#0f172a}
 html.light .nav-badge{color:#4338ca;background:rgba(99,102,241,.14)}
@@ -2322,7 +2329,9 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
   <!-- 앱 이름 -->
   <div class="nav-brand">
     <span class="nav-appname" id="nav-appname">MSO 통합 관리 시스템</span>
-    <span class="nav-appname-report" id="nav-appname-report" style="display:none">MSO 리포트 <span class="nav-badge">REPORT</span></span>
+    <span class="nav-appname-report" id="nav-appname-report" style="display:none">MSO 리포트 <span class="nav-badge">REPORT</span><button class="nav-refresh-btn" onclick="mrManualRefresh(this)" aria-label="새로고침" title="데이터 새로고침">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    </button></span>
     <span class="nav-caption">TheSC-MSO v2.0</span>
   </div>
   <div class="nav-sep"></div>
@@ -9999,6 +10008,34 @@ function mrRenderStats(){
     });
   }, 30);
 }
+
+// 수동 새로고침 — 상단 새로고침 버튼 클릭 시
+async function mrManualRefresh(btn){
+  try{
+    if(btn) btn.classList.add('spinning');
+    if(typeof sbCaseFetchAll === 'function'){
+      const remote = await sbCaseFetchAll();
+      if(remote){
+        MR_CASES = remote.map(_sbCaseToLocal);
+        try{ mrRenderCases(); }catch(e){}
+        try{ mrRenderStats(); }catch(e){}
+        try{ mrRenderCharts(); }catch(e){}
+        try{ mrRenderCalendar(); }catch(e){}
+        if(typeof MR_CURRENT_ID !== 'undefined' && MR_CURRENT_ID){
+          const stillExists = MR_CASES.find(c=>c.id===MR_CURRENT_ID);
+          if(stillExists) mrSelectCase(MR_CURRENT_ID);
+        }
+      }
+    }
+    // 사원 동기화도 같이
+    if(typeof sbEmpFetchAll === 'function'){
+      try{ await sbEmpFetchAll(); }catch(e){}
+    }
+  } finally {
+    setTimeout(()=>{ if(btn) btn.classList.remove('spinning'); }, 500);
+  }
+}
+window.mrManualRefresh = mrManualRefresh;
 
 function mrRenderCases(){
   const search = (document.getElementById('mr-search')?.value||'').toLowerCase();
