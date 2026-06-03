@@ -7394,6 +7394,8 @@ function showAppScreen(){
   document.body.style.overflow = '';
   // 햄버거 사용자 정보 갱신
   try{ mobUpdateUserInfo(); }catch(e){}
+  // 권한별 메뉴 가드 적용
+  try{ authApplyMenuGuards(); }catch(e){}
 }
 
 async function handleLoginSubmit(){
@@ -7550,6 +7552,94 @@ function mrToggleMyOnly(){
   mrRenderCases();
 }
 
+// ═══ Phase 3: 권한 가드 확장 ═══
+function authCanEditComment(cm){
+  if(!CURRENT_USER || !cm) return false;
+  if(authIsAdmin()) return true;
+  return cm.who === CURRENT_USER.name;
+}
+function authCanDeleteCase(c){
+  // 관리자만 안건 삭제 가능
+  return authIsAdmin();
+}
+function authCanAccessMaster(){
+  // 기초 관리는 관리자만
+  return authIsAdmin();
+}
+
+// 권한 가드: 메뉴 표시 토글
+function authApplyMenuGuards(){
+  if(!CURRENT_USER) return;
+  const showMaster = authCanAccessMaster();
+  // 데스크탑 사이드바 - 기초 관리 메뉴
+  document.querySelectorAll('#nav-menu-report .nav-item').forEach((it,idx)=>{
+    if(idx===3) it.style.display = showMaster ? '' : 'none'; // 4번째가 기초 관리
+  });
+  // 모바일 햄버거 - 기초 관리 항목
+  const mobMaster = document.querySelectorAll('.mob-menu .mh-li.dis')[0];
+  if(mobMaster && mobMaster.textContent.includes('기초 관리')){
+    mobMaster.style.display = showMaster ? '' : 'none';
+  }
+  // 일반 사원이 기초 관리 탭에 있으면 리포트로 이동
+  if(!showMaster){
+    const masterTab = document.getElementById('mr-tab-master');
+    if(masterTab && getComputedStyle(masterTab).display !== 'none'){
+      mrSwitchTab('report', document.querySelector('#nav-menu-report .nav-item'));
+    }
+  }
+}
+
+// 안건 편집 UI 활성/비활성 (mrSelectCase 후 호출)
+function mrApplyEditGuards(c){
+  const canEdit = c ? authCanEditCase(c) : false;
+  const canDelete = c ? authCanDeleteCase(c) : false;
+  // 상태 변경 버튼
+  document.querySelectorAll('#mr-statbtns button').forEach(b=>{
+    b.disabled = !canEdit;
+    b.style.opacity = canEdit ? '' : '0.5';
+    b.style.cursor = canEdit ? '' : 'not-allowed';
+  });
+  // 진행률 슬라이더
+  const pg = document.getElementById('mr-d-pg');
+  if(pg){ pg.disabled = !canEdit; pg.style.opacity = canEdit ? '' : '0.5'; }
+  // 마일스톤 클릭
+  document.querySelectorAll('#mr-mil-grid .mr-mil-item').forEach(m=>{
+    m.style.pointerEvents = canEdit ? '' : 'none';
+    m.style.opacity = canEdit ? '' : '0.6';
+  });
+  // 메타 인라인 편집 (병원/담당/관리/마감)
+  document.querySelectorAll('#mr-d-meta .ed').forEach(el=>{
+    el.style.pointerEvents = canEdit ? '' : 'none';
+    el.style.opacity = canEdit ? '' : '0.65';
+    if(!canEdit) el.style.cursor = 'default';
+  });
+  // 안건 삭제 버튼 (리스트 카드)
+  document.querySelectorAll('.mr-case-del').forEach(b=>{
+    b.style.display = canDelete ? '' : 'none';
+  });
+  // 사유 기록 추가 버튼 / 누적 사유 삭제 / 코멘트 입력 — 읽기 권한자도 코멘트는 작성 가능
+  // 안건 신규 등록 FAB / 버튼
+  const fab = document.getElementById('mob-fab-new');
+  if(fab && mrIsMobile()){
+    // 모든 로그인 사용자가 신규 안건 등록 가능 (현재 정책)
+  }
+  // 권한 안내 배너
+  let banner = document.getElementById('mr-edit-banner');
+  if(c && !canEdit){
+    if(!banner){
+      banner = document.createElement('div');
+      banner.id = 'mr-edit-banner';
+      banner.style.cssText = 'padding:8px 14px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);border-radius:8px;font-size:11px;color:#bfdbfe;margin:10px 16px 0;text-align:center;line-height:1.5';
+      const dh = document.querySelector('#mr-detail .dh');
+      if(dh) dh.parentElement.insertBefore(banner, dh.nextSibling);
+    }
+    banner.textContent = '읽기 전용 — 본인이 담당이거나 관리자만 수정할 수 있습니다';
+    banner.style.display = '';
+  } else if(banner){
+    banner.style.display = 'none';
+  }
+}
+
 // 수동 리셋 함수 (콘솔에서 mrResetData() 실행 시 샘플로 초기화)
 function mrResetData(){
   if(!confirm('저장된 모든 데이터를 삭제하고 샘플 데이터로 초기화하시겠습니까?\n(복구 불가)')) return;
@@ -7580,6 +7670,10 @@ function mrEmpBuildRow(prefill){
 }
 
 function mrEmpToggleForm(open){
+  if(open && !authCanManageEmployees()){
+    showToast('사원 등록은 관리자만 가능합니다');
+    return;
+  }
   const f = document.getElementById('mr-emp-form');
   if(open===undefined) f.classList.toggle('open');
   else f.classList.toggle('open', open);
@@ -7680,8 +7774,10 @@ function mrEmpEdit(id){
 }
 
 function mrEmpDelete(id){
+  if(!authCanManageEmployees()){ showToast('관리자만 사원을 삭제할 수 있습니다'); return; }
   const emp = MR_EMPLOYEES.find(e=>e.id===id);
   if(!emp) return;
+  if(emp.id===CURRENT_USER?.id){ showToast('본인 계정은 삭제할 수 없습니다'); return; }
   if(!confirm(`${emp.name} (${emp.position}) 을(를) 삭제할까요?`)) return;
   MR_EMPLOYEES = MR_EMPLOYEES.filter(e=>e.id!==id);
   MR_EMP_CHECKED.delete(id);
@@ -7837,6 +7933,13 @@ function mrSetReportMode(on){
 
 let MR_CAL_VIEW = new Date();
 function mrSwitchTab(tab, el){
+  // 권한 가드: 기초 관리는 관리자만
+  if(tab==='master' && !authCanAccessMaster()){
+    showToast('접근 권한이 없습니다 (관리자만 가능)');
+    // 리포트 탭으로 우회
+    tab = 'report';
+    el = document.querySelector('#nav-menu-report .nav-item');
+  }
   ['report','cases','calendar','master'].forEach(t=>{
     const div = document.getElementById('mr-tab-'+t);
     if(div) div.style.display = (t===tab) ? '' : 'none';
@@ -8379,6 +8482,8 @@ function mrSelectCase(id){
   mrRenderMilestones(c);
   mrRenderRecordedReasons(c);
   mrRenderWarningBadge(c);
+  // 편집 권한 가드 적용
+  try{ mrApplyEditGuards(c); }catch(e){}
   // 활성 인라인 편집 복원 (같은 안건일 때만)
   if(MR_ACTIVE_EDIT && MR_ACTIVE_EDIT.caseId===c.id){
     try{ mrEditMeta(MR_ACTIVE_EDIT.field, true); }catch(e){}
@@ -8439,6 +8544,7 @@ function mrDeleteComment(cid){
   if(!c) return;
   const cm = c.comments.find(x=>x.cid===cid);
   if(!cm) return;
+  if(!authCanEditComment(cm)){ showToast('본인 코멘트 또는 관리자만 삭제 가능합니다'); return; }
   if(!confirm('이 코멘트를 삭제할까요?')) return;
   c.comments = c.comments.filter(x=>x.cid!==cid);
   mrSelectCase(c.id);
@@ -8451,6 +8557,7 @@ function mrEditComment(cid){
   if(!c) return;
   const cm = c.comments.find(x=>x.cid===cid);
   if(!cm) return;
+  if(!authCanEditComment(cm)){ showToast('본인 코멘트 또는 관리자만 수정 가능합니다'); return; }
   // 카테고리 태그 [xxx]를 본문에서 분리
   let raw = cm.body || '';
   let cat = cm.category || null;
@@ -8714,6 +8821,7 @@ let MR_PENDING_DELETE_ID = null;
 function mrConfirmDeleteCase(id){
   const c = MR_CASES.find(x=>x.id===id);
   if(!c) return;
+  if(!authCanDeleteCase(c)){ showToast('관리자만 안건을 삭제할 수 있습니다'); return; }
   MR_PENDING_DELETE_ID = id;
   document.getElementById('mr-confirm-title').textContent = `[${c.client}] 안건을 삭제하시겠습니까?`;
   document.getElementById('mr-confirm-mask').classList.add('open');
