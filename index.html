@@ -628,7 +628,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   /* 데스크탑 사이드/탑 네비 전체 숨김 — 햄버거+브랜드만 노출 */
   .topnav .nav-cats,.topnav .nav-menu,.topnav #nav-menu-cosm,.topnav #nav-menu-med,.topnav #nav-menu-report,.topnav.report-mode #nav-menu-report,.topnav .nav-clock,.topnav .nav-caption,.topnav .nav-sep,.topnav .home-btn,.theme-toggle,.settings-icon,.topnav .nav-icon-btn{display:none !important}
   /* 안건 관리 상단 "+ 신규 안건" 버튼 숨김 (FAB로 대체) */
-  #mr-tab-cases > div:first-of-type .mr-btn-new,#mr-tab-cases > div:first-of-type{display:none !important}
+  #mr-tab-cases .mr-new-btn-row{display:none !important}
   .topnav{padding:0 12px;justify-content:flex-start;gap:0;height:48px;position:sticky;top:0;z-index:90;background:rgba(10,14,26,.96);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
   .topnav .nav-brand{flex:1;text-align:center;padding-left:0;padding-right:38px}
   .topnav .nav-appname,.topnav .nav-appname-report{font-size:14px;font-weight:800;display:inline-block}
@@ -1950,7 +1950,7 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
   </div>
 
   <!-- 신규 안건 버튼 (상단 우측) -->
-  <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+  <div class="mr-new-btn-row" style="display:flex;justify-content:flex-end;margin-bottom:12px">
     <button class="mr-btn-new" onclick="mrToggleForm(true)">＋ 신규 안건</button>
   </div>
 
@@ -7338,13 +7338,10 @@ function mrSwitchTab(tab, el){
   if(el) el.classList.add('active');
   // 📱 모바일 하단 탭/햄버거 메뉴 active 동기화
   try{ mobSyncTabs(tab); }catch(e){}
-  // 📱 안건 관리 탭 진입 시 — 기본 리스트 페이지로
+  // 📱 안건 관리 탭 진입 시 — 항상 리스트 페이지부터 시작 (좌측 도트 활성)
   if(tab==='cases'){
     setTimeout(()=>{
-      const row = document.querySelector('#mr-tab-cases .mr-row.b3-3col');
-      if(row && mrIsMobile() && !row.classList.contains('mob-page-detail') && !row.classList.contains('mob-page-cmts')){
-        row.classList.add('mob-page-list');
-      }
+      if(mrIsMobile()) mrMobSetPage('list');
       mrMobShowFabIfNeeded();
       mrMobSetupMention();
       mrMobSetupSwipe();
