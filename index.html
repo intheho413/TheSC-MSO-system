@@ -2035,6 +2035,72 @@ html.light .mr-reply-banner b{color:#1e293b}
   html.light #page-med-sales-detail .detail-back,
   html.light #page-med-recv-detail .detail-back{background:#f1f5f9 !important;color:#475569 !important;border-color:#e2e8f0 !important}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 3 — 기초 관리 모바일 최적화
+   대상: page-master (제품·거래처), page-med-master (장비·거래처·계약서·문서함)
+═══════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* 페이지 컨테이너 */
+  #page-master,#page-med-master{padding-left:8px !important;padding-right:8px !important}
+
+  /* 탭 — 의료장비 기초관리 4탭은 가로 스크롤, 화장품 2탭은 균등 분배 */
+  #page-master .tabs{display:flex !important;gap:4px !important;margin-bottom:12px !important}
+  #page-master .tab{flex:1 1 50% !important;padding:10px 8px !important;font-size:12.5px !important;text-align:center}
+  #page-med-master .tabs{overflow-x:auto !important;-webkit-overflow-scrolling:touch;flex-wrap:nowrap !important;display:flex;padding-bottom:4px;margin-bottom:12px !important}
+  #page-med-master .tabs::-webkit-scrollbar{height:2px}
+  #page-med-master .tab{flex:0 0 auto !important;min-width:max-content !important;padding:10px 14px !important;font-size:12.5px !important;white-space:nowrap}
+
+  /* 등록 폼 expander 헤더 모바일 — 터치 영역 확대 */
+  #page-master .expander-header,#page-med-master .expander-header{padding:12px 14px !important;font-size:13.5px !important;font-weight:700}
+  #page-master .expander-arrow,#page-med-master .expander-arrow{font-size:12px}
+  #page-master .expander-body,#page-med-master .expander-body{padding:14px !important}
+
+  /* 슬라이더 (할인율) 모바일 큰 터치 */
+  #page-master .slider-wrap,#page-med-master .slider-wrap{padding:6px 0}
+  #page-master .slider-wrap input[type=range],#page-med-master .slider-wrap input[type=range]{height:32px !important;cursor:pointer}
+  #page-master .slider-wrap input[type=range]::-webkit-slider-thumb{width:24px !important;height:24px !important}
+  #page-master .slider-val,#page-med-master .slider-val{font-size:14px !important;font-weight:700 !important;min-width:50px !important}
+
+  /* 장비사별 필터 행 — 세로 스택 */
+  #page-med-master #medprod-mfr-filter{max-width:100% !important;width:100% !important;font-size:16px !important;padding:9px 12px !important}
+  #page-med-master .tab-pane div[style*="display:flex"][style*="align-items:center"]{flex-direction:column !important;align-items:stretch !important;gap:6px !important}
+
+  /* 등록된 ~ 수정 섹션 헤더 */
+  #page-master div[style*="font-size:15px"]:not(.card-title),
+  #page-med-master div[style*="font-size:15px"]:not(.card-title){font-size:14px !important;margin:16px 0 10px !important}
+
+  /* 선택 저장/삭제 버튼 그룹 — 2열 wrap */
+  #page-master .btn-group,#page-med-master .btn-group{flex-wrap:wrap !important;gap:6px !important}
+  #page-master .btn-group .btn,#page-med-master .btn-group .btn{flex:1 1 calc(50% - 3px) !important;padding:10px !important;font-size:12.5px !important}
+
+  /* 입력 필드 풀폭 + iOS 줌 방지 (Phase 1에 누락된 master 페이지 추가) */
+  #page-master .form-control,#page-med-master .form-control{font-size:16px !important;padding:10px 12px !important;max-width:100% !important;width:100% !important}
+
+  /* 표 — 작업 버튼 영역 컴팩트 */
+  #page-master table tbody td:last-child,#page-med-master table tbody td:last-child{padding:5px 8px !important}
+  #page-master table tbody td button,#page-med-master table tbody td button{padding:4px 9px !important;font-size:11px !important}
+
+  /* 체크박스 확대 (선택용) */
+  #page-master table th input[type=checkbox],
+  #page-master table td input[type=checkbox],
+  #page-med-master table th input[type=checkbox],
+  #page-med-master table td input[type=checkbox]{width:18px !important;height:18px !important;cursor:pointer}
+
+  /* info-box (대분류 설명 등) */
+  #page-master #cat-info,#page-med-master #cat-info{font-size:11.5px !important;padding:8px 10px !important;line-height:1.5;margin-bottom:10px}
+
+  /* 계약서 발급/문서함 탭 콘텐츠 모바일 대응 */
+  #page-med-master #med-master-tab-contract .form-row,
+  #page-med-master #med-master-tab-docs .form-row{grid-template-columns:1fr !important}
+
+  /* 계약서 미리보기/다운로드 버튼들 — 풀폭 */
+  #page-med-master #med-master-tab-contract .btn,
+  #page-med-master #med-master-tab-docs .btn{width:100% !important;margin-bottom:6px}
+
+  /* datalist 인풋 — 둥근 모서리 확인 */
+  #page-master input[list],#page-med-master input[list]{border-radius:8px !important}
+}
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
 .mr-cmt .time{margin-right:0}
