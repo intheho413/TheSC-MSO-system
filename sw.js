@@ -5,7 +5,7 @@
 //  - 3rd-party CDN scripts: stale-while-revalidate
 // Bump CACHE_VERSION on each release to invalidate old caches.
 
-const CACHE_VERSION = 'mso-v14';
+const CACHE_VERSION = 'mso-v15';
 const CORE_CACHE  = `${CACHE_VERSION}-core`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -77,6 +77,11 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname.endsWith('supabase.co')) return;
   // Skip Google APIs (OAuth / Calendar) — never cache auth flows
   if (url.hostname.includes('googleapis.com') || url.hostname.includes('google.com') || url.hostname.includes('gstatic.com')) return;
+  // version.json은 절대 캐시 안 함 — 항상 네트워크에서 최신
+  if (url.pathname.endsWith('/version.json')) {
+    event.respondWith(fetch(req, { cache: 'no-store' }).catch(()=>new Response('{}',{headers:{'Content-Type':'application/json'}})));
+    return;
+  }
 
   // Navigation requests → network-first
   if (req.mode === 'navigate') {
