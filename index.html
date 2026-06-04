@@ -2113,6 +2113,96 @@ html.light .mr-reply-banner b{color:#1e293b}
   /* datalist 인풋 — 둥근 모서리 확인 */
   #page-master input[list],#page-med-master input[list]{border-radius:8px !important}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 4 — 통합 정밀 조정 (사용자 피드백 반영)
+   - 화장품 영업관리 탭 라벨 컴팩트화
+   - 출고 수정 기간 선택 컴팩트
+   - 수금 미수금 비중 탭 숨김
+   - 기초관리 PC 전용 차단
+   - 의료장비 동일 적용
+═══════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* === 1) 짤리는 부분 방지 — overflow 대응 강화 === */
+  #page-dashboard,#page-stock,#page-med-report,#page-med-sales,
+  #page-recv,#page-med-recv,#page-master,#page-med-master,
+  #page-low-detail,#page-recv-detail,#page-sales-detail,
+  #page-med-sales-detail,#page-med-recv-detail{overflow-x:hidden}
+  #page-dashboard *,#page-stock *,#page-med-report *,#page-med-sales *,
+  #page-recv *,#page-med-recv *{max-width:100%}
+
+  /* === 2) 화장품 영업관리 탭 라벨 압축 + 균등 분배 === */
+  #page-stock .tabs,#page-med-sales .tabs{display:flex !important;gap:4px !important;width:100%}
+  #page-stock .tabs .tab,#page-med-sales .tabs .tab{flex:1 1 0 !important;min-width:0 !important;padding:10px 6px !important;font-size:12.5px !important;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* === 3) 출고 수정 — 기간 + 필터 컴팩트 + 리스트 메인 === */
+  #stock-tab-edit .card:first-child,#med-sales-tab-edit .card:first-child{padding:10px 12px !important;margin-bottom:10px !important}
+  #stock-tab-edit .form-row.cols-2,#med-sales-tab-edit .form-row.cols-2{grid-template-columns:1fr 1fr !important;gap:8px !important;margin-bottom:8px !important}
+  #stock-tab-edit .form-row.cols-2 .form-group,#med-sales-tab-edit .form-row.cols-2 .form-group{margin-bottom:0 !important}
+  #stock-tab-edit .form-label,#med-sales-tab-edit .form-label{font-size:11px !important;margin-bottom:3px !important}
+  #stock-tab-edit .form-control,#med-sales-tab-edit .form-control{padding:8px 10px !important;font-size:14px !important}
+  #stock-tab-edit input[type=date],#med-sales-tab-edit input[type=date]{font-size:13px !important}
+  #stock-tab-edit > .card:first-child .btn,#med-sales-tab-edit > .card:first-child .btn{padding:9px !important;font-size:13px !important;width:100% !important;margin-top:4px}
+  /* 출고 수정 — 안내문/액션버튼 압축 */
+  #stock-tab-edit .info-box,#med-sales-tab-edit .info-box{font-size:11px !important;padding:7px 10px !important;line-height:1.4;margin-top:8px !important}
+  #stock-tab-edit > .btn-group,#med-sales-tab-edit > .btn-group{margin-top:8px !important;margin-bottom:8px !important}
+  /* 결과 리스트 강조 (높이 확보) */
+  #stock-tab-edit > .tbl-wrap,#med-sales-tab-edit > .tbl-wrap{margin-top:6px !important;border:1px solid rgba(167,139,250,.2) !important;border-radius:8px !important;background:rgba(167,139,250,.03)}
+
+  /* === 4) 수금 — 미수금 비중 탭 숨김 + 수금 등록 사이즈 정리 === */
+  #page-recv .tabs button:nth-child(4){display:none !important}
+  #page-recv .tabs button:nth-child(1){flex:2 1 0 !important}
+  #page-recv .tabs button:nth-child(2){flex:1.5 1 0 !important}
+  #page-recv .tabs button:nth-child(3){flex:1.5 1 0 !important}
+  /* 수금 등록 폼 — 카드 + 날짜·금액 사이즈 */
+  #recv-tab-pay .card{padding:14px 14px !important}
+  #recv-tab-pay .form-row.cols-2{grid-template-columns:1fr 1fr !important;gap:10px !important}
+  #recv-tab-pay .form-row.cols-2 .form-group{margin-bottom:0 !important}
+  #recv-tab-pay #pay-date,#recv-tab-pay #pay-amount{font-size:15px !important;padding:9px 11px !important}
+  #recv-tab-pay #pay-note{font-size:15px !important;padding:9px 11px !important}
+  #recv-tab-pay .form-label{font-size:11.5px !important;margin-bottom:4px !important}
+  #recv-tab-pay .btn-full{margin-top:12px !important;padding:12px !important;font-size:14px !important}
+
+  /* === 5) 화장품 기초관리 — PC 전용 안내 === */
+  #page-master::before{content:'기초 관리는 PC에서만 이용 가능합니다';display:block;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fde68a;padding:14px 16px;border-radius:10px;font-size:13px;font-weight:700;text-align:center;margin-bottom:12px;line-height:1.5;position:relative;z-index:5}
+  /* 기초관리 입력 폼/표 흐림 + 비활성 */
+  #page-master > *{opacity:.3;pointer-events:none}
+
+  /* === 6) 의료장비 영업관리 동일 적용 === */
+  #page-med-sales .tabs{display:flex !important;gap:4px !important;width:100%}
+  #page-med-sales .tabs .tab{flex:1 1 0 !important;min-width:0 !important;padding:10px 6px !important;font-size:12.5px !important;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #page-med-sales .form-row{margin-bottom:8px !important}
+  #page-med-sales .form-group{margin-bottom:8px !important}
+  /* 의료장비 수금 비중 탭도 숨김 (있다면) */
+  #page-med-recv .tabs button[onclick*="pie"]{display:none !important}
+
+  /* === 7) 의료장비 기초관리 — PC 전용 안내 === */
+  #page-med-master::before{content:'기초 관리는 PC에서만 이용 가능합니다';display:block;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#fde68a;padding:14px 16px;border-radius:10px;font-size:13px;font-weight:700;text-align:center;margin-bottom:12px;line-height:1.5;position:relative;z-index:5}
+  #page-med-master > *{opacity:.3;pointer-events:none}
+
+  /* === 라이트 모드 PC 전용 안내 === */
+  html.light #page-master::before,html.light #page-med-master::before{background:#fef3c7;border-color:#f59e0b;color:#92400e}
+
+  /* === 공통 — 짤리는 텍스트/버튼 방지 === */
+  .kpi-row,.kpi-row.three,.kpi-row.two{max-width:100% !important}
+  .kpi-label,.kpi-sub{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .kpi-value{overflow:hidden;text-overflow:ellipsis}
+  .card-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tab{overflow:hidden;text-overflow:ellipsis}
+
+  /* === 의료장비 리포트 KPI 행 2번째 (kpi-row.two) === */
+  #page-med-report .kpi-row.two{grid-template-columns:1fr 1fr !important;gap:8px !important}
+
+  /* === 거래처 원장 액션 버튼 그룹 — 4개 버튼 2x2 wrap === */
+  #recv-tab-ledger .btn-group{flex-wrap:wrap !important;gap:6px !important}
+  #recv-tab-ledger .btn-group .btn{flex:1 1 calc(50% - 3px) !important;padding:9px 8px !important;font-size:12px !important}
+  #recv-tab-ledger .selcount{flex-basis:100% !important;font-size:11.5px !important;margin:0 !important}
+
+  /* === 입고 카트/출고 카트 — 카드 패딩 정리 === */
+  #in-cart-section .card,#out-cart-section .card{padding:12px !important}
+  #in-cart-section .btn-group,#out-cart-section .btn-group{flex-wrap:wrap !important;gap:6px}
+  #in-cart-section .btn-group .btn,#out-cart-section .btn-group .btn{flex:1 1 calc(50% - 3px) !important;font-size:12.5px !important}
+}
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
 .mr-cmt .time{margin-right:0}
@@ -13123,6 +13213,11 @@ function mobNavTo(page, tab){
     }
     setTimeout(()=>mrSwitchTab(tab, document.querySelector(`#nav-menu-report .nav-item:nth-child(${({'report':1,'cases':2,'calendar':3,'master':4})[tab]||1})`)), 50);
   } else if(page==='mso'){
+    // 모바일에서 기초관리는 PC 전용
+    if(tab==='master' && mrIsMobile && mrIsMobile()){
+      showToast('기초 관리는 PC에서 사용해주세요');
+      return;
+    }
     // 통합관리 페이지 — 현재 선택된 카테고리(cosm/med)에 맞춰 navigate
     if(typeof navigate!=='function') return;
     const cat = (typeof currentCat==='string') ? currentCat : 'cosm';
@@ -13237,9 +13332,9 @@ window.addEventListener('DOMContentLoaded', async ()=>{
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>
         수금 현황
       </button>
-      <button class="mh-li" data-mso="master" onclick="mobNavTo('mso','master')">
+      <button class="mh-li dis" onclick="showToast('기초 관리는 PC에서 사용해주세요')">
         <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg></span>
-        기초 관리
+        기초 관리 <span class="pc-only">PC 전용</span>
       </button>
     </div>
 
