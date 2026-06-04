@@ -2430,11 +2430,17 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
     <div class="nav-item" onclick="navigate('stock',this)">
       <span class="menu-label" id="menu-cosm-1">영업 관리</span>
     </div>
+    <div class="nav-item" onclick="navigate('inventory',this)">
+      <span class="menu-label" id="menu-cosm-2">잔여재고 현황</span>
+    </div>
+    <div class="nav-item" onclick="navigate('low-stock',this)">
+      <span class="menu-label" id="menu-cosm-3">재고 부족 품목</span>
+    </div>
     <div class="nav-item" onclick="navigate('recv',this)">
-      <span class="menu-label" id="menu-cosm-2">수금 현황</span>
+      <span class="menu-label" id="menu-cosm-4">수금 현황</span>
     </div>
     <div class="nav-item" onclick="navigate('master',this)">
-      <span class="menu-label" id="menu-cosm-3">기초 관리</span>
+      <span class="menu-label" id="menu-cosm-5">기초 관리</span>
     </div>
   </div>
 
@@ -3239,9 +3245,9 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
     <div class="kpi"><div class="kpi-label">이번달 평균 마진율</div>
       <div class="kpi-value" id="kpi-margin">0%</div>
       <div class="kpi-sub" id="kpi-margin-sub"></div></div>
-    <div class="kpi kpi-clickable" onclick="openLowDetail()"><span class="kpi-go">›</span><div class="kpi-label">재고 부족 품목</div>
+    <div class="kpi kpi-clickable" onclick="openLowDetail()"><span class="kpi-go">›</span><div class="kpi-label">재고 현황</div>
       <div class="kpi-value" id="kpi-low">0개</div>
-      <div class="kpi-sub">최소 재고 미달</div></div>
+      <div class="kpi-sub">재고 부족 품목</div></div>
   </div>
 
 
@@ -3290,6 +3296,58 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
     <table>
       <thead><tr><th>제품명</th><th>제품군</th><th>현재고</th><th>최소재고</th><th>부족수량</th><th>상태</th></tr></thead>
       <tbody id="ld-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════ 잔여재고 현황 (메뉴 페이지) ════ -->
+<div id="page-inventory" class="page" style="display:none">
+  <div class="page-title">잔여재고 현황</div>
+  <div class="page-sub">제품별 현재 재고 · 최소재고 비교 · 충족률</div>
+  <div class="kpi-row three" style="margin-bottom:14px">
+    <div class="kpi"><div class="kpi-label">전체 품목</div><div class="kpi-value" id="inv-kpi-total">0개</div><div class="kpi-sub">등록 제품 수</div></div>
+    <div class="kpi"><div class="kpi-label">총 재고 수량</div><div class="kpi-value accent" id="inv-kpi-stock">0</div><div class="kpi-sub">잔여 수량 합계</div></div>
+    <div class="kpi"><div class="kpi-label">평균 충족률</div><div class="kpi-value" id="inv-kpi-rate">0%</div><div class="kpi-sub">현재고 ÷ 최소재고</div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-title">필터 · 정렬</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:6px 0">
+      <input type="text" id="inv-search" placeholder="제품명 검색" oninput="renderInventoryPage()" style="flex:1;min-width:140px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:13px">
+      <select id="inv-filter" onchange="renderInventoryPage()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:13px">
+        <option value="all">전체</option>
+        <option value="ok">충분</option>
+        <option value="low">부족</option>
+        <option value="out">품절</option>
+      </select>
+      <select id="inv-sort" onchange="renderInventoryPage()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:13px">
+        <option value="stock-asc">재고 적은순</option>
+        <option value="stock-desc">재고 많은순</option>
+        <option value="name">제품명 가나다순</option>
+        <option value="rate-asc">충족률 낮은순</option>
+      </select>
+    </div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>제품명</th><th>제품군</th><th class="num">현재고</th><th class="num">최소재고</th><th class="num">충족률</th><th>상태</th></tr></thead>
+      <tbody id="inv-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════ 재고 부족 품목 (메뉴 페이지) ════ -->
+<div id="page-low-stock" class="page" style="display:none">
+  <div class="page-title">재고 부족 품목</div>
+  <div class="page-sub" id="ls-sub">최소재고에 미달한 제품 · 발주 검토 필요</div>
+  <div class="kpi-row three" style="margin-bottom:14px">
+    <div class="kpi"><div class="kpi-label">부족 품목</div><div class="kpi-value accent" id="ls-kpi-count">0개</div><div class="kpi-sub">최소재고 미달</div></div>
+    <div class="kpi"><div class="kpi-label">품절 품목</div><div class="kpi-value" id="ls-kpi-out" style="color:#ef4444">0개</div><div class="kpi-sub">잔여재고 = 0</div></div>
+    <div class="kpi"><div class="kpi-label">총 부족 수량</div><div class="kpi-value" id="ls-kpi-short">0</div><div class="kpi-sub">합산 부족 수량</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>제품명</th><th>제품군</th><th class="num">현재고</th><th class="num">최소재고</th><th class="num">부족수량</th><th>상태</th></tr></thead>
+      <tbody id="ls-tbody"></tbody>
     </table>
   </div>
 </div>
@@ -4389,6 +4447,8 @@ function navigate(page, el) {
   if(page==='stock')      initStockPage();
   if(page==='recv')       { initRecvPage(); setTimeout(()=>initRecvPie(),100); }
   if(page==='master')     initMasterPage();
+  if(page==='inventory')  initInventoryPage();
+  if(page==='low-stock')  initLowStockPage();
   if(page==='med-report') initMedReport();
   if(page==='med-sales')  initMedSales();
   if(page==='med-recv')   initMedRecv();
@@ -4808,6 +4868,108 @@ async function openLowDetail() {
     return `<tr><td>${p.name||p.id}</td><td>${p.product_group||'—'}</td><td>${cur}</td><td>${p.min_stock||0}</td><td>${short}</td><td><span class="badge ${cls}">${cur<=0?'품절':'부족'}</span></td></tr>`;
   }).join('');
   window.scrollTo(0,0);
+}
+
+// ── 잔여재고 현황 (메뉴 페이지) ──────────────
+let _INV_CACHE = null;
+async function initInventoryPage(){
+  const tb = document.getElementById('inv-tbody');
+  if(tb) tb.innerHTML = emptyRow(6, '불러오는 중...');
+  const [prods, sins] = await Promise.all([
+    dbQuery('products','?select=id,name,product_group,min_stock'),
+    dbQuery('stock_in','?select=product_id,remaining_qty')
+  ]);
+  const sm = {};
+  (sins||[]).forEach(r => sm[r.product_id] = (sm[r.product_id]||0) + (r.remaining_qty||0));
+  _INV_CACHE = (prods||[]).map(p => ({
+    id: p.id, name: p.name || '(이름 없음)', group: p.product_group || '—',
+    cur: sm[p.id] || 0, min: p.min_stock || 0
+  }));
+  // KPI
+  const total = _INV_CACHE.length;
+  const totalStock = _INV_CACHE.reduce((a,p)=>a+p.cur, 0);
+  const rates = _INV_CACHE.filter(p=>p.min>0).map(p=>Math.min(p.cur/p.min, 99));
+  const avgRate = rates.length ? Math.round(rates.reduce((a,b)=>a+b,0)/rates.length*100) : 0;
+  document.getElementById('inv-kpi-total').textContent = total + '개';
+  document.getElementById('inv-kpi-stock').textContent = totalStock.toLocaleString();
+  document.getElementById('inv-kpi-rate').textContent = avgRate + '%';
+  renderInventoryPage();
+}
+function renderInventoryPage(){
+  if(!_INV_CACHE) return;
+  const q = (document.getElementById('inv-search')?.value||'').trim().toLowerCase();
+  const filter = document.getElementById('inv-filter')?.value || 'all';
+  const sortBy = document.getElementById('inv-sort')?.value || 'stock-asc';
+  let rows = _INV_CACHE.slice();
+  if(q) rows = rows.filter(p => p.name.toLowerCase().includes(q) || p.group.toLowerCase().includes(q));
+  if(filter !== 'all'){
+    rows = rows.filter(p => {
+      if(filter==='out') return p.cur <= 0;
+      if(filter==='low') return p.cur > 0 && p.cur < p.min;
+      if(filter==='ok')  return p.cur >= p.min;
+      return true;
+    });
+  }
+  const sortFn = {
+    'stock-asc':  (a,b)=>a.cur-b.cur,
+    'stock-desc': (a,b)=>b.cur-a.cur,
+    'name':       (a,b)=>a.name.localeCompare(b.name,'ko'),
+    'rate-asc':   (a,b)=>((a.min?a.cur/a.min:99))-((b.min?b.cur/b.min:99))
+  }[sortBy];
+  rows.sort(sortFn);
+  const tb = document.getElementById('inv-tbody');
+  if(!rows.length){ tb.innerHTML = emptyRow(6, '검색 결과가 없습니다'); return; }
+  tb.innerHTML = rows.map(p => {
+    const rate = p.min > 0 ? Math.round(p.cur/p.min*100) : null;
+    let badge, badgeCls;
+    if(p.cur <= 0){ badge = '품절'; badgeCls = 'badge-red'; }
+    else if(p.cur < p.min){ badge = '부족'; badgeCls = 'badge-amber'; }
+    else { badge = '충분'; badgeCls = 'badge-green'; }
+    return `<tr>
+      <td>${p.name}</td>
+      <td>${p.group}</td>
+      <td class="num">${p.cur.toLocaleString()}</td>
+      <td class="num">${p.min ? p.min.toLocaleString() : '—'}</td>
+      <td class="num">${rate !== null ? rate + '%' : '—'}</td>
+      <td><span class="badge ${badgeCls}">${badge}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── 재고 부족 품목 (메뉴 페이지) ──────────────
+async function initLowStockPage(){
+  const tb = document.getElementById('ls-tbody');
+  if(tb) tb.innerHTML = emptyRow(6, '불러오는 중...');
+  const [prods, sins] = await Promise.all([
+    dbQuery('products','?select=id,name,product_group,min_stock'),
+    dbQuery('stock_in','?select=product_id,remaining_qty')
+  ]);
+  const sm = {};
+  (sins||[]).forEach(r => sm[r.product_id] = (sm[r.product_id]||0) + (r.remaining_qty||0));
+  const low = (prods||[])
+    .filter(p => (sm[p.id]||0) < (p.min_stock||0))
+    .sort((a,b) => (sm[a.id]||0) - (sm[b.id]||0));
+  const outCount = low.filter(p => (sm[p.id]||0) <= 0).length;
+  const totalShort = low.reduce((a,p) => a + ((p.min_stock||0) - (sm[p.id]||0)), 0);
+  document.getElementById('ls-kpi-count').textContent = low.length + '개';
+  document.getElementById('ls-kpi-out').textContent = outCount + '개';
+  document.getElementById('ls-kpi-short').textContent = totalShort.toLocaleString();
+  document.getElementById('ls-sub').textContent = `최소재고에 미달한 제품 · 발주 검토 필요 · ${low.length}건`;
+  if(!low.length){ tb.innerHTML = emptyRow(6, '재고 부족 품목이 없습니다 ✨'); return; }
+  tb.innerHTML = low.map(p => {
+    const cur = sm[p.id] || 0;
+    const short = (p.min_stock||0) - cur;
+    const badge = cur <= 0 ? '품절' : '부족';
+    const badgeCls = cur <= 0 ? 'badge-red' : 'badge-amber';
+    return `<tr>
+      <td>${p.name || '(이름 없음)'}</td>
+      <td>${p.product_group || '—'}</td>
+      <td class="num">${cur.toLocaleString()}</td>
+      <td class="num">${(p.min_stock||0).toLocaleString()}</td>
+      <td class="num">${short.toLocaleString()}</td>
+      <td><span class="badge ${badgeCls}">${badge}</span></td>
+    </tr>`;
+  }).join('');
 }
 
 // ── KPI 박스 드릴다운: 미수금 상세 ──────────────
