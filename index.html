@@ -2203,6 +2203,72 @@ html.light .mr-reply-banner b{color:#1e293b}
   #in-cart-section .btn-group,#out-cart-section .btn-group{flex-wrap:wrap !important;gap:6px}
   #in-cart-section .btn-group .btn,#out-cart-section .btn-group .btn{flex:1 1 calc(50% - 3px) !important;font-size:12.5px !important}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 5 — 정밀 비율 조정 (사용자 피드백)
+   - 리포트 엑셀 다운로드 카드 빈 공간 제거
+   - 폼 라벨/인풋 컴팩트
+   - 탭 클릭 영역 컴팩트
+   - 모바일 화면 전체 활용
+═══════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* === 리포트 엑셀 다운로드 카드 빈 공간 제거 (column flex에서 title div가 flex:1로 공간 잡던 버그) === */
+  #page-dashboard > .card:first-child,#page-med-report > .card:first-child{padding:12px 14px !important;gap:6px !important}
+  #page-dashboard > .card:first-child > div:first-child,#page-med-report > .card:first-child > div:first-child{flex:0 0 auto !important;width:100%;min-width:0}
+  #page-dashboard > .card:first-child .card-title,#page-med-report > .card:first-child .card-title{font-size:13.5px !important;margin-bottom:2px !important}
+  #page-dashboard > .card:first-child .card-sub,#page-med-report > .card:first-child .card-sub{font-size:11px !important;margin-bottom:0 !important}
+  #page-dashboard > .card:first-child .form-group,#page-med-report > .card:first-child .form-group{margin-bottom:0 !important;flex:0 0 auto !important;width:100%}
+  #page-dashboard > .card:first-child .form-label,#page-med-report > .card:first-child .form-label{font-size:11px !important;margin-bottom:3px !important}
+  #page-dashboard > .card:first-child input,#page-med-report > .card:first-child input{padding:9px 12px !important;font-size:14px !important}
+  #page-dashboard > .card:first-child .btn,#page-med-report > .card:first-child .btn{margin-top:4px !important;padding:10px !important;font-size:13px !important}
+
+  /* === 폼 라벨/인풋 더 컴팩트 (영업관리 + 수금 + 마스터) === */
+  #page-stock .form-group,#page-med-sales .form-group,#page-recv .form-group,#page-master .form-group,#page-med-master .form-group{margin-bottom:8px !important}
+  #page-stock .form-label,#page-med-sales .form-label,#page-recv .form-label,#page-master .form-label,#page-med-master .form-label{font-size:11.5px !important;margin-bottom:3px !important;font-weight:600}
+  #page-stock .form-control,#page-med-sales .form-control,#page-recv .form-control,#page-master .form-control,#page-med-master .form-control{padding:9px 11px !important;box-sizing:border-box !important}
+  #page-stock .card,#page-med-sales .card,#page-recv .card,#page-master .card,#page-med-master .card{padding:12px !important;margin-bottom:10px !important}
+  #page-stock .divider,#page-med-sales .divider{margin:8px 0 !important}
+
+  /* 품목 추가 등 섹션 헤더 (입고 폼 안 텍스트) */
+  #page-stock div[style*="font-size:13px"]{font-size:12px !important;margin-bottom:6px !important}
+
+  /* === 탭 클릭 영역 컴팩트 — 전 페이지 === */
+  #page-stock .tabs,#page-med-sales .tabs,#page-recv .tabs,#page-med-recv .tabs,#page-master .tabs,#page-med-master .tabs{margin-bottom:8px !important;padding:0 !important;gap:3px !important}
+  #page-stock .tab,#page-med-sales .tab,#page-recv .tab,#page-med-recv .tab,#page-master .tab,#page-med-master .tab{padding:7px 4px !important;font-size:12px !important;font-weight:700 !important;line-height:1.2 !important}
+
+  /* === 수금 등록 — 2열 강제 (수금일/수금액 겹침 방지) === */
+  #recv-tab-pay .form-row.cols-2{display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important;margin-bottom:8px !important}
+  #recv-tab-pay .form-row.cols-2 .form-group{margin-bottom:0 !important;width:100% !important;min-width:0}
+  #recv-tab-pay .form-control{width:100% !important;max-width:100% !important;box-sizing:border-box !important;font-size:14px !important;padding:9px 11px !important}
+  #recv-tab-pay #pay-date,#recv-tab-pay #pay-amount,#recv-tab-pay #pay-note{width:100% !important;max-width:100% !important}
+
+  /* === KPI 컴팩트 (리포트 화면 짧게) === */
+  #page-dashboard .kpi-row,#page-med-report .kpi-row{gap:6px !important;margin-bottom:8px !important}
+  #page-dashboard .kpi,#page-med-report .kpi{padding:8px 11px !important}
+  #page-dashboard .kpi-value,#page-med-report .kpi-value{font-size:16px !important;margin:3px 0 1px !important}
+  #page-dashboard .kpi-label,#page-med-report .kpi-label{font-size:10.5px !important;letter-spacing:0}
+  #page-dashboard .kpi-sub,#page-med-report .kpi-sub{font-size:9px !important}
+
+  /* === 차트 카드 컴팩트 === */
+  #page-dashboard .chart-card,#page-med-report .chart-card{padding:10px 12px !important;margin-bottom:8px !important}
+  #page-dashboard .chart-card .card-title,#page-med-report .chart-card .card-title{font-size:12.5px !important;margin-bottom:4px !important}
+  #page-dashboard [id^="chart-"],#page-med-report [id^="chart-"]{height:180px !important}
+
+  /* === 카드 일반 — 마진 축소 === */
+  .page > .card{margin-bottom:10px !important}
+
+  /* === info-box 컴팩트 === */
+  .info-box{font-size:11.5px !important;padding:8px 10px !important;line-height:1.45 !important;margin-bottom:8px !important}
+
+  /* === 등록된 ~ 수정 섹션 헤더 컴팩트 === */
+  div[style*="font-size:15px"]:not(.card-title){font-size:13px !important;margin:12px 0 8px !important;font-weight:700}
+
+  /* === 페이지 자체 패딩 === */
+  #page-dashboard,#page-stock,#page-med-report,#page-med-sales,#page-recv,#page-med-recv{padding-top:6px !important}
+
+  /* === 리포트 KPI 2x2 grid 보장 === */
+  #page-dashboard .kpi-row:not(.three):not(.two){grid-template-columns:1fr 1fr !important}
+}
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
 .mr-cmt .time{margin-right:0}
