@@ -8667,6 +8667,13 @@ function showAppScreen(){
   if(login) login.style.display = 'none';
   if(appShell) appShell.style.display = '';
   document.body.style.overflow = '';
+  // 🏠 로그인 후 항상 홈 화면(두 카드)부터 표시
+  const root = document.getElementById('app-root');
+  if(root){
+    root.classList.add('home-mode');
+    root.setAttribute('data-dir', 'right');
+  }
+  try{ updateHomeClock(); }catch(e){}
   // 햄버거 사용자 정보 갱신
   try{ mobUpdateUserInfo(); }catch(e){}
   // 권한별 메뉴 가드 적용
