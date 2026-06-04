@@ -8712,7 +8712,7 @@ function sbSubscribeCases(){
 // 로그인 시스템 — 자체 사번/비밀번호 인증
 // ═══════════════════════════════════════════════════════════════
 const AUTH_SESSION_KEY = 'thesc-mso-session-v1';
-const AUTH_SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24시간
+const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30일 (모바일 편의성)
 const AUTH_DEFAULT_PW = '1234'; // 초기 비밀번호
 
 let CURRENT_USER = null; // {id, name, position, role}
@@ -8746,8 +8746,13 @@ async function _authVerify(password, storedHash){
 function _authSaveSession(user){
   const session = {
     userId: user.id,
+    // 사용자 정보 캐시 — MR_EMPLOYEES 미로드 시에도 즉시 복원 가능
+    cachedName: user.name || '',
+    cachedPosition: user.position || '',
+    cachedRole: user.role || 'staff',
     token: (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
-    expiresAt: Date.now() + AUTH_SESSION_DURATION_MS
+    expiresAt: Date.now() + AUTH_SESSION_DURATION_MS,
+    savedAt: Date.now()
   };
   localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
   CURRENT_USER = {id:user.id, name:user.name, position:user.position||'', role:user.role||'staff'};
@@ -8762,14 +8767,26 @@ function authLoadSession(){
       localStorage.removeItem(AUTH_SESSION_KEY);
       return null;
     }
-    const u = MR_EMPLOYEES.find(e=>e.id===session.userId);
-    if(!u || u.active===false){
-      localStorage.removeItem(AUTH_SESSION_KEY);
-      return null;
+    // MR_EMPLOYEES가 비어있어도(오프라인/네트워크 지연) 캐시된 정보로 즉시 복원
+    let u = null;
+    if(Array.isArray(MR_EMPLOYEES) && MR_EMPLOYEES.length){
+      u = MR_EMPLOYEES.find(e=>e.id===session.userId);
+      if(u && u.active === false){
+        // 명시적으로 비활성화된 사용자만 로그아웃
+        localStorage.removeItem(AUTH_SESSION_KEY);
+        return null;
+      }
     }
-    CURRENT_USER = {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'};
+    // u가 있으면 최신 정보, 없으면 캐시된 정보 사용
+    CURRENT_USER = u
+      ? {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'}
+      : {id:session.userId, name:session.cachedName||'사용자', position:session.cachedPosition||'', role:session.cachedRole||'staff'};
+    // 슬라이딩 윈도우: 접속 때마다 세션 만료시간 갱신
+    session.expiresAt = Date.now() + AUTH_SESSION_DURATION_MS;
+    session.savedAt = Date.now();
+    try{ localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session)); }catch(_){}
     return CURRENT_USER;
-  }catch(e){ return null; }
+  }catch(e){ console.warn('[authLoadSession]', e); return null; }
 }
 
 function authLogout(){
@@ -9309,10 +9326,7 @@ function authBootstrap(){
   const user = authLoadSession();
   if(user){
     showAppScreen();
-    // 모바일은 세션 복원 시에도 자동으로 MSO 리포트
-    if(typeof mrIsMobile==='function' && mrIsMobile()){
-      authNavigateToReport();
-    }
+    // 세션 복원 시 항상 홈 화면 유지 — 사용자가 직접 선택
   } else {
     showLoginScreen();
   }
@@ -12878,57 +12892,33 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
     if(document.visibilityState === 'visible') checkAppVersion(false);
   });
 
-  // 1) Service Worker registration + 강력한 자동 갱신
+  // 1) Service Worker registration — 강제 새로고침 없는 부드러운 업데이트
+  // 정책:
+  //  - 새 SW가 준비되면 백그라운드에서 silently 활성화
+  //  - 페이지 강제 새로고침 X (로그인/입력 중 끊김 방지)
+  //  - 새 버전 적용은 사용자가 다음에 앱을 새로 열 때 자연스럽게 반영
+  //  - version.json 체크 + 토스트로만 사용자에게 안내
   if ('serviceWorker' in navigator) {
-    // controllerchange = 새 SW가 활성화됨 → 즉시 새로고침
-    let _reloadOnce = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (_reloadOnce) return;
-      _reloadOnce = true;
-      console.log('[PWA] 새 SW 활성화 — 새로고침');
-      location.reload();
-    });
-
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
-        // 새 버전 즉시 적용
+        // 새 SW 발견 시 활성화만 시켜두고 reload는 안 함 (다음 로드 때 자연스럽게 적용)
         reg.addEventListener('updatefound', () => {
           const sw = reg.installing;
           if (!sw) return;
           sw.addEventListener('statechange', () => {
             if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('[PWA] 새 버전 발견 — SKIP_WAITING 메시지 전송');
               try { sw.postMessage('SKIP_WAITING'); } catch(_) {}
             }
           });
         });
-        // 페이지 로드마다 SW 업데이트 확인
+        // 페이지 로드 시 + 탭 복귀 시 SW 업데이트 확인 (활성화만, reload 없음)
         try { reg.update(); } catch(_) {}
-        // 탭이 다시 활성화될 때도 업데이트 체크
         document.addEventListener('visibilitychange', () => {
           if (document.visibilityState === 'visible') {
             try { reg.update(); } catch(_) {}
           }
         });
       }).catch((err) => console.warn('[PWA] SW 등록 실패:', err));
-
-      // standalone 모드(PWA) — 5분 이상 백그라운드 후 복귀하면 강제 새로고침
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-      if (isStandalone) {
-        let _lastActive = Date.now();
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState === 'visible') {
-            const gap = Date.now() - _lastActive;
-            if (gap > 5 * 60 * 1000) { // 5분 이상
-              console.log('[PWA] 백그라운드 5분+ → 새로고침');
-              location.reload();
-            }
-            _lastActive = Date.now();
-          } else {
-            _lastActive = Date.now();
-          }
-        });
-      }
     });
   }
 
