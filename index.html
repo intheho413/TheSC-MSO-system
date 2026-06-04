@@ -1969,6 +1969,72 @@ html.light .mr-reply-banner b{color:#1e293b}
   /* 의료장비 카테고리 페이지 — 영업 관리 상세/수금 상세도 동일 적용 */
   #page-med-sales-detail .form-row,#page-med-recv-detail .form-row{grid-template-columns:1fr !important}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 2 — 수금 + 잔여재고 디테일 모바일 최적화
+   대상: page-recv, page-med-recv, page-low-detail (드릴다운)
+═══════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* 수금 페이지 탭 4개 — 가로 스크롤 (4개라 한 줄에 안 들어감) */
+  #page-recv .tabs,#page-med-recv .tabs{overflow-x:auto !important;-webkit-overflow-scrolling:touch;flex-wrap:nowrap !important;padding-bottom:4px;display:flex}
+  #page-recv .tabs::-webkit-scrollbar,#page-med-recv .tabs::-webkit-scrollbar{height:2px}
+  #page-recv .tab,#page-med-recv .tab{flex:0 0 auto !important;min-width:max-content !important;padding:9px 14px !important;font-size:12.5px !important;white-space:nowrap}
+
+  /* 수금 KPI 단일 카드 풀폭 */
+  #page-recv .kpi-row,#page-med-recv .kpi-row{max-width:100% !important;margin-bottom:14px !important}
+  #page-recv .kpi-row .kpi,#page-med-recv .kpi-row .kpi{padding:12px 14px !important}
+  #page-recv .kpi-value,#page-med-recv .kpi-value{font-size:22px !important}
+
+  /* 거래처 원장 액션 버튼 그룹 (엑셀/저장/삭제) */
+  #page-recv .btn-group,#page-med-recv .btn-group{flex-wrap:wrap !important;gap:6px !important;align-items:stretch !important}
+  #page-recv .btn-group .btn,#page-med-recv .btn-group .btn{flex:1 1 calc(50% - 3px) !important;min-width:0 !important;padding:9px 10px !important;font-size:12.5px !important;white-space:nowrap}
+  #page-recv .btn-group .selcount,#page-med-recv .btn-group .selcount{flex-basis:100% !important;text-align:left !important;font-size:11.5px !important;margin:0 0 4px 0 !important}
+
+  /* 미수금 비중 도넛 차트 모바일 높이 */
+  #chart-recv-pie,#chart-med-recv-pie{height:320px !important}
+
+  /* 재고 현황 드릴다운 탭 (잔여재고/재고부족) */
+  #page-low-detail .ld-tabs{overflow-x:auto !important;-webkit-overflow-scrolling:touch;flex-wrap:nowrap !important;padding-bottom:0;margin-bottom:10px !important}
+  #page-low-detail .ld-tab{flex:0 0 auto !important;padding:10px 14px !important;font-size:12.5px !important;white-space:nowrap}
+  #page-low-detail .ld-badge{font-size:10px !important}
+
+  /* 재고 현황 — 검색/필터/정렬 필드 세로 스택 (이미 한 줄에 가로 배치였음) */
+  #page-low-detail #ld-inv-search{font-size:16px !important;padding:10px 12px !important;flex:1 1 100% !important;min-width:0 !important}
+  #page-low-detail #ld-inv-filter,#page-low-detail #ld-inv-sort{flex:1 1 calc(50% - 5px) !important;font-size:13px !important;padding:9px 10px !important}
+  #page-low-detail .card div[style*="display:flex"]{flex-wrap:wrap !important;gap:8px !important}
+
+  /* 수금 등록 폼 — 거래처 선택 풀폭 */
+  #pay-client,#ledger-client{max-width:100% !important;width:100% !important;font-size:16px !important}
+
+  /* 미수금 정보 박스 강조 */
+  #pay-recv-info{font-size:12px !important;padding:10px 12px !important;line-height:1.5;margin-bottom:12px !important}
+
+  /* 페이지 섹션 제목 (전체 출고 내역 같은) */
+  #page-stock div[style*="font-size:15px"]:not(.card-title),
+  #page-med-sales div[style*="font-size:15px"]:not(.card-title){font-size:14px !important;margin:14px 0 8px !important}
+
+  /* 백버튼 (← 리포트로) 모바일 명확화 */
+  #page-low-detail .detail-back,
+  #page-recv-detail .detail-back,
+  #page-sales-detail .detail-back,
+  #page-med-sales-detail .detail-back,
+  #page-med-recv-detail .detail-back{background:rgba(255,255,255,.06) !important;border-radius:8px !important;border:1px solid rgba(255,255,255,.08) !important;color:#cbd5e1 !important;font-weight:700 !important}
+
+  /* 미수금/수금 상세 페이지 KPI도 모바일 컴팩트 */
+  #page-recv-detail .kpi-row,#page-med-recv-detail .kpi-row{grid-template-columns:1fr 1fr 1fr !important;gap:8px !important}
+  #page-recv-detail .kpi-row .kpi,#page-med-recv-detail .kpi-row .kpi{padding:10px 8px !important}
+  #page-recv-detail .kpi-row .kpi-value,#page-med-recv-detail .kpi-row .kpi-value{font-size:16px !important}
+
+  /* 화장품/의료장비 거래처별 카드 — 모바일 풀폭 */
+  #page-recv-detail .card,#page-med-recv-detail .card{padding:12px !important}
+
+  /* 라이트 모드 백버튼 */
+  html.light #page-low-detail .detail-back,
+  html.light #page-recv-detail .detail-back,
+  html.light #page-sales-detail .detail-back,
+  html.light #page-med-sales-detail .detail-back,
+  html.light #page-med-recv-detail .detail-back{background:#f1f5f9 !important;color:#475569 !important;border-color:#e2e8f0 !important}
+}
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
 .mr-cmt .time{margin-right:0}
