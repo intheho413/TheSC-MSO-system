@@ -1392,6 +1392,29 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
   /* 안건 관리 페이지 — FAB 아래 도트 여백 확보 */
   #mr-tab-cases{padding-bottom:40px}
 
+  /* ── 안건 관리 모바일 여백 축소 (콘텐츠 가시성 향상) ── */
+  #mr-tab-cases{padding-left:0 !important;padding-right:0 !important;margin-left:-12px;margin-right:-12px}
+  #mr-tab-cases .mr-row.b3-3col{padding:0}
+  #mr-tab-cases .mr-panel{border-left:none;border-right:none;border-radius:0}
+  #mr-tab-cases .mr-panel-body{padding:8px 8px !important}
+  #mr-tab-cases .mr-panel-head{padding:9px 12px}
+  /* 카드 자체 패딩 축소 + 간격 조밀화 */
+  #mr-tab-cases .mr-case{padding:8px 26px 8px 10px !important;margin-bottom:6px}
+  #mr-tab-cases .mr-case-del{top:4px !important;right:4px !important}
+  /* 코멘트 카드 패딩 축소 */
+  #mr-tab-cases .mr-cmt{padding:8px 10px !important;margin-bottom:5px}
+  /* 상세 패널 — 내부 여백 축소 */
+  #mr-tab-cases .mr-detail{padding-left:10px !important;padding-right:10px !important}
+  #mr-tab-cases .mr-detail .dh{padding:12px 0 8px}
+  /* 코멘트 입력창 여백 축소 */
+  #mr-tab-cases .mr-cmtinput{padding:8px 10px}
+  /* 검색바 + 정렬 옵션 축소 */
+  #mr-tab-cases .mr-search,#mr-tab-cases .mr-sort-row{margin:6px 8px}
+  /* 코멘트 스레드 — 최대 가로 활용 */
+  #mr-tab-cases .mr-thread{padding:8px}
+  /* 모바일 뒤로가기 헤더 패딩 축소 */
+  #mr-tab-cases .mob-back-h{padding:9px 10px}
+
   /* ═══════════════════════
      4단계 — 캘린더 모바일
      ═══════════════════════ */
