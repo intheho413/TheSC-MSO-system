@@ -3309,15 +3309,15 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
 
   <!-- 탭 -->
   <div class="ld-tabs">
-    <button class="ld-tab active" data-tab="inv" onclick="ldSwitchTab('inv')">📦 잔여재고 현황</button>
-    <button class="ld-tab" data-tab="low" onclick="ldSwitchTab('low')">⚠️ 재고 부족 품목 <span class="ld-badge" id="ld-tab-low-count">0</span></button>
+    <button class="ld-tab active" data-tab="inv" onclick="ldSwitchTab('inv')">잔여재고 현황</button>
+    <button class="ld-tab" data-tab="low" onclick="ldSwitchTab('low')">재고 부족 품목 <span class="ld-badge" id="ld-tab-low-count">0</span></button>
   </div>
 
   <!-- 탭 1: 잔여재고 현황 -->
   <div class="ld-tab-body" id="ld-body-inv">
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:6px 0">
-        <input type="text" id="ld-inv-search" placeholder="🔍 제품명 / 제품군 검색" oninput="renderLdInventory()" style="flex:1;min-width:180px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:13px">
+        <input type="text" id="ld-inv-search" placeholder="제품명 / 제품군 검색" oninput="renderLdInventory()" style="flex:1;min-width:180px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:13px">
         <select id="ld-inv-filter" onchange="renderLdInventory()" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;padding:8px 12px;border-radius:8px;font-size:13px">
           <option value="all">전체 상태</option>
           <option value="ok">충분</option>
@@ -3328,13 +3328,12 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
           <option value="stock-asc">재고 적은순</option>
           <option value="stock-desc">재고 많은순</option>
           <option value="name">제품명 가나다순</option>
-          <option value="rate-asc">충족률 낮은순</option>
         </select>
       </div>
     </div>
     <div class="tbl-wrap">
       <table>
-        <thead><tr><th>제품명</th><th>제품군</th><th class="num">현재고</th><th class="num">최소재고</th><th class="num">충족률</th><th>상태</th></tr></thead>
+        <thead><tr><th>제품명</th><th>제품군</th><th class="num">현재고</th><th class="num">최소재고</th><th>상태</th></tr></thead>
         <tbody id="ld-inv-tbody"></tbody>
       </table>
     </div>
@@ -4908,14 +4907,12 @@ function renderLdInventory(){
   const sortFn = {
     'stock-asc':  (a,b)=>a.cur-b.cur,
     'stock-desc': (a,b)=>b.cur-a.cur,
-    'name':       (a,b)=>a.name.localeCompare(b.name,'ko'),
-    'rate-asc':   (a,b)=>((a.min?a.cur/a.min:99))-((b.min?b.cur/b.min:99))
-  }[sortBy];
+    'name':       (a,b)=>a.name.localeCompare(b.name,'ko')
+  }[sortBy] || ((a,b)=>a.cur-b.cur);
   rows.sort(sortFn);
   const tb = document.getElementById('ld-inv-tbody');
-  if(!rows.length){ tb.innerHTML = emptyRow(6, '검색 결과가 없습니다'); return; }
+  if(!rows.length){ tb.innerHTML = emptyRow(5, '검색 결과가 없습니다'); return; }
   tb.innerHTML = rows.map(p => {
-    const rate = p.min > 0 ? Math.round(p.cur/p.min*100) : null;
     let badge, badgeCls;
     if(p.cur <= 0){ badge = '품절'; badgeCls = 'badge-red'; }
     else if(p.cur < p.min){ badge = '부족'; badgeCls = 'badge-amber'; }
@@ -4925,7 +4922,6 @@ function renderLdInventory(){
       <td>${p.group}</td>
       <td class="num">${p.cur.toLocaleString()}</td>
       <td class="num">${p.min ? p.min.toLocaleString() : '—'}</td>
-      <td class="num">${rate !== null ? rate + '%' : '—'}</td>
       <td><span class="badge ${badgeCls}">${badge}</span></td>
     </tr>`;
   }).join('');
@@ -4935,7 +4931,7 @@ function renderLdLowStock(){
   if(!_LD_CACHE) return;
   const low = _LD_CACHE.filter(p => p.cur < p.min).sort((a,b)=>a.cur-b.cur);
   const tb = document.getElementById('ld-tbody');
-  if(!low.length){ tb.innerHTML = emptyRow(6, '재고 부족 품목이 없습니다 ✨'); return; }
+  if(!low.length){ tb.innerHTML = emptyRow(6, '재고 부족 품목이 없습니다'); return; }
   tb.innerHTML = low.map(p => {
     const short = p.min - p.cur;
     const badge = p.cur <= 0 ? '품절' : '부족';
