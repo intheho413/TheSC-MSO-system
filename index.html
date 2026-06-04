@@ -2327,8 +2327,8 @@ html.light .mr-reply-banner b{color:#1e293b}
   #page-med-report .form-row > *,#page-med-sales .form-row > *,#page-med-recv .form-row > *,#page-med-master .form-row > *{min-width:0 !important}
   #page-med-report .form-control,#page-med-sales .form-control,#page-med-recv .form-control,#page-med-master .form-control{width:100% !important;max-width:100% !important;min-width:0 !important;box-sizing:border-box !important}
 
-  /* === 카드 자체 박스 정리 — overflow 방지 + 패딩 일관 === */
-  .page .card{box-sizing:border-box !important;overflow:hidden}
+  /* === 카드 자체 박스 정리 — overflow visible (date input 잘림 방지) === */
+  .page .card{box-sizing:border-box !important;overflow:visible !important}
   .page .card .card-title{overflow:hidden;text-overflow:ellipsis}
 
   /* === select(드롭다운) min-width 0 === */
@@ -2345,6 +2345,86 @@ html.light .mr-reply-banner b{color:#1e293b}
 
   /* === 표 — wrapping 한도 === */
   .tbl-wrap{max-width:100% !important;box-sizing:border-box !important}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 7 — 박스 잘림 현상 완전 해결
+   - 카드 overflow:visible (기존 hidden이 input 끝 잘랐음)
+   - 페이지 레벨만 overflow-x:hidden (가로 스크롤 차단)
+   - 모든 input box-shadow/border 완전히 보이게
+═══════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* 페이지 레벨에서만 가로 스크롤 차단 */
+  .page{overflow-x:hidden !important;overflow-y:visible !important;box-sizing:border-box !important}
+
+  /* 카드 — overflow visible (내부 input border 보호) */
+  .page .card{overflow:visible !important}
+
+  /* 모든 input/select — 명시적 border-radius + visible 박스 */
+  .page input,.page select,.page textarea{
+    border-radius:8px !important;
+    box-sizing:border-box !important;
+    min-width:0 !important;
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  /* 날짜 input — iOS Safari 호환 + 박스 완전 표시 */
+  .page input[type="date"],.page input[type="datetime-local"]{
+    -webkit-appearance:none !important;
+    appearance:none !important;
+    border:1px solid rgba(255,255,255,.12) !important;
+    background:rgba(255,255,255,.04) !important;
+    color:#e9e7ff !important;
+    padding:10px 12px !important;
+    font-size:14px !important;
+    text-align:left !important;
+    border-radius:8px !important;
+    box-sizing:border-box !important;
+    height:auto !important;
+    line-height:1.4 !important;
+    display:block !important;
+    width:100% !important;
+  }
+  html.light .page input[type="date"],html.light .page input[type="datetime-local"]{
+    background:rgba(0,0,0,.02) !important;
+    border-color:rgba(0,0,0,.12) !important;
+    color:#1e293b !important;
+  }
+
+  /* 폼 그룹 — 내부 input이 가장자리에 닿지 않게 여유 */
+  .page .form-group{box-sizing:border-box !important;overflow:visible !important}
+
+  /* 카드 안 폼 영역 — 가장자리 1-2px 여유 */
+  .page .card > .form-group,
+  .page .card > .form-row{margin-left:0;margin-right:0;width:auto}
+
+  /* 리포트 첫 카드 (엑셀 다운로드) 특별 처리 — 박스 완전 표시 */
+  #page-dashboard > .card:first-child,#page-med-report > .card:first-child{
+    padding:14px !important;
+    overflow:visible !important;
+  }
+  #page-dashboard > .card:first-child .form-group,
+  #page-med-report > .card:first-child .form-group{
+    width:100% !important;
+    box-sizing:border-box !important;
+  }
+  #page-dashboard > .card:first-child input[type="date"],
+  #page-med-report > .card:first-child input[type="date"]{
+    width:100% !important;
+    box-sizing:border-box !important;
+  }
+
+  /* KPI 카드 — overflow visible로 그림자/border 보호 */
+  .kpi{overflow:visible !important}
+
+  /* 페이지 컨테이너 패딩 — 카드 가장자리 여유 확보 */
+  #page-dashboard,#page-stock,#page-med-report,#page-med-sales,
+  #page-recv,#page-med-recv{padding-left:10px !important;padding-right:10px !important}
+
+  /* 수금 등록 카드도 overflow visible */
+  #recv-tab-pay .card,#med-recv-tab-pay .card{overflow:visible !important;padding:14px !important}
+  #recv-tab-pay .form-row.cols-2 .form-group{overflow:visible !important}
 }
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */

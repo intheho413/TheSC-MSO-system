@@ -1,5 +1,5 @@
 {
-  "version": "2.0.29",
-  "buildTime": "2026-06-04T09:30:00Z",
-  "changelog": "Grid Cell Overflow 전역 픽스 — 날짜 잘림/수금일 겹침/의료기기 동일 해결"
+  "version": "2.0.30",
+  "buildTime": "2026-06-04T10:00:00Z",
+  "changelog": "박스 잘림 완전 해결 — 카드 overflow visible + iOS 날짜 input 명시 박스"
 }
