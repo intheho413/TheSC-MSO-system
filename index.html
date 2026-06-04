@@ -2278,6 +2278,74 @@ html.light .mr-reply-banner b{color:#1e293b}
   /* === 리포트 KPI 2x2 grid 보장 === */
   #page-dashboard .kpi-row:not(.three):not(.two){grid-template-columns:1fr 1fr !important}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 6 — Grid Cell Overflow 전역 픽스
+   (날짜 박스 잘림, 수금일/수금액 겹침 등 공통 원인 해결)
+═══════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* 핵심: min-width:0 으로 grid cell이 input intrinsic width에 맞춰
+     늘어나지 않도록 강제. 모든 input/select/textarea 적용. */
+  .page input,.page select,.page textarea,
+  .page input[type="date"],.page input[type="datetime-local"],
+  .page input[type="number"],.page input[type="text"]{
+    min-width:0 !important;
+    max-width:100% !important;
+    box-sizing:border-box !important;
+  }
+  /* form-row grid 셀의 min-width:0 (overflow 핵심) */
+  .page .form-row{width:100% !important;box-sizing:border-box !important}
+  .page .form-row > *{min-width:0 !important;box-sizing:border-box !important}
+  .page .form-row.cols-2{display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important;width:100% !important}
+  .page .form-row.cols-2 > .form-group{margin-bottom:0 !important;width:auto !important;min-width:0 !important}
+  /* form-control 강제 풀폭 + 인라인 width 무시 */
+  .page .form-control{width:100% !important;max-width:100% !important;min-width:0 !important;box-sizing:border-box !important}
+
+  /* === iOS 날짜 박스 — 컴팩트 패딩 (overflow 방지) === */
+  .page input[type="date"],.page input[type="datetime-local"]{padding:9px 10px !important;font-size:14px !important;text-align:left !important}
+
+  /* === 수금 등록 — 수금일/수금액 강제 분리 (겹침 차단) === */
+  #recv-tab-pay .form-row{display:grid !important;width:100% !important}
+  #recv-tab-pay .form-row.cols-2{grid-template-columns:1fr 1fr !important;gap:10px !important;margin-bottom:10px !important}
+  #recv-tab-pay .form-row.cols-2 .form-group{min-width:0 !important;width:auto !important;margin-bottom:0 !important;overflow:hidden}
+  #recv-tab-pay .form-row.cols-2 .form-control,
+  #recv-tab-pay #pay-date,#recv-tab-pay #pay-amount{width:100% !important;max-width:100% !important;min-width:0 !important;font-size:14px !important;padding:9px 10px !important}
+  #recv-tab-pay .form-row.cols-2 .form-label{font-size:11px !important;margin-bottom:3px !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* === 리포트 엑셀 다운로드 — 날짜 박스 풀폭 + 1열 === */
+  #page-dashboard > .card:first-child input[type="date"],
+  #page-med-report > .card:first-child input[type="date"]{width:100% !important;max-width:100% !important;font-size:14px !important;padding:9px 10px !important}
+  #page-dashboard > .card:first-child .form-row,
+  #page-med-report > .card:first-child .form-row{display:grid !important;grid-template-columns:1fr !important;gap:8px !important}
+
+  /* === 영업관리 출고 수정 — 기간 박스 컴팩트 === */
+  #stock-tab-edit input[type="date"],#med-sales-tab-edit input[type="date"]{font-size:13px !important;padding:8px 9px !important}
+
+  /* === 의료기기 페이지 동일 적용 (med-* 모든 페이지) === */
+  #page-med-report .form-row,#page-med-sales .form-row,#page-med-recv .form-row,#page-med-master .form-row,
+  #page-med-sales-detail .form-row,#page-med-recv-detail .form-row{width:100% !important;box-sizing:border-box !important}
+  #page-med-report .form-row > *,#page-med-sales .form-row > *,#page-med-recv .form-row > *,#page-med-master .form-row > *{min-width:0 !important}
+  #page-med-report .form-control,#page-med-sales .form-control,#page-med-recv .form-control,#page-med-master .form-control{width:100% !important;max-width:100% !important;min-width:0 !important;box-sizing:border-box !important}
+
+  /* === 카드 자체 박스 정리 — overflow 방지 + 패딩 일관 === */
+  .page .card{box-sizing:border-box !important;overflow:hidden}
+  .page .card .card-title{overflow:hidden;text-overflow:ellipsis}
+
+  /* === select(드롭다운) min-width 0 === */
+  .page select,.page select.form-control{min-width:0 !important;width:100% !important;max-width:100% !important;text-overflow:ellipsis;padding-right:32px !important}
+
+  /* === 의료기기 수금 등록 (동일 구조) === */
+  #med-recv-tab-pay .form-row.cols-2{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;width:100%}
+  #med-recv-tab-pay .form-row.cols-2 > .form-group{min-width:0 !important;margin-bottom:0 !important}
+
+  /* === KPI 행 — 가로 overflow 차단 === */
+  .kpi-row,.kpi-row.three,.kpi-row.two{width:100% !important;max-width:100% !important;box-sizing:border-box !important}
+  .kpi{min-width:0 !important;box-sizing:border-box !important;overflow:hidden}
+  .kpi .kpi-value{overflow:hidden;text-overflow:ellipsis}
+
+  /* === 표 — wrapping 한도 === */
+  .tbl-wrap{max-width:100% !important;box-sizing:border-box !important}
+}
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
 .mr-cmt .time{margin-right:0}

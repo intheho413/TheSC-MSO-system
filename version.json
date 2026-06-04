@@ -1,5 +1,5 @@
 {
-  "version": "2.0.28",
-  "buildTime": "2026-06-04T09:00:00Z",
-  "changelog": "햄버거 메뉴 강제 업데이트 버튼 — 캐시 무효화 + 하드 리로드"
+  "version": "2.0.29",
+  "buildTime": "2026-06-04T09:30:00Z",
+  "changelog": "Grid Cell Overflow 전역 픽스 — 날짜 잘림/수금일 겹침/의료기기 동일 해결"
 }
