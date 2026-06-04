@@ -708,6 +708,10 @@ body.light-mode .home-install-hint{color:#94a3b8}
 .topnav.report-mode #nav-appname{display:none !important}
 .topnav.report-mode #nav-appname-report{display:inline-flex !important;align-items:center;gap:8px}
 .topnav.report-mode #nav-refresh-btn{display:inline-flex !important}
+/* 모바일 — MSO 통합관리 드릴다운에서도 새로고침 버튼 표시 */
+@media (max-width:768px){
+  .app:not(.home-mode) #nav-refresh-btn{display:inline-flex !important}
+}
 .topnav.report-mode .nav-sep:nth-of-type(2){display:none}
 .nav-appname-report{font-size:14px;font-weight:800;color:#fff;letter-spacing:.2px;align-items:center;gap:8px}
 .nav-refresh-btn{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.35);color:#c4b5fd;width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:6px;transition:.2s;padding:0;vertical-align:middle;flex-shrink:0;-webkit-tap-highlight-color:transparent}
@@ -10880,28 +10884,56 @@ function mrRenderStats(){
   }, 30);
 }
 
-// 수동 새로고침 — 상단 새로고침 버튼 클릭 시
+// 수동 새로고침 — 상단 새로고침 버튼 클릭 시 (컨텍스트 인식)
 async function mrManualRefresh(btn){
   try{
     if(btn) btn.classList.add('spinning');
-    if(typeof sbCaseFetchAll === 'function'){
-      const remote = await sbCaseFetchAll();
-      if(remote){
-        MR_CASES = remote.map(_sbCaseToLocal);
-        try{ mrRenderCases(); }catch(e){}
-        try{ mrRenderStats(); }catch(e){}
-        try{ mrRenderCharts(); }catch(e){}
-        try{ mrRenderCalendar(); }catch(e){}
-        if(typeof MR_CURRENT_ID !== 'undefined' && MR_CURRENT_ID){
-          const stillExists = MR_CASES.find(c=>c.id===MR_CURRENT_ID);
-          if(stillExists) mrSelectCase(MR_CURRENT_ID);
+    // 현재 컨텍스트 감지: MSO 리포트 진입 여부
+    const reportPage = document.getElementById('page-mso-report');
+    const inReport = reportPage && getComputedStyle(reportPage).display !== 'none';
+
+    if(inReport){
+      // ─── MSO 리포트 새로고침 (안건/사원 데이터) ───
+      if(typeof sbCaseFetchAll === 'function'){
+        const remote = await sbCaseFetchAll();
+        if(remote){
+          MR_CASES = remote.map(_sbCaseToLocal);
+          try{ mrRenderCases(); }catch(e){}
+          try{ mrRenderStats(); }catch(e){}
+          try{ mrRenderCharts(); }catch(e){}
+          try{ mrRenderCalendar(); }catch(e){}
+          if(typeof MR_CURRENT_ID !== 'undefined' && MR_CURRENT_ID){
+            const stillExists = MR_CASES.find(c=>c.id===MR_CURRENT_ID);
+            if(stillExists) mrSelectCase(MR_CURRENT_ID);
+          }
         }
       }
+      if(typeof sbEmpFetchAll === 'function'){
+        try{ await sbEmpFetchAll(); }catch(e){}
+      }
+    } else {
+      // ─── MSO 통합 관리 시스템 — 현재 페이지에 맞춰 init 호출 ───
+      const page = (typeof currentPage === 'string') ? currentPage : '';
+      const initMap = {
+        'dashboard': 'initDashboard',
+        'stock':     'initStockPage',
+        'recv':      'initRecvPage',
+        'master':    'initMasterPage',
+        'med-report':'initMedReport',
+        'med-sales': 'initMedSales',
+        'med-recv':  'initMedRecv',
+        'med-master':'initMedMaster'
+      };
+      const fnName = initMap[page];
+      if(fnName && typeof window[fnName] === 'function'){
+        try{ await window[fnName](); }catch(e){ console.warn('[refresh]', e); }
+      }
+      // 추가로 미수금 파이 차트 등 다시 그리기
+      if(page === 'recv' && typeof initRecvPie === 'function'){
+        setTimeout(()=>initRecvPie(), 100);
+      }
     }
-    // 사원 동기화도 같이
-    if(typeof sbEmpFetchAll === 'function'){
-      try{ await sbEmpFetchAll(); }catch(e){}
-    }
+    try{ showToast('새로고침 완료'); }catch(e){}
   } finally {
     setTimeout(()=>{ if(btn) btn.classList.remove('spinning'); }, 500);
   }
