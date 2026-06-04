@@ -1189,6 +1189,18 @@ html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !imp
   .mob-menu .mh-li.mh-home:active{background:linear-gradient(90deg,rgba(167,139,250,.25),transparent);color:#fff}
   .mob-menu .mh-li.mh-home .ic svg{color:#a78bfa}
   .mob-menu .mh-divider{height:1px;background:rgba(255,255,255,.06);margin:6px 14px}
+  .mob-menu .mh-hint{font-size:11px;color:#64748b;padding:6px 18px 10px;font-weight:600;letter-spacing:.3px}
+  .mob-menu .mh-li.mh-drill{font-weight:700;color:#cbd5e1;background:rgba(255,255,255,.02);margin:4px 14px;border-radius:9px;padding:14px 14px}
+  .mob-menu .mh-li.mh-drill:active{background:rgba(167,139,250,.15);color:#fff}
+  .mob-menu .mh-cat-toggle{display:flex;gap:4px;padding:4px;margin:4px 14px 10px;background:rgba(0,0,0,.25);border-radius:9px;border:1px solid rgba(255,255,255,.06)}
+  .mob-menu .mh-cat{flex:1;background:transparent;border:0;color:#94a3b8;padding:8px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s}
+  .mob-menu .mh-cat.on{background:linear-gradient(135deg,#a78bfa,#6366f1);color:#fff}
+  .mob-menu .mh-cat:not(.on):active{background:rgba(255,255,255,.05);color:#cbd5e1}
+  html.light .mob-menu .mh-li.mh-drill{background:rgba(0,0,0,.025);color:#475569}
+  html.light .mob-menu .mh-li.mh-drill:active{background:rgba(99,102,241,.12);color:#1e293b}
+  html.light .mob-menu .mh-cat-toggle{background:#f1f5f9;border-color:#e2e8f0}
+  html.light .mob-menu .mh-cat{color:#64748b}
+  html.light .mob-menu .mh-hint{color:#94a3b8}
   html.light .mob-menu .mh-li.mh-home{color:#6366f1;background:linear-gradient(90deg,rgba(99,102,241,.08),transparent)}
   html.light .mob-menu .mh-divider{background:rgba(0,0,0,.08)}
   .mob-menu .mh-li{padding:13px 18px;display:flex;align-items:center;gap:12px;font-size:13px;color:#cbd5e1;font-weight:600;cursor:pointer;transition:.15s;border:none;background:transparent;width:100%;text-align:left;font-family:inherit}
@@ -13035,26 +13047,101 @@ function mobMenuToggle(force){
   mask.classList.toggle('open', willOpen);
   menu.setAttribute('aria-hidden', willOpen?'false':'true');
   document.body.style.overflow = willOpen ? 'hidden' : '';
-  // 열릴 때마다 사용자 정보 최신화
-  if(willOpen) try{ mobUpdateUserInfo(); }catch(e){}
+  // 열릴 때마다 사용자 정보 + 컨텍스트별 섹션 갱신
+  if(willOpen){
+    try{ mobUpdateUserInfo(); }catch(e){}
+    try{ mobUpdateMenuContext(); }catch(e){}
+  }
 }
-// MSO 리포트 페이지 + 탭으로 이동 (햄버거 메뉴에서)
+
+// 햄버거 메뉴 — 현재 진입한 드릴다운에 맞게 섹션 전환
+function mobUpdateMenuContext(){
+  const root = document.getElementById('app-root');
+  const inHome = root && root.classList.contains('home-mode');
+  const reportPage = document.getElementById('page-mso-report');
+  const inReport = reportPage && getComputedStyle(reportPage).display !== 'none';
+  let ctx = 'home';
+  if(!inHome){ ctx = inReport ? 'report' : 'mso'; }
+  ['home','mso','report'].forEach(s=>{
+    const el = document.getElementById('mh-section-'+s);
+    if(el) el.style.display = (s===ctx) ? 'block' : 'none';
+  });
+  // 통합관리 컨텍스트: 카테고리 토글 동기화
+  if(ctx==='mso'){
+    const cat = (typeof currentCat==='string') ? currentCat : 'cosm';
+    document.querySelectorAll('.mob-menu .mh-cat').forEach(b=>b.classList.toggle('on', b.dataset.cat===cat));
+    // 현재 페이지에 맞춰 active 표시
+    const curr = typeof currentPage==='string' ? currentPage : '';
+    document.querySelectorAll('.mob-menu .mh-li[data-mso]').forEach(b=>{
+      const t = b.dataset.mso;
+      let isCurrent = false;
+      if(t==='dashboard') isCurrent = (curr==='dashboard' || curr==='med-report');
+      else if(t==='stock') isCurrent = (curr==='stock' || curr==='med-sales');
+      else if(t==='recv')  isCurrent = (curr==='recv' || curr==='med-recv');
+      else if(t==='master')isCurrent = (curr==='master' || curr==='med-master');
+      b.classList.toggle('on', isCurrent);
+    });
+  } else if(ctx==='report'){
+    // 리포트 탭 active 표시 (mrCurrentTab 또는 DOM 상태로 판단)
+    const reportTabActive = document.querySelector('#mr-tab-report')?.style.display !== 'none';
+    const casesTabActive  = document.querySelector('#mr-tab-cases')?.style.display !== 'none';
+    const calTabActive    = document.querySelector('#mr-tab-calendar')?.style.display !== 'none';
+    document.querySelectorAll('.mob-menu .mh-li[data-nav]').forEach(b=>{
+      const t = b.dataset.nav;
+      let isCurrent = false;
+      if(t==='report-report') isCurrent = reportTabActive;
+      else if(t==='report-cases') isCurrent = casesTabActive;
+      else if(t==='report-calendar') isCurrent = calTabActive;
+      b.classList.toggle('on', isCurrent);
+    });
+  }
+}
+
+// 통합관리 햄버거 카테고리 토글 (화장품/의료장비)
+function mobMsoCat(cat){
+  if(typeof switchCat==='function'){
+    const btn = document.getElementById('cat-btn-'+cat);
+    if(btn) switchCat(cat, btn);
+  }
+  // 토글 UI 갱신
+  document.querySelectorAll('.mob-menu .mh-cat').forEach(b=>b.classList.toggle('on', b.dataset.cat===cat));
+}
+
+// 햄버거 메뉴에서 페이지 이동
 function mobNavTo(page, tab){
   mobMenuToggle(false);
   if(page==='report'){
     // MSO 리포트 페이지로 진입
     if(typeof navigate==='function'){
-      // nav-menu-report 메뉴 진입 - "report" 카테고리의 navigate 호출
       const ev = document.querySelector('#nav-menu-report .nav-item');
       if(ev && typeof navigateToReport==='function') navigateToReport();
       else {
-        // 직접 페이지 토글
         document.querySelectorAll('.page').forEach(p=>p.style.display='none');
         const tgt = document.getElementById('page-mso-report');
         if(tgt) tgt.style.display='';
       }
     }
     setTimeout(()=>mrSwitchTab(tab, document.querySelector(`#nav-menu-report .nav-item:nth-child(${({'report':1,'cases':2,'calendar':3,'master':4})[tab]||1})`)), 50);
+  } else if(page==='mso'){
+    // 통합관리 페이지 — 현재 선택된 카테고리(cosm/med)에 맞춰 navigate
+    if(typeof navigate!=='function') return;
+    const cat = (typeof currentCat==='string') ? currentCat : 'cosm';
+    // 카테고리별 타깃 페이지 매핑
+    const map = {
+      cosm:{dashboard:'dashboard', stock:'stock', recv:'recv', master:'master'},
+      med: {dashboard:'med-report', stock:'med-sales', recv:'med-recv', master:'med-master'}
+    };
+    const target = (map[cat]||map.cosm)[tab] || (map[cat]||map.cosm).dashboard;
+    // 홈모드 해제
+    const root = document.getElementById('app-root');
+    if(root && root.classList.contains('home-mode')) root.classList.remove('home-mode');
+    // nav-item 활성화용 셀렉터
+    const navMenu = '#nav-menu-'+cat;
+    const navItems = document.querySelectorAll(navMenu+' .nav-item');
+    // tab 순서 매핑 (dashboard=0, stock=1, recv=2, master=3)
+    const order = {dashboard:0, stock:1, recv:2, master:3};
+    const navEl = navItems[order[tab]||0];
+    setTimeout(()=>navigate(target, navEl), 50);
   }
 }
 // 하단 탭바 클릭
@@ -13118,22 +13205,63 @@ window.addEventListener('DOMContentLoaded', async ()=>{
       홈으로
     </button>
     <div class="mh-divider"></div>
-    <button class="mh-li on" data-nav="report-report" onclick="mobNavTo('report','report')">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
-      리포트
-    </button>
-    <button class="mh-li" data-nav="report-cases" onclick="mobNavTo('report','cases')">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="14" x2="16" y2="14"/></svg></span>
-      안건 관리
-    </button>
-    <button class="mh-li" data-nav="report-calendar" onclick="mobNavTo('report','calendar')">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-      캘린더
-    </button>
-    <button class="mh-li dis" onclick="showToast('PC에서 사용해주세요')">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg></span>
-      기초 관리 <span class="pc-only">PC 전용</span>
-    </button>
+
+    <!-- 홈 상태 — 드릴다운 선택 안내 -->
+    <div class="mh-section" id="mh-section-home">
+      <div class="mh-hint">메뉴 진입을 위해 시스템을 선택하세요</div>
+      <button class="mh-li mh-drill" onclick="mobMenuToggle(false);enterApp('mso')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+        MSO 통합 관리 시스템
+      </button>
+      <button class="mh-li mh-drill" onclick="mobMenuToggle(false);enterApp('report')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
+        MSO 리포트
+      </button>
+    </div>
+
+    <!-- 통합관리 (MSO) 메뉴 -->
+    <div class="mh-section" id="mh-section-mso" style="display:none">
+      <div class="mh-cat-toggle">
+        <button class="mh-cat on" data-cat="cosm" onclick="mobMsoCat('cosm')">화장품</button>
+        <button class="mh-cat" data-cat="med" onclick="mobMsoCat('med')">의료장비</button>
+      </div>
+      <button class="mh-li" data-mso="dashboard" onclick="mobNavTo('mso','dashboard')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
+        리포트
+      </button>
+      <button class="mh-li" data-mso="stock" onclick="mobNavTo('mso','stock')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-3V4a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1z"/><path d="M9 7V5h6v2"/></svg></span>
+        영업 관리
+      </button>
+      <button class="mh-li" data-mso="recv" onclick="mobNavTo('mso','recv')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>
+        수금 현황
+      </button>
+      <button class="mh-li" data-mso="master" onclick="mobNavTo('mso','master')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg></span>
+        기초 관리
+      </button>
+    </div>
+
+    <!-- MSO 리포트 메뉴 (기존) -->
+    <div class="mh-section" id="mh-section-report" style="display:none">
+      <button class="mh-li on" data-nav="report-report" onclick="mobNavTo('report','report')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-7"/></svg></span>
+        리포트
+      </button>
+      <button class="mh-li" data-nav="report-cases" onclick="mobNavTo('report','cases')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="14" x2="16" y2="14"/></svg></span>
+        안건 관리
+      </button>
+      <button class="mh-li" data-nav="report-calendar" onclick="mobNavTo('report','calendar')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        캘린더
+      </button>
+      <button class="mh-li dis" onclick="showToast('PC에서 사용해주세요')">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg></span>
+        기초 관리 <span class="pc-only">PC 전용</span>
+      </button>
+    </div>
   </div>
   <div class="mh-foot">
     <span class="mh-ver">TheSC-MSO v2.0</span>
