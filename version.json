@@ -1,5 +1,5 @@
 {
-  "version": "2.0.20",
-  "buildTime": "2026-06-04T05:00:00Z",
-  "changelog": "로그인 placeholder 정리 + 햄버거 메뉴 상단에 홈으로 버튼 추가"
+  "version": "2.0.21",
+  "buildTime": "2026-06-04T05:30:00Z",
+  "changelog": "통합관리 Phase 1 모바일 최적화 — 리포트 + 영업관리 (화장품/의료장비)"
 }

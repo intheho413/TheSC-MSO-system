@@ -1870,6 +1870,105 @@ html.light .mr-reply-banner b{color:#1e293b}
   html.light .mr-cmt .cmt-act.reply{color:#059669 !important;background:rgba(16,185,129,.12) !important;border-color:rgba(16,185,129,.35) !important}
   html.light .mr-cmt .cmt-act.reply::after{color:#059669}
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Phase 1 — MSO 통합 관리 시스템 모바일 최적화
+   대상: 리포트 (대시보드) + 영업 관리 (입고/출고/수정)
+   - 화장품: page-dashboard, page-stock
+   - 의료장비: page-med-report, page-med-sales
+═══════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* 페이지 컨테이너 폭 활용 */
+  #page-dashboard,#page-stock,#page-med-report,#page-med-sales,
+  #page-low-detail,#page-recv,#page-recv-detail,#page-sales-detail{padding-left:8px !important;padding-right:8px !important}
+
+  /* KPI 그리드 → 2열로 컴팩트화 */
+  #page-dashboard .kpi-row,#page-med-report .kpi-row,
+  #page-low-detail .kpi-row,#page-recv-detail .kpi-row{grid-template-columns:1fr 1fr !important;gap:8px !important;margin-bottom:10px !important}
+  #page-dashboard .kpi-row.three,#page-med-report .kpi-row.three,
+  #page-low-detail .kpi-row.three,#page-recv-detail .kpi-row.three{grid-template-columns:1fr 1fr !important}
+
+  /* KPI 카드 자체 컴팩트 */
+  #page-dashboard .kpi,#page-stock .kpi,#page-med-report .kpi,#page-med-sales .kpi,
+  #page-low-detail .kpi,#page-recv .kpi,#page-recv-detail .kpi{padding:10px 12px !important;min-height:auto !important}
+  #page-dashboard .kpi-label,#page-med-report .kpi-label,
+  #page-low-detail .kpi-label,#page-recv-detail .kpi-label{font-size:11px !important}
+  #page-dashboard .kpi-value,#page-med-report .kpi-value,
+  #page-low-detail .kpi-value,#page-recv-detail .kpi-value{font-size:18px !important;line-height:1.2 !important;margin:4px 0 !important}
+  #page-dashboard .kpi-sub,#page-med-report .kpi-sub,
+  #page-low-detail .kpi-sub,#page-recv-detail .kpi-sub{font-size:9.5px !important}
+  #page-dashboard .kpi-go,#page-med-report .kpi-go{font-size:12px !important;top:8px !important;right:8px !important}
+
+  /* 차트 2열 → 1열 */
+  #page-dashboard .two-col,#page-med-report .two-col,
+  #page-recv-detail .two-col,#page-recv .two-col{grid-template-columns:1fr !important;gap:10px !important}
+  #page-dashboard .chart-card,#page-med-report .chart-card{padding:12px !important}
+  #page-dashboard [id^="chart-"],#page-med-report [id^="chart-"]{height:220px !important}
+
+  /* 카드 일반 컴팩트 */
+  #page-dashboard .card,#page-stock .card,#page-med-report .card,#page-med-sales .card,
+  #page-low-detail .card,#page-recv .card,#page-recv-detail .card,#page-master .card,#page-med-master .card{padding:12px !important;margin-bottom:10px !important;border-radius:10px !important}
+  .card-title{font-size:13.5px !important}
+  .card-sub{font-size:11px !important;margin-bottom:10px !important}
+
+  /* 폼 그리드 → 1열 스택 */
+  #page-stock .form-row,#page-med-sales .form-row,#page-master .form-row,#page-med-master .form-row,
+  #page-stock .form-row.cols-2,#page-stock .form-row.cols-3,#page-stock .form-row.cols-32,#page-stock .form-row.cols-4,
+  #page-med-sales .form-row.cols-2,#page-med-sales .form-row.cols-3,#page-med-sales .form-row.cols-32,#page-med-sales .form-row.cols-4{grid-template-columns:1fr !important;gap:10px !important}
+
+  /* 폼 그룹 간격 + 라벨 */
+  #page-stock .form-group,#page-med-sales .form-group{margin-bottom:10px !important}
+  #page-stock .form-label,#page-med-sales .form-label{font-size:12px !important;margin-bottom:4px !important}
+
+  /* 폼 컨트롤 풀폭 + iOS 줌 방지 16px */
+  #page-stock .form-control,#page-med-sales .form-control,
+  #page-dashboard .form-control,#page-med-report .form-control{max-width:100% !important;width:100% !important;padding:10px 12px !important;font-size:16px !important}
+
+  /* 탭 (입고/출고/수정) 풀폭 분배 */
+  #page-stock .tabs,#page-med-sales .tabs,#page-master .tabs,#page-med-master .tabs{gap:4px !important;margin-bottom:12px !important;display:flex}
+  #page-stock .tab,#page-med-sales .tab,#page-master .tab,#page-med-master .tab{padding:9px 8px !important;font-size:12.5px !important;flex:1 !important;text-align:center}
+
+  /* 테이블 가로 스크롤 */
+  #page-dashboard .tbl-wrap,#page-stock .tbl-wrap,#page-med-report .tbl-wrap,#page-med-sales .tbl-wrap,
+  #page-low-detail .tbl-wrap,#page-recv .tbl-wrap,#page-recv-detail .tbl-wrap,#page-master .tbl-wrap,#page-med-master .tbl-wrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch !important}
+  #page-dashboard table,#page-stock table,#page-med-report table,#page-med-sales table,
+  #page-low-detail table,#page-recv table,#page-recv-detail table,#page-master table,#page-med-master table{font-size:11px !important;min-width:520px}
+  #page-dashboard th,#page-dashboard td,#page-stock th,#page-stock td,
+  #page-med-report th,#page-med-report td,#page-med-sales th,#page-med-sales td,
+  #page-low-detail th,#page-low-detail td,#page-recv th,#page-recv td,
+  #page-recv-detail th,#page-recv-detail td,#page-master th,#page-master td,
+  #page-med-master th,#page-med-master td{padding:7px 9px !important;white-space:nowrap}
+
+  /* 엑셀 다운로드 바 (날짜 + 버튼) 세로 스택 */
+  #page-dashboard > .card:first-child,#page-med-report > .card:first-child{flex-direction:column !important;align-items:stretch !important;gap:10px !important}
+  #page-dashboard > .card:first-child .form-group input,
+  #page-med-report > .card:first-child .form-group input{width:100% !important;max-width:100% !important}
+  #page-dashboard > .card:first-child .btn,
+  #page-med-report > .card:first-child .btn{width:100% !important}
+
+  /* 일반 버튼 + 풀폭 버튼 */
+  #page-stock .btn,#page-med-sales .btn,#page-master .btn,#page-med-master .btn{padding:10px 14px !important;font-size:13px !important}
+  #page-stock .btn-full,#page-med-sales .btn-full{width:100% !important}
+
+  /* 입고 카트/출고 카트 테이블 — 폭 보장 */
+  #in-cart-section table,#out-cart-section table{min-width:600px !important}
+
+  /* info-box 컴팩트 */
+  #page-stock .info-box,#page-med-sales .info-box,#page-master .info-box,#page-med-master .info-box{font-size:11.5px !important;padding:8px 10px !important;line-height:1.5}
+
+  /* divider */
+  .divider{margin:12px 0 !important}
+
+  /* 페이지 제목 / 서브 제목 */
+  .page-title{font-size:18px !important;margin-bottom:4px !important;line-height:1.25}
+  .page-sub{font-size:12px !important;margin-bottom:12px !important}
+
+  /* 백버튼 (← 리포트로) 모바일 터치 영역 확대 */
+  .detail-back{font-size:13px !important;padding:8px 10px !important;margin-bottom:10px !important;display:inline-flex;align-items:center;gap:5px}
+
+  /* 의료장비 카테고리 페이지 — 영업 관리 상세/수금 상세도 동일 적용 */
+  #page-med-sales-detail .form-row,#page-med-recv-detail .form-row{grid-template-columns:1fr !important}
+}
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
 .mr-cmt .time{margin-right:0}
