@@ -1830,6 +1830,39 @@ html.light .mr-reply-banner b{color:#1e293b}
 @media(max-width:768px){
   .mr-cmt.reply-comment{margin-left:16px}
   .mr-cmt.reply-comment::before{left:-11px;font-size:13px}
+  /* 모바일 — 답글 버튼 텍스트 + 초록 강조 (다른 아이콘과 시각 구분) */
+  .mr-cmt .cmt-act.reply{
+    width:auto !important;
+    min-width:auto !important;
+    height:22px !important;
+    padding:0 9px !important;
+    background:rgba(52,211,153,.15) !important;
+    border:1px solid rgba(52,211,153,.4) !important;
+    color:#34d399 !important;
+    font-size:11px !important;
+    font-weight:700 !important;
+    font-family:inherit !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    gap:3px !important;
+  }
+  .mr-cmt .cmt-act.reply::after{
+    content:'답글';
+    color:#34d399;
+    font-weight:700;
+    font-size:11px;
+    line-height:1;
+  }
+  .mr-cmt .cmt-act.reply svg{width:11px !important;height:11px !important}
+  .mr-cmt .cmt-act.reply:active{
+    background:rgba(52,211,153,.3) !important;
+    color:#fff !important;
+  }
+  .mr-cmt .cmt-act.reply:active::after{color:#fff}
+  /* 답글 버튼이 커진 만큼 ctop 우측 패딩 늘려 겹침 방지 */
+  .mr-cmt:not(.reply-comment) .ctop{padding-right:130px !important}
+  html.light .mr-cmt .cmt-act.reply{color:#059669 !important;background:rgba(16,185,129,.12) !important;border-color:rgba(16,185,129,.35) !important}
+  html.light .mr-cmt .cmt-act.reply::after{color:#059669}
 }
 .mr-cmt .ctop{padding-right:72px}
 /* 시간 영역은 액션 아이콘과 겹치지 않게 우측 마진 추가 */
