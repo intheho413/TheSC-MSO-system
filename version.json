@@ -1,5 +1,5 @@
 {
-  "version": "2.0.19",
-  "buildTime": "2026-06-04T04:30:00Z",
-  "changelog": "모바일 답글 버튼 텍스트+초록 강조로 명확화"
+  "version": "2.0.20",
+  "buildTime": "2026-06-04T05:00:00Z",
+  "changelog": "로그인 placeholder 정리 + 햄버거 메뉴 상단에 홈으로 버튼 추가"
 }
