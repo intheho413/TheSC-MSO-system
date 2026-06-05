@@ -1683,6 +1683,25 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
 .mr-fg label .hint{font-size:10px;color:#475569;font-weight:500;margin-left:auto}
 .mr-fg input,.mr-fg select,.mr-fg textarea{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:#fff;padding:9px 12px;border-radius:8px;font-size:13px;font-family:inherit;transition:.15s}
 .mr-fg input:focus,.mr-fg select:focus,.mr-fg textarea:focus{outline:none;border-color:rgba(52,211,153,.5);background:rgba(255,255,255,.07)}
+
+/* 신규 안건 일정 (시작 ~ 마감) — 가독성 강화 */
+.mr-fg.mr-fg-schedule .mr-schedule-row{display:flex;align-items:flex-end;gap:8px;width:100%}
+.mr-fg.mr-fg-schedule .mr-schedule-cell{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.mr-fg.mr-fg-schedule .mr-schedule-lbl{font-size:10px;font-weight:800;color:#86efac;letter-spacing:.4px;text-transform:uppercase}
+.mr-fg.mr-fg-schedule .mr-schedule-cell:nth-child(3) .mr-schedule-lbl{color:#fca5a5}
+.mr-fg.mr-fg-schedule .mr-schedule-cell input{width:100%;min-width:0;box-sizing:border-box}
+.mr-fg.mr-fg-schedule .mr-schedule-sep{color:#64748b;font-weight:800;font-size:14px;padding-bottom:9px;flex-shrink:0}
+html.light .mr-fg.mr-fg-schedule .mr-schedule-lbl{color:#059669}
+html.light .mr-fg.mr-fg-schedule .mr-schedule-cell:nth-child(3) .mr-schedule-lbl{color:#dc2626}
+
+@media(max-width:768px){
+  /* 모바일에서는 시작/마감 세로 스택 */
+  .mr-fg.mr-fg-schedule .mr-schedule-row{flex-direction:column;align-items:stretch;gap:10px}
+  .mr-fg.mr-fg-schedule .mr-schedule-cell{flex:1 1 100%;width:100%}
+  .mr-fg.mr-fg-schedule .mr-schedule-cell input{font-size:15px;padding:10px 12px}
+  .mr-fg.mr-fg-schedule .mr-schedule-sep{display:none}
+  .mr-fg.mr-fg-schedule .mr-schedule-lbl{font-size:11px}
+}
 .mr-fg input::placeholder,.mr-fg textarea::placeholder{color:#475569}
 .mr-fg textarea{resize:vertical;min-height:80px;line-height:1.55}
 .mr-catpick{display:flex;gap:8px;flex-wrap:wrap}
@@ -3551,12 +3570,18 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
     <div class="mr-fsec">
       <div class="stt">일정 · 시작 진행률</div>
       <div class="mr-g3">
-        <div class="mr-fg">
-          <label>일정 (시작 일시 ~ 종료 일시) <span class="hint">캘린더 자동 반영 · 시간 단위 표시</span></label>
-          <div style="display:flex;align-items:center;gap:6px">
-            <input type="datetime-local" id="mr-start-date" style="flex:1;min-width:0">
-            <span style="color:#64748b;font-weight:700">~</span>
-            <input type="datetime-local" id="mr-due" style="flex:1;min-width:0">
+        <div class="mr-fg mr-fg-schedule">
+          <label>일정 · 시작 일시 ~ 마감 일시 <span class="hint">캘린더 자동 반영 · 시간 단위 표시</span></label>
+          <div class="mr-schedule-row">
+            <div class="mr-schedule-cell">
+              <div class="mr-schedule-lbl">시작</div>
+              <input type="datetime-local" id="mr-start-date">
+            </div>
+            <span class="mr-schedule-sep">~</span>
+            <div class="mr-schedule-cell">
+              <div class="mr-schedule-lbl">마감</div>
+              <input type="datetime-local" id="mr-due">
+            </div>
           </div>
         </div>
         <div class="mr-fg">
@@ -11154,7 +11179,13 @@ window.mrManualRefresh = mrManualRefresh;
 function mrRenderCases(){
   const search = (document.getElementById('mr-search')?.value||'').toLowerCase();
   let list = MR_CASES.slice();
-  if(MR_FILTER!=='all') list = list.filter(c=>c.status===MR_FILTER);
+  if(MR_FILTER!=='all'){
+    list = list.filter(c=>c.status===MR_FILTER);
+  } else {
+    // '전체' 필터일 때 종결 안건은 숨김
+    // (상태 필터에서 '종결'을 명시적으로 선택했을 때만 표시)
+    list = list.filter(c=>c.status!=='종결');
+  }
   // 내 안건 필터 (관리자 아닐 시에도 활성화 가능)
   if(MR_FILTER_MY_ONLY && CURRENT_USER){
     list = list.filter(c=>c.owner===CURRENT_USER.name || c.mgr===CURRENT_USER.name);
@@ -11166,6 +11197,13 @@ function mrRenderCases(){
       return terms.every(t=>hay.includes(t));
     });
   }
+  // 정렬: 보류 안건을 최상단으로 (긴급 환기), 그 외는 기존 순서 유지
+  list.sort((a, b) => {
+    const aHold = a.status === '보류' ? 0 : 1;
+    const bHold = b.status === '보류' ? 0 : 1;
+    if(aHold !== bHold) return aHold - bHold;
+    return 0; // 같은 그룹 안에서는 원래 순서 유지 (stable sort)
+  });
   const html = list.map(c=>{
     const dueDT = c.due ? mrParseDT(c.due) : null;
     const startDT = c.startDate ? mrParseDT(c.startDate) : null;
