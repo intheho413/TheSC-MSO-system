@@ -2597,6 +2597,21 @@ html.light .mr-reply-banner b{color:#1e293b}
 .mr-detail .dmeta .ied .ok{background:#34d399;border:none;color:#fff;width:18px;height:18px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:900}
 .mr-detail .dmeta .ied .nx{background:rgba(255,255,255,.1);border:none;color:#cbd5e1;width:18px;height:18px;border-radius:4px;cursor:pointer;font-size:10px;font-weight:700}
 
+/* 사원 선택 드롭다운 (담당/관리 편집 시) */
+.mr-detail .dmeta .ied.ied-emp{padding:3px 5px;gap:5px;background:rgba(167,139,250,.18);border-color:rgba(167,139,250,.6)}
+.mr-detail .dmeta .ied.ied-emp .mr-emp-sel{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:12px;padding:4px 8px;padding-right:24px;border-radius:5px;min-width:140px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.5'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 6px center;background-size:12px}
+.mr-detail .dmeta .ied.ied-emp .mr-emp-sel option{background:#1e2d45;color:#fff}
+.mr-detail .dmeta .ied.ied-emp .save-btn{background:linear-gradient(135deg,#34d399,#10b981);border:0;color:#fff;width:auto;height:24px;padding:0 10px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:800;letter-spacing:.3px}
+.mr-detail .dmeta .ied.ied-emp .save-btn:active{filter:brightness(1.15)}
+.mr-detail .dmeta .ied.ied-emp .nx{width:auto;height:24px;padding:0 8px;font-size:11px}
+html.light .mr-detail .dmeta .ied.ied-emp .mr-emp-sel{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:#1e293b;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'><polyline points='6 9 12 15 18 9'/></svg>")}
+html.light .mr-detail .dmeta .ied.ied-emp .mr-emp-sel option{background:#fff;color:#1e293b}
+@media(max-width:768px){
+  .mr-detail .dmeta .ied.ied-emp{flex-wrap:wrap;gap:6px;padding:6px 8px}
+  .mr-detail .dmeta .ied.ied-emp .mr-emp-sel{font-size:14px;padding:8px 12px;padding-right:28px;flex:1 1 100%;min-width:0;width:100%}
+  .mr-detail .dmeta .ied.ied-emp .save-btn,.mr-detail .dmeta .ied.ied-emp .nx{flex:1 1 auto;height:32px;font-size:13px;padding:0 12px}
+}
+
 /* 캘린더 */
 .mr-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
 .mr-cal-nav{display:flex;align-items:center;gap:8px}
@@ -11742,6 +11757,26 @@ function mrClearNextAction(){
 let MR_ACTIVE_EDIT = null;   // {caseId, field, value}
 let MR_CMT_DRAFTS = {};       // caseId → 미등록 코멘트 초안
 
+// 활성 사원 목록 → select options 생성 (owner/mgr 공용)
+function _mrBuildEmpOptions(currentVal, placeholder){
+  const emps = (typeof MR_EMPLOYEES !== 'undefined' && Array.isArray(MR_EMPLOYEES))
+    ? MR_EMPLOYEES.filter(e => e.active !== false)
+    : [];
+  // 현재 값이 사원 목록에 없으면 별도 표시 (legacy 데이터 보존)
+  const inList = emps.some(e => e.name === currentVal);
+  let opts = `<option value="">${placeholder}</option>`;
+  emps.forEach(e => {
+    const label = e.position ? `${e.name} · ${e.position}` : e.name;
+    const sel = (e.name === currentVal) ? ' selected' : '';
+    opts += `<option value="${e.name.replace(/"/g,'&quot;')}"${sel}>${label}</option>`;
+  });
+  // 미등록 값 fallback (현재 값 보존)
+  if(currentVal && !inList){
+    opts += `<option value="${currentVal.replace(/"/g,'&quot;')}" selected>${currentVal} (미등록)</option>`;
+  }
+  return opts;
+}
+
 function mrEditMeta(field, _restore){
   const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
   if(!c) return;
@@ -11753,8 +11788,15 @@ function mrEditMeta(field, _restore){
   const v = (useVal||'').replace(/"/g,'&quot;');
   let html = '';
   if(field==='client') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${v}" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
-  if(field==='owner') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${v}" placeholder="담당자명" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
-  if(field==='mgr')   html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${v}" placeholder="관리자명 (선택)" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
+  if(field==='owner'){
+    // 등록된 사원 중에서만 선택 가능 (select)
+    const opts = _mrBuildEmpOptions(useVal, '담당자 선택');
+    html = `<span class="ied ied-emp"><select id="mr-edit-${field}" class="mr-emp-sel" onchange="mrTrackEdit('${field}',this.value)">${opts}</select><button class="ok save-btn" onclick="mrSaveMeta('${field}')">저장</button><button class="nx" onclick="mrCancelEdit(${c.id})">취소</button></span>`;
+  }
+  if(field==='mgr'){
+    const opts = _mrBuildEmpOptions(useVal, '관리자 선택 (없음)');
+    html = `<span class="ied ied-emp"><select id="mr-edit-${field}" class="mr-emp-sel" onchange="mrTrackEdit('${field}',this.value)">${opts}</select><button class="ok save-btn" onclick="mrSaveMeta('${field}')">저장</button><button class="nx" onclick="mrCancelEdit(${c.id})">취소</button></span>`;
+  }
   if(field==='due')   html = `<span class="ied"><input type="datetime-local" id="mr-edit-${field}" value="${useVal||''}" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
   target.outerHTML = html;
   if(!_restore){ const inp = document.getElementById('mr-edit-'+field); if(inp){ inp.focus(); inp.select?.(); } }

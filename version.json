@@ -1,5 +1,5 @@
 {
-  "version": "2.0.30",
-  "buildTime": "2026-06-04T10:00:00Z",
-  "changelog": "박스 잘림 완전 해결 — 카드 overflow visible + iOS 날짜 input 명시 박스"
+  "version": "2.0.31",
+  "buildTime": "2026-06-04T10:30:00Z",
+  "changelog": "안건 담당/관리 변경 — 등록된 사원만 선택 가능한 드롭다운 + 저장 버튼"
 }
