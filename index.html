@@ -2612,6 +2612,49 @@ html.light .mr-detail .dmeta .ied.ied-emp .mr-emp-sel option{background:#fff;col
   .mr-detail .dmeta .ied.ied-emp .save-btn,.mr-detail .dmeta .ied.ied-emp .nx{flex:1 1 auto;height:32px;font-size:13px;padding:0 12px}
 }
 
+/* ─── 사원 검색 + 선택 Picker (가나다순) ─── */
+.mr-detail .dmeta .ied-picker{display:block;background:linear-gradient(160deg,#1a1a2e,#0f0f1a);border:1px solid rgba(167,139,250,.55);border-radius:10px;padding:8px;min-width:280px;max-width:340px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.ied-picker .picker-top{display:flex;gap:5px;margin-bottom:7px}
+.ied-picker .picker-search{flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:12px;font-weight:600;padding:7px 10px;border-radius:6px;outline:none;font-family:inherit;min-width:0}
+.ied-picker .picker-search::placeholder{color:#94a3b8;font-weight:500}
+.ied-picker .picker-search:focus{border-color:rgba(167,139,250,.6);background:rgba(0,0,0,.4)}
+.ied-picker .save-btn{background:linear-gradient(135deg,#34d399,#10b981);border:0;color:#fff;height:30px;padding:0 12px;border-radius:6px;cursor:pointer;font-size:11.5px;font-weight:800;letter-spacing:.3px;font-family:inherit;flex-shrink:0;transition:.15s}
+.ied-picker .save-btn:hover{filter:brightness(1.15);box-shadow:0 3px 10px rgba(16,185,129,.4)}
+.ied-picker .save-btn:active{transform:translateY(1px)}
+.ied-picker .nx{background:rgba(255,255,255,.06);border:0;color:#cbd5e1;height:30px;padding:0 10px;border-radius:6px;cursor:pointer;font-size:11.5px;font-weight:700;font-family:inherit;flex-shrink:0;transition:.15s}
+.ied-picker .nx:hover{background:rgba(255,255,255,.12);color:#fff}
+.ied-picker .picker-list{max-height:220px;overflow-y:auto;border:1px solid rgba(255,255,255,.06);border-radius:7px;background:rgba(0,0,0,.18);padding:3px}
+.ied-picker .picker-list::-webkit-scrollbar{width:5px}
+.ied-picker .picker-list::-webkit-scrollbar-thumb{background:rgba(167,139,250,.35);border-radius:3px}
+.ied-picker .emp-pick-item{display:flex;align-items:center;gap:5px;padding:7px 10px;font-size:12px;color:#e2e8f0;cursor:pointer;border-radius:5px;font-weight:600;transition:.12s;position:relative}
+.ied-picker .emp-pick-item:hover{background:rgba(167,139,250,.15);color:#fff}
+.ied-picker .emp-pick-item.selected{background:linear-gradient(90deg,rgba(167,139,250,.28),rgba(167,139,250,.12));color:#fff;border:1px solid rgba(167,139,250,.5)}
+.ied-picker .emp-pick-item .emp-nm{font-weight:800}
+.ied-picker .emp-pick-item .emp-ps{color:#94a3b8;font-weight:600;margin-left:3px;font-size:11px}
+.ied-picker .emp-pick-item.selected .emp-ps{color:#cbd5e1}
+.ied-picker .emp-pick-item .leg{display:inline-block;background:rgba(251,191,36,.18);color:#fde68a;font-size:9px;font-weight:800;padding:1px 6px;border-radius:8px;margin-left:5px;letter-spacing:.3px}
+.ied-picker .emp-pick-item .emp-chk{margin-left:auto;color:#34d399;font-weight:900;font-size:13px;opacity:0;transition:.15s}
+.ied-picker .emp-pick-item.selected .emp-chk{opacity:1}
+.ied-picker .picker-empty,.ied-picker .picker-no-result{font-size:11.5px;color:#94a3b8;text-align:center;padding:14px 8px;font-style:italic}
+html.light .mr-detail .dmeta .ied-picker{background:#fff;border-color:rgba(99,102,241,.4)}
+html.light .ied-picker .picker-search{background:#f8fafc;border-color:rgba(0,0,0,.1);color:#1e293b}
+html.light .ied-picker .picker-search::placeholder{color:#94a3b8}
+html.light .ied-picker .picker-list{background:#fafafa;border-color:rgba(0,0,0,.06)}
+html.light .ied-picker .emp-pick-item{color:#475569}
+html.light .ied-picker .emp-pick-item:hover{background:rgba(99,102,241,.08);color:#1e293b}
+html.light .ied-picker .emp-pick-item.selected{background:linear-gradient(90deg,rgba(99,102,241,.18),rgba(99,102,241,.08));color:#3730a3;border-color:rgba(99,102,241,.4)}
+html.light .ied-picker .emp-pick-item .emp-ps{color:#64748b}
+html.light .ied-picker .nx{background:#f1f5f9;color:#475569}
+html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
+@media(max-width:768px){
+  .mr-detail .dmeta .ied-picker{min-width:0;max-width:100%;width:100%;padding:9px}
+  .ied-picker .picker-search{font-size:15px;padding:9px 11px}
+  .ied-picker .save-btn,.ied-picker .nx{height:36px;font-size:13px;padding:0 14px}
+  .ied-picker .picker-list{max-height:260px}
+  .ied-picker .emp-pick-item{padding:11px 12px;font-size:14px}
+  .ied-picker .emp-pick-item .emp-ps{font-size:12.5px}
+}
+
 /* 캘린더 */
 .mr-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
 .mr-cal-nav{display:flex;align-items:center;gap:8px}
@@ -11757,25 +11800,97 @@ function mrClearNextAction(){
 let MR_ACTIVE_EDIT = null;   // {caseId, field, value}
 let MR_CMT_DRAFTS = {};       // caseId → 미등록 코멘트 초안
 
-// 활성 사원 목록 → select options 생성 (owner/mgr 공용)
-function _mrBuildEmpOptions(currentVal, placeholder){
-  const emps = (typeof MR_EMPLOYEES !== 'undefined' && Array.isArray(MR_EMPLOYEES))
-    ? MR_EMPLOYEES.filter(e => e.active !== false)
+// 활성 사원 목록 → 가나다순 정렬 + 검색 가능한 picker HTML 생성 (owner/mgr 공용)
+function _mrBuildEmpPicker(field, currentVal, placeholder, caseId){
+  let emps = (typeof MR_EMPLOYEES !== 'undefined' && Array.isArray(MR_EMPLOYEES))
+    ? MR_EMPLOYEES.filter(e => e.active !== false).map(e => ({...e}))
     : [];
-  // 현재 값이 사원 목록에 없으면 별도 표시 (legacy 데이터 보존)
+  // 가나다순 정렬 (한국어 로케일)
+  emps.sort((a,b) => (a.name||'').localeCompare(b.name||'', 'ko'));
+  // 레거시 데이터 보존 — 현재 값이 사원 목록에 없으면 별도 항목
   const inList = emps.some(e => e.name === currentVal);
-  let opts = `<option value="">${placeholder}</option>`;
-  emps.forEach(e => {
-    const label = e.position ? `${e.name} · ${e.position}` : e.name;
-    const sel = (e.name === currentVal) ? ' selected' : '';
-    opts += `<option value="${e.name.replace(/"/g,'&quot;')}"${sel}>${label}</option>`;
-  });
-  // 미등록 값 fallback (현재 값 보존)
   if(currentVal && !inList){
-    opts += `<option value="${currentVal.replace(/"/g,'&quot;')}" selected>${currentVal} (미등록)</option>`;
+    emps.push({name: currentVal, position: '', _legacy: true});
   }
-  return opts;
+  const escName = (s) => (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  const allowEmpty = (field === 'mgr');
+  let items = '';
+  // 관리자 필드는 '선택 없음' 옵션 제공 (담당자는 필수)
+  if(allowEmpty){
+    const selEmpty = (!currentVal) ? ' selected' : '';
+    items += `<div class="emp-pick-item emp-pick-clear${selEmpty}" data-name="" onclick="mrPickEmp(this)">
+      <span class="emp-nm" style="color:#94a3b8;font-style:italic">— 선택 없음 —</span>
+      <span class="emp-chk">✓</span>
+    </div>`;
+  }
+  items += emps.map(e => {
+    const sel = (e.name === currentVal) ? ' selected' : '';
+    const leg = e._legacy ? '<span class="leg">미등록</span>' : '';
+    const pos = e.position ? `<span class="emp-ps">· ${escName(e.position)}</span>` : '';
+    return `<div class="emp-pick-item${sel}" data-name="${escName(e.name)}" onclick="mrPickEmp(this)">
+      <span class="emp-nm">${escName(e.name)}</span>${pos}${leg}
+      <span class="emp-chk">✓</span>
+    </div>`;
+  }).join('');
+  const v = escName(currentVal);
+  return `<div class="ied-picker" data-field="${field}">
+    <div class="picker-top">
+      <input type="text" class="picker-search" placeholder="${placeholder}" oninput="mrPickerFilter(this)" autocomplete="off" spellcheck="false">
+      <button class="save-btn" onclick="mrSaveMeta('${field}')">저장</button>
+      <button class="nx" onclick="mrCancelEdit(${caseId})">취소</button>
+    </div>
+    <div class="picker-list" id="mr-edit-${field}-list">
+      ${items || '<div class="picker-empty">등록된 사원이 없습니다</div>'}
+    </div>
+    <input type="hidden" id="mr-edit-${field}" value="${v}">
+  </div>`;
 }
+
+// 검색 필터링
+window.mrPickerFilter = function(input){
+  const q = (input.value||'').toLowerCase().trim();
+  const picker = input.closest('.ied-picker');
+  if(!picker) return;
+  const items = picker.querySelectorAll('.emp-pick-item');
+  let visibleCount = 0;
+  items.forEach(item => {
+    const name = (item.dataset.name||'').toLowerCase();
+    const pos = (item.querySelector('.emp-ps')?.textContent || '').toLowerCase();
+    const match = !q || name.includes(q) || pos.includes(q);
+    item.style.display = match ? '' : 'none';
+    if(match) visibleCount++;
+  });
+  // 빈 상태 표시
+  let emptyEl = picker.querySelector('.picker-no-result');
+  if(visibleCount === 0){
+    if(!emptyEl){
+      emptyEl = document.createElement('div');
+      emptyEl.className = 'picker-no-result';
+      emptyEl.textContent = '검색 결과가 없습니다';
+      picker.querySelector('.picker-list').appendChild(emptyEl);
+    }
+  } else if(emptyEl){
+    emptyEl.remove();
+  }
+};
+
+// 사원 선택 (클릭 시 선택 상태로 표시)
+window.mrPickEmp = function(itemEl){
+  const picker = itemEl.closest('.ied-picker');
+  if(!picker) return;
+  const field = picker.dataset.field;
+  const name = itemEl.dataset.name || '';
+  // 모든 항목 selected 제거 → 현재 항목 활성화
+  picker.querySelectorAll('.emp-pick-item').forEach(it => it.classList.remove('selected'));
+  itemEl.classList.add('selected');
+  // 숨겨진 input에 값 저장 (mrSaveMeta가 읽음)
+  const hidden = document.getElementById('mr-edit-'+field);
+  if(hidden) hidden.value = name;
+  // 활성 편집 트래커 갱신
+  if(typeof MR_ACTIVE_EDIT === 'object' && MR_ACTIVE_EDIT && MR_ACTIVE_EDIT.field === field){
+    MR_ACTIVE_EDIT.value = name;
+  }
+};
 
 function mrEditMeta(field, _restore){
   const c = MR_CASES.find(x=>x.id===MR_CURRENT_ID);
@@ -11789,17 +11904,23 @@ function mrEditMeta(field, _restore){
   let html = '';
   if(field==='client') html = `<span class="ied"><input type="text" id="mr-edit-${field}" value="${v}" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
   if(field==='owner'){
-    // 등록된 사원 중에서만 선택 가능 (select)
-    const opts = _mrBuildEmpOptions(useVal, '담당자 선택');
-    html = `<span class="ied ied-emp"><select id="mr-edit-${field}" class="mr-emp-sel" onchange="mrTrackEdit('${field}',this.value)">${opts}</select><button class="ok save-btn" onclick="mrSaveMeta('${field}')">저장</button><button class="nx" onclick="mrCancelEdit(${c.id})">취소</button></span>`;
+    // 검색 + 가나다순 정렬된 사원 picker
+    html = _mrBuildEmpPicker(field, useVal, '담당자 이름 검색...', c.id);
   }
   if(field==='mgr'){
-    const opts = _mrBuildEmpOptions(useVal, '관리자 선택 (없음)');
-    html = `<span class="ied ied-emp"><select id="mr-edit-${field}" class="mr-emp-sel" onchange="mrTrackEdit('${field}',this.value)">${opts}</select><button class="ok save-btn" onclick="mrSaveMeta('${field}')">저장</button><button class="nx" onclick="mrCancelEdit(${c.id})">취소</button></span>`;
+    html = _mrBuildEmpPicker(field, useVal, '관리자 이름 검색... (선택)', c.id);
   }
   if(field==='due')   html = `<span class="ied"><input type="datetime-local" id="mr-edit-${field}" value="${useVal||''}" oninput="mrTrackEdit('${field}',this.value)"><button class="ok" onclick="mrSaveMeta('${field}')">✓</button><button class="nx" onclick="mrCancelEdit(${c.id})">×</button></span>`;
   target.outerHTML = html;
-  if(!_restore){ const inp = document.getElementById('mr-edit-'+field); if(inp){ inp.focus(); inp.select?.(); } }
+  if(!_restore){
+    // 사원 picker는 search input에 포커스
+    const searchInp = document.querySelector(`.ied-picker[data-field="${field}"] .picker-search`);
+    if(searchInp){ setTimeout(()=>searchInp.focus(), 50); }
+    else {
+      const inp = document.getElementById('mr-edit-'+field);
+      if(inp){ inp.focus(); inp.select?.(); }
+    }
+  }
 }
 
 function mrTrackEdit(field, val){
