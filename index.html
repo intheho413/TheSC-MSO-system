@@ -1575,6 +1575,13 @@ html.light .mr-cal-detail .cd-cmt{background:rgba(0,0,0,.03);color:#475569}
 .mr-ppt-pop .pst.q{border-left:3px solid #60a5fa}
 .mr-ppt-pop .pst.h{border-left:3px solid #34d399}
 .mr-ppt-pop .pst.q.on,.mr-ppt-pop .pst.h.on{border-left-color:transparent}
+.mr-ppt-pop .pst.pst-all{background:linear-gradient(135deg,rgba(251,191,36,.18),rgba(245,158,11,.18));border:1px solid rgba(251,191,36,.5);color:#fde68a;font-weight:800;width:100%;justify-content:center;display:inline-flex;align-items:center;gap:6px}
+.mr-ppt-pop .pst.pst-all:hover{background:linear-gradient(135deg,rgba(251,191,36,.32),rgba(245,158,11,.32));color:#fff}
+.mr-ppt-pop .pst.pst-all.on{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(245,158,11,.35)}
+.mr-ppt-pop .pst.pst-all .all-hint{font-size:9px;font-weight:700;background:rgba(0,0,0,.25);padding:1px 6px;border-radius:8px;letter-spacing:.3px}
+.mr-ppt-pop .pst.pst-all.on .all-hint{background:rgba(255,255,255,.22)}
+html.light .mr-ppt-pop .pst.pst-all{background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(217,119,6,.12));color:#92400e;border-color:rgba(245,158,11,.4)}
+html.light .mr-ppt-pop .pst.pst-all.on{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff}
 .mr-ppt-pop .grp{width:100%;font-size:9px;font-weight:800;color:#64748b;letter-spacing:1px;text-transform:uppercase;padding:4px 2px 2px}
 .mr-ppt-dl{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.35);color:#6ee7b7;padding:5px 13px;border-radius:7px;font-size:11.5px;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:.15s}
 .mr-ppt-dl:hover{background:rgba(52,211,153,.2);color:#fff;border-color:rgba(52,211,153,.5)}
@@ -3423,6 +3430,7 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
         <button class="pst h" data-p="h2" data-l="하반기" type="button">하반기</button>
         <div class="grp">기타</div>
         <button class="pst" data-p="custom" data-l="사용자 지정" type="button">사용자 지정</button>
+        <button class="pst pst-all" data-p="all" data-l="총 누적 데이터" type="button">총 누적 데이터 <span class="all-hint">전체 기간</span></button>
       </div>
     </div>
     <button class="mr-ppt-dl" onclick="mrPptDownload()"><span class="ic">⬇</span> PPT 다운로드</button>
@@ -12098,10 +12106,28 @@ function mrPostComment(){
 function _mrPad(n){return String(n).padStart(2,'0');}
 function _mrISO(d){return `${d.getFullYear()}-${_mrPad(d.getMonth()+1)}-${_mrPad(d.getDate())}`;}
 function _mrFmt(d){return `${d.getFullYear()}.${_mrPad(d.getMonth()+1)}.${_mrPad(d.getDate())}`;}
+// 누적 데이터 모드 (모든 안건 포함, 기간 무시)
+let MR_PPT_ALL_MODE = false;
+
 function mrPptGetRange(p){
   const t=new Date(), Y=t.getFullYear();
   let from,to;
-  if(p==='week'){const d=t.getDay(),o=d===0?-6:1-d;from=new Date(t);from.setDate(t.getDate()+o);to=new Date(from);to.setDate(from.getDate()+6);}
+  if(p==='all'){
+    // 모든 안건의 시작/마감일 범위를 자동 계산
+    const dates = [];
+    (MR_CASES||[]).forEach(c=>{
+      if(c.startDate){ const d=new Date(c.startDate); if(!isNaN(d)) dates.push(d); }
+      if(c.due){ const d=new Date(c.due); if(!isNaN(d)) dates.push(d); }
+    });
+    if(dates.length){
+      from = new Date(Math.min.apply(null, dates));
+      to = new Date(Math.max.apply(null, dates));
+    } else {
+      from = new Date(Y, 0, 1);
+      to = new Date(Y, 11, 31);
+    }
+  }
+  else if(p==='week'){const d=t.getDay(),o=d===0?-6:1-d;from=new Date(t);from.setDate(t.getDate()+o);to=new Date(from);to.setDate(from.getDate()+6);}
   else if(p==='month'){from=new Date(Y,t.getMonth(),1);to=new Date(Y,t.getMonth()+1,0);}
   else if(p==='quarter'){const q=Math.floor(t.getMonth()/3);from=new Date(Y,q*3,1);to=new Date(Y,q*3+3,0);}
   else if(/^q[1-4]$/.test(p)){const q=parseInt(p[1])-1;from=new Date(Y,q*3,1);to=new Date(Y,q*3+3,0);}
@@ -12112,12 +12138,23 @@ function mrPptGetRange(p){
   return {from,to};
 }
 function mrPptApply(p,label){
+  // 누적 모드 토글
+  MR_PPT_ALL_MODE = (p === 'all');
   const {from,to}=mrPptGetRange(p);
   if(p!=='custom'){
     document.getElementById('mr-ppt-from').value=_mrISO(from);
     document.getElementById('mr-ppt-to').value=_mrISO(to);
   }
   if(label) document.getElementById('mr-ppt-preset-label').textContent=label;
+  // 누적 모드일 때 date input 시각 잠금 (시각 힌트)
+  const fromEl = document.getElementById('mr-ppt-from');
+  const toEl   = document.getElementById('mr-ppt-to');
+  if(fromEl && toEl){
+    fromEl.disabled = MR_PPT_ALL_MODE;
+    toEl.disabled = MR_PPT_ALL_MODE;
+    fromEl.style.opacity = MR_PPT_ALL_MODE ? '.5' : '';
+    toEl.style.opacity = MR_PPT_ALL_MODE ? '.5' : '';
+  }
 }
 function mrPptTogglePop(e){
   e.stopPropagation();
@@ -12156,28 +12193,51 @@ function mrPptDownload(){
     showToast('PPT 다운로드 권한이 없습니다 (마스터/매니저 권한 필요)');
     return;
   }
-  const from=new Date(document.getElementById('mr-ppt-from').value);
-  const to=new Date(document.getElementById('mr-ppt-to').value);
-  if(isNaN(from)||isNaN(to)||from>to){ showToast('기간을 확인해주세요'); return; }
   if(typeof PptxGenJS === 'undefined'){ showToast('PPT 라이브러리 로드 실패 (네트워크 확인)'); return; }
-  // 기간 내 안건 (시작일 OR 마감일이 기간에 걸치는 안건 포함)
-  const inRange = MR_CASES.filter(c=>{
-    const sd = c.startDate ? new Date(c.startDate) : null;
-    const ed = c.due ? new Date(c.due) : null;
-    if(!sd && !ed) return false;
-    const s = sd || ed, e = ed || sd;
-    return (s<=to && e>=from);
-  });
-  if(inRange.length===0){ showToast('해당 기간에 안건이 없습니다'); return; }
-  showToast(`PPT 생성 중... (${inRange.length}건)`);
-  setTimeout(()=>_mrPptBuild(from, to, inRange), 100);
+
+  let from, to, cases, isAllMode = MR_PPT_ALL_MODE;
+  if(isAllMode){
+    // ─── 총 누적 모드: 모든 안건 포함 (기간 무시) ───
+    cases = MR_CASES.slice();
+    if(cases.length === 0){ showToast('등록된 안건이 없습니다'); return; }
+    // 안건의 시작/마감일에서 자동 범위 추출 (표지·푸터용)
+    const dates = [];
+    cases.forEach(c=>{
+      if(c.startDate){ const d=new Date(c.startDate); if(!isNaN(d)) dates.push(d); }
+      if(c.due){ const d=new Date(c.due); if(!isNaN(d)) dates.push(d); }
+    });
+    if(dates.length){
+      from = new Date(Math.min.apply(null, dates));
+      to = new Date(Math.max.apply(null, dates));
+    } else {
+      const t=new Date();
+      from = new Date(t.getFullYear(),0,1);
+      to = new Date(t.getFullYear(),11,31);
+    }
+    showToast(`총 누적 PPT 생성 중... (전체 ${cases.length}건)`);
+  } else {
+    // ─── 기간 모드: 기존 동작 ───
+    from = new Date(document.getElementById('mr-ppt-from').value);
+    to = new Date(document.getElementById('mr-ppt-to').value);
+    if(isNaN(from)||isNaN(to)||from>to){ showToast('기간을 확인해주세요'); return; }
+    cases = MR_CASES.filter(c=>{
+      const sd = c.startDate ? new Date(c.startDate) : null;
+      const ed = c.due ? new Date(c.due) : null;
+      if(!sd && !ed) return false;
+      const s = sd || ed, e = ed || sd;
+      return (s<=to && e>=from);
+    });
+    if(cases.length===0){ showToast('해당 기간에 안건이 없습니다'); return; }
+    showToast(`PPT 생성 중... (${cases.length}건)`);
+  }
+  setTimeout(()=>_mrPptBuild(from, to, cases, isAllMode), 100);
 }
 
-function _mrPptBuild(from, to, cases){
+function _mrPptBuild(from, to, cases, isAllMode){
   try{
     const pres = new PptxGenJS();
     pres.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5 inch
-    pres.title = 'MSO 영업 리포트';
+    pres.title = isAllMode ? 'MSO 영업 리포트 — 총 누적' : 'MSO 영업 리포트';
     pres.author = '정인호';
     pres.company = 'TheSC-MSO';
 
@@ -12205,6 +12265,11 @@ function _mrPptBuild(from, to, cases){
         const q = Math.floor(fM/3)+1; periodLabel = `${fY}년 ${q}분기`;
       } else periodLabel = `${_mrFmt(from)} ~ ${_mrFmt(to)}`;
     } else periodLabel = `${_mrFmt(from)} ~ ${_mrFmt(to)}`;
+
+    // 누적 모드 오버라이드 — 명시적으로 '총 누적' 표시
+    if(isAllMode){
+      periodLabel = `총 누적 (${_mrFmt(from)} ~ ${_mrFmt(to)})`;
+    }
 
     // 통계 집계
     const total = cases.length;
@@ -12704,7 +12769,9 @@ function _mrPptBuild(from, to, cases){
     s6.addText(`발행일 · ${todayStr}`, {x:0.5,y:4.5,w:12.3,h:0.6,fontSize:18,color:C.gray400,fontFace:'Pretendard',align:'center'});
 
     // 다운로드 — Blob 방식 (더 안정적, iframe/모바일 호환)
-    const fname = `MSO_영업리포트_${_mrFmt(from).replace(/\./g,'')}-${_mrFmt(to).replace(/\./g,'')}.pptx`;
+    const fname = isAllMode
+      ? `MSO_영업리포트_총누적_${_mrFmt(new Date()).replace(/\./g,'')}.pptx`
+      : `MSO_영업리포트_${_mrFmt(from).replace(/\./g,'')}-${_mrFmt(to).replace(/\./g,'')}.pptx`;
     pres.write({outputType:'blob'}).then(blob=>{
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
