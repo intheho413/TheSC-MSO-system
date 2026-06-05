@@ -1598,6 +1598,21 @@ html.light .mr-ppt-pop .pst.pst-all.on{background:linear-gradient(135deg,#f59e0b
 
 /* 컬럼1 — 안건 리스트 상단 검색 + 상태 필터 */
 .mr-list-search{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.015)}
+
+/* 종결 안건 숨김 안내 (안건 리스트 하단) */
+.mr-hidden-hint{display:flex;align-items:center;gap:8px;padding:10px 14px;margin:10px 14px;background:linear-gradient(135deg,rgba(100,116,139,.08),rgba(100,116,139,.04));border:1px dashed rgba(100,116,139,.25);border-radius:8px;color:#94a3b8;font-size:11.5px;cursor:pointer;transition:.18s;font-weight:600}
+.mr-hidden-hint:hover{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.04));border-color:rgba(239,68,68,.35);color:#fca5a5}
+.mr-hidden-hint .hh-icon{font-size:13px;flex-shrink:0;opacity:.8}
+.mr-hidden-hint:hover .hh-icon{color:#ef4444;opacity:1}
+.mr-hidden-hint .hh-text{flex:1}
+.mr-hidden-hint .hh-text b{color:#cbd5e1;margin:0 2px}
+.mr-hidden-hint:hover .hh-text b{color:#fff}
+.mr-hidden-hint .hh-cta{font-size:11px;font-weight:800;color:#94a3b8;letter-spacing:.3px;flex-shrink:0}
+.mr-hidden-hint:hover .hh-cta{color:#fca5a5}
+html.light .mr-hidden-hint{background:linear-gradient(135deg,rgba(0,0,0,.025),rgba(0,0,0,.01));border-color:rgba(0,0,0,.12);color:#64748b}
+html.light .mr-hidden-hint .hh-text b{color:#1e293b}
+html.light .mr-hidden-hint:hover{background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(239,68,68,.02));border-color:rgba(239,68,68,.3);color:#dc2626}
+html.light .mr-hidden-hint:hover .hh-text b{color:#7f1d1d}
 .mr-list-search input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:#fff;padding:7px 11px;border-radius:8px;font-size:12px;outline:none;font-family:inherit}
 .mr-list-search input:focus{border-color:rgba(167,139,250,.5)}
 .mr-list-search .hint{font-size:10px;color:#64748b;padding:0 2px;margin-top:5px}
@@ -11249,8 +11264,26 @@ function mrRenderCases(){
       </div>
     </div>`;
   }).join('');
-  document.getElementById('mr-case-list').innerHTML = html || '<div style="text-align:center;color:#64748b;padding:30px;font-size:13px">조건에 맞는 안건이 없습니다</div>';
+  // 종결 안건 숨김 안내 (전체 필터일 때만)
+  let hiddenHint = '';
+  if(MR_FILTER === 'all'){
+    const closedCount = MR_CASES.filter(c => c.status === '종결').length;
+    if(closedCount > 0){
+      hiddenHint = `<div class="mr-hidden-hint" onclick="mrSetFilter('종결')" title="종결 안건 보기">
+        <span class="hh-icon">⊝</span>
+        <span class="hh-text">종결 안건 <b>${closedCount}건</b> 숨김</span>
+        <span class="hh-cta">보기 ›</span>
+      </div>`;
+    }
+  }
+  document.getElementById('mr-case-list').innerHTML = (html || '<div style="text-align:center;color:#64748b;padding:30px;font-size:13px">조건에 맞는 안건이 없습니다</div>') + hiddenHint;
 }
+// 필터 직접 설정 헬퍼 (종결 숨김 힌트에서 사용)
+window.mrSetFilter = function(filter){
+  MR_FILTER = filter;
+  document.querySelectorAll('.mr-list-tg').forEach(b => b.classList.toggle('on', b.dataset.f === filter));
+  mrRenderCases();
+};
 
 function mrSelectCase(id){
   MR_CURRENT_ID = id;
