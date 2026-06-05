@@ -12732,44 +12732,32 @@ function _mrPptBuild(from, to, cases, isAllMode){
     // ═══════════════════════════════════════════════════════════════
     const slProg = pres.addSlide();
     slProg.background = {color:C.white};
-    _pptHeader(slProg, '06', '진행 중 안건 요약 (마감 임박순)', `현재 활성 ${inProgressCases.length}건 · 마감 임박 순 정렬 + 최근 코멘트`, '6 / 7', C);
+    _pptHeader(slProg, '06', '진행 중 안건 요약', `현재 활성 ${inProgressCases.length}건 · 최근 코멘트 요약`, '6 / 7', C);
     if(inProgressCases.length){
-      // 마감 임박순 정렬 — 가장 급한 안건부터 위로, 마감 없는 안건은 뒤로
+      // 마감 임박순 정렬 — 가장 급한 안건부터 위로 (silent — 컬럼은 표시 안 함)
       const sortedProg = [...inProgressCases].sort((a, b) => {
         const aDue = a.due ? new Date(a.due).getTime() : Infinity;
         const bDue = b.due ? new Date(b.due).getTime() : Infinity;
         return aDue - bDue;
       });
-      const todayMs = new Date().setHours(0,0,0,0);
       const progRows = [[
         {text:'병원·제품',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5}},
         {text:'상태',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5,align:'center'}},
         {text:'진행률',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5,align:'center'}},
         {text:'담당',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5,align:'center'}},
-        {text:'마감',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5,align:'center'}},
         {text:'최근 코멘트 요약',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5}}
       ]];
       sortedProg.slice(0, 12).forEach(c => {
-        const dueStr = c.due ? c.due.slice(5).replace('-','.') : '—';
         const summary = _summarizeComments(c);
-        // 마감 임박(7일 이내) 표시 — 빨강 강조
-        let dueColor = '374151';
-        if(c.due){
-          const dueMs = new Date(c.due).getTime();
-          const days = Math.floor((dueMs - todayMs) / 86400000);
-          if(days < 0) dueColor = 'DC2626';        // 경과 (빨강)
-          else if(days <= 7) dueColor = 'EA580C';  // D-7 이내 (주황)
-        }
         progRows.push([
           {text:`${c.client||'-'}\n${c.prod||''} ${c.type||''}`,options:{fontSize:9,color:'1F2937',bold:false}},
           {text:c.status||'-',options:{fontSize:9,color:c.status==='진행 중'?'D97706':(c.status==='컨펌 대기'?'7C3AED':'2563EB'),bold:true,align:'center'}},
           {text:(c.progress||0)+'%',options:{fontSize:10,color:'7C3AED',bold:true,align:'center'}},
           {text:c.owner||'-',options:{fontSize:9,color:'374151',align:'center'}},
-          {text:dueStr,options:{fontSize:9,color:dueColor,bold:dueColor!=='374151',align:'center'}},
           {text:summary,options:{fontSize:9,color:'4B5563'}}
         ]);
       });
-      slProg.addTable(progRows, {x:0.5,y:1.55,w:12.3,colW:[2.6,1.4,1.0,1.0,1.0,5.3],fontFace:'Pretendard',border:{type:'solid',color:'F3F4F6',pt:1},rowH:0.45});
+      slProg.addTable(progRows, {x:0.5,y:1.55,w:12.3,colW:[2.8,1.5,1.1,1.1,5.8],fontFace:'Pretendard',border:{type:'solid',color:'F3F4F6',pt:1},rowH:0.45});
       if(inProgressCases.length > 12){
         slProg.addText(`+ ${inProgressCases.length-12}건 추가 진행 중 안건 (상세는 본 시스템에서 확인)`, {x:0.5,y:6.7,w:12.3,h:0.3,fontSize:9.5,color:'9CA3AF',fontFace:'Pretendard',align:'center'});
       }
