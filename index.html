@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -12187,6 +12187,34 @@ function mrPptSetupPresets(){
   // 초기: 이번 달
   mrPptApply('month','이번 달');
 }
+// PPT 다운로드 감사 로그 (클라이언트 사이드)
+function _mrPptLogDownload(meta){
+  try{
+    const log = JSON.parse(localStorage.getItem('thesc-ppt-dl-log') || '[]');
+    log.unshift({
+      ts: new Date().toISOString(),
+      user: meta.user || '미지정',
+      role: meta.role || '',
+      mode: meta.mode,
+      cases: meta.cases,
+      from: meta.from,
+      to: meta.to,
+      fname: meta.fname
+    });
+    if(log.length > 100) log.length = 100;  // 최근 100건만 유지
+    localStorage.setItem('thesc-ppt-dl-log', JSON.stringify(log));
+    console.info('[PPT Download Log]', log[0]);
+  } catch(e){ console.warn('[PPT log error]', e); }
+}
+// 콘솔에서 로그 조회: mrPptViewLog()
+window.mrPptViewLog = function(){
+  try{
+    const log = JSON.parse(localStorage.getItem('thesc-ppt-dl-log') || '[]');
+    console.table(log);
+    return log;
+  } catch(e){ return []; }
+};
+
 function mrPptDownload(){
   // 다운로드 권한 가드
   if(typeof authCanDownload==='function' && !authCanDownload()){
@@ -12235,10 +12263,15 @@ function mrPptDownload(){
 
 function _mrPptBuild(from, to, cases, isAllMode){
   try{
+    // 작성자 동적 결정 — 로그인 사용자 이름 (없으면 fallback)
+    const authorName = (typeof CURRENT_USER === 'object' && CURRENT_USER && CURRENT_USER.name) ? CURRENT_USER.name : '미지정';
+    const authorRole = (typeof CURRENT_USER === 'object' && CURRENT_USER && CURRENT_USER.position) ? CURRENT_USER.position : '';
+    const authorLabel = authorRole ? `${authorName} (${authorRole})` : authorName;
+
     const pres = new PptxGenJS();
     pres.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5 inch
     pres.title = isAllMode ? 'MSO 영업 리포트 — 총 누적' : 'MSO 영업 리포트';
-    pres.author = '정인호';
+    pres.author = authorName;
     pres.company = 'TheSC-MSO';
 
     // 컬러 팔레트
@@ -12367,7 +12400,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
       s2.addText(s.n, {x:9.1+(i%2)*1.95,y:4.05+Math.floor(i/2)*0.95,w:1.7,h:0.3,fontSize:9,color:'6B7280',fontFace:'Pretendard'});
       s2.addText(String(s.v), {x:9.1+(i%2)*1.95,y:4.3+Math.floor(i/2)*0.95,w:1.7,h:0.55,fontSize:20,bold:true,color:C.gray900,fontFace:'Pretendard'});
     });
-    _pptFoot(s2, todayStr, C);
+    _pptFoot(s2, todayStr, C, authorLabel);
 
     // ─── 슬라이드 3: 의료장비 부문 ───
     const s3 = pres.addSlide();
@@ -12395,7 +12428,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
     s3.addText('📦  주요 제품', {x:0.85,y:4.5,w:11,h:0.4,fontSize:12,bold:true,color:C.gray700,fontFace:'Pretendard'});
     s3.addText(topProds.length ? topProds.join(' · ') : '제품 데이터 없음', {x:0.85,y:4.9,w:11,h:0.5,fontSize:14,bold:true,color:C.gray900,fontFace:'Pretendard'});
     s3.addText(`총 ${cases.filter(c=>c.prod).length}건의 안건 · 제품 ${Object.keys(byProd).length}종 등록`, {x:0.85,y:5.6,w:11,h:0.4,fontSize:11,color:'6B7280',fontFace:'Pretendard'});
-    _pptFoot(s3, todayStr, C);
+    _pptFoot(s3, todayStr, C, authorLabel);
 
     // ═══════════════════════════════════════════════════════════════
     // 전략 통계 집계 (완료/종결/진행 안건 패턴 분석)
@@ -12584,7 +12617,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
       slDone.addText(it.v, {x:x+0.15,y:6.58,w:3.8,h:0.25,fontSize:9.5,bold:true,color:C.gray900,fontFace:'Pretendard',align:'right'});
       slDone.addText(it.d, {x:x+0.15,y:6.83,w:3.8,h:0.25,fontSize:8.5,color:'4B5563',fontFace:'Pretendard'});
     });
-    _pptFoot(slDone, todayStr, C);
+    _pptFoot(slDone, todayStr, C, authorLabel);
 
     // ═══════════════════════════════════════════════════════════════
     // 슬라이드 5: 종결 안건 통계 분석
@@ -12645,7 +12678,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
       slLost.addText(`L${i+1}`, {x:7.25,y:y+0.06,w:0.5,h:0.3,fontSize:10,bold:true,color:lpColors[i%4],fontFace:'Pretendard'});
       slLost.addText(lp, {x:7.8,y:y+0.06,w:4.7,h:0.65,fontSize:10.5,color:'374151',fontFace:'Pretendard',valign:'middle'});
     });
-    _pptFoot(slLost, todayStr, C);
+    _pptFoot(slLost, todayStr, C, authorLabel);
 
     // ═══════════════════════════════════════════════════════════════
     // 슬라이드 6: 전략 인사이트 · 다음 분기 방향성
@@ -12685,7 +12718,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
       slSwot.addShape('roundRect',{x:11.85,y:y+0.18,w:0.85,h:0.3,fill:{color:a.prc},line:{type:'none'},rectRadius:0.05});
       slSwot.addText(a.pr, {x:11.85,y:y+0.18,w:0.85,h:0.3,fontSize:9,bold:true,color:'FFFFFF',fontFace:'Pretendard',align:'center',valign:'middle'});
     });
-    _pptFoot(slSwot, todayStr, C);
+    _pptFoot(slSwot, todayStr, C, authorLabel);
 
     // ═══════════════════════════════════════════════════════════════
     // 슬라이드 7: 진행 중 안건 요약 표
@@ -12722,7 +12755,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
       slProg.addShape('roundRect',{x:1,y:2.5,w:11.3,h:3,fill:{color:'F9FAFB'},line:{type:'none'},rectRadius:0.1});
       slProg.addText('현재 진행 중 안건이 없습니다', {x:1,y:3.8,w:11.3,h:0.5,fontSize:14,color:'9CA3AF',fontFace:'Pretendard',align:'center'});
     }
-    _pptFoot(slProg, todayStr, C);
+    _pptFoot(slProg, todayStr, C, authorLabel);
 
     // ─── 슬라이드 8: 안건 상태 + TOP 5 (기존 슬라이드 4) ───
     const s4 = pres.addSlide();
@@ -12758,7 +12791,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
       ]);
     });
     s4.addTable(tableRows, {x:0.5,y:3.2,w:12.3,colW:[3,3.5,1.3,1.8,1.4,1.3],fontFace:'Pretendard',border:{type:'solid',color:'F3F4F6',pt:1}});
-    _pptFoot(s4, todayStr, C);
+    _pptFoot(s4, todayStr, C, authorLabel);
 
     // ─── 슬라이드 9: 마무리 ───
     const s6 = pres.addSlide();
@@ -12766,7 +12799,10 @@ function _mrPptBuild(from, to, cases, isAllMode){
     s6.addShape('rect',{x:0,y:0,w:13.333,h:7.5,fill:{type:'solid',color:C.bgDark2}});
     s6.addShape('ellipse',{x:8,y:-2,w:7,h:7,fill:{color:C.purple,transparency:75},line:{type:'none'}});
     s6.addText('Thank You.', {x:0.5,y:2.8,w:12.3,h:1.5,fontSize:72,bold:true,color:C.white,fontFace:'Pretendard',align:'center'});
-    s6.addText(`발행일 · ${todayStr}`, {x:0.5,y:4.5,w:12.3,h:0.6,fontSize:18,color:C.gray400,fontFace:'Pretendard',align:'center'});
+    s6.addText(`발행일 · ${todayStr} · 작성자 ${authorLabel}`, {x:0.5,y:4.5,w:12.3,h:0.6,fontSize:18,color:C.gray400,fontFace:'Pretendard',align:'center'});
+
+    // 진행률 토스트 — 9슬라이드 모두 생성 완료
+    showToast('파일 인코딩 중... (9/9 슬라이드 생성 완료)');
 
     // 다운로드 — Blob 방식 (더 안정적, iframe/모바일 호환)
     const fname = isAllMode
@@ -12784,7 +12820,15 @@ function _mrPptBuild(from, to, cases, isAllMode){
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 1000);
-      showToast(`✓ ${fname} 다운로드 완료`);
+      // 감사 로그 기록
+      _mrPptLogDownload({
+        user: authorName, role: authorRole,
+        mode: isAllMode ? 'cumulative' : 'period',
+        cases: cases.length,
+        from: _mrFmt(from), to: _mrFmt(to),
+        fname: fname
+      });
+      showToast(`✓ ${fname} 다운로드 완료 (${cases.length}건)`);
     }).catch(err=>{
       console.error('[PPT write 오류]', err);
       showToast('PPT 생성 실패: '+(err?.message||err));
@@ -12806,10 +12850,12 @@ function _pptHeader(slide, num, title, sub, page, C){
   slide.addShape('rect',{x:0.5,y:1.4,w:12.5,h:0.03,fill:{color:'F3F4F6'}});
   slide.addShape('rect',{x:0.5,y:1.4,w:1,h:0.03,fill:{color:C.purpleDark}});
 }
-function _pptFoot(slide, date, C){
+function _pptFoot(slide, date, C, author){
+  // author 인자가 없으면 CURRENT_USER 폴백
+  const who = author || ((typeof CURRENT_USER === 'object' && CURRENT_USER && CURRENT_USER.name) ? CURRENT_USER.name : '미지정');
   slide.addShape('rect',{x:0.5,y:7.1,w:12.3,h:0.03,fill:{color:'F3F4F6'}});
   slide.addText('MSO 통합 관리', {x:0.5,y:7.15,w:6,h:0.3,fontSize:9,color:'9CA3AF',fontFace:'Pretendard',bold:true});
-  slide.addText(date + ' · 정인호', {x:6.5,y:7.15,w:6.3,h:0.3,fontSize:9,color:'9CA3AF',fontFace:'Pretendard',align:'right'});
+  slide.addText(date + ' · ' + who, {x:6.5,y:7.15,w:6.3,h:0.3,fontSize:9,color:'9CA3AF',fontFace:'Pretendard',align:'right'});
 }
 
 // 카테고리 칩 토글 (DOM ready 후 위임)
