@@ -12356,7 +12356,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
     // ─── 슬라이드 2: 핵심 요약 ───
     const s2 = pres.addSlide();
     s2.background = {color:C.bgLight};
-    _pptHeader(s2, '02', '핵심 지표 요약', `${periodLabel} 주요 성과 지표`, '2 / 9', C);
+    _pptHeader(s2, '02', '핵심 지표 요약', `${periodLabel} 주요 성과 지표`, '2 / 7', C);
     // KPI 4개
     const kpis = [
       {l:'총 안건', v:total+'건', c:C.purpleDark},
@@ -12402,33 +12402,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
     });
     _pptFoot(s2, todayStr, C, authorLabel);
 
-    // ─── 슬라이드 3: 의료장비 부문 ───
-    const s3 = pres.addSlide();
-    s3.background = {color:C.bgLight};
-    _pptHeader(s3, '03', '의료장비 부문 성과', `${periodLabel} 의료장비 사업부 종합 지표`, '3 / 9', C);
-    s3.addShape('roundRect',{x:0.5,y:1.6,w:12.3,h:5.2,fill:{color:'FFFFFF'},line:{color:C.borderLight,width:1},rectRadius:0.15});
-    s3.addShape('rect',{x:0.5,y:1.6,w:12.3,h:0.15,fill:{color:C.blue}});
-    s3.addShape('roundRect',{x:0.85,y:1.95,w:0.7,h:0.7,fill:{color:C.blue},line:{type:'none'},rectRadius:0.1});
-    s3.addText('⚕', {x:0.85,y:1.95,w:0.7,h:0.7,fontSize:24,bold:true,color:C.white,fontFace:'Pretendard',align:'center',valign:'middle'});
-    s3.addText('의료장비', {x:1.7,y:1.95,w:6,h:0.5,fontSize:22,bold:true,color:C.gray900,fontFace:'Pretendard'});
-    s3.addText('Medical Equipment', {x:1.7,y:2.4,w:6,h:0.3,fontSize:11,color:'6B7280',fontFace:'Pretendard'});
-    // 4 stat boxes
-    const m3 = [
-      {l:'안건 수', v:total+'건'},
-      {l:'완료', v:done+'건'},
-      {l:'평균 진행률', v:avgProg+'%'},
-      {l:'완료율', v:(total?Math.round(done/total*100):0)+'%'}
-    ];
-    m3.forEach((s,i)=>{
-      s3.addShape('roundRect',{x:0.85+i*2.95,y:3.0,w:2.75,h:1.2,fill:{color:'F9FAFB'},line:{type:'none'},rectRadius:0.07});
-      s3.addText(s.l, {x:0.95+i*2.95,y:3.1,w:2.5,h:0.3,fontSize:10,bold:true,color:'6B7280',fontFace:'Pretendard'});
-      s3.addText(s.v, {x:0.95+i*2.95,y:3.4,w:2.5,h:0.7,fontSize:24,bold:true,color:C.gray900,fontFace:'Pretendard'});
-    });
-    // 주요 제품
-    s3.addText('📦  주요 제품', {x:0.85,y:4.5,w:11,h:0.4,fontSize:12,bold:true,color:C.gray700,fontFace:'Pretendard'});
-    s3.addText(topProds.length ? topProds.join(' · ') : '제품 데이터 없음', {x:0.85,y:4.9,w:11,h:0.5,fontSize:14,bold:true,color:C.gray900,fontFace:'Pretendard'});
-    s3.addText(`총 ${cases.filter(c=>c.prod).length}건의 안건 · 제품 ${Object.keys(byProd).length}종 등록`, {x:0.85,y:5.6,w:11,h:0.4,fontSize:11,color:'6B7280',fontFace:'Pretendard'});
-    _pptFoot(s3, todayStr, C, authorLabel);
+    // (Option 1 압축: 슬라이드 3 '의료장비 부문 성과' 삭제 — 슬라이드 2와 데이터 중복)
 
     // ═══════════════════════════════════════════════════════════════
     // 전략 통계 집계 (완료/종결/진행 안건 패턴 분석)
@@ -12557,7 +12531,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
     // ═══════════════════════════════════════════════════════════════
     const slDone = pres.addSlide();
     slDone.background = {color:C.white};
-    _pptHeader(slDone, '04', '완료 안건 통계 분석', `${periodLabel} 완료 ${completedCases.length}건 패턴 분석 · 성공 요인 + 평균 전환 기간`, '4 / 9', C);
+    _pptHeader(slDone, '03', '완료 안건 통계 분석', `${periodLabel} 완료 ${completedCases.length}건 패턴 분석 · 성공 요인 + 평균 전환 기간`, '3 / 7', C);
     // 상단 KPI 4박스
     const doneKpis = [
       {l:'완료 안건', v:completedCases.length+'건', sub:`전체 ${total}건 중 ${total?Math.round(completedCases.length/total*100):0}%`, c:C.green},
@@ -12624,7 +12598,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
     // ═══════════════════════════════════════════════════════════════
     const slLost = pres.addSlide();
     slLost.background = {color:'FFFBFB'};
-    _pptHeader(slLost, '05', '종결 안건 통계 분석', `${periodLabel} 종결 ${terminatedCases.length}건 · 사유 분포 + 단계별 이탈 + 학습 포인트`, '5 / 9', C);
+    _pptHeader(slLost, '04', '종결 안건 통계 분석', `${periodLabel} 종결 ${terminatedCases.length}건 · 사유 분포 + 단계별 이탈 + 학습 포인트`, '4 / 7', C);
     // 상단 KPI 4박스
     const earlyTerm = terminatedCases.filter(c => (c.progress||0) < 30).length;
     const termAvgProg = terminatedCases.length ? Math.round(terminatedCases.reduce((s,c)=>s+(c.progress||0),0)/terminatedCases.length) : 0;
@@ -12685,7 +12659,7 @@ function _mrPptBuild(from, to, cases, isAllMode){
     // ═══════════════════════════════════════════════════════════════
     const slSwot = pres.addSlide();
     slSwot.background = {color:C.white};
-    _pptHeader(slSwot, '06', '전략 인사이트 · 다음 분기 방향성', 'SWOT 매트릭스 + 우선순위 액션 아이템', '6 / 9', C);
+    _pptHeader(slSwot, '05', '전략 인사이트 · 다음 분기 방향성', 'SWOT 매트릭스 + 우선순위 액션 아이템', '5 / 7', C);
     // SWOT 좌측
     slSwot.addText('SWOT 매트릭스', {x:0.5,y:1.55,w:6.2,h:0.3,fontSize:11,bold:true,color:'6B7280',fontFace:'Pretendard'});
     const swotQuads = [
@@ -12725,8 +12699,15 @@ function _mrPptBuild(from, to, cases, isAllMode){
     // ═══════════════════════════════════════════════════════════════
     const slProg = pres.addSlide();
     slProg.background = {color:C.white};
-    _pptHeader(slProg, '07', '진행 중 안건 요약', `현재 활성 ${inProgressCases.length}건 · 최근 코멘트 + 진행률`, '7 / 9', C);
+    _pptHeader(slProg, '06', '진행 중 안건 요약 (마감 임박순)', `현재 활성 ${inProgressCases.length}건 · 마감 임박 순 정렬 + 최근 코멘트`, '6 / 7', C);
     if(inProgressCases.length){
+      // 마감 임박순 정렬 — 가장 급한 안건부터 위로, 마감 없는 안건은 뒤로
+      const sortedProg = [...inProgressCases].sort((a, b) => {
+        const aDue = a.due ? new Date(a.due).getTime() : Infinity;
+        const bDue = b.due ? new Date(b.due).getTime() : Infinity;
+        return aDue - bDue;
+      });
+      const todayMs = new Date().setHours(0,0,0,0);
       const progRows = [[
         {text:'병원·제품',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5}},
         {text:'상태',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5,align:'center'}},
@@ -12735,15 +12716,23 @@ function _mrPptBuild(from, to, cases, isAllMode){
         {text:'마감',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5,align:'center'}},
         {text:'최근 코멘트 요약',options:{bold:true,fill:{color:'EDE9FE'},color:'5B21B6',fontSize:9.5}}
       ]];
-      inProgressCases.slice(0, 12).forEach(c => {
+      sortedProg.slice(0, 12).forEach(c => {
         const dueStr = c.due ? c.due.slice(5).replace('-','.') : '—';
         const summary = _summarizeComments(c);
+        // 마감 임박(7일 이내) 표시 — 빨강 강조
+        let dueColor = '374151';
+        if(c.due){
+          const dueMs = new Date(c.due).getTime();
+          const days = Math.floor((dueMs - todayMs) / 86400000);
+          if(days < 0) dueColor = 'DC2626';        // 경과 (빨강)
+          else if(days <= 7) dueColor = 'EA580C';  // D-7 이내 (주황)
+        }
         progRows.push([
           {text:`${c.client||'-'}\n${c.prod||''} ${c.type||''}`,options:{fontSize:9,color:'1F2937',bold:false}},
           {text:c.status||'-',options:{fontSize:9,color:c.status==='진행 중'?'D97706':(c.status==='컨펌 대기'?'7C3AED':'2563EB'),bold:true,align:'center'}},
           {text:(c.progress||0)+'%',options:{fontSize:10,color:'7C3AED',bold:true,align:'center'}},
           {text:c.owner||'-',options:{fontSize:9,color:'374151',align:'center'}},
-          {text:dueStr,options:{fontSize:9,color:'374151',align:'center'}},
+          {text:dueStr,options:{fontSize:9,color:dueColor,bold:dueColor!=='374151',align:'center'}},
           {text:summary,options:{fontSize:9,color:'4B5563'}}
         ]);
       });
@@ -12757,43 +12746,11 @@ function _mrPptBuild(from, to, cases, isAllMode){
     }
     _pptFoot(slProg, todayStr, C, authorLabel);
 
-    // ─── 슬라이드 8: 안건 상태 + TOP 5 (기존 슬라이드 4) ───
-    const s4 = pres.addSlide();
-    s4.background = {color:C.white};
-    _pptHeader(s4, '08', '안건 상태 분포', `${periodLabel} 전체 ${total}건의 상태별 현황 + 주요 안건 TOP 5`, '8 / 9', C);
-    // 상태 6 카드
-    statItems.forEach((s,i)=>{
-      const x = 0.5 + i*2.1;
-      s4.addShape('roundRect',{x,y:1.5,w:1.95,h:1.4,fill:{color:'F9FAFB'},line:{type:'none'},rectRadius:0.1});
-      s4.addShape('rect',{x,y:2.78,w:1.95,h:0.12,fill:{color:s.c}});
-      s4.addText(s.n, {x:x+0.1,y:1.55,w:1.75,h:0.3,fontSize:10,bold:true,color:'6B7280',fontFace:'Pretendard',align:'center'});
-      s4.addText(String(s.v), {x:x+0.1,y:1.85,w:1.75,h:0.7,fontSize:32,bold:true,color:C.gray900,fontFace:'Pretendard',align:'center'});
-      s4.addText(total?Math.round(s.v/total*100)+'%':'0%', {x:x+0.1,y:2.55,w:1.75,h:0.25,fontSize:10,color:'9CA3AF',fontFace:'Pretendard',align:'center'});
-    });
-    // TOP 5 표
-    const tableRows = [[
-      {text:'병원',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
-      {text:'제품·유형',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
-      {text:'담당',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
-      {text:'상태',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
-      {text:'진행률',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}},
-      {text:'마감',options:{bold:true,fill:{color:'F3F4F6'},color:'4B5563',fontSize:10}}
-    ]];
-    top5.forEach(c=>{
-      const dueStr = c.due ? c.due.slice(5,10) : '—';
-      tableRows.push([
-        {text:c.client||'-',options:{fontSize:11,color:'1F2937',bold:true}},
-        {text:`${c.prod||''} ${c.type||''}`,options:{fontSize:10,color:'374151'}},
-        {text:c.owner||'-',options:{fontSize:10,color:'374151'}},
-        {text:c.status||'-',options:{fontSize:10,color:'374151'}},
-        {text:(c.progress||0)+'%',options:{fontSize:11,color:C.purpleDark,bold:true}},
-        {text:dueStr,options:{fontSize:10,color:'374151'}}
-      ]);
-    });
-    s4.addTable(tableRows, {x:0.5,y:3.2,w:12.3,colW:[3,3.5,1.3,1.8,1.4,1.3],fontFace:'Pretendard',border:{type:'solid',color:'F3F4F6',pt:1}});
-    _pptFoot(s4, todayStr, C, authorLabel);
+    // (Option 1 압축: 슬라이드 8 '안건 상태 + TOP 5' 삭제
+    //  - 상단 6개 상태 카드는 슬라이드 2 우측 박스와 중복
+    //  - TOP 5 표는 슬라이드 6 마감 임박순 정렬로 흡수)
 
-    // ─── 슬라이드 9: 마무리 ───
+    // ─── 슬라이드 7: 마무리 ───
     const s6 = pres.addSlide();
     s6.background = {color:C.bgDark3};
     s6.addShape('rect',{x:0,y:0,w:13.333,h:7.5,fill:{type:'solid',color:C.bgDark2}});
@@ -12801,8 +12758,8 @@ function _mrPptBuild(from, to, cases, isAllMode){
     s6.addText('Thank You.', {x:0.5,y:2.8,w:12.3,h:1.5,fontSize:72,bold:true,color:C.white,fontFace:'Pretendard',align:'center'});
     s6.addText(`발행일 · ${todayStr} · 작성자 ${authorLabel}`, {x:0.5,y:4.5,w:12.3,h:0.6,fontSize:18,color:C.gray400,fontFace:'Pretendard',align:'center'});
 
-    // 진행률 토스트 — 9슬라이드 모두 생성 완료
-    showToast('파일 인코딩 중... (9/9 슬라이드 생성 완료)');
+    // 진행률 토스트 — 7슬라이드 모두 생성 완료
+    showToast('파일 인코딩 중... (7/7 슬라이드 생성 완료)');
 
     // 다운로드 — Blob 방식 (더 안정적, iframe/모바일 호환)
     const fname = isAllMode
