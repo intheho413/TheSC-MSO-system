@@ -2842,13 +2842,13 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
       <div class="login-logo">M</div>
       <div>
         <div class="login-title">MSO 통합 관리</div>
-        <div class="login-sub">사번과 비밀번호로 로그인하세요</div>
+        <div class="login-sub">이메일과 비밀번호로 로그인하세요</div>
       </div>
     </div>
     <form class="login-form" onsubmit="event.preventDefault();handleLoginSubmit()">
       <label class="login-field">
-        <span class="login-lbl">사원명</span>
-        <input id="login-empid" type="text" autocomplete="username" placeholder="이름을 입력하세요" required>
+        <span class="login-lbl">이메일</span>
+        <input id="login-empid" type="email" autocomplete="username" placeholder="이메일을 입력하세요" required>
       </label>
       <label class="login-field">
         <span class="login-lbl">비밀번호</span>
@@ -2858,7 +2858,7 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
     </form>
     <div id="login-error" class="login-error"></div>
     <div class="login-help">
-      <div>초기 비밀번호: <b>1234</b> (최초 로그인 시 변경)</div>
+      <div>계정은 관리자에게 발급받으세요</div>
       <div>비밀번호 분실 시 관리자에게 문의</div>
     </div>
   </div>
@@ -5153,11 +5153,13 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
 const SUPABASE_URL = 'https://wgrnqxxfzazvnbikkdgb.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indncm5xeHhmemF6dm5iaWtrZGdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3MzM4NjksImV4cCI6MjA5NDMwOTg2OX0.8yxbScVUCswP-heAiWOZ4mLnyEWsHkGK7M0T-k0kfGs';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let AUTH_TOKEN = null;
+sb.auth.onAuthStateChange((_e, s) => { AUTH_TOKEN = (s && s.access_token) ? s.access_token : null; });
 
 // ── DB 쿼리 헬퍼 ─────────────────────────────────
 async function dbQuery(table, params='') {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${params}`, {
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (AUTH_TOKEN || SUPABASE_KEY) }
   });
   if (!res.ok) return [];
   return res.json();
@@ -5339,7 +5341,7 @@ async function submitCart() {
         expiry_date: item.expiry||null, remaining_qty: item.qty, note
       };
       const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in`,{method:'POST',
-        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
         body: JSON.stringify(body)});
       if(res.ok||res.status===201) ok++; else fail++;
     }
@@ -6171,7 +6173,7 @@ async function _ensureMedProduct(name, mfr) {
     const found = await dbQuery('med_products', q);
     if(found && found.length) return 'exists';
     const res = await fetch(`${SUPABASE_URL}/rest/v1/med_products`,{method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
       body: JSON.stringify({name, manufacturer:mfr, spec:null})});
     return (res.ok||res.status===201) ? 'created' : 'fail';
   } catch(e){ return 'fail'; }
@@ -6195,7 +6197,7 @@ async function submitMedIn() {
     agency:document.getElementById('med-in-agency')?.value?.trim()||null,
     note:document.getElementById('med-in-note')?.value||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_stock_in`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
   if(res.ok||res.status===201){
     // 매입한 장비를 장비 관리에 자동 등록
     const reg = await _ensureMedProduct(prod, mfr);
@@ -6223,13 +6225,13 @@ async function _saveMedInCore(id){
     note:document.getElementById('mi-note-'+id)?.value?.trim()||null};
   if(remEl) body.remaining_qty = parseInt(remEl.value)||0;
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_stock_in?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify(body)});
   return (res.ok||res.status===204||res.status===200)?{ok:true}:{ok:false,msg:'저장실패'};
 }
 async function _deleteMedInCore(id){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_stock_in?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   return (res.ok||res.status===204)?{ok:true}:{ok:false,msg:'삭제실패'};
 }
 async function saveMedInRow(id){ const r=await _saveMedInCore(id); showToast(r.ok?'매입 내역 수정 완료':`수정 실패 — ${r.msg}`); if(r.ok) initMedSales(); }
@@ -6267,7 +6269,7 @@ async function _resolveMedClient(name){
   const found = await dbQuery('med_clients', `?hospital_name=eq.${encodeURIComponent(name)}&select=id&limit=1`);
   if(found && found.length) return found[0].id;
   const res = await fetch(`${SUPABASE_URL}/rest/v1/med_clients`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=representation'},
     body:JSON.stringify({hospital_name:name})});
   if(res.ok||res.status===201){ const d=await res.json(); return d?.[0]?.id||null; }
   return null;
@@ -6291,13 +6293,13 @@ async function _saveMedOutCore(id){
     supply_amount:supply, vat_amount:sp-supply, total_amount:sp,
     note:document.getElementById('mo-note-'+id)?.value?.trim()||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_stock_out?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify(body)});
   return (res.ok||res.status===204||res.status===200)?{ok:true}:{ok:false,msg:'저장실패'};
 }
 async function _deleteMedOutCore(id){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_stock_out?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   return (res.ok||res.status===204)?{ok:true}:{ok:false,msg:'삭제실패'};
 }
 async function saveMedOutRow(id){ const r=await _saveMedOutCore(id); showToast(r.ok?'납품 내역 수정 완료':`수정 실패 — ${r.msg}`); if(r.ok) initMedSales(); }
@@ -6398,7 +6400,7 @@ async function submitMedOut(){
   let hosps=await dbQuery('med_clients',`?hospital_name=eq.${encodeURIComponent(hosp)}&select=id`);
   let cid=hosps?.[0]?.id||null;
   if(!cid){const r=await fetch(`${SUPABASE_URL}/rest/v1/med_clients`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=representation'},
     body:JSON.stringify({hospital_name:hosp})});
     if(r.ok||r.status===201){const d=await r.json();cid=d?.[0]?.id;}}
   if(!cid){showToast('거래처 등록 실패');return;}
@@ -6424,7 +6426,7 @@ async function submitMedOut(){
     const {_medInId, ...rec}=row;
     const sp=rec.sale_price,supply=sp>0?Math.round(sp/1.1):0;
     await fetch(`${SUPABASE_URL}/rest/v1/med_stock_out`,{method:'POST',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
       body:JSON.stringify({date,client_id:cid,...rec,supply_amount:supply,vat_amount:sp-supply,total_amount:sp})});
     if(_medInId) deduct[_medInId]=(deduct[_medInId]||0)+rec.quantity;   // 매입 장비별 차감량 집계
   }
@@ -6434,7 +6436,7 @@ async function submitMedOut(){
     const row=(await dbQuery('med_stock_in',`?id=eq.${mid}&select=quantity,remaining_qty`))[0]||{};
     const cur = row.remaining_qty ?? row.quantity ?? 0;
     await fetch(`${SUPABASE_URL}/rest/v1/med_stock_in?id=eq.${mid}`,{method:'PATCH',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
       body:JSON.stringify({remaining_qty: cur - deduct[mid]})});
     deducted += deduct[mid];
   }
@@ -6453,7 +6455,7 @@ async function submitMedPay(){
     payment_method:document.querySelector('[name="med-pay-type"]')?.value||'현금',
     note:document.getElementById('med-pay-note')?.value||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_payments`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
   if(res.ok||res.status===201){showToast('수금 등록 완료');initMedRecv();}
   else showToast('수금 등록 실패');
 }
@@ -6464,7 +6466,7 @@ async function submitMedProd(){
   const mfr=document.getElementById('med-prod-mfr')?.value?.trim();
   if(!name||!mfr){showToast('장비명과 장비사를 입력하세요');return;}
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_products`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify({name,manufacturer:mfr,spec:document.getElementById('med-prod-spec')?.value||null})});
   if(res.ok||res.status===201){showToast('장비 등록 완료');initMedMaster();}
   else showToast('등록 실패 (med_products 테이블 확인 필요)');
@@ -6480,7 +6482,7 @@ async function submitMedClient(){
     phone:document.getElementById('med-cli-phone')?.value||null,
     address:document.getElementById('med-cli-addr')?.value||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_clients`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(body)});
   if(res.ok||res.status===201){showToast('거래처 등록 완료');initMedMaster();}
   else showToast('등록 실패 (med_clients 테이블 확인 필요)');
 }
@@ -6492,13 +6494,13 @@ async function _saveMedProdCore(id){
   if(!name) return {ok:false, msg:'장비명 누락'};
   const body={name, manufacturer:mfr||null, spec:document.getElementById('emp-spec-'+id)?.value?.trim()||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_products?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify(body)});
   return (res.ok||res.status===204||res.status===200)?{ok:true}:{ok:false,msg:'저장실패'};
 }
 async function _deleteMedProdCore(id){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_products?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   if(res.ok||res.status===204) return {ok:true};
   if(res.status===409) return {ok:false, msg:'매입/납품 이력 있음'};
   return {ok:false, msg:'삭제실패'};
@@ -6549,13 +6551,13 @@ async function _saveMedClientCore(id){
     phone:document.getElementById('emc-phone-'+id)?.value?.trim()||null,
     address:document.getElementById('emc-addr-'+id)?.value?.trim()||null};
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_clients?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body:JSON.stringify(body)});
   return (res.ok||res.status===204||res.status===200)?{ok:true}:{ok:false,msg:'저장실패'};
 }
 async function _deleteMedClientCore(id){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/med_clients?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   if(res.ok||res.status===204) return {ok:true};
   if(res.status===409) return {ok:false, msg:'납품/수금 이력 있음'};
   return {ok:false, msg:'삭제실패'};
@@ -6724,7 +6726,7 @@ async function saveMedLedgerRow(type, id){
     table='med_payments'; body={date, amount:amt, note};
   }
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   const ok = res.ok||res.status===204||res.status===200;
   showToast(ok ? '저장 완료' : '저장 실패');
@@ -6735,7 +6737,7 @@ async function deleteMedLedgerRow(type, id){
   if(!confirm(`이 ${label} 내역을 삭제할까요?\n되돌릴 수 없습니다.`)) return;
   const table = type==='out' ? 'med_stock_out' : 'med_payments';
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   const ok = res.ok||res.status===204;
   showToast(ok ? `${label} 내역 삭제 완료` : '삭제 실패');
   if(ok) loadMedLedger(_medLedgerClient);
@@ -6962,13 +6964,13 @@ async function _saveInCore(id) {
   const newRemaining = qty - consumed;                 // 잔여 = 입고수량 - 소비량
   const body = { date, lot_number:lot, quantity:qty, purchase_price:price, expiry_date:exp, remaining_qty:newRemaining };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'저장실패'};
 }
 async function _deleteInCore(id) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'삭제실패'};
 }
 async function saveInRow(id){
@@ -7133,13 +7135,13 @@ async function _savePaymentCore(id) {
   if(!date) return {ok:false, msg:'수금일 누락'};
   if(!amount) return {ok:false, msg:'수금액 누락'};
   const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify({date, amount})});
   return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'저장실패'};
 }
 async function _deletePaymentCore(id) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/payments?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'삭제실패'};
 }
 async function savePayment(id) {
@@ -7213,7 +7215,7 @@ async function submitPayment() {
   if(!cid){ showToast('거래처를 선택하세요'); return; }
   if(!amount){ showToast('수금액을 입력하세요'); return; }
   const res = await fetch(`${SUPABASE_URL}/rest/v1/payments`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify({date, client_id:parseInt(cid), amount, note})});
   if(res.ok || res.status===201){
     showToast(`수금 등록 완료 — ${W(amount)}`);
@@ -7303,7 +7305,7 @@ async function submitProduct() {
     min_stock: parseInt(document.getElementById('prod-min')?.value)||0,
   };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/products`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   if(res.ok || res.status===201){
     showToast(`제품 등록 완료 — ${name}`);
@@ -7324,14 +7326,14 @@ async function _saveProductCore(id) {
   };
   if(!body.name) return {ok:false, msg:'제품명 누락'};
   const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'저장실패'};
 }
 // 단일 제품 삭제 핵심 — {ok,msg} 반환 (입출고 이력 있으면 FK로 실패)
 async function _deleteProductCore(id) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   if(res.ok||res.status===204) return {ok:true};
   if(res.status===409) return {ok:false, msg:'입출고 이력 있음'};
   return {ok:false, msg:'삭제실패'};
@@ -7382,7 +7384,7 @@ async function submitClient() {
     discount_rate: (parseInt(document.getElementById('disc-slider')?.value)||0)/100,
   };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/clients`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   if(res.ok || res.status===201){
     showToast(`거래처 등록 완료 — ${name}`);
@@ -7401,14 +7403,14 @@ async function _saveClientCore(id) {
     discount_rate: (parseFloat(document.getElementById('ec-disc-'+id)?.value)||0)/100,
   };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'저장실패'};
 }
 // 단일 거래처 삭제 핵심 — {ok,msg} 반환 (출고/수금 이력 있으면 FK로 실패)
 async function _deleteClientCore(id) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/clients?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   if(res.ok||res.status===204) return {ok:true};
   if(res.status===409) return {ok:false, msg:'출고/수금 이력 있음'};
   return {ok:false, msg:'삭제실패'};
@@ -7563,14 +7565,14 @@ async function _processOutItem(cid, date, type, disc, item) {
     supply_amount:supply, vat_amount:vat, total_amount:total, fifo_purchase_price:unitCost,
     margin_amount:margin, margin_rate:marginRate, note:fullNote };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_out`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   if(!(res.ok||res.status===201)) return {ok:false, msg:`${item.name} 저장실패`};
   if(type==='출고'){
     for(const p of plan){
       const l = lots.find(x=>x.id===p.id);
       await fetch(`${SUPABASE_URL}/rest/v1/stock_in?id=eq.${p.id}`,{method:'PATCH',
-        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
         body: JSON.stringify({remaining_qty:(l.remaining_qty||0)-p.take})});
     }
   }
@@ -7653,7 +7655,7 @@ async function loadEditList() {
 
 async function _patchRem(id, rem){
   return fetch(`${SUPABASE_URL}/rest/v1/stock_in?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify({remaining_qty:rem})});
 }
 
@@ -7701,7 +7703,7 @@ async function _saveEditCore(id) {
   const memo = (memoInput ? memoInput.value : _noteMemo(d.note) || '').trim();
   const note = 'Lot: ' + label + (memo ? ' / '+memo : '');
   const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_out?id=eq.${id}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify({quantity:newQty, total_amount:total, supply_amount:supply, vat_amount:vat, fifo_purchase_price:newCost, margin_amount:margin, margin_rate:marginRate, note})});
   return (res.ok||res.status===204||res.status===200) ? {ok:true, marginRate, label} : {ok:false, msg:'저장실패'};
 }
@@ -7717,7 +7719,7 @@ async function _deleteOutCore(id) {
     if(l) await _patchRem(l.id, Math.min((l.remaining_qty||0)+d.oldQty, l.quantity||((l.remaining_qty||0)+d.oldQty)));
   }
   const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_out?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   return (res.ok||res.status===204||res.status===200) ? {ok:true} : {ok:false, msg:'삭제실패'};
 }
 
@@ -8136,7 +8138,7 @@ async function createSignRequest(){
     client_id,
   };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/med_contracts`,{method:'POST',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   if(res.ok||res.status===201){
     // 항상 라이브 페이지로 링크 (localhost에서 생성해도 외부 공유 가능)
@@ -8361,7 +8363,7 @@ async function deleteSelectedMedDocs(){
   let ok=0; const errs=[];
   for(const id of ids){
     const res = await fetch(`${SUPABASE_URL}/rest/v1/med_contracts?id=eq.${id}`,{method:'DELETE',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
     if(res.ok||res.status===204) ok++; else errs.push(id);
   }
   showToast(errs.length ? `${ok}건 삭제, ${errs.length}건 실패` : `${ok}건 일괄 삭제 완료`);
@@ -8371,7 +8373,7 @@ async function deleteSelectedMedDocs(){
 async function deleteMedDocRow(id){
   if(!confirm('이 문서를 삭제할까요?\n되돌릴 수 없습니다. (서명된 문서도 함께 삭제됩니다)')) return;
   const res = await fetch(`${SUPABASE_URL}/rest/v1/med_contracts?id=eq.${id}`,{method:'DELETE',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'}});
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Prefer':'return=minimal'}});
   if(res.ok||res.status===204){ showToast('문서가 삭제되었습니다'); initMedMaster(); }
   else showToast('삭제 실패 ('+res.status+')');
 }
@@ -8544,7 +8546,7 @@ async function dbGetConfig() {
 async function dbSaveConfig(patch) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/app_config?id=eq.main`,{method:'PATCH',
-      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
       body: JSON.stringify(patch)});
     return res.ok || res.status===204;
   } catch(e) { return false; }
@@ -9513,49 +9515,33 @@ function authLoadSession(){
   }catch(e){ console.warn('[authLoadSession]', e); return null; }
 }
 
-function authLogout(){
+async function authLogout(){
+  try{ await sb.auth.signOut(); }catch(_){}
   localStorage.removeItem(AUTH_SESSION_KEY);
+  AUTH_TOKEN = null;
   CURRENT_USER = null;
   showLoginScreen();
 }
 
-async function authLogin(loginId, password){
-  const input = (loginId||'').toString().trim();
-  if(!input) return {ok:false, msg:'사원명을 입력하세요'};
-  // 사원명 또는 사번(EMP001/숫자)으로 조회
-  const u = MR_EMPLOYEES.find(e =>
-    e.name === input
-    || e.empNo === input
-    || String(e.id) === input
-    || authFormatEmpId(e.id) === input
-  );
-  if(!u) return {ok:false, msg:'존재하지 않는 사원명입니다'};
-  if(u.active===false) return {ok:false, msg:'비활성화된 계정입니다 (관리자 문의)'};
-  // 비밀번호 미설정 = 초기 비밀번호 '1234'로 로그인 가능 (강제 변경)
-  if(!u.passwordHash){
-    if(password !== AUTH_DEFAULT_PW){
-      return {ok:false, msg:`초기 비밀번호는 ${AUTH_DEFAULT_PW} 입니다`};
-    }
-    _authSaveSession(u);
-    return {ok:true, mustChangePassword:true};
-  }
-  const valid = await _authVerify(password, u.passwordHash);
-  if(!valid) return {ok:false, msg:'비밀번호가 일치하지 않습니다'};
-  _authSaveSession(u);
-  return {ok:true, mustChangePassword: u.mustChangePassword===true};
+async function authLogin(email, password){
+  const input = (email||'').toString().trim().toLowerCase();
+  if(!input) return {ok:false, msg:'이메일을 입력하세요'};
+  const { data, error } = await sb.auth.signInWithPassword({ email: input, password });
+  if(error) return {ok:false, msg:'이메일 또는 비밀번호가 올바르지 않습니다'};
+  AUTH_TOKEN = data.session ? data.session.access_token : null;
+  try{ await sbBootstrapEmployees(); }catch(_){}
+  const u = (Array.isArray(MR_EMPLOYEES)?MR_EMPLOYEES:[]).find(e => (e.email||'').toLowerCase() === input);
+  if(u && u.active === false){ await sb.auth.signOut(); return {ok:false, msg:'비활성화된 계정입니다 (관리자 문의)'}; }
+  CURRENT_USER = u
+    ? {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'}
+    : {id:null, name:(data.user&&data.user.email)||input, position:'', role:'staff'};
+  return {ok:true, mustChangePassword:false};
 }
 
 async function authChangePassword(newPassword){
-  if(!CURRENT_USER) return {ok:false, msg:'로그인이 필요합니다'};
-  if(!newPassword || newPassword.length<4) return {ok:false, msg:'비밀번호는 4자 이상이어야 합니다'};
-  const u = MR_EMPLOYEES.find(e=>e.id===CURRENT_USER.id);
-  if(!u) return {ok:false, msg:'사용자 정보 오류'};
-  u.passwordHash = await _authHash(newPassword);
-  u.mustChangePassword = false;
-  u.passwordChangedAt = new Date().toISOString();
-  try{ mrSaveState(); }catch(e){}
-  // 클라우드 동기화
-  try{ await sbEmpUpdate(u.id, {passwordHash:u.passwordHash, mustChangePassword:false, passwordChangedAt:u.passwordChangedAt}); }catch(e){}
+  if(!newPassword || newPassword.length < 6) return {ok:false, msg:'비밀번호는 6자 이상이어야 합니다'};
+  const { error } = await sb.auth.updateUser({ password: newPassword });
+  if(error) return {ok:false, msg:'변경 실패: '+error.message};
   return {ok:true};
 }
 
@@ -9989,7 +9975,7 @@ async function handleLoginSubmit(){
   const empId = empIdEl.value.trim();
   const pw = pwEl.value;
   errEl.textContent = '';
-  if(!empId || !pw){ errEl.textContent = '사원명과 비밀번호를 입력하세요'; return; }
+  if(!empId || !pw){ errEl.textContent = '이메일과 비밀번호를 입력하세요'; return; }
   const result = await authLogin(empId, pw);
   if(!result.ok){ errEl.textContent = result.msg; pwEl.value=''; return; }
   showAppScreen();
@@ -10046,14 +10032,17 @@ async function handlePasswordChange(){
 }
 
 // 페이지 로드 시 인증 체크
-function authBootstrap(){
-  const user = authLoadSession();
-  if(user){
+async function authBootstrap(){
+  const { data } = await sb.auth.getSession();
+  if(data && data.session){
+    AUTH_TOKEN = data.session.access_token;
+    try{ await sbBootstrapEmployees(); }catch(_){}
+    const email = ((data.session.user && data.session.user.email) || '').toLowerCase();
+    const u = (Array.isArray(MR_EMPLOYEES)?MR_EMPLOYEES:[]).find(e => (e.email||'').toLowerCase() === email);
+    CURRENT_USER = u ? {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'}
+                     : {id:null, name:email||'사용자', position:'', role:'staff'};
     showAppScreen();
-    // 세션 복원 시 항상 홈 화면 유지 — 사용자가 직접 선택
-  } else {
-    showLoginScreen();
-  }
+  } else { showLoginScreen(); }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -13428,7 +13417,7 @@ async function signSubmit(){
   const signatureImage = _signPad.toDataURL('image/png');
   const body = { signature_image:signatureImage, signer_name:name, signed_at:new Date().toISOString(), signed_status:'signed' };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/med_contracts?share_token=eq.${encodeURIComponent(_signToken)}`,{method:'PATCH',
-    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+    headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
   if(res.ok||res.status===204){
     // 메모리상 _signRec도 갱신 → 미리보기 재렌더 시 서명란 표시
