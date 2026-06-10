@@ -8697,7 +8697,7 @@ let MR_SELECTED_CAT = 'med';
 // ═══════════════ 구글 캘린더 연동 ═══════════════
 const MR_GCAL_DEFAULT_CALENDAR = '3cdcb19598c4ab7644b56e65ff9eb22049efbc96e0e19c5db788f687b4af37b9@group.calendar.google.com';
 const MR_GCAL_DEFAULT_CLIENT_ID = '614321764934-f62ksk50pcut5g2t8p8ffe8v8lo4vnmp.apps.googleusercontent.com';
-const MR_GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar.events';
+const MR_GCAL_SCOPES = 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly';
 const MR_GCAL_COLOR_MAP = { '시너젯':'9', '써마지':'6', '인텐스울트라':'10' }; // default 3 (grape)
 let MR_GCAL_TOKEN = null;
 let MR_GCAL_TOKEN_CLIENT = null;
@@ -8786,13 +8786,17 @@ function mrGCalInitGAPI(){
   gapi.load('client', async ()=>{
     await gapi.client.init({ discoveryDocs:['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'] });
     MR_GCAL_GAPI_READY = true;
-    // 저장된 토큰 복원
+    // 저장된 토큰 복원 (스코프 버전 불일치 시 폐기)
     try{
       const saved = JSON.parse(localStorage.getItem('mr_gcal_token')||'null');
-      if(saved && saved.access_token && saved.expires_at > Date.now()){
+      const scopeOk = saved && saved.scope && MR_GCAL_SCOPES.split(' ').every(s => saved.scope.includes(s));
+      if(saved && saved.access_token && saved.expires_at > Date.now() && scopeOk){
         MR_GCAL_TOKEN = saved;
         gapi.client.setToken({access_token: saved.access_token});
         mrGCalUpdateStatus();
+      } else if(saved){
+        localStorage.removeItem('mr_gcal_token');
+        MR_GCAL_TOKEN = null;
       }
     }catch(e){}
   });
@@ -8810,7 +8814,8 @@ function mrGCalInitGIS(){
       const expSec = resp.expires_in || 3600;
       MR_GCAL_TOKEN = {
         access_token: resp.access_token,
-        expires_at: Date.now() + (expSec*1000) - 60000
+        expires_at: Date.now() + (expSec*1000) - 60000,
+        scope: resp.scope || MR_GCAL_SCOPES
       };
       localStorage.setItem('mr_gcal_token', JSON.stringify(MR_GCAL_TOKEN));
       if(gapi?.client) gapi.client.setToken({access_token: resp.access_token});
