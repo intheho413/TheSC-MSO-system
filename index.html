@@ -797,6 +797,11 @@ html.light .home-btn:hover{background:rgba(59,130,246,.1);color:#1e40af}
 .login-error:not(:empty){display:block}
 .login-help{margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);font-size:11px;color:#64748b;line-height:1.7}
 .login-help b{color:#c4b5fd;font-weight:800}
+.login-remember{display:flex;gap:14px;flex-wrap:wrap;margin-top:2px}
+.login-chk{display:flex;align-items:center;gap:6px;font-size:12px;color:#94a3b8;cursor:pointer;user-select:none}
+.login-chk input[type=checkbox]{accent-color:#a78bfa;width:14px;height:14px;cursor:pointer}
+.login-chk input[type=checkbox]:disabled{opacity:.35;cursor:default}
+.login-chk:has(input:disabled){opacity:.45;cursor:default}
 
 /* ═══ 비밀번호 변경 모달 ═══ */
 .pw-change-mask{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:99998;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -2855,6 +2860,11 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
         <input id="login-pw" type="password" autocomplete="current-password" placeholder="비밀번호" required>
       </label>
       <button type="submit" class="login-btn">로그인</button>
+      <div class="login-remember">
+        <label class="login-chk"><input type="checkbox" id="login-save-id" onchange="loginRememberChange()"> 아이디 저장</label>
+        <label class="login-chk"><input type="checkbox" id="login-save-pw" disabled onchange="loginRememberChange()"> 비밀번호 저장</label>
+        <label class="login-chk"><input type="checkbox" id="login-autologin" disabled> 자동 로그인</label>
+      </div>
     </form>
     <div id="login-error" class="login-error"></div>
     <div class="login-help">
@@ -4145,7 +4155,7 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
 <div id="page-chart-detail" class="page" style="display:none">
   <div class="detail-back" onclick="backFromChart()">← 리포트로</div>
   <div class="page-title" id="cd-title">전체 보기</div>
-  <div class="page-sub" id="cd-sub"></div>
+  <div class="page-sub" id="chart-detail-sub"></div>
   <div class="card"><div id="cd-chart" style="height:460px"></div></div>
   <div class="card" style="margin-top:16px">
     <div class="card-title">데이터</div>
@@ -5267,10 +5277,7 @@ function onCatChange() {
     info.style.display='none';
   }
 }
-function onClientChange() {
-  document.getElementById('client-info').innerHTML = '[더데이랩스] 할인율: <b>20%</b>';
-}
-function onPayClientChange(sel) {}
+// onClientChange / onPayClientChange 의 실제 구현은 하단 '출고 등록' 섹션 참조
 
 // ── 입고 품목 선택 시 입고가 자동 입력 ───────────
 function onInProdChange() {
@@ -5350,22 +5357,7 @@ async function submitCart() {
   await loadMasterData(); initStockPage();
 }
 
-// ── 의료장비 행 추가 ─────────────────────────────
-function addMedRow() {
-  const tbody = document.getElementById('med-rows');
-  const row = document.createElement('tr');
-  row.innerHTML = `
-    <td><input type="text" class="form-control" placeholder="장비명" style="min-width:120px"></td>
-    <td><input type="text" class="form-control" placeholder="장비사" style="min-width:100px"></td>
-    <td><input type="number" class="form-control" placeholder="0" style="min-width:100px"></td>
-    <td><input type="number" class="form-control" placeholder="0" style="min-width:80px"></td>
-    <td><input type="text" class="form-control" placeholder="SN-XXXXX" style="min-width:110px"></td>
-    <td><select class="form-control" style="min-width:80px"><option>매입</option><option>위탁</option></select></td>
-    <td><select class="form-control" style="min-width:80px"><option>현금</option><option>카드</option><option>할부</option></select></td>
-    <td><button class="btn btn-danger" style="padding:5px 10px;font-size:12px" onclick="removeMedRow(this)">삭제</button></td>`;
-  tbody.appendChild(row);
-}
-function removeMedRow(btn) { btn.closest('tr').remove(); }
+// addMedRow / removeMedRow 의 실제 구현은 하단 '출고 등록(의료장비)' 섹션 참조
 
 // ── Toast ────────────────────────────────────────
 function showToast(msg) {
@@ -5514,16 +5506,7 @@ async function initDashboard() {
   sins.forEach(r => { stockMap[r.product_id] = (stockMap[r.product_id]||0) + (r.remaining_qty||0); });
   const lowList = prods.filter(p => (stockMap[p.id]||0) < (p.min_stock||0))
                        .sort((a,b)=>(stockMap[a.id]||0)-(stockMap[b.id]||0));
-  const lowCount = lowList.length;
-  // 재고 부족 상세 목록 + 헤더 개수 채우기
-  const lowTitle = document.getElementById('dash-low-title');
-  if(lowTitle) lowTitle.textContent = `재고 부족 품목 ${lowCount}개 — 상세 보기`;
-  const lowTb = document.getElementById('dash-low-tbody');
-  if(lowTb) lowTb.innerHTML = lowCount ? lowList.map(p=>{
-    const cur = stockMap[p.id]||0;
-    const cls = cur<=0 ? 'badge-red' : 'badge-amber';
-    return `<tr><td>${p.name||p.id}</td><td><span class="badge ${cls}">${cur}</span></td><td>${p.min_stock||0}</td></tr>`;
-  }).join('') : emptyRow(3,'재고 부족 품목이 없습니다');
+  const lowCount = lowList.length;  // KPI '재고 부족 품목' 카운트용 (상세 목록은 '재고 현황' 드릴다운 페이지에서 표시)
 
   // KPI 표시
   countUp(document.getElementById('kpi-today'),  todaySales, '₩');
@@ -5798,7 +5781,7 @@ function openChartDetail(type) {
   pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
   _chartDetailCat = d.cat;
   document.getElementById('cd-title').textContent = d.title + ' — 전체 보기';
-  document.getElementById('cd-sub').textContent = d.sub || '';
+  document.getElementById('chart-detail-sub').textContent = d.sub || '';
   const thead = document.getElementById('cd-thead'), tbody = document.getElementById('cd-tbody');
 
   if(d.kind==='trend'){
@@ -9440,8 +9423,56 @@ function sbSubscribeCases(){
 const AUTH_SESSION_KEY = 'thesc-mso-session-v1';
 const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30일 (모바일 편의성)
 const AUTH_DEFAULT_PW = '1234'; // 초기 비밀번호
+const AUTH_REMEMBER_KEY = 'thesc-mso-remember-v1';
 
 let CURRENT_USER = null; // {id, name, position, role}
+
+// ── 아이디/비밀번호 저장 ──────────────────────────────────────────
+function _authRememberLoad(){
+  try{ return JSON.parse(localStorage.getItem(AUTH_REMEMBER_KEY)||'{}'); }catch(_){ return {}; }
+}
+function _authRememberSave(obj){
+  try{ localStorage.setItem(AUTH_REMEMBER_KEY, JSON.stringify(obj)); }catch(_){}
+}
+function loginRememberChange(){
+  const saveId = document.getElementById('login-save-id');
+  const savePw = document.getElementById('login-save-pw');
+  const autoEl = document.getElementById('login-autologin');
+  if(!saveId) return;
+  savePw.disabled = !saveId.checked;
+  if(!saveId.checked){ savePw.checked=false; autoEl.checked=false; }
+  autoEl.disabled = !savePw.checked;
+  if(!savePw.checked) autoEl.checked=false;
+}
+function _loginRememberApply(){
+  const data = _authRememberLoad();
+  const saveIdEl  = document.getElementById('login-save-id');
+  const savePwEl  = document.getElementById('login-save-pw');
+  const autoEl    = document.getElementById('login-autologin');
+  const empEl     = document.getElementById('login-empid');
+  const pwEl      = document.getElementById('login-pw');
+  if(!saveIdEl) return;
+  saveIdEl.checked  = !!data.saveId;
+  savePwEl.checked  = !!data.savePw;
+  autoEl.checked    = !!data.autoLogin;
+  savePwEl.disabled = !data.saveId;
+  autoEl.disabled   = !data.savePw;
+  if(data.saveId && data.savedId && empEl)  empEl.value = data.savedId;
+  if(data.savePw && data.savedPw && pwEl)   pwEl.value  = atob(data.savedPw);
+}
+function _loginRememberOnSuccess(empId, pw){
+  const saveId    = document.getElementById('login-save-id')?.checked;
+  const savePw    = document.getElementById('login-save-pw')?.checked;
+  const autoLogin = document.getElementById('login-autologin')?.checked;
+  const cur = _authRememberLoad();
+  _authRememberSave({
+    saveId,
+    savePw,
+    autoLogin,
+    savedId: saveId  ? empId : null,
+    savedPw: savePw  ? btoa(pw)  : null,
+  });
+}
 
 // SHA-256 + 랜덤 솔트 해싱 (Web Crypto API)
 async function _authHash(password, saltB64){
@@ -9552,10 +9583,13 @@ function showLoginScreen(){
   if(login) login.style.display = 'flex';
   if(appShell) appShell.style.display = 'none';
   document.body.style.overflow = 'hidden';
-  // 입력 초기화
   setTimeout(()=>{
+    _loginRememberApply();
     const empIn = document.getElementById('login-empid');
-    if(empIn) empIn.focus();
+    const pwIn  = document.getElementById('login-pw');
+    if(empIn && !empIn.value) empIn.focus();
+    else if(pwIn && !pwIn.value) pwIn.focus();
+    else empIn?.focus();
   }, 100);
 }
 function showAppScreen(){
@@ -9978,6 +10012,7 @@ async function handleLoginSubmit(){
   if(!empId || !pw){ errEl.textContent = '이메일과 비밀번호를 입력하세요'; return; }
   const result = await authLogin(empId, pw);
   if(!result.ok){ errEl.textContent = result.msg; pwEl.value=''; return; }
+  _loginRememberOnSuccess(empId, pw);
   showAppScreen();
   pwEl.value = '';
   if(result.mustChangePassword){
@@ -10033,16 +10068,26 @@ async function handlePasswordChange(){
 
 // 페이지 로드 시 인증 체크
 async function authBootstrap(){
-  const { data } = await sb.auth.getSession();
-  if(data && data.session){
-    AUTH_TOKEN = data.session.access_token;
-    try{ await sbBootstrapEmployees(); }catch(_){}
-    const email = ((data.session.user && data.session.user.email) || '').toLowerCase();
-    const u = (Array.isArray(MR_EMPLOYEES)?MR_EMPLOYEES:[]).find(e => (e.email||'').toLowerCase() === email);
-    CURRENT_USER = u ? {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'}
-                     : {id:null, name:email||'사용자', position:'', role:'staff'};
+  const user = authLoadSession();
+  if(user){
     showAppScreen();
-  } else { showLoginScreen(); }
+    return;
+  }
+  // 자동 로그인 시도
+  const rem = _authRememberLoad();
+  if(rem.autoLogin && rem.savedId && rem.savedPw){
+    try{
+      const result = await authLogin(rem.savedId, atob(rem.savedPw));
+      if(result.ok){
+        showAppScreen();
+        if(result.mustChangePassword) showPasswordChangeModal(true);
+        return;
+      }
+    }catch(_){}
+    // 자동 로그인 실패 — 저장값 초기화
+    _authRememberSave({...rem, autoLogin:false, savedPw:null, savePw:false});
+  }
+  showLoginScreen();
 }
 
 // ═══════════════════════════════════════════════════════════════
