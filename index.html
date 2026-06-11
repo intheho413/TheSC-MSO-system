@@ -9331,6 +9331,18 @@ async function sbCaseFetchAll(){
   }catch(e){ console.warn('[sbCaseFetchAll]', e); MR_SYNC.errorCount++; return null; }
 }
 
+async function sbCaseInsert(c){
+  if(!MR_SYNC.enabled) return null;
+  _sbMarkSelfWrite();
+  try{
+    const payload = _sbCaseFromLocal(c);
+    delete payload.id; // DB bigserial이 ID 자동 생성
+    const {data, error} = await sb.from('cases').insert(payload).select().single();
+    if(error) throw error;
+    return data;
+  }catch(e){ console.warn('[sbCaseInsert]', e); MR_SYNC.errorCount++; return null; }
+}
+
 async function sbCaseUpsert(c){
   if(!MR_SYNC.enabled) return null;
   _sbMarkSelfWrite();
@@ -9384,7 +9396,7 @@ async function sbBootstrapCases(){
 
 // cases 실시간 구독
 let _caseRealtimeChannel = null;
-// 본인 쓰기 직후 잠시 실시간 무시 (echo 방지)
+// 푸시 알림 중복 방지용 (쓰기 주체 판별)
 let _sbSelfWriteUntil = 0;
 function _sbMarkSelfWrite(){ _sbSelfWriteUntil = Date.now() + 1500; }
 
@@ -9394,14 +9406,12 @@ function sbSubscribeCases(){
     .on('postgres_changes', {event:'*', schema:'public', table:'cases'}, payload=>{
       // 푸시 알림 트리거 (본인 쓰기 echo는 내부에서 필터)
       try{ pwaHandleCaseChange(payload); }catch(e){}
-      // 본인 쓰기 echo 무시
-      if(Date.now() < _sbSelfWriteUntil) return;
+      // 누가 쓰든 DB 변경 시 전체 갱신 (등록/수정/삭제 모두 반영)
       setTimeout(async ()=>{
-        if(Date.now() < _sbSelfWriteUntil) return;
         const remote = await sbCaseFetchAll();
         if(remote){
           MR_CASES = remote.map(_sbCaseToLocal);
-          // 현재 열려있는 화면 갱신
+          // 현재 열려있는 탭 갱신
           if(document.getElementById('mr-tab-cases')?.style.display !== 'none'){
             mrRenderCases();
             if(MR_CURRENT_ID){
@@ -9417,7 +9427,7 @@ function sbSubscribeCases(){
             try{ mrRenderCalendar(); }catch(e){}
           }
         }
-      }, 200);
+      }, 500);
     })
     .subscribe();
 }
@@ -10618,6 +10628,11 @@ function mrDateKey(d){
 
 async function initMsoReport(){
   mrSetReportMode(true);
+  // 페이지 진입 시마다 DB에서 최신 안건 데이터 재조회
+  try{
+    const remote = await sbCaseFetchAll();
+    if(remote) MR_CASES = remote.map(_sbCaseToLocal);
+  }catch(e){ console.warn('[initMsoReport] re-fetch failed', e); }
   mrRenderStats();
   mrRenderCases();
   mrRenderEmployees();
@@ -13040,7 +13055,7 @@ function mrBuildAutoTitle(){
   document.getElementById('mr-auto-title').innerHTML = `<span class="em">${client}</span> · ${prod} ${type}`;
 }
 
-function mrSubmitCase(){
+async function mrSubmitCase(){
   const client = document.getElementById('mr-client').value.trim();
   const prod = document.getElementById('mr-prod-name').value.trim();
   const type = document.querySelector('#mr-typepick .on')?.dataset.t;
@@ -13060,18 +13075,26 @@ function mrSubmitCase(){
   // 시작일이 종료일보다 늦으면 경고
   if(startDate && due && startDate > due){ showToast('시작일이 종료일보다 늦을 수 없습니다'); return; }
 
-  const newId = Math.max(0, ...MR_CASES.map(c=>c.id)) + 1;
   const dateLabel = startDate && due ? ` · 일정 ${startDate} ~ ${due}` : (due ? ` · 마감 ${due}` : '');
   const newCase = {
-    id:newId, cat:MR_SELECTED_CAT, prod, client, type, owner, mgr, startDate, due, status, progress,
+    cat:MR_SELECTED_CAT, prod, client, type, owner, mgr, startDate, due, status, progress,
     desc, tags, comments:[
       {who:owner, role:'담당', time:'방금 전', body:`안건 등록 — ${client} · ${prod} ${type}${dateLabel}`, event:'created'}
     ]
   };
   if(desc) newCase.comments.push({who:owner, role:'담당', time:'방금 전', body:desc});
+
+  // DB INSERT — bigserial이 ID 자동 발급 (충돌 방지)
+  let assignedId;
+  try{
+    const dbRow = await sbCaseInsert(newCase);
+    assignedId = dbRow ? dbRow.id : (Math.max(0, ...MR_CASES.map(c=>c.id)) + 1);
+  }catch(e){
+    assignedId = Math.max(0, ...MR_CASES.map(c=>c.id)) + 1;
+  }
+  newCase.id = assignedId;
   MR_CASES.unshift(newCase);
-  // 클라우드 저장 (즉시)
-  try{ sbCaseUpsert(newCase); }catch(e){}
+
   // 폼 초기화
   document.getElementById('mr-client').value = '';
   document.getElementById('mr-prod-name').value = '';
@@ -13080,7 +13103,7 @@ function mrSubmitCase(){
   document.getElementById('mr-due').value = '';
   [...document.querySelectorAll('#mr-tag-box .tag')].forEach(t=>t.remove());
   mrToggleForm(false);
-  mrSelectCase(newId);
+  mrSelectCase(assignedId);
   mrRenderStats();
   mrRenderCharts();
   mrRenderCalendar();
