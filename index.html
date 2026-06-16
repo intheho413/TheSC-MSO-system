@@ -9473,6 +9473,51 @@ async function sbCaseFetchAll(){
   }catch(e){ console.warn('[sbCaseFetchAll]', e); MR_SYNC.errorCount++; return null; }
 }
 
+// 기존 '방금 전' 코멘트 날짜 일괄 수정 (최초 1회, localStorage 플래그로 재실행 방지)
+async function mrMigrateCommentTimes(){
+  if(localStorage.getItem('mr_cmt_time_v1')==='1') return;
+  if(!MR_SYNC.enabled) return;
+  try{
+    const {data, error} = await sb.from('cases').select('id, comments, created_at').order('id');
+    if(error || !data) return;
+    const updates = [];
+    for(const row of data){
+      const comments = Array.isArray(row.comments) ? row.comments : [];
+      let dirty = false;
+      const fixed = comments.map(cm=>{
+        if(cm.time !== '방금 전') return cm;
+        let newTime = null;
+        // cid = Date.now() 기반 → 실제 등록 시각 역산
+        if(cm.cid){
+          const ts = parseInt(cm.cid);
+          if(!isNaN(ts) && ts > 1000000000000){
+            const d = new Date(ts);
+            newTime = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+          }
+        }
+        // cid 없는 초기 등록 이벤트 → 케이스 생성 시각 사용
+        if(!newTime && row.created_at){
+          const d = new Date(row.created_at);
+          if(!isNaN(d.getTime())){
+            newTime = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+          }
+        }
+        if(newTime){ dirty = true; return {...cm, time: newTime}; }
+        return cm;
+      });
+      if(dirty) updates.push({id: row.id, comments: fixed});
+    }
+    if(updates.length){
+      _sbMarkSelfWrite();
+      await Promise.all(updates.map(u=>sb.from('cases').update({comments: u.comments}).eq('id', u.id)));
+      const refreshed = await sbCaseFetchAll();
+      if(refreshed) MR_CASES = refreshed.map(_sbCaseToLocal);
+      console.log(`[mrMigrateCommentTimes] ${updates.length}개 안건 코멘트 날짜 수정 완료`);
+    }
+    localStorage.setItem('mr_cmt_time_v1', '1');
+  }catch(e){ console.warn('[mrMigrateCommentTimes]', e); }
+}
+
 async function sbCaseInsert(c){
   if(!MR_SYNC.enabled) return null;
   _sbMarkSelfWrite();
@@ -10777,6 +10822,8 @@ async function initMsoReport(){
     const remote = await sbCaseFetchAll();
     if(remote) MR_CASES = remote.map(_sbCaseToLocal);
   }catch(e){ console.warn('[initMsoReport] re-fetch failed', e); }
+  // '방금 전' 코멘트 날짜 일괄 수정 (최초 1회)
+  await mrMigrateCommentTimes();
   mrRenderStats();
   mrRenderCases();
   mrRenderEmployees();
@@ -12312,7 +12359,7 @@ function mrPostComment(){
   const catLabel = cat ? `<b style="color:#c4b5fd">[${cat}]</b> ` : '';
   const author = CURRENT_USER || {name:'사용자', position:''};
   const newComment = {
-    who: author.name, role: author.position||'', time:'방금 전',
+    who: author.name, role: author.position||'', time:_mrNow(),
     body: catLabel + text.replace(/@(\S+)/g,'<span class="ment">@$1</span>'),
     category: cat,
     cid: Date.now() + Math.floor(Math.random()*1000)
@@ -12337,6 +12384,7 @@ function mrPostComment(){
 function _mrPad(n){return String(n).padStart(2,'0');}
 function _mrISO(d){return `${d.getFullYear()}-${_mrPad(d.getMonth()+1)}-${_mrPad(d.getDate())}`;}
 function _mrFmt(d){return `${d.getFullYear()}.${_mrPad(d.getMonth()+1)}.${_mrPad(d.getDate())}`;}
+function _mrNow(){const n=new Date();return `${n.getFullYear()}.${_mrPad(n.getMonth()+1)}.${_mrPad(n.getDate())} ${_mrPad(n.getHours())}:${_mrPad(n.getMinutes())}`;}
 // 누적 데이터 모드 (모든 안건 포함, 기간 무시)
 let MR_PPT_ALL_MODE = false;
 
@@ -13223,10 +13271,10 @@ async function mrSubmitCase(){
   const newCase = {
     cat:MR_SELECTED_CAT, prod, client, type, owner, mgr, startDate, due, status, progress,
     desc, tags, comments:[
-      {who:owner, role:'담당', time:'방금 전', body:`안건 등록 — ${client} · ${prod} ${type}${dateLabel}`, event:'created'}
+      {who:owner, role:'담당', time:_mrNow(), body:`안건 등록 — ${client} · ${prod} ${type}${dateLabel}`, event:'created'}
     ]
   };
-  if(desc) newCase.comments.push({who:owner, role:'담당', time:'방금 전', body:desc});
+  if(desc) newCase.comments.push({who:owner, role:'담당', time:_mrNow(), body:desc});
 
   // DB INSERT — bigserial이 ID 자동 발급 (충돌 방지)
   let assignedId;
