@@ -4131,7 +4131,7 @@ html.light #aurora-bg{opacity:.35}
       <div class="kpi-sub" id="kpi-year-sub"></div></div>
   </div>
   <!-- KPI Row 2 -->
-  <div class="kpi-row three">
+  <div class="kpi-row">
     <div class="kpi kpi-clickable" onclick="openRecvDetail()"><span class="kpi-go">›</span><div class="kpi-label">미수금 합계</div>
       <div class="kpi-value accent" id="kpi-recv">0</div>
       <div class="kpi-sub">전체 누적</div></div>
@@ -4141,6 +4141,9 @@ html.light #aurora-bg{opacity:.35}
     <div class="kpi kpi-clickable" onclick="openLowDetail()"><span class="kpi-go">›</span><div class="kpi-label">재고 현황</div>
       <div class="kpi-value" id="kpi-low">0개</div>
       <div class="kpi-sub">재고 부족 품목</div></div>
+    <div class="kpi kpi-clickable" onclick="openExpiryDetail()"><span class="kpi-go">›</span><div class="kpi-label">유통기한 임박</div>
+      <div class="kpi-value" id="kpi-expiry" style="color:#fbbf24">0개</div>
+      <div class="kpi-sub">잔여 1년 3개월 이내</div></div>
   </div>
 
 
@@ -4181,6 +4184,20 @@ html.light #aurora-bg{opacity:.35}
 </div>
 
 <!-- ════ 재고 현황 (KPI 박스 드릴다운) — 잔여재고 + 재고부족 통합 ════ -->
+<div id="page-expiry-detail" class="page" style="display:none">
+  <div class="detail-back" onclick="backToReport()">← 리포트로</div>
+  <div class="page-title">유통기한 임박 품목</div>
+  <div class="page-sub">잔여 1년 3개월 이내 · 잔여 기간이 짧은 순서로 정렬 · 소진(잔여 0) 제외</div>
+  <div class="card" style="margin-top:12px">
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>순위</th><th>제품명</th><th>Lot No.</th><th class="num">잔여수량</th><th>유통기한</th><th>잔여 기간</th></tr></thead>
+        <tbody id="exp-tbody"><tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">불러오는 중...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <div id="page-low-detail" class="page" style="display:none">
   <div class="detail-back" onclick="backToReport()">← 리포트로</div>
   <div class="page-title">재고 현황</div>
@@ -4289,6 +4306,7 @@ html.light #aurora-bg{opacity:.35}
 
   <div class="tabs">
     <button class="tab active" onclick="switchTab('stock','in',this)">입고 등록</button>
+    <button class="tab" onclick="switchTab('stock','manage',this)">입고 관리</button>
     <button class="tab" onclick="switchTab('stock','out',this)">출고 등록</button>
     <button class="tab" onclick="switchTab('stock','edit',this)">출고 수정</button>
   </div>
@@ -4356,40 +4374,43 @@ html.light #aurora-bg{opacity:.35}
       </div>
     </div>
 
-    <!-- 전체 입고 내역 (필터 + 수정/삭제) -->
-    <div style="font-size:15px;font-weight:600;color:#fff;margin:20px 0 12px">전체 입고 내역</div>
+  </div>
+
+  <!-- 입고 관리 (입고 내역 수정 + 유통기한 임박) -->
+  <div id="stock-tab-manage" class="tab-pane">
+    <div class="kpi-row three" style="margin-bottom:14px">
+      <div class="kpi"><div class="kpi-label">총 입고 건수</div><div class="kpi-value" id="in-mg-count">0</div><div class="kpi-sub">조회 조건 기준</div></div>
+      <div class="kpi"><div class="kpi-label">총 잔여 수량</div><div class="kpi-value accent" id="in-mg-remain">0</div><div class="kpi-sub">전체 Lot 합계</div></div>
+      <div class="kpi"><div class="kpi-label">유통기한 임박</div><div class="kpi-value" id="in-mg-soon" style="color:#fbbf24">0</div><div class="kpi-sub">잔여 1년 3개월 이내</div></div>
+    </div>
     <div class="card" style="padding:14px 16px">
       <div class="form-row cols-2" style="margin-bottom:10px">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">기간 시작</label>
-          <input type="date" class="form-control" id="in-hist-from">
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">기간 종료</label>
-          <input type="date" class="form-control" id="in-hist-to">
-        </div>
+        <div class="form-group" style="margin-bottom:0"><label class="form-label">기간 시작</label><input type="date" class="form-control" id="in-hist-from"></div>
+        <div class="form-group" style="margin-bottom:0"><label class="form-label">기간 종료</label><input type="date" class="form-control" id="in-hist-to"></div>
       </div>
       <div class="form-row cols-2" style="margin-bottom:10px">
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">품목</label>
-          <select class="form-control" id="in-hist-prod-filter"><option value="">전체</option></select>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">Lot No. 검색</label>
-          <input type="text" class="form-control" id="in-hist-lot" placeholder="Lot 번호 일부">
-        </div>
+        <div class="form-group" style="margin-bottom:0"><label class="form-label">품목</label><select class="form-control" id="in-hist-prod-filter"><option value="">전체</option></select></div>
+        <div class="form-group" style="margin-bottom:0"><label class="form-label">Lot No. 검색</label><input type="text" class="form-control" id="in-hist-lot" placeholder="Lot 번호 일부"></div>
+      </div>
+      <div class="form-row cols-2" style="margin-bottom:10px">
+        <div class="form-group" style="margin-bottom:0"><label class="form-label">제품명 검색</label><input type="text" class="form-control" id="in-hist-name" placeholder="제품명 일부"></div>
+        <div class="form-group" style="margin-bottom:0"><label class="form-label">상태</label><select class="form-control" id="in-hist-status"><option value="all">전체</option><option value="soon">유통기한 임박</option><option value="has">잔여 있음</option><option value="empty">소진</option></select></div>
+      </div>
+      <div class="form-row cols-2" style="margin-bottom:10px">
+        <div class="form-group" style="margin-bottom:0"><label class="form-label">정렬</label><select class="form-control" id="in-hist-sort"><option value="expiry">유통기한 가까운 순</option><option value="date">입고일 최신순</option><option value="remain">잔여 적은순</option></select></div>
+        <div></div>
       </div>
       <button class="btn btn-primary" onclick="loadInHist()">조회</button>
     </div>
-    <div class="info-box">날짜·Lot·수량·입고가·유통기한을 직접 수정할 수 있습니다. 수량 변경 시 잔여수량도 자동 보정됩니다. 체크 후 <b>선택 삭제</b>로 한 번에 정리하세요.</div>
+    <div class="info-box">날짜·Lot·수량·입고가·유통기한을 직접 수정할 수 있습니다. 수량 변경 시 잔여수량도 자동 보정됩니다. 유통기한 잔여 <b style="color:#fbbf24">1년 3개월 이내</b>는 임박으로 표시됩니다.</div>
     <div class="btn-group" style="margin-bottom:0">
       <button class="btn btn-primary" onclick="saveSelectedInRows()">선택 저장</button>
       <button class="btn btn-danger" onclick="deleteSelectedInRows()">선택 삭제</button>
     </div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleAllIn(this)" title="전체 선택"></th><th>날짜</th><th>품목</th><th>Lot No.</th><th>수량</th><th>입고가</th><th>잔여</th><th>유통기한</th><th>작업</th></tr></thead>
-        <tbody id="stock-in-tbody"><tr><td colspan="9" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">조회 버튼을 눌러 입고 내역을 불러오세요</td></tr></tbody>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllIn(this)" title="전체 선택"></th><th>날짜</th><th>품목</th><th>Lot No.</th><th>수량</th><th>입고가</th><th>잔여</th><th>유통기한</th><th>잔여 기간</th><th>작업</th></tr></thead>
+        <tbody id="stock-in-tbody"><tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">조회 버튼을 눌러 입고 내역을 불러오세요</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -5393,6 +5414,7 @@ function switchTab(group, name, el) {
 
   if(group==='recv' && name==='pie') setTimeout(initRecvPie,100);
   if(group==='stock' && name==='edit') loadEditList();
+  if(group==='stock' && name==='manage') loadInHist();
 }
 
 // ── Expander ────────────────────────────────────
@@ -5656,13 +5678,17 @@ async function initDashboard() {
   // 재고 부족 카운트
   const [prods, sins] = await Promise.all([
     dbQuery('products', '?select=id,name,min_stock'),
-    dbQuery('stock_in', '?select=product_id,remaining_qty'),
+    dbQuery('stock_in', '?select=product_id,remaining_qty,expiry_date'),
   ]);
   const stockMap = {};
   sins.forEach(r => { stockMap[r.product_id] = (stockMap[r.product_id]||0) + (r.remaining_qty||0); });
   const lowList = prods.filter(p => (stockMap[p.id]||0) < (p.min_stock||0))
                        .sort((a,b)=>(stockMap[a.id]||0)-(stockMap[b.id]||0));
   const lowCount = lowList.length;  // KPI '재고 부족 품목' 카운트용 (상세 목록은 '재고 현황' 드릴다운 페이지에서 표시)
+
+  // 유통기한 임박 카운트 (잔여 > 0 & 잔여기간 15개월 이내)
+  const EXPIRY_SOON_MONTHS = 15;
+  const soonCount = sins.filter(r => (r.remaining_qty||0) > 0 && (()=>{ const m=_expiryMonthsLeft(r.expiry_date); return m!==null && m<=EXPIRY_SOON_MONTHS; })()).length;
 
   // KPI 표시
   countUp(document.getElementById('kpi-today'),  todaySales, '₩');
@@ -5672,6 +5698,7 @@ async function initDashboard() {
   countUp(document.getElementById('kpi-recv'),   recv,       '₩');
   document.getElementById('kpi-margin').textContent = marginPct + '%';
   document.getElementById('kpi-low').textContent    = lowCount + '개';
+  { const ke = document.getElementById('kpi-expiry'); if(ke) ke.textContent = soonCount + '개'; }
 
   // 월별 집계 (백만원)
   const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
@@ -5745,6 +5772,35 @@ async function openSalesDetail(period) {
 
 // ── KPI 박스 드릴다운: 재고 현황 (잔여재고 + 재고부족 통합) ──────────────
 let _LD_CACHE = null;
+// 유통기한 임박 드릴다운 (잔여 1년 3개월 이내, 짧은 순)
+async function openExpiryDetail() {
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  const pg = document.getElementById('page-expiry-detail');
+  pg.style.display='block'; pg.classList.remove('page'); void pg.offsetWidth; pg.classList.add('page');
+  const tb = document.getElementById('exp-tbody');
+  if(tb) tb.innerHTML = emptyRow(6,'불러오는 중...');
+  const [prods, sins] = await Promise.all([
+    dbQuery('products','?select=id,name'),
+    dbQuery('stock_in','?select=product_id,lot_number,remaining_qty,expiry_date'),
+  ]);
+  const pmap = Object.fromEntries((prods||[]).map(p=>[p.id,p.name]));
+  const rows = (sins||[])
+    .map(r => ({ ...r, _m:_expiryMonthsLeft(r.expiry_date), _name:pmap[r.product_id]||String(r.product_id) }))
+    .filter(r => (r.remaining_qty||0)>0 && r._m!==null && r._m<=EXPIRY_SOON_MONTHS)
+    .sort((a,b)=>a._m-b._m);
+  if(!tb) return;
+  if(!rows.length){ tb.innerHTML = emptyRow(6,'유통기한 임박 품목이 없습니다'); return; }
+  tb.innerHTML = rows.map((r,i)=>`<tr>
+    <td style="text-align:center;font-weight:800;color:#c4b5fd">${i+1}</td>
+    <td title="${r._name.replace(/"/g,'&quot;')}">${r._name}</td>
+    <td>${(r.lot_number||'—').replace(/</g,'&lt;')}</td>
+    <td class="num" style="text-align:right">${r.remaining_qty||0}</td>
+    <td>${r.expiry_date||'—'}</td>
+    <td>${_expiryCell(r.expiry_date)}</td>
+  </tr>`).join('');
+}
+window.openExpiryDetail = openExpiryDetail;
+
 async function openLowDetail() {
   document.querySelectorAll('.page').forEach(p => p.style.display='none');
   const pg = document.getElementById('page-low-detail');
@@ -7056,33 +7112,87 @@ async function initStockPage() {
 
 // ── 입고 내역 (기간·품목·Lot 필터 + 인라인 수정/삭제) ──
 const inRowData = {};
+const EXPIRY_SOON_MONTHS = 15;  // 유통기한 임박 기준 = 잔여 1년 3개월(15개월) 이내
+
+// 유통기한 잔여 개월수 (오늘 기준). 날짜 없으면 null, 만료면 음수.
+function _expiryMonthsLeft(dateStr){
+  if(!dateStr) return null;
+  const d = new Date(dateStr); if(isNaN(d.getTime())) return null;
+  const now = new Date();
+  let months = (d.getFullYear()-now.getFullYear())*12 + (d.getMonth()-now.getMonth());
+  if(d.getDate() < now.getDate()) months -= 1;  // 부분 월 보정
+  return months;
+}
+// "N년 M개월" 표기 (음수/0 → '0년 0개월'). 날짜 없으면 '—'
+function _expiryRemainLabel(dateStr){
+  const m = _expiryMonthsLeft(dateStr);
+  if(m === null) return '—';
+  const mm = Math.max(0, m);
+  return `${Math.floor(mm/12)}년 ${mm%12}개월`;
+}
+// 잔여기간 셀 HTML (임박이면 강조)
+function _expiryCell(dateStr){
+  const m = _expiryMonthsLeft(dateStr);
+  if(m === null) return '<span style="color:#64748b">—</span>';
+  const label = _expiryRemainLabel(dateStr);
+  if(m <= EXPIRY_SOON_MONTHS) return `<span style="background:rgba(245,158,11,.16);color:#fbbf24;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:800;white-space:nowrap">${label} · 임박</span>`;
+  return `<span style="color:#94a3b8;font-size:11.5px">${label}</span>`;
+}
+
 async function loadInHist() {
   const from = document.getElementById('in-hist-from')?.value;
   const to   = document.getElementById('in-hist-to')?.value;
   const pf   = document.getElementById('in-hist-prod-filter')?.value;
   const lf   = document.getElementById('in-hist-lot')?.value?.trim();
-  let q = '?order=date.desc&limit=200&select=id,date,product_id,quantity,purchase_price,remaining_qty,lot_number,expiry_date';
+  const nf   = (document.getElementById('in-hist-name')?.value||'').trim().toLowerCase();
+  const sf   = document.getElementById('in-hist-status')?.value || 'all';
+  const sort = document.getElementById('in-hist-sort')?.value || 'expiry';
+  let q = '?limit=300&select=id,date,product_id,quantity,purchase_price,remaining_qty,lot_number,expiry_date';
   if(from) q += `&date=gte.${from}`;
   if(to)   q += `&date=lte.${to}`;
   if(pf)   q += `&product_id=eq.${pf}`;
   if(lf)   q += `&lot_number=like.*${encodeURIComponent(lf)}*`;
-  const sins = await dbQuery('stock_in', q);
+  let sins = await dbQuery('stock_in', q);
   const prodMap = Object.fromEntries(G.products.map(p=>[p.id,p.name]));
   const tb = document.getElementById('stock-in-tbody');
   if(!tb) return;
-  if(!sins.length){ tb.innerHTML = emptyRow(9,'해당 조건의 입고 내역이 없습니다'); return; }
+
+  // 가공: 제품명·잔여기간
+  sins = sins.map(r => ({ ...r, _name: prodMap[r.product_id]||String(r.product_id), _m: _expiryMonthsLeft(r.expiry_date) }));
+  // 필터: 제품명
+  if(nf) sins = sins.filter(r => r._name.toLowerCase().includes(nf));
+  // 필터: 상태
+  if(sf==='soon')  sins = sins.filter(r => (r.remaining_qty||0)>0 && r._m!==null && r._m<=EXPIRY_SOON_MONTHS);
+  else if(sf==='has')   sins = sins.filter(r => (r.remaining_qty||0)>0);
+  else if(sf==='empty') sins = sins.filter(r => (r.remaining_qty||0)<=0);
+  // 정렬
+  const big = 1e9;
+  if(sort==='expiry')      sins.sort((a,b)=>(a._m??big)-(b._m??big));
+  else if(sort==='remain') sins.sort((a,b)=>(a.remaining_qty||0)-(b.remaining_qty||0));
+  else                     sins.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+
+  // 요약 KPI
+  const totRemain = sins.reduce((s,r)=>s+(r.remaining_qty||0),0);
+  const soonN = sins.filter(r => (r.remaining_qty||0)>0 && r._m!==null && r._m<=EXPIRY_SOON_MONTHS).length;
+  const setK=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+  setK('in-mg-count', sins.length);
+  setK('in-mg-remain', totRemain.toLocaleString());
+  setK('in-mg-soon', soonN);
+
+  if(!sins.length){ tb.innerHTML = emptyRow(10,'해당 조건의 입고 내역이 없습니다'); return; }
   tb.innerHTML = sins.map(r => {
     inRowData[r.id] = { quantity:r.quantity||0, remaining_qty:r.remaining_qty||0 };
     const consumed = (r.quantity||0) - (r.remaining_qty||0);
     return `<tr>
       <td style="text-align:center"><input type="checkbox" class="in-chk" data-id="${r.id}"></td>
       <td><input type="date" class="form-control" style="padding:5px 8px;font-size:12px" value="${r.date||''}" id="in-date-${r.id}"></td>
-      <td title="${(prodMap[r.product_id]||'').replace(/"/g,'&quot;')}">${prodMap[r.product_id]||r.product_id}</td>
+      <td title="${r._name.replace(/"/g,'&quot;')}">${r._name}</td>
       <td><input type="text" class="form-control" style="padding:5px 8px;font-size:12px" value="${(r.lot_number||'').replace(/"/g,'&quot;')}" id="in-lot-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px" value="${r.quantity||0}" min="${consumed}" id="in-qty-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px" step="100" value="${r.purchase_price||0}" id="in-price-${r.id}"></td>
       <td style="text-align:center">${r.remaining_qty??'—'}</td>
       <td><input type="date" class="form-control" style="padding:5px 8px;font-size:12px" value="${r.expiry_date||''}" id="in-exp-${r.id}"></td>
+      <td style="text-align:center">${_expiryCell(r.expiry_date)}</td>
       <td><div style="display:flex;gap:5px;justify-content:center"><button class="btn btn-primary" onclick="saveInRow(${r.id})">저장</button><button class="btn btn-danger" onclick="deleteInRow(${r.id})">삭제</button></div></td>
     </tr>`;
   }).join('');
@@ -14982,174 +15092,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
       if (enabled.comment && Array.isArray(newRow.comments)) {
         const oldLen = Array.isArray(oldRow.comments) ? oldRow.comments.length : 0;
         if (newRow.comments.length > oldLen) {
-          const last = newRow.comments[newRow.comments.length-1] || {};
-          const author = last.author || last.user || '담당자';
-          if (author !== me) {
-            const txt = String(last.text || last.body || '').slice(0,80);
-            notifShow(`💬 ${newRow.client||'안건'} — 새 코멘트`, `${author}: ${txt}`, './index.html#cases');
-
-            // D. @멘션
-            if (enabled.mention && txt.includes('@'+me)) {
-              notifShow(`📌 ${me}님이 멘션되었습니다`, `${author}: ${txt}`, './index.html#cases');
-            }
-          }
-        }
-      }
-
-      // C. 상태 변경
-      if (enabled.status && payload.eventType === 'UPDATE' && newRow.status && oldRow.status && newRow.status !== oldRow.status) {
-        notifShow(`🔄 상태 변경: ${newRow.client||'안건'}`, `${oldRow.status} → ${newRow.status}`, './index.html#cases');
-      }
-    } catch(e){ console.warn('[notif] handle error', e); }
-  };
-
-  // B. 마감 임박 — 로컬 데이터에서 매시간 체크 (오늘 + 내일)
-  function dueCheckOnce(){
-    try {
-      if (!('Notification' in window) || Notification.permission !== 'granted') return;
-      const prefs = notifPrefs();
-      if (prefs.due === false) return;
-      if (!Array.isArray(window.MR_CASES)) return;
-      const me = (window.CURRENT_USER && CURRENT_USER.name) || '';
-      if (!me) return;
-      const today = new Date(); today.setHours(0,0,0,0);
-      const tomorrow = new Date(today.getTime()+86400000);
-      const seenKey = 'pwa-due-seen-' + today.toISOString().slice(0,10);
-      let seen = {};
-      try { seen = JSON.parse(localStorage.getItem(seenKey)||'{}'); } catch(_){}
-      MR_CASES.forEach(c => {
-        if (!c.due) return;
-        if ((c.owner||c.mgr) !== me && c.mgr !== me) return;
-        if (c.status && /완료|취소|보류/.test(c.status)) return;
-        const d = new Date(c.due); d.setHours(0,0,0,0);
-        if (isNaN(d)) return;
-        const dayKey = c.id+'@'+d.toISOString().slice(0,10);
-        if (seen[dayKey]) return;
-        if (d.getTime() === today.getTime()) {
-          notifShow(`⏰ 오늘 마감: ${c.client||'안건'}`, `${c.prod||''} • ${c.status||''}`.trim(), './index.html#cases');
-          seen[dayKey] = 1;
-        } else if (d.getTime() === tomorrow.getTime()) {
-          notifShow(`⏳ 내일 마감: ${c.client||'안건'}`, `${c.prod||''} • ${c.status||''}`.trim(), './index.html#cases');
-          seen[dayKey] = 1;
-        }
-      });
-      try { localStorage.setItem(seenKey, JSON.stringify(seen)); } catch(_){}
-    } catch(_){}
-  }
-  // 첫 로드 10초 뒤 + 매 30분 + 탭 복귀 시
-  setTimeout(dueCheckOnce, 10000);
-  setInterval(dueCheckOnce, 30*60*1000);
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') dueCheckOnce(); });
-  window.pwaDueCheckOnce = dueCheckOnce;
-
-  // 3) iOS Safari hint — 자동 노출 비활성화
-  // 사용자는 햄버거 메뉴 "📥 앱 설치" 버튼으로 직접 진입
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  // (자동 배너 노출 코드 제거됨)
-
-  // In-app browser 감지 (카카오톡·네이트온·인스타·페북 등)
-  function detectInAppBrowser(){
-    const ua = navigator.userAgent;
-    const patterns = ['KAKAOTALK','NAVER','Nate','Daum','Instagram','FBAN','FBAV','FB_IAB','Line','wv','WebView','everytimeapp','TwitterAndroid','Snapchat'];
-    for (const p of patterns) { if (ua.includes(p)) return p; }
-    // iOS Safari (실제)에는 'Version/' 토큰이 있음. 인앱 WebView에는 없는 경우 多
-    const iOS = /iPad|iPhone|iPod/.test(ua);
-    if (iOS && !/Version\//.test(ua)) return 'iOS-InApp';
-    return null;
-  }
-
-  // iOS Configuration Profile (.mobileconfig) 다운로드 — 가장 확실한 설치 방법
-  window.downloadIOSConfig = async function(btn){
-    const origLabel = btn.innerHTML;
-    btn.innerHTML = '⏳ 준비 중...';
-    btn.disabled = true;
-    try {
-      const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : 'https://intheho413.github.io/TheSC-MSO-system/';
-      // 아이콘을 base64로 인코딩
-      const iconResp = await fetch('icons/icon-192.png', {cache:'force-cache'});
-      const iconBlob = await iconResp.blob();
-      const iconBase64 = await new Promise((resolve, reject)=>{
-        const fr = new FileReader();
-        fr.onload = ()=> resolve(fr.result.split(',')[1]);
-        fr.onerror = reject;
-        fr.readAsDataURL(iconBlob);
-      });
-      // 64자마다 줄바꿈 (plist data 형식)
-      const iconB64Lines = iconBase64.match(/.{1,52}/g).join('\n\t\t\t\t');
-      const uuid1 = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)+'-'+Date.now());
-      const uuid2 = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)+'-'+Date.now()+1);
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-\t<key>PayloadContent</key>
-\t<array>
-\t\t<dict>
-\t\t\t<key>FullScreen</key>
-\t\t\t<true/>
-\t\t\t<key>Icon</key>
-\t\t\t<data>
-\t\t\t\t${iconB64Lines}
-\t\t\t</data>
-\t\t\t<key>IsRemovable</key>
-\t\t\t<true/>
-\t\t\t<key>Label</key>
-\t\t\t<string>The SC(MSO)</string>
-\t\t\t<key>PayloadDescription</key>
-\t\t\t<string>Web Clip</string>
-\t\t\t<key>PayloadDisplayName</key>
-\t\t\t<string>The SC(MSO)</string>
-\t\t\t<key>PayloadIdentifier</key>
-\t\t\t<string>com.thesc.mso.webclip</string>
-\t\t\t<key>PayloadType</key>
-\t\t\t<string>com.apple.webClip.managed</string>
-\t\t\t<key>PayloadUUID</key>
-\t\t\t<string>${uuid1}</string>
-\t\t\t<key>PayloadVersion</key>
-\t\t\t<integer>1</integer>
-\t\t\t<key>Precomposed</key>
-\t\t\t<false/>
-\t\t\t<key>URL</key>
-\t\t\t<string>${url}</string>
-\t\t</dict>
-\t</array>
-\t<key>PayloadDescription</key>
-\t<string>The SC(MSO) — 홈 화면 아이콘 설치</string>
-\t<key>PayloadDisplayName</key>
-\t<string>The SC(MSO)</string>
-\t<key>PayloadIdentifier</key>
-\t<string>com.thesc.mso.config</string>
-\t<key>PayloadOrganization</key>
-\t<string>The SC</string>
-\t<key>PayloadRemovalDisallowed</key>
-\t<false/>
-\t<key>PayloadType</key>
-\t<string>Configuration</string>
-\t<key>PayloadUUID</key>
-\t<string>${uuid2}</string>
-\t<key>PayloadVersion</key>
-\t<integer>1</integer>
-</dict>
-</plist>`;
-      const blob = new Blob([xml], {type: 'application/x-apple-aspen-config; charset=utf-8'});
-      const dlUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = dlUrl;
-      a.download = 'TheSC-MSO.mobileconfig';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
-      btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
-      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
-    } catch(e) {
-      console.error(e);
-      btn.innerHTML = '❌ 다운로드 실패 — 다시 시도';
-      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
-      btn.disabled = false;
-      setTimeout(()=>{ btn.innerHTML = origLabel; btn.style.background=''; }, 3000);
-    }
-  };
-
-  window.installCopyHomeUrl = async
+          const last = newRow.comments[newR
