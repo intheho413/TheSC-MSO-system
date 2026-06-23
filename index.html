@@ -4314,7 +4314,7 @@ html.light #aurora-bg{opacity:.35}
       <div class="form-row cols-3">
         <div class="form-group">
           <label class="form-label">수량</label>
-          <input type="number" class="form-control" value="1" min="1" id="in-qty">
+          <input type="number" class="form-control" value="1" min="1" id="in-qty" oninput="onInTotalChange()">
         </div>
         <div class="form-group">
           <label class="form-label">입고가</label>
@@ -4324,6 +4324,11 @@ html.light #aurora-bg{opacity:.35}
           <label class="form-label">유통기한 (선택)</label>
           <input type="date" class="form-control" id="in-expiry">
         </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <label class="form-label">총 매입액 (선택)</label>
+        <input type="number" class="form-control" placeholder="총액 입력 시 입고가 자동 계산" step="1000" id="in-total-amt" oninput="onInTotalChange()">
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px">총액 ÷ 수량으로 입고가 자동 계산 · 원 미만 절삭</div>
       </div>
       <div class="info-box" style="margin-bottom:12px">Lot No.는 입고 등록 시 <b>입고일·품목 기준으로 자동 생성</b>됩니다.</div>
       <button class="btn btn-secondary btn-full" onclick="addToCart()">목록에 추가</button>
@@ -5439,6 +5444,15 @@ async function genLot(productId, dateStr, offset) {
 }
 
 // ── 입고 카트 ────────────────────────────────────
+// 총 매입액 입력 시 입고가(단가) 자동 계산 — floor(총액÷수량), 원 미만 절삭
+function onInTotalChange() {
+  const total = parseFloat(document.getElementById('in-total-amt')?.value) || 0;
+  const qty   = parseInt(document.getElementById('in-qty')?.value) || 0;
+  const priceEl = document.getElementById('in-price');
+  if (total > 0 && qty > 0 && priceEl) {
+    priceEl.value = Math.floor(total / qty);
+  }
+}
 function addToCart() {
   const sel = document.getElementById('in-prod');
   const pid = sel?.value;
@@ -9740,6 +9754,7 @@ function authLoadSession(){
     CURRENT_USER = u
       ? {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'}
       : {id:session.userId, name:session.cachedName||'사용자', position:session.cachedPosition||'', role:session.cachedRole||'staff'};
+    try{ window.pwaEnsurePushSubscription && window.pwaEnsurePushSubscription(); }catch(_){}
     // 슬라이딩 윈도우: 접속 때마다 세션 만료시간 갱신
     session.expiresAt = Date.now() + AUTH_SESSION_DURATION_MS;
     session.savedAt = Date.now();
@@ -9768,6 +9783,7 @@ async function authLogin(email, password){
   CURRENT_USER = u
     ? {id:u.id, name:u.name, position:u.position||'', role:u.role||'staff'}
     : {id:null, name:(data.user&&data.user.email)||input, position:'', role:'staff'};
+  try{ window.pwaEnsurePushSubscription && window.pwaEnsurePushSubscription(); }catch(_){}
   return {ok:true, mustChangePassword:false};
 }
 
@@ -12369,6 +12385,7 @@ function mrPostComment(){
     newComment.parentCid = MR_REPLY_TARGET;
   }
   c.comments.push(newComment);
+  if(window.mrPushNotify) mrPushNotify(c, `💬 ${c.client||'안건'} — 새 코멘트`, `${author.name}: ${text.slice(0,80)}`);
   inp.value = '';
   MR_CMT_DRAFTS[c.id] = '';
   // 답글 모드 해제
@@ -13121,6 +13138,7 @@ function mrSetupFilters(){
       mrRenderStats();
       mrRenderCharts();
       showToast(`상태 → ${newStatus}`);
+      if(window.mrPushNotify) mrPushNotify(c, `🔄 ${c.client||'안건'} 상태 변경`, `→ ${newStatus}`);
     });
   });
   // 진행률 슬라이더 — 좌측 상태창에만 반영, 코멘트 자동 등록 X
@@ -14859,6 +14877,7 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
     if (Notification.permission === 'denied')  return 'denied';
     const res = await Notification.requestPermission();
     try { localStorage.setItem(NOTIF_ASK_KEY, String(Date.now())); } catch(_){}
+    if (res === 'granted') { try { window.pwaEnsurePushSubscription && pwaEnsurePushSubscription(); } catch(_){} }
     return res;
   };
 
@@ -14891,6 +14910,49 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
     }
   }
   window.notifShow = notifShow;
+
+  // ── Web Push 구독 ──────────────────────────────────
+  const VAPID_PUBLIC_KEY = 'BO8PKPJGzTn5gUB8-fRmDoG-QeXpMZjhY5S9GTQAdJA0qCaPee-GDDnBgdcxF_T7glALpu9f0EMFjijcgMaqQ3E';
+  function _urlB64ToUint8(b64){
+    const pad = '='.repeat((4 - b64.length % 4) % 4);
+    const s = (b64 + pad).replace(/-/g,'+').replace(/_/g,'/');
+    const raw = atob(s); const arr = new Uint8Array(raw.length);
+    for(let i=0;i<raw.length;i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+  async function pwaEnsurePushSubscription(){
+    try{
+      if(!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+      if(typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      if(!window.CURRENT_USER || !CURRENT_USER.name) return;
+      const reg = await navigator.serviceWorker.ready;
+      let sub = await reg.pushManager.getSubscription();
+      if(!sub){
+        sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey:_urlB64ToUint8(VAPID_PUBLIC_KEY) });
+      }
+      const j = sub.toJSON();
+      await sb.from('push_subscriptions').upsert({
+        subscriber: CURRENT_USER.name,
+        endpoint: sub.endpoint,
+        p256dh: j.keys.p256dh,
+        auth: j.keys.auth,
+        user_agent: navigator.userAgent
+      }, { onConflict:'endpoint' });
+    }catch(e){ console.warn('[push] subscribe fail', e); }
+  }
+  window.pwaEnsurePushSubscription = pwaEnsurePushSubscription;
+
+  // ── 안건 변경 시 담당자+관리자에게 푸시 발송 (본인 제외) ──
+  async function mrPushNotify(c, title, body){
+    try{
+      if(!c) return;
+      const me = (window.CURRENT_USER && CURRENT_USER.name) || '';
+      const recipients = [...new Set([c.owner, c.mgr].filter(Boolean))].filter(n => n && n !== me);
+      if(!recipients.length) return;
+      await sb.functions.invoke('send-push', { body: { recipients, title, body, url: './index.html#cases' } });
+    }catch(e){ console.warn('[push] send fail', e); }
+  }
+  window.mrPushNotify = mrPushNotify;
 
   // realtime payload → 알림 분기 (A 새 코멘트, C 상태 변경, D @멘션)
   window.pwaHandleCaseChange = function(payload){
@@ -15090,69 +15152,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
     }
   };
 
-  window.installCopyHomeUrl = async function(btn){
-    const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      btn.textContent = '✓ 복사 완료 — Safari에 붙여넣기';
-      btn.style.background = 'rgba(34,197,94,.3)';
-    } catch(_) {
-      const ta = document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      btn.textContent = '✓ 복사 완료';
-    }
-  };
-
-  // 4) 설치 방법 가이드 모달
-  window.openHowToInstall = function(){
-    const ua = navigator.userAgent;
-    const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    const Android = /Android/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua) && /Version\//.test(ua);
-    const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
-    const inApp = detectInAppBrowser();
-
-    let osText = '';
-    let showId = 'howTo-other';
-    if (iOS) {
-      if (inApp || !isSafari) {
-        osText = 'iPhone · ' + (inApp ? `다른 앱 (${inApp})` : '기타 브라우저');
-      } else {
-        osText = 'iPhone · Safari';
-      }
-      showId = 'howTo-ios';
-      // 인앱/비Safari → 빨강 경고, 진짜 Safari → 초록 안내
-      const inappWarn = document.getElementById('howTo-ios-inapp');
-      const safariOK  = document.getElementById('howTo-ios-safari');
-      if (inApp || !isSafari) {
-        inappWarn.style.display = 'block';
-        safariOK.style.display = 'none';
-      } else {
-        inappWarn.style.display = 'none';
-        safariOK.style.display = 'block';
-      }
-    } else if (Android) {
-      osText = 'Android · ' + (inApp ? `다른 앱 (${inApp})` : (isChrome?'Chrome':'기타 브라우저'));
-      showId = 'howTo-android';
-      const aInapp = document.getElementById('howTo-android-inapp');
-      if (aInapp) aInapp.style.display = (inApp || !isChrome) ? 'block' : 'none';
-    } else {
-      osText = '데스크탑';
-      showId = 'howTo-other';
-    }
-    document.getElementById('howToOS').textContent = osText;
-    ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
-      document.getElementById(id).style.display = (id===showId)?'block':'none';
-    });
-    const bgEl = document.getElementById('howToInstallBg');
-    bgEl.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  };
-  window.closeHowToInstall = function(){
-    document.getElementById('howToInstallBg').style.display = 'none';
-    document.body.style.overflow = '';
-  };
-})();
-</script>
-
-</body>
-</html>
+  window.installCopyHomeUrl = async
