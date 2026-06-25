@@ -4378,9 +4378,10 @@ html.light #aurora-bg{opacity:.35}
 
   <!-- 입고 관리 (입고 내역 수정 + 유통기한 임박) -->
   <div id="stock-tab-manage" class="tab-pane">
-    <div class="kpi-row three" style="margin-bottom:14px">
+    <div class="kpi-row" style="margin-bottom:14px">
       <div class="kpi"><div class="kpi-label">총 입고 건수</div><div class="kpi-value" id="in-mg-count">0</div><div class="kpi-sub">조회 조건 기준</div></div>
       <div class="kpi"><div class="kpi-label">총 잔여 수량</div><div class="kpi-value accent" id="in-mg-remain">0</div><div class="kpi-sub">전체 Lot 합계</div></div>
+      <div class="kpi"><div class="kpi-label">총 매입액</div><div class="kpi-value" id="in-mg-total">₩0</div><div class="kpi-sub">실제 매입 총액 합계</div></div>
       <div class="kpi"><div class="kpi-label">유통기한 임박</div><div class="kpi-value" id="in-mg-soon" style="color:#fbbf24">0</div><div class="kpi-sub">잔여 1년 3개월 이내</div></div>
     </div>
     <div class="card" style="padding:14px 16px">
@@ -4409,7 +4410,7 @@ html.light #aurora-bg{opacity:.35}
     </div>
     <div class="tbl-wrap" style="margin-top:12px">
       <table>
-        <thead><tr><th><input type="checkbox" onclick="toggleAllIn(this)" title="전체 선택"></th><th>날짜</th><th>품목</th><th>Lot No.</th><th>수량</th><th>입고가</th><th>잔여</th><th>유통기한</th><th>잔여 기간</th><th>작업</th></tr></thead>
+        <thead><tr><th><input type="checkbox" onclick="toggleAllIn(this)" title="전체 선택"></th><th>날짜</th><th>품목</th><th>Lot No.</th><th>수량</th><th>입고가</th><th>입고 총액</th><th>잔여</th><th>유통기한</th><th>잔여 기간</th><th>작업</th></tr></thead>
         <tbody id="stock-in-tbody"><tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,.3);padding:20px">조회 버튼을 눌러 입고 내역을 불러오세요</td></tr></tbody>
       </table>
     </div>
@@ -5482,8 +5483,12 @@ function addToCart() {
   const name = sel.selectedOptions[0].text;
   const qty   = parseInt(document.getElementById('in-qty').value)||1;
   const price = parseInt(document.getElementById('in-price').value)||0;
+  const totalAmt = parseInt(document.getElementById('in-total-amt')?.value)||0;
   const expiry = document.getElementById('in-expiry')?.value || '';
-  inCart.push({productId:pid, name, qty, price, expiry, sub: qty*price});
+  // 총 매입액을 입력한 경우 소계는 입력 총액 그대로, 아니면 수량×입고가
+  const sub = totalAmt > 0 ? totalAmt : qty*price;
+  inCart.push({productId:pid, name, qty, price, expiry, sub});
+  const _t = document.getElementById('in-total-amt'); if(_t) _t.value = '';
   renderCart();
   showToast('목록에 추가됐습니다.');
 }
@@ -5523,7 +5528,8 @@ async function submitCart() {
       const body = {
         date, product_id: parseInt(item.productId), quantity: item.qty,
         purchase_price: item.price, lot_number: lot,
-        expiry_date: item.expiry||null, remaining_qty: item.qty, note
+        expiry_date: item.expiry||null, remaining_qty: item.qty, note,
+        total_amount: (item.sub != null ? item.sub : item.qty*item.price)
       };
       const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in`,{method:'POST',
         headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
@@ -7147,7 +7153,7 @@ async function loadInHist() {
   const nf   = (document.getElementById('in-hist-name')?.value||'').trim().toLowerCase();
   const sf   = document.getElementById('in-hist-status')?.value || 'all';
   const sort = document.getElementById('in-hist-sort')?.value || 'expiry';
-  let q = '?limit=300&select=id,date,product_id,quantity,purchase_price,remaining_qty,lot_number,expiry_date';
+  let q = '?limit=300&select=id,date,product_id,quantity,purchase_price,total_amount,remaining_qty,lot_number,expiry_date';
   if(from) q += `&date=gte.${from}`;
   if(to)   q += `&date=lte.${to}`;
   if(pf)   q += `&product_id=eq.${pf}`;
@@ -7173,13 +7179,15 @@ async function loadInHist() {
 
   // 요약 KPI
   const totRemain = sins.reduce((s,r)=>s+(r.remaining_qty||0),0);
+  const totAmt = sins.reduce((s,r)=>s + (r.total_amount!=null ? r.total_amount : (r.quantity||0)*(r.purchase_price||0)), 0);
   const soonN = sins.filter(r => (r.remaining_qty||0)>0 && r._m!==null && r._m<=EXPIRY_SOON_MONTHS).length;
   const setK=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
   setK('in-mg-count', sins.length);
   setK('in-mg-remain', totRemain.toLocaleString());
+  setK('in-mg-total', '₩'+totAmt.toLocaleString());
   setK('in-mg-soon', soonN);
 
-  if(!sins.length){ tb.innerHTML = emptyRow(10,'해당 조건의 입고 내역이 없습니다'); return; }
+  if(!sins.length){ tb.innerHTML = emptyRow(11,'해당 조건의 입고 내역이 없습니다'); return; }
   tb.innerHTML = sins.map(r => {
     inRowData[r.id] = { quantity:r.quantity||0, remaining_qty:r.remaining_qty||0 };
     const consumed = (r.quantity||0) - (r.remaining_qty||0);
@@ -7190,6 +7198,7 @@ async function loadInHist() {
       <td><input type="text" class="form-control" style="padding:5px 8px;font-size:12px" value="${(r.lot_number||'').replace(/"/g,'&quot;')}" id="in-lot-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px" value="${r.quantity||0}" min="${consumed}" id="in-qty-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px" step="100" value="${r.purchase_price||0}" id="in-price-${r.id}"></td>
+      <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px;min-width:90px" step="1000" value="${r.total_amount!=null ? r.total_amount : (r.quantity||0)*(r.purchase_price||0)}" id="in-total-${r.id}" title="실제 매입 총액 (원본 보존 · 직접 수정 가능)"></td>
       <td style="text-align:center">${r.remaining_qty??'—'}</td>
       <td><input type="date" class="form-control" style="padding:5px 8px;font-size:12px" value="${r.expiry_date||''}" id="in-exp-${r.id}"></td>
       <td style="text-align:center">${_expiryCell(r.expiry_date)}</td>
@@ -7211,7 +7220,9 @@ async function _saveInCore(id) {
   const consumed = d.quantity - d.remaining_qty;       // 이미 출고된 수량
   if(qty < consumed) return {ok:false, msg:`수량은 이미 출고된 ${consumed} 이상이어야 함`};
   const newRemaining = qty - consumed;                 // 잔여 = 입고수량 - 소비량
-  const body = { date, lot_number:lot, quantity:qty, purchase_price:price, expiry_date:exp, remaining_qty:newRemaining };
+  const totalRaw = document.getElementById('in-total-'+id)?.value;
+  const total = (totalRaw==='' || totalRaw==null) ? null : (parseInt(totalRaw)||0);
+  const body = { date, lot_number:lot, quantity:qty, purchase_price:price, expiry_date:exp, remaining_qty:newRemaining, total_amount: (total!=null ? total : qty*price) };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/stock_in?id=eq.${id}`,{method:'PATCH',
     headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+(AUTH_TOKEN||SUPABASE_KEY),'Content-Type':'application/json','Prefer':'return=minimal'},
     body: JSON.stringify(body)});
@@ -15092,4 +15103,205 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
       if (enabled.comment && Array.isArray(newRow.comments)) {
         const oldLen = Array.isArray(oldRow.comments) ? oldRow.comments.length : 0;
         if (newRow.comments.length > oldLen) {
-          const last = newRow.comments[newR
+          const last = newRow.comments[newRow.comments.length-1] || {};
+          const author = last.author || last.user || '담당자';
+          if (author !== me) {
+            const txt = String(last.text || last.body || '').slice(0,80);
+            notifShow(`💬 ${newRow.client||'안건'} — 새 코멘트`, `${author}: ${txt}`, './index.html#cases');
+
+            // D. @멘션
+            if (enabled.mention && txt.includes('@'+me)) {
+              notifShow(`📌 ${me}님이 멘션되었습니다`, `${author}: ${txt}`, './index.html#cases');
+            }
+          }
+        }
+      }
+
+      // C. 상태 변경
+      if (enabled.status && payload.eventType === 'UPDATE' && newRow.status && oldRow.status && newRow.status !== oldRow.status) {
+        notifShow(`🔄 상태 변경: ${newRow.client||'안건'}`, `${oldRow.status} → ${newRow.status}`, './index.html#cases');
+      }
+    } catch(e){ console.warn('[notif] handle error', e); }
+  };
+
+  // B. 마감 임박 — 로컬 데이터에서 매시간 체크 (오늘 + 내일)
+  function dueCheckOnce(){
+    try {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const prefs = notifPrefs();
+      if (prefs.due === false) return;
+      if (!Array.isArray(window.MR_CASES)) return;
+      const me = (window.CURRENT_USER && CURRENT_USER.name) || '';
+      if (!me) return;
+      const today = new Date(); today.setHours(0,0,0,0);
+      const tomorrow = new Date(today.getTime()+86400000);
+      const seenKey = 'pwa-due-seen-' + today.toISOString().slice(0,10);
+      let seen = {};
+      try { seen = JSON.parse(localStorage.getItem(seenKey)||'{}'); } catch(_){}
+      MR_CASES.forEach(c => {
+        if (!c.due) return;
+        if ((c.owner||c.mgr) !== me && c.mgr !== me) return;
+        if (c.status && /완료|취소|보류/.test(c.status)) return;
+        const d = new Date(c.due); d.setHours(0,0,0,0);
+        if (isNaN(d)) return;
+        const dayKey = c.id+'@'+d.toISOString().slice(0,10);
+        if (seen[dayKey]) return;
+        if (d.getTime() === today.getTime()) {
+          notifShow(`⏰ 오늘 마감: ${c.client||'안건'}`, `${c.prod||''} • ${c.status||''}`.trim(), './index.html#cases');
+          seen[dayKey] = 1;
+        } else if (d.getTime() === tomorrow.getTime()) {
+          notifShow(`⏳ 내일 마감: ${c.client||'안건'}`, `${c.prod||''} • ${c.status||''}`.trim(), './index.html#cases');
+          seen[dayKey] = 1;
+        }
+      });
+      try { localStorage.setItem(seenKey, JSON.stringify(seen)); } catch(_){}
+    } catch(_){}
+  }
+  // 첫 로드 10초 뒤 + 매 30분 + 탭 복귀 시
+  setTimeout(dueCheckOnce, 10000);
+  setInterval(dueCheckOnce, 30*60*1000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') dueCheckOnce(); });
+  window.pwaDueCheckOnce = dueCheckOnce;
+
+  // 3) iOS Safari hint — 자동 노출 비활성화
+  // 사용자는 햄버거 메뉴 "📥 앱 설치" 버튼으로 직접 진입
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  // (자동 배너 노출 코드 제거됨)
+
+  // In-app browser 감지 (카카오톡·네이트온·인스타·페북 등)
+  function detectInAppBrowser(){
+    const ua = navigator.userAgent;
+    const patterns = ['KAKAOTALK','NAVER','Nate','Daum','Instagram','FBAN','FBAV','FB_IAB','Line','wv','WebView','everytimeapp','TwitterAndroid','Snapchat'];
+    for (const p of patterns) { if (ua.includes(p)) return p; }
+    // iOS Safari (실제)에는 'Version/' 토큰이 있음. 인앱 WebView에는 없는 경우 多
+    const iOS = /iPad|iPhone|iPod/.test(ua);
+    if (iOS && !/Version\//.test(ua)) return 'iOS-InApp';
+    return null;
+  }
+
+  // iOS Configuration Profile (.mobileconfig) 다운로드 — 가장 확실한 설치 방법
+  window.downloadIOSConfig = async function(btn){
+    const origLabel = btn.innerHTML;
+    btn.innerHTML = '⏳ 준비 중...';
+    btn.disabled = true;
+    try {
+      const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : 'https://intheho413.github.io/TheSC-MSO-system/';
+      // 아이콘을 base64로 인코딩
+      const iconResp = await fetch('icons/icon-192.png', {cache:'force-cache'});
+      const iconBlob = await iconResp.blob();
+      const iconBase64 = await new Promise((resolve, reject)=>{
+        const fr = new FileReader();
+        fr.onload = ()=> resolve(fr.result.split(',')[1]);
+        fr.onerror = reject;
+        fr.readAsDataURL(iconBlob);
+      });
+      // 64자마다 줄바꿈 (plist data 형식)
+      const iconB64Lines = iconBase64.match(/.{1,52}/g).join('\n\t\t\t\t');
+      const uuid1 = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)+'-'+Date.now());
+      const uuid2 = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)+'-'+Date.now()+1);
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+\t<key>PayloadContent</key>
+\t<array>
+\t\t<dict>
+\t\t\t<key>FullScreen</key>
+\t\t\t<true/>
+\t\t\t<key>Icon</key>
+\t\t\t<data>
+\t\t\t\t${iconB64Lines}
+\t\t\t</data>
+\t\t\t<key>IsRemovable</key>
+\t\t\t<true/>
+\t\t\t<key>Label</key>
+\t\t\t<string>The SC(MSO)</string>
+\t\t\t<key>PayloadDescription</key>
+\t\t\t<string>Web Clip</string>
+\t\t\t<key>PayloadDisplayName</key>
+\t\t\t<string>The SC(MSO)</string>
+\t\t\t<key>PayloadIdentifier</key>
+\t\t\t<string>com.thesc.mso.webclip</string>
+\t\t\t<key>PayloadType</key>
+\t\t\t<string>com.apple.webClip.managed</string>
+\t\t\t<key>PayloadUUID</key>
+\t\t\t<string>${uuid1}</string>
+\t\t\t<key>PayloadVersion</key>
+\t\t\t<integer>1</integer>
+\t\t\t<key>Precomposed</key>
+\t\t\t<false/>
+\t\t\t<key>URL</key>
+\t\t\t<string>${url}</string>
+\t\t</dict>
+\t</array>
+\t<key>PayloadDescription</key>
+\t<string>The SC(MSO) — 홈 화면 아이콘 설치</string>
+\t<key>PayloadDisplayName</key>
+\t<string>The SC(MSO)</string>
+\t<key>PayloadIdentifier</key>
+\t<string>com.thesc.mso.config</string>
+\t<key>PayloadOrganization</key>
+\t<string>The SC</string>
+\t<key>PayloadRemovalDisallowed</key>
+\t<false/>
+\t<key>PayloadType</key>
+\t<string>Configuration</string>
+\t<key>PayloadUUID</key>
+\t<string>${uuid2}</string>
+\t<key>PayloadVersion</key>
+\t<integer>1</integer>
+</dict>
+</plist>`;
+      const blob = new Blob([xml], {type: 'application/x-apple-aspen-config; charset=utf-8'});
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = 'TheSC-MSO.mobileconfig';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
+      btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
+      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+    } catch(e) {
+      console.error(e);
+      btn.innerHTML = '❌ 다운로드 실패 — 다시 시도';
+      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+      btn.disabled = false;
+      setTimeout(()=>{ btn.innerHTML = origLabel; btn.style.background=''; }, 3000);
+    }
+  };
+
+  window.installCopyHomeUrl = async function(btn){
+    const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = '✓ 복사 완료 — Safari에 붙여넣기';
+      btn.style.background = 'rgba(34,197,94,.3)';
+    } catch(_) {
+      const ta = document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      btn.textContent = '✓ 복사 완료';
+    }
+  };
+
+  // 4) 설치 방법 가이드 모달
+  window.openHowToInstall = function(){
+    const ua = navigator.userAgent;
+    const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const Android = /Android/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua) && /Version\//.test(ua);
+    const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
+    const inApp = detectInAppBrowser();
+
+    let osText = '';
+    let showId = 'howTo-other';
+    if (iOS) {
+      if (inApp || !isSafari) {
+        osText = 'iPhone · ' + (inApp ? `다른 앱 (${inApp})` : '기타 브라우저');
+      } else {
+        osText = 'iPhone · Safari';
+      }
+      showId = 'howTo-ios';
+      // 인앱/비Safari → 빨강 경고, 진짜 Safari → 초록 안내
+      const inappWarn = document.getElementById('howTo-ios-inapp
