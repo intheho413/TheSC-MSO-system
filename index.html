@@ -476,7 +476,7 @@ input[type=range]{width:100%;accent-color:#a78bfa;height:4px}
 #stock-tab-in .tbl-wrap td:nth-child(9) .btn{padding:5px 9px;font-size:12px}
 #stock-tab-edit .tbl-wrap td .form-control{width:100%;display:block}
 /* 입고 관리 표: 11컬럼 고정 폭 (수량·입고가·총액 눌림 방지) */
-#stock-tab-manage .tbl-wrap table{table-layout:fixed;width:100%;min-width:1060px}
+#stock-tab-manage .tbl-wrap table{table-layout:fixed !important;width:100%;min-width:1060px !important}
 #stock-tab-manage .tbl-wrap th,#stock-tab-manage .tbl-wrap td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;padding:8px 7px}
 #stock-tab-manage .tbl-wrap td .form-control{width:100%;display:block;min-width:0;padding:5px 7px;font-size:12px}
 #stock-tab-manage .tbl-wrap th:nth-child(1),#stock-tab-manage .tbl-wrap td:nth-child(1){width:38px;overflow:visible;text-align:center}
@@ -7214,7 +7214,7 @@ async function loadInHist() {
       <td><input type="text" class="form-control" style="padding:5px 8px;font-size:12px" value="${(r.lot_number||'').replace(/"/g,'&quot;')}" id="in-lot-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px" value="${r.quantity||0}" min="${consumed}" id="in-qty-${r.id}"></td>
       <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px" step="100" value="${r.purchase_price||0}" id="in-price-${r.id}"></td>
-      <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px;min-width:90px" step="1000" value="${r.total_amount!=null ? r.total_amount : (r.quantity||0)*(r.purchase_price||0)}" id="in-total-${r.id}" title="실제 매입 총액 (원본 보존 · 직접 수정 가능)"></td>
+      <td><input type="number" class="form-control" style="padding:5px 8px;font-size:12px" step="1000" value="${r.total_amount!=null ? r.total_amount : (r.quantity||0)*(r.purchase_price||0)}" id="in-total-${r.id}" title="실제 매입 총액 (원본 보존 · 직접 수정 가능)"></td>
       <td style="text-align:center">${r.remaining_qty??'—'}</td>
       <td><input type="date" class="form-control" style="padding:5px 8px;font-size:12px" value="${r.expiry_date||''}" id="in-exp-${r.id}"></td>
       <td style="text-align:center">${_expiryCell(r.expiry_date)}</td>
@@ -15280,5 +15280,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
       setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
       btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
       btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
-    } catch(e) {
-      
+    } catch(e) {
