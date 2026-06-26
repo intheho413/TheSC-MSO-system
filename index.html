@@ -8186,7 +8186,7 @@ async function downloadReport(type) {
         const total=(r.quantity||0)*(r.purchase_price||0), supply=won(total/1.1);
         return [r.date||'', pMap[r.product_id]||'', r.quantity||0, r.purchase_price||0, supply, total-supply, total];
       });
-      const t=['합계',null,0,null,0,0,0]; inRows.forEach(r=>{t[2]+=r[2];t[4]+=r[4];t[5]+=r[5];t[6]+=r[6];}); t[6]=Math.round(t[6]/10)*10;  // 입고 합계(매입금액) 10원 반올림
+      const t=['합계',null,0,null,0,0,0]; inRows.forEach(r=>{t[2]+=r[2];t[4]+=r[4];t[5]+=r[5];t[6]+=r[6];}); [4,5,6].forEach(i=>t[i]=Math.round(t[i]/10)*10);  // 합계 행 금액 10원 반올림
       inRows.push(t);
       XLSX.utils.book_append_sheet(wb, buildSheet(
         ['날짜','품목','수량','단가','입고가액(공급가액)','부가세','합계'],
@@ -8202,7 +8202,7 @@ async function downloadReport(type) {
       });
       const t=['합계',null,null,0,null,0,0,0,0,0,'',null];
       outRows.forEach(r=>{t[3]+=r[3];t[5]+=r[5];t[6]+=r[6];t[7]+=r[7];t[8]+=r[8];t[9]+=r[9];});
-      t[8]=Math.round(t[8]/10)*10;  // 매입원가합계 10원 반올림
+      [5,6,7,8,9].forEach(i=>t[i]=Math.round(t[i]/10)*10);  // 합계 행 금액 10원 반올림
       t[10]= t[7]>0 ? rate2(t[9]/t[7]*100) : ''; outRows.push(t);
       XLSX.utils.book_append_sheet(wb, buildSheet(
         ['날짜','거래처','품목','수량','할인율(%)','출고가액(공급가액)','부가세','합계(납품금액)','매입원가합계','마진액','마진율(%)','메모'],
@@ -15342,4 +15342,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
     }
     document.getElementById('howToOS').textContent = osText;
     ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
-      document.getElementById(id).style
+      
