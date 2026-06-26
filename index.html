@@ -8190,7 +8190,7 @@ async function downloadReport(type) {
       inRows.push(t);
       XLSX.utils.book_append_sheet(wb, buildSheet(
         ['날짜','품목','수량','단가','입고가액(공급가액)','부가세','합계'],
-        inRows,[14,17,6,9,16,9,11],{2:FMT_NUM,3:FMT_WON,4:FMT_WON,5:FMT_WON,6:FMT_WON}), '입고 상세');
+        inRows,[14,22,6,9,16,9,11],{2:FMT_NUM,3:FMT_WON,4:FMT_WON,5:FMT_WON,6:FMT_WON}), '입고 상세');
     }
     // 출고 상세
     if((souts||[]).length){
@@ -8205,7 +8205,7 @@ async function downloadReport(type) {
       t[10]= t[7]>0 ? rate2(t[9]/t[7]*100) : ''; outRows.push(t);
       XLSX.utils.book_append_sheet(wb, buildSheet(
         ['날짜','거래처','품목','수량','할인율(%)','출고가액(공급가액)','부가세','합계(납품금액)','매입원가합계','마진액','마진율(%)','메모'],
-        outRows,[14,13,19,6,10,16,10,14,12,10,10,8],
+        outRows,[14,13,22,6,10,16,10,14,12,10,10,59],
         {3:FMT_NUM,4:FMT_PCT,5:FMT_WON,6:FMT_WON,7:FMT_WON,8:FMT_WON,9:FMT_WON,10:FMT_PCT}), '출고 상세');
       // 거래처별 요약
       const so={}, sm={}, sp={};
@@ -8228,13 +8228,20 @@ async function downloadReport(type) {
     // 재고 현황 (현재 기준 스냅샷)
     if((G.products||[]).length){
       const stockMap={}; (sinsAll||[]).forEach(r=>{stockMap[r.product_id]=(stockMap[r.product_id]||0)+(r.remaining_qty||0);});
-      const rows=(G.products||[]).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(p=>{
+      // 제품 순서: 제품군(PHA물톡스 → 로즈 드 메르 → 기타) → PHA물톡스 그룹은 가나다순, 그 외 그룹은 등록순(id)
+      const GRP_ORDER=['PHA물톡스','로즈 드 메르'];
+      const _grank=g=>{const i=GRP_ORDER.indexOf(g||'');return i<0?GRP_ORDER.length:i;};
+      const rows=(G.products||[]).slice().sort((a,b)=>{
+        const gr=_grank(a.product_group)-_grank(b.product_group); if(gr) return gr;
+        if((a.product_group||'')==='PHA물톡스') return (a.name||'').localeCompare(b.name||'','ko');
+        return (a.id||0)-(b.id||0);
+      }).map(p=>{
         const cur=stockMap[p.id]||0, min=p.min_stock||0;
         return [p.name||'', p.spec||'', p.purchase_price||0, p.sale_price||0, cur, min, cur<min?'부족':'정상'];
       });
       XLSX.utils.book_append_sheet(wb, buildSheet(
         ['제품명','규격','공급가','납품가','현재고','최소재고','재고상태'],
-        rows,[19,16,10,10,7,8,8],{2:FMT_WON,3:FMT_WON,4:FMT_NUM,5:FMT_NUM}), '재고 현황');
+        rows,[26,16,10,10,7,8,8],{2:FMT_WON,3:FMT_WON,4:FMT_NUM,5:FMT_NUM}), '재고 현황');
     }
 
     XLSX.writeFile(wb, `SC-MSO_리포트_${from}_${to}.xlsx`);
@@ -15331,14 +15338,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
         safariOK.style.display = 'block';
       }
     } else if (Android) {
-      osText = 'Android · ' + (inApp ? `다른 앱 (${inApp})` : (isChrome?'Chrome':'기타 브라우저'));
-      showId = 'howTo-android';
-      const aInapp = document.getElementById('howTo-android-inapp');
-      if (aInapp) aInapp.style.display = (inApp || !isChrome) ? 'block' : 'none';
-    } else {
-      osText = '데스크탑';
-      showId = 'howTo-other';
-    }
-    document.getElementById('howToOS').textContent = osText;
-    ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
-      document.getEle
+      osText = 'Androi
