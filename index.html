@@ -9319,7 +9319,7 @@ window.addEventListener('load', ()=>{
 });
 
 // 사원 마스터 데이터 (관리자/담당자 단일 역할)
-const MR_POSITIONS = ['사원','주임','대리','과장','차장','부장','본부장','이사'];
+const MR_POSITIONS = ['사원','주임','대리','과장','차장','부장','본부장','이사','상무','전무','대표'];
 let MR_EMPLOYEES = [
   {id:1, name:'정인호', position:'대리', role:'manager', createdAt:'2026-04-27'}
 ];
@@ -15337,5 +15337,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
         inappWarn.style.display = 'none';
         safariOK.style.display = 'block';
       }
-    } else if (Android) {
-      osText = 'Androi
+    } else if (Android
