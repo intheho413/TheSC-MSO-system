@@ -5521,7 +5521,7 @@ function renderCart() {
     </tr>`;
   });
   document.getElementById('in-cart-section').style.display = inCart.length?'block':'none';
-  document.getElementById('in-total').textContent = '합계 매입금액: ₩'+total.toLocaleString();
+  document.getElementById('in-total').textContent = '합계 매입금액: ₩'+(Math.round(total/10)*10).toLocaleString();  // 10원 반올림
 }
 function removeCart(i) { inCart.splice(i,1); renderCart(); }
 function clearCart()   { inCart=[]; renderCart(); }
@@ -7200,7 +7200,7 @@ async function loadInHist() {
   const setK=(id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
   setK('in-mg-count', sins.length);
   setK('in-mg-remain', totRemain.toLocaleString());
-  setK('in-mg-total', '₩'+totAmt.toLocaleString());
+  setK('in-mg-total', '₩'+(Math.round(totAmt/10)*10).toLocaleString());  // 총 매입액 10원 반올림
   setK('in-mg-soon', soonN);
 
   if(!sins.length){ tb.innerHTML = emptyRow(11,'해당 조건의 입고 내역이 없습니다'); return; }
@@ -8201,6 +8201,7 @@ async function downloadReport(type) {
       });
       const t=['합계',null,null,0,null,0,0,0,0,0,'',null];
       outRows.forEach(r=>{t[3]+=r[3];t[5]+=r[5];t[6]+=r[6];t[7]+=r[7];t[8]+=r[8];t[9]+=r[9];});
+      t[8]=Math.round(t[8]/10)*10;  // 매입원가합계 10원 반올림
       t[10]= t[7]>0 ? rate2(t[9]/t[7]*100) : ''; outRows.push(t);
       XLSX.utils.book_append_sheet(wb, buildSheet(
         ['날짜','거래처','품목','수량','할인율(%)','출고가액(공급가액)','부가세','합계(납품금액)','매입원가합계','마진액','마진율(%)','메모'],
@@ -15342,9 +15343,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
     ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
       document.getElementById(id).style.display = (id===showId)?'block':'none';
     });
-    const bgEl = document.getElementById('howToInstallBg');
-    bgEl.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  };
-  window.closeHowToInstall = function(){
-    document.
+    const bgEl = document.getElem
