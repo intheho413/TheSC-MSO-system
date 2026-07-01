@@ -505,6 +505,28 @@ html.light .ld-tab{color:#64748b}
 html.light .ld-tab:hover{color:#475569}
 html.light .ld-tab.active{color:#1e293b}
 html.light .ld-tab .ld-badge{background:rgba(245,158,11,.15);color:#d97706}
+/* 잔여재고 현황 — 현재고 드릴다운(입고가 내역) */
+.ld-cur{cursor:pointer;user-select:none;transition:.15s}
+.ld-cur:hover{background:rgba(167,139,250,.08)}
+.ld-cur-btn{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end;width:100%;font-weight:700}
+.ld-caret{display:inline-block;width:15px;height:15px;line-height:14px;text-align:center;font-size:10px;color:#a78bfa;border:1px solid rgba(167,139,250,.4);border-radius:5px;transition:transform .2s;flex-shrink:0}
+tr.ld-open .ld-caret{transform:rotate(90deg);background:rgba(167,139,250,.2)}
+tr.ld-detail>td{padding:0 !important;border-top:0 !important}
+.ld-dwrap{max-height:0;overflow:hidden;transition:max-height .28s ease}
+tr.ld-open+tr.ld-detail .ld-dwrap{max-height:480px}
+.ld-dinner{margin:0 14px 12px;background:linear-gradient(160deg,rgba(167,139,250,.07),rgba(99,102,241,.04));border:1px solid rgba(167,139,250,.22);border-radius:10px;padding:11px 14px}
+.ld-dhead{font-size:11.5px;font-weight:700;color:#c7d2fe;margin-bottom:8px}
+.ld-dtl{width:100%;border-collapse:collapse;font-size:12.5px}
+.ld-dtl th{text-align:left;font-size:10.5px;font-weight:700;color:#8b93a7;padding:5px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ld-dtl th.num,.ld-dtl td.num{text-align:right}
+.ld-dtl td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.05);color:#dbe2ee}
+.ld-dtl tr:last-child td{border-bottom:0}
+.ld-free{display:inline-block;background:rgba(148,163,184,.18);color:#cbd5e1;font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;margin-left:5px}
+html.light .ld-cur:hover{background:rgba(124,58,237,.06)}
+html.light .ld-dinner{background:linear-gradient(160deg,rgba(124,58,237,.06),rgba(99,102,241,.03));border-color:rgba(124,58,237,.18)}
+html.light .ld-dhead{color:#6d28d9}
+html.light .ld-dtl th{color:#64748b;border-color:rgba(0,0,0,.08)}
+html.light .ld-dtl td{color:#334155;border-color:rgba(0,0,0,.05)}
 .rd-rank{display:inline-block;width:18px;color:rgba(255,255,255,.4);font-weight:700;font-size:12px}
 html.light .rd-rank{color:rgba(0,0,0,.35)}
 .badge-blue{background:rgba(58,130,255,0.15);color:#60a5fa}
@@ -5836,13 +5858,16 @@ async function openLowDetail() {
 
   const [prods, sins] = await Promise.all([
     dbQuery('products','?select=id,name,product_group,min_stock'),
-    dbQuery('stock_in','?select=product_id,remaining_qty'),
+    dbQuery('stock_in','?select=product_id,date,lot_number,purchase_price,remaining_qty&order=date'),
   ]);
-  const sm = {};
-  (sins||[]).forEach(r => sm[r.product_id] = (sm[r.product_id]||0) + (r.remaining_qty||0));
+  const sm = {}, lotsMap = {};
+  (sins||[]).forEach(r => {
+    sm[r.product_id] = (sm[r.product_id]||0) + (r.remaining_qty||0);
+    if((r.remaining_qty||0) > 0){ (lotsMap[r.product_id] ||= []).push({date:r.date||'', lot:r.lot_number||'', price:r.purchase_price||0, qty:r.remaining_qty||0}); }
+  });
   _LD_CACHE = (prods||[]).map(p => ({
     id: p.id, name: p.name || '(이름 없음)', group: p.product_group || '—',
-    cur: sm[p.id] || 0, min: p.min_stock || 0
+    cur: sm[p.id] || 0, min: p.min_stock || 0, lots: lotsMap[p.id] || []
   }));
   // 통합 KPI
   const total = _LD_CACHE.length;
@@ -5893,14 +5918,34 @@ function renderLdInventory(){
     if(p.cur <= 0){ badge = '품절'; badgeCls = 'badge-red'; }
     else if(p.cur < p.min){ badge = '부족'; badgeCls = 'badge-amber'; }
     else { badge = '충분'; badgeCls = 'badge-green'; }
-    return `<tr>
+    const hasLots = p.lots && p.lots.length;
+    const lotRows = hasLots ? p.lots.map(l => `<tr>
+        <td>${l.date || '—'}</td>
+        <td class="num">${l.price ? ('₩'+l.price.toLocaleString()) : '₩0<span class="ld-free">무상</span>'}</td>
+        <td class="num">${l.qty.toLocaleString()}</td>
+      </tr>`).join('') : '';
+    return `<tr class="ld-main" data-pid="${p.id}">
       <td>${p.name}</td>
       <td>${p.group}</td>
-      <td class="num">${p.cur.toLocaleString()}</td>
+      <td class="num${hasLots?' ld-cur':''}"${hasLots?` onclick="ldToggleLots(${p.id})"`:''}>${hasLots
+        ? `<span class="ld-cur-btn"><span>${p.cur.toLocaleString()}</span><span class="ld-caret">›</span></span>`
+        : p.cur.toLocaleString()}</td>
       <td class="num">${p.min ? p.min.toLocaleString() : '—'}</td>
       <td><span class="badge ${badgeCls}">${badge}</span></td>
-    </tr>`;
+    </tr>${hasLots ? `<tr class="ld-detail" data-dpid="${p.id}"><td colspan="5">
+      <div class="ld-dwrap"><div class="ld-dinner">
+        <div class="ld-dhead">입고가 내역 · 남은 수량</div>
+        <table class="ld-dtl">
+          <thead><tr><th>입고일</th><th class="num">입고 단가</th><th class="num">남은 수량</th></tr></thead>
+          <tbody>${lotRows}</tbody>
+        </table>
+      </div></div>
+    </td></tr>` : ''}`;
   }).join('');
+}
+function ldToggleLots(pid){
+  const row = document.querySelector('.ld-main[data-pid="'+pid+'"]');
+  if(row) row.classList.toggle('ld-open');
 }
 
 function renderLdLowStock(){
@@ -15281,60 +15326,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
       const dlUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = dlUrl;
-      a.download = 'TheSC-MSO.mobileconfig';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
-      btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
-      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
-    } catch(e) {
-      console.error(e);
-      btn.innerHTML = '❌ 다운로드 실패 — 다시 시도';
-      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
-      btn.disabled = false;
-      setTimeout(()=>{ btn.innerHTML = origLabel; btn.style.background=''; }, 3000);
-    }
-  };
-
-  window.installCopyHomeUrl = async function(btn){
-    const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      btn.textContent = '✓ 복사 완료 — Safari에 붙여넣기';
-      btn.style.background = 'rgba(34,197,94,.3)';
-    } catch(_) {
-      const ta = document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      btn.textContent = '✓ 복사 완료';
-    }
-  };
-
-  // 4) 설치 방법 가이드 모달
-  window.openHowToInstall = function(){
-    const ua = navigator.userAgent;
-    const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    const Android = /Android/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua) && /Version\//.test(ua);
-    const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
-    const inApp = detectInAppBrowser();
-
-    let osText = '';
-    let showId = 'howTo-other';
-    if (iOS) {
-      if (inApp || !isSafari) {
-        osText = 'iPhone · ' + (inApp ? `다른 앱 (${inApp})` : '기타 브라우저');
-      } else {
-        osText = 'iPhone · Safari';
-      }
-      showId = 'howTo-ios';
-      // 인앱/비Safari → 빨강 경고, 진짜 Safari → 초록 안내
-      const inappWarn = document.getElementById('howTo-ios-inapp');
-      const safariOK  = document.getElementById('howTo-ios-safari');
-      if (inApp || !isSafari) {
-        inappWarn.style.display = 'block';
-        safariOK.style.display = 'none';
-      } else {
-        inappWarn.style.display = 'none';
-        safariOK.style.display = 'block';
-      }
-    } else if (Android
+    

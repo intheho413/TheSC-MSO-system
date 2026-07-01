@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>시안 — 잔여재고 현황: 현재고 드릴다운(입고가 내역)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Inter','맑은 고딕',sans-serif;color:#e2e8f0}
+body{background:radial-gradient(900px circle at 12% -5%,rgba(96,165,250,.14),transparent 45%),radial-gradient(1000px circle at 100% 8%,rgba(167,139,250,.12),transparent 42%),#070b14;background-attachment:fixed;min-height:100vh;padding:26px 18px 70px}
+.wrap{max-width:1000px;margin:0 auto}
+.note{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:13px 16px;margin-bottom:18px;font-size:12.5px;line-height:1.65;color:#cbd5e1}
+.note b{color:#fff}
+.tag{display:inline-block;background:rgba(167,139,250,.25);color:#ddd6fe;font-weight:800;font-size:10px;padding:2px 8px;border-radius:5px;margin-right:6px}
+
+.page-title{font-size:20px;font-weight:800;color:#fff;margin-bottom:3px}
+.page-sub{font-size:12.5px;color:#94a3b8;margin-bottom:16px}
+
+.tbl-wrap{border-radius:14px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.02);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:rgba(255,255,255,.05);padding:11px 14px;text-align:left;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);white-space:nowrap}
+th.num,td.num{text-align:right}
+tbody td{padding:11px 14px;border-top:1px solid rgba(255,255,255,.05);color:#cbd5e1;vertical-align:middle}
+.prod{font-weight:700;color:#f1f5f9}
+.grp{color:#94a3b8;font-size:12px}
+
+/* 현재고 클릭 셀 */
+.cur-cell{cursor:pointer;user-select:none;transition:.15s}
+.cur-cell:hover{background:rgba(167,139,250,.08)}
+.cur-btn{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end;width:100%;font-weight:800;color:#e2e8f0}
+.cur-val{font-size:14px}
+.caret{display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;font-size:10px;color:#a78bfa;border:1px solid rgba(167,139,250,.4);border-radius:5px;transition:transform .2s;flex-shrink:0}
+tr.open .caret{transform:rotate(90deg);background:rgba(167,139,250,.2)}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800}
+.badge-green{background:rgba(52,211,153,.15);color:#6ee7b7}
+.badge-amber{background:rgba(245,158,11,.16);color:#fbbf24}
+.badge-red{background:rgba(239,68,68,.16);color:#f87171}
+
+/* 드릴다운 패널 */
+tr.detail-row>td{padding:0;border-top:0}
+.detail-wrap{max-height:0;overflow:hidden;transition:max-height .28s ease}
+tr.open+tr.detail-row .detail-wrap{max-height:420px}
+.detail-inner{margin:0 14px 14px;background:linear-gradient(160deg,rgba(167,139,250,.07),rgba(99,102,241,.04));border:1px solid rgba(167,139,250,.22);border-radius:12px;padding:14px 16px}
+.detail-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#c7d2fe;margin-bottom:11px}
+.detail-head .dh-prod{color:#fff}
+.dtl{width:100%;border-collapse:collapse;font-size:12.5px}
+.dtl th{text-align:left;font-size:10.5px;font-weight:700;color:#8b93a7;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.dtl th.num,.dtl td.num{text-align:right}
+.dtl td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.05);color:#dbe2ee}
+.lotno{font-family:ui-monospace,monospace;font-size:11.5px;color:#93c5fd}
+.free{display:inline-block;background:rgba(148,163,184,.18);color:#cbd5e1;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:4px;margin-left:6px}
+.dtl tfoot td{padding:9px 10px;border-top:1.5px solid rgba(167,139,250,.3);font-weight:800;color:#fff;background:rgba(167,139,250,.06)}
+.wavg{color:#a78bfa}
+.muted{color:#8b93a7;font-weight:600;font-size:11px}
+.hint{font-size:11.5px;color:#64748b;margin-top:14px;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="note">
+    <span class="tag">시안</span>
+    <b>잔여재고 현황 → 현재고 드릴다운.</b> 표에서 <b>현재고 숫자</b>를 클릭하면, 그 재고가 <b>어느 입고건에서 얼마(입고 단가)에 몇 개 남았는지</b> FIFO 기준으로 펼쳐 보여줍니다.
+    맨 아래 합계 줄에 <b>가중평균 입고가</b>와 <b>총 재고금액</b>도 표시됩니다. 아래 행의 현재고를 직접 눌러보세요 (실데이터).
+  </div>
+
+  <div class="page-title">재고 현황</div>
+  <div class="page-sub">제품별 잔여재고 · 최소재고 비교 — 현재고를 누르면 입고가 내역이 열립니다</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>제품명</th><th>제품군</th><th class="num">현재고</th><th class="num">최소재고</th><th>상태</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+
+  <div class="hint">
+    · 입고 단가 <b>₩0</b> 행은 무상/증정 입고건입니다 (표기 원치 않으시면 뺄 수 있어요).<br>
+    · 가중평균 입고가 = (각 입고 단가 × 남은 수량) 합 ÷ 현재고 → 실제 남은 재고의 평균 매입원가.<br>
+    · 총 재고금액 = 각 입고 단가 × 남은 수량 합 (현재 보유 재고의 장부상 매입가치).
+  </div>
+</div>
+
+<script>
+// 실제 DB 잔여 Lot 데이터
+const DATA = [
+  {name:'페이셜 클렌저', grp:'PHA물톡스', min:2, lots:[
+    {date:'2025-11-28', lot:'2025-11', price:77000, qty:7},
+    {date:'2025-12-29', lot:'2025-12', price:0, qty:1},
+  ]},
+  {name:'바이오닉 페이스 세럼', grp:'PHA물톡스', min:2, lots:[
+    {date:'2025-11-28', lot:'2025-11', price:123200, qty:6},
+    {date:'2025-12-29', lot:'2025-12', price:0, qty:1},
+  ]},
+  {name:'리바이탈라이징 필 20%', grp:'PHA물톡스', min:2, lots:[
+    {date:'2026-06-25', lot:'20260625-5-01', price:75333, qty:3},
+  ]},
+  {name:'스무스 서피스 필 10%', grp:'PHA물톡스', min:2, lots:[
+    {date:'2026-06-05', lot:'20260605-4-01', price:68475, qty:2},
+  ]},
+  {name:'퓨리파잉 클레이 마스크', grp:'PHA물톡스', min:2, lots:[
+    {date:'2026-04-20', lot:'2026-04a', price:110321, qty:1},
+  ]},
+];
+const W = n => '₩'+Math.round(n).toLocaleString();
+function badge(cur,min){
+  if(cur<=0) return '<span class="badge badge-red">품절</span>';
+  if(cur<min) return '<span class="badge badge-amber">부족</span>';
+  return '<span class="badge badge-green">충분</span>';
+}
+const tb = document.getElementById('tb');
+tb.innerHTML = DATA.map((p,i)=>{
+  const cur = p.lots.reduce((a,l)=>a+l.qty,0);
+  const val = p.lots.reduce((a,l)=>a+l.price*l.qty,0);
+  const wavg = cur? val/cur : 0;
+  const lotRows = p.lots.map(l=>`
+    <tr>
+      <td>${l.date}</td>
+      <td><span class="lotno">${l.lot}</span></td>
+      <td class="num">${W(l.price)}${l.price===0?'<span class="free">무상</span>':''}</td>
+      <td class="num">${l.qty}</td>
+      <td class="num">${W(l.price*l.qty)}</td>
+    </tr>`).join('');
+  return `
+  <tr class="main-row" data-i="${i}">
+    <td class="prod">${p.name}</td>
+    <td class="grp">${p.grp}</td>
+    <td class="num cur-cell" onclick="toggle(${i})">
+      <span class="cur-btn"><span class="cur-val">${cur.toLocaleString()}</span><span class="caret">›</span></span>
+    </td>
+    <td class="num">${p.min}</td>
+    <td>${badge(cur,p.min)}</td>
+  </tr>
+  <tr class="detail-row" data-d="${i}">
+    <td colspan="5">
+      <div class="detail-wrap"><div class="detail-inner">
+        <div class="detail-head"><span class="dh-prod">${p.name}</span><span class="muted">입고가 내역 · FIFO 잔여 기준</span></div>
+        <table class="dtl">
+          <thead><tr><th>입고일</th><th>Lot No.</th><th class="num">입고 단가</th><th class="num">남은 수량</th><th class="num">재고 금액</th></tr></thead>
+          <tbody>${lotRows}</tbody>
+          <tfoot><tr>
+            <td colspan="2">합계 · 가중평균 <span class="wavg">${W(wavg)}</span></td>
+            <td class="num muted">평균 ${W(wavg)}</td>
+            <td class="num">${cur.toLocaleString()}</td>
+            <td class="num">${W(val)}</td>
+          </tr></tfoot>
+        </table>
+      </div></div>
+    </td>
+  </tr>`;
+}).join('');
+
+function toggle(i){
+  const row = document.querySelector(`.main-row[data-i="${i}"]`);
+  row.classList.toggle('open');
+}
+// 첫 행 기본 펼침
+toggle(0);
+</script>
+</body>
+</html>
