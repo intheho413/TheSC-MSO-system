@@ -8219,7 +8219,7 @@ async function downloadReport(type) {
       dbQuery('stock_out', `?date=gte.${from}&date=lte.${to}&order=date`),
       dbQuery('stock_in',  `?date=gte.${from}&date=lte.${to}&order=date`),
       dbQuery('payments',  `?date=gte.${from}&date=lte.${to}&select=client_id,amount`),
-      dbQuery('stock_in',  '?select=product_id,remaining_qty'),
+      dbQuery('stock_in',  '?select=product_id,date,lot_number,purchase_price,remaining_qty&order=date'),
     ]);
     if(!(souts||[]).length && !(sins||[]).length) { showToast('해당 기간에 데이터가 없습니다'); return; }
     const cMap = Object.fromEntries((G.clients||[]).map(c=>[c.id,c.name]));
@@ -8270,23 +8270,37 @@ async function downloadReport(type) {
       XLSX.utils.book_append_sheet(wb, buildSheet(
         ['월','납품금액','마진액','평균마진율(%)'],mr,[11,13,11,12],{1:FMT_WON,2:FMT_WON,3:FMT_PCT}), '월별 매출');
     }
-    // 재고 현황 (현재 기준 스냅샷)
+    // 재고 현황 (현재 기준 스냅샷) — Lot이 여러 개인 제품은 로트별 행으로 분리(각 Lot 입고가·남은수량 표시)
     if((G.products||[]).length){
-      const stockMap={}; (sinsAll||[]).forEach(r=>{stockMap[r.product_id]=(stockMap[r.product_id]||0)+(r.remaining_qty||0);});
+      const stockMap={}, lotsMap={};
+      (sinsAll||[]).forEach(r=>{const q=r.remaining_qty||0; if(q<=0) return;
+        stockMap[r.product_id]=(stockMap[r.product_id]||0)+q;
+        (lotsMap[r.product_id] ||= []).push({date:r.date||'', lot:r.lot_number||'', price:r.purchase_price||0, qty:q});});
       // 제품 순서: 제품군(PHA물톡스 → 로즈 드 메르 → 기타) → PHA물톡스 그룹은 가나다순, 그 외 그룹은 등록순(id)
       const GRP_ORDER=['PHA물톡스','로즈 드 메르'];
       const _grank=g=>{const i=GRP_ORDER.indexOf(g||'');return i<0?GRP_ORDER.length:i;};
-      const rows=(G.products||[]).slice().sort((a,b)=>{
+      const sortedP=(G.products||[]).slice().sort((a,b)=>{
         const gr=_grank(a.product_group)-_grank(b.product_group); if(gr) return gr;
         if((a.product_group||'')==='PHA물톡스') return (a.name||'').localeCompare(b.name||'','ko');
         return (a.id||0)-(b.id||0);
-      }).map(p=>{
-        const cur=stockMap[p.id]||0, min=p.min_stock||0;
-        return [p.name||'', p.spec||'', p.purchase_price||0, p.sale_price||0, cur, min, cur<min?'부족':'정상'];
+      });
+      const rows=[];
+      sortedP.forEach(p=>{
+        const cur=stockMap[p.id]||0, min=p.min_stock||0, status=cur<min?'부족':'정상';
+        const lots=lotsMap[p.id]||[];
+        if(!lots.length){
+          // 재고 0(잔여 Lot 없음): 제품 마스터 매입가로 대체 표시
+          rows.push([p.name||'', p.spec||'', '—', '—', p.purchase_price||0, 0, cur, min, status]);
+        } else {
+          lots.forEach((l,i)=>{
+            if(i===0) rows.push([p.name||'', p.spec||'', l.date||'—', l.lot||'—', l.price, l.qty, cur, min, status]);
+            else      rows.push(['', '', l.date||'—', l.lot||'—', l.price, l.qty, '', '', '']); // 같은 제품 추가 Lot: 제품정보는 첫 행에만
+          });
+        }
       });
       XLSX.utils.book_append_sheet(wb, buildSheet(
-        ['제품명','규격','공급가','납품가','현재고','최소재고','재고상태'],
-        rows,[26,16,10,10,7,8,8],{2:FMT_WON,3:FMT_WON,4:FMT_NUM,5:FMT_NUM}), '재고 현황');
+        ['제품명','규격','입고일','Lot No.','입고가','남은수량','현재고','최소재고','재고상태'],
+        rows,[26,16,13,16,12,9,8,8,9],{4:FMT_WON,5:FMT_NUM,6:FMT_NUM,7:FMT_NUM}), '재고 현황');
     }
 
     XLSX.writeFile(wb, `SC-MSO_리포트_${from}_${to}.xlsx`);
@@ -15326,4 +15340,61 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
       const dlUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = dlUrl;
-    
+      a.download = 'TheSC-MSO.mobileconfig';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
+      btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
+      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+    } catch(e) {
+      console.error(e);
+      btn.innerHTML = '❌ 다운로드 실패 — 다시 시도';
+      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+      btn.disabled = false;
+      setTimeout(()=>{ btn.innerHTML = origLabel; btn.style.background=''; }, 3000);
+    }
+  };
+
+  window.installCopyHomeUrl = async function(btn){
+    const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = '✓ 복사 완료 — Safari에 붙여넣기';
+      btn.style.background = 'rgba(34,197,94,.3)';
+    } catch(_) {
+      const ta = document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      btn.textContent = '✓ 복사 완료';
+    }
+  };
+
+  // 4) 설치 방법 가이드 모달
+  window.openHowToInstall = function(){
+    const ua = navigator.userAgent;
+    const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const Android = /Android/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua) && /Version\//.test(ua);
+    const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
+    const inApp = detectInAppBrowser();
+
+    let osText = '';
+    let showId = 'howTo-other';
+    if (iOS) {
+      if (inApp || !isSafari) {
+        osText = 'iPhone · ' + (inApp ? `다른 앱 (${inApp})` : '기타 브라우저');
+      } else {
+        osText = 'iPhone · Safari';
+      }
+      showId = 'howTo-ios';
+      // 인앱/비Safari → 빨강 경고, 진짜 Safari → 초록 안내
+      const inappWarn = document.getElementById('howTo-ios-inapp');
+      const safariOK  = document.getElementById('howTo-ios-safari');
+      if (inApp || !isSafari) {
+        inappWarn.style.display = 'block';
+        safariOK.style.display = 'none';
+      } else {
+        inappWarn.style.display = 'none';
+        safariOK.style.display = 'block';
+      }
+    } else if (Android) {
+      osText
