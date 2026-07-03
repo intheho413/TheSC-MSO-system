@@ -8290,17 +8290,17 @@ async function downloadReport(type) {
         const lots=lotsMap[p.id]||[];
         if(!lots.length){
           // 재고 0(잔여 Lot 없음): 제품 마스터 매입가로 대체 표시
-          rows.push([p.name||'', p.spec||'', '—', '—', p.purchase_price||0, 0, cur, min, status]);
+          rows.push([p.name||'', p.spec||'', '—', '—', p.purchase_price||0, 0, min, status]);
         } else {
           lots.forEach((l,i)=>{
-            if(i===0) rows.push([p.name||'', p.spec||'', l.date||'—', l.lot||'—', l.price, l.qty, cur, min, status]);
-            else      rows.push(['', '', l.date||'—', l.lot||'—', l.price, l.qty, '', '', '']); // 같은 제품 추가 Lot: 제품정보는 첫 행에만
+            if(i===0) rows.push([p.name||'', p.spec||'', l.date||'—', l.lot||'—', l.price, l.qty, min, status]);
+            else      rows.push(['', '', l.date||'—', l.lot||'—', l.price, l.qty, '', '']); // 같은 제품 추가 Lot: 제품정보는 첫 행에만
           });
         }
       });
       XLSX.utils.book_append_sheet(wb, buildSheet(
-        ['제품명','규격','입고일','Lot No.','입고가','남은수량','현재고','최소재고','재고상태'],
-        rows,[26,16,13,16,12,9,8,8,9],{4:FMT_WON,5:FMT_NUM,6:FMT_NUM,7:FMT_NUM}), '재고 현황');
+        ['제품명','규격','입고일','Lot No.','입고가','남은수량','최소재고','재고상태'],
+        rows,[26,16,13,16,12,9,8,9],{4:FMT_WON,5:FMT_NUM,6:FMT_NUM}), '재고 현황');
     }
 
     XLSX.writeFile(wb, `SC-MSO_리포트_${from}_${to}.xlsx`);
@@ -15397,4 +15397,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
         safariOK.style.display = 'block';
       }
     } else if (Android) {
-      osText
+      osText = 'Android · ' + (inApp ? `다른 �
