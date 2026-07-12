@@ -7828,13 +7828,14 @@ function addOutItem() {
   const pSel = document.getElementById('out-prod');
   const pid = pSel?.value;
   const qty = parseInt(document.getElementById('out-qty')?.value)||0;
-  const unit = parseInt(document.getElementById('out-price')?.value)||0;
+  const priceRaw = (document.getElementById('out-price')?.value ?? '').trim();
+  const unit = parseInt(priceRaw)||0;
   const lotSel = document.getElementById('out-lot');
   const lotVal = lotSel?.value || 'auto';
   if(!cid){ showToast('거래처를 먼저 선택하세요'); return; }
   if(!pid){ showToast('품목을 선택하세요'); return; }
   if(!qty){ showToast('수량을 입력하세요'); return; }
-  if(!unit){ showToast('출고가를 입력하세요'); return; }
+  if(priceRaw==='' || isNaN(parseInt(priceRaw)) || unit<0){ showToast('출고가를 입력하세요 (0원 가능)'); return; }
   const lotLabel = lotVal==='auto' ? '자동(FIFO)' : (lotSel.selectedOptions[0]?.text.split(' · ')[0] || lotVal);
   outCart.push({productId:pid, name:pSel.selectedOptions[0].text, qty, unit, lotVal, lotLabel, sub:unit*qty});
   renderOutCart();
@@ -7984,10 +7985,11 @@ async function _patchRem(id, rem){
 async function _saveEditCore(id) {
   const d = editRowData[id];
   if(!d) return {ok:false, msg:'행정보없음'};
-  const unit = parseInt(document.getElementById('edit-price-'+id)?.value)||0;
+  const priceRaw = (document.getElementById('edit-price-'+id)?.value ?? '').trim();
+  const unit = parseInt(priceRaw)||0;
   const newQty = parseInt(document.getElementById('edit-qty-'+id)?.value)||0;
   const lotVal = document.getElementById('edit-lot-'+id)?.value || 'auto';
-  if(!unit) return {ok:false, msg:'출고가 누락'};
+  if(priceRaw==='' || isNaN(parseInt(priceRaw)) || unit<0) return {ok:false, msg:'출고가 누락 (0원 가능)'};
   if(!newQty) return {ok:false, msg:'수량 누락'};
 
   const lots = await dbQuery('stock_in',
@@ -15397,4 +15399,18 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
         safariOK.style.display = 'block';
       }
     } else if (Android) {
-      osText = 'Android · ' + (inApp ? `다른 �
+      osText = 'Android · ' + (inApp ? `다른 앱 (${inApp})` : (isChrome?'Chrome':'기타 브라우저'));
+      showId = 'howTo-android';
+      const aInapp = document.getElementById('howTo-android-inapp');
+      if (aInapp) aInapp.style.display = (inApp || !isChrome) ? 'block' : 'none';
+    } else {
+      osText = '데스크탑';
+      showId = 'howTo-other';
+    }
+    document.getElementById('howToOS').textContent = osText;
+    ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
+      document.getElementById(id).style.display = (id===showId)?'block':'none';
+    });
+    const bgEl = document.getElementById('howToInstallBg');
+    bgEl.style.display = 'flex';
+    document.body.style.overflow = 'h
