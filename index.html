@@ -1196,6 +1196,65 @@ html.light .mob-menu .mh-li:active{background:rgba(124,58,237,.1)}
 html.light .mob-menu .mh-li.on{background:linear-gradient(90deg,rgba(124,58,237,.15),transparent);color:#0f172a}
 html.light .mob-menu .mh-foot{color:#94a3b8}
 
+/* ── MSO 리포트 라이트모드 가독성 보강 (다크 전용 색 → 라이트용) ── */
+/* 통계 카드 / 카테고리 카드 */
+html.light .mr-card .h{color:#0f172a}
+html.light .mr-card .h .meta,html.light .mr-card .sh{color:#64748b}
+html.light .mr-cat{background:linear-gradient(160deg,#ffffff,#f8fafc);border-color:rgba(0,0,0,.09)}
+html.light .mr-cat:hover{border-color:rgba(0,0,0,.18)}
+html.light .mr-cat .name{color:#0f172a}
+html.light .mr-cat .name .cnt{background:rgba(0,0,0,.06);color:#475569}
+html.light .mr-cat .stat .lbl,html.light .mr-cat .sub-stat{color:#64748b}
+html.light .mr-cat .bar{background:rgba(0,0,0,.08)}
+/* 필터·검색 */
+html.light .mr-filt{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:#334155}
+html.light .mr-filt .mr-badge{background:rgba(0,0,0,.1);color:#334155}
+html.light .mr-search{background:#fff;border-color:rgba(0,0,0,.14);color:#0f172a}
+html.light .mr-search::placeholder{color:#94a3b8}
+/* 안건 등록 폼 */
+html.light .mr-form{background:linear-gradient(160deg,rgba(16,185,129,.06),rgba(59,130,246,.03));border-color:rgba(16,185,129,.3)}
+html.light .mr-form .head-row .ttl{color:#0f172a}
+html.light .mr-form .head-row .close{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.12);color:#475569}
+html.light .mr-fsec .stt{color:#475569}
+html.light .mr-fg label{color:#475569}
+html.light .mr-fg label .hint{color:#94a3b8}
+html.light .mr-fg input,html.light .mr-fg select,html.light .mr-fg textarea{background:#fff;border-color:rgba(0,0,0,.14);color:#0f172a}
+html.light .mr-fg input:focus,html.light .mr-fg select:focus,html.light .mr-fg textarea:focus{background:#fff;border-color:rgba(16,185,129,.55)}
+html.light .mr-fg input::placeholder,html.light .mr-fg textarea::placeholder{color:#94a3b8}
+html.light .mr-catpick button{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:#334155}
+html.light .mr-catpick button:hover{background:rgba(0,0,0,.07)}
+html.light .mr-typepick button{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:#334155}
+html.light .mr-mbchip{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:#334155}
+html.light .mr-mbchip.on{background:rgba(124,58,237,.14);border-color:rgba(124,58,237,.4);color:#5b21b6}
+html.light .mr-autotitle{background:rgba(124,58,237,.06);border-color:rgba(124,58,237,.3)}
+html.light .mr-autotitle .lbl{color:#7c3aed}
+html.light .mr-autotitle .val{color:#0f172a}
+html.light .mr-taginput{background:#fff;border-color:rgba(0,0,0,.14)}
+html.light .mr-taginput input{color:#0f172a}
+html.light .mr-taginput input::placeholder{color:#94a3b8}
+html.light .mr-alert{color:#334155}
+html.light .mr-alert input[type=checkbox]{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.25)}
+html.light .mr-actions{border-color:rgba(0,0,0,.08)}
+html.light .mr-actions .left{color:#64748b}
+html.light .mr-btn-ghost{background:rgba(0,0,0,.05);border-color:rgba(0,0,0,.12);color:#334155}
+html.light .mr-combo .sug{background:#fff;border-color:rgba(0,0,0,.12);box-shadow:0 12px 30px rgba(0,0,0,.12)}
+html.light .mr-combo .sug button{color:#334155}
+html.light .mr-combo .sug button:hover{background:rgba(0,0,0,.05);color:#0f172a}
+/* PPT 다운로드 바 */
+html.light .mr-ppt-range{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1);color:#475569}
+html.light .mr-ppt-range input{color:#0f172a}
+html.light .mr-ppt-preset{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1);color:#475569}
+html.light .mr-ppt-pop .pst{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1);color:#475569}
+/* 종결 안건 숨김 안내 */
+html.light .mr-hidden-hint{background:linear-gradient(135deg,rgba(100,116,139,.1),rgba(100,116,139,.04));border-color:rgba(100,116,139,.35);color:#64748b}
+html.light .mr-hidden-hint .hh-text b{color:#334155}
+html.light .mr-hidden-hint .hh-cta{color:#475569}
+/* 캘린더 상세 팝오버 */
+html.light .mr-cal-detail{background:#fff;border-color:rgba(0,0,0,.1)}
+html.light .mr-cal-detail .cd-close{color:#64748b}
+html.light .mr-cal-detail .cd-k,html.light .mr-cal-detail .cd-cmts-hd{color:#64748b}
+html.light .mr-cal-detail .cd-v{color:#0f172a}
+
 /* Plotly 차트 텍스트 (자동) */
 html.light .js-plotly-plot .plotly text{fill:#1e293b !important}
 html.light .js-plotly-plot .plotly .gridlayer .crisp{stroke:rgba(0,0,0,.06) !important}
@@ -15318,99 +15377,4 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
 \t\t\t<false/>
 \t\t\t<key>URL</key>
 \t\t\t<string>${url}</string>
-\t\t</dict>
-\t</array>
-\t<key>PayloadDescription</key>
-\t<string>The SC(MSO) — 홈 화면 아이콘 설치</string>
-\t<key>PayloadDisplayName</key>
-\t<string>The SC(MSO)</string>
-\t<key>PayloadIdentifier</key>
-\t<string>com.thesc.mso.config</string>
-\t<key>PayloadOrganization</key>
-\t<string>The SC</string>
-\t<key>PayloadRemovalDisallowed</key>
-\t<false/>
-\t<key>PayloadType</key>
-\t<string>Configuration</string>
-\t<key>PayloadUUID</key>
-\t<string>${uuid2}</string>
-\t<key>PayloadVersion</key>
-\t<integer>1</integer>
-</dict>
-</plist>`;
-      const blob = new Blob([xml], {type: 'application/x-apple-aspen-config; charset=utf-8'});
-      const dlUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = dlUrl;
-      a.download = 'TheSC-MSO.mobileconfig';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
-      btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
-      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
-    } catch(e) {
-      console.error(e);
-      btn.innerHTML = '❌ 다운로드 실패 — 다시 시도';
-      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
-      btn.disabled = false;
-      setTimeout(()=>{ btn.innerHTML = origLabel; btn.style.background=''; }, 3000);
-    }
-  };
-
-  window.installCopyHomeUrl = async function(btn){
-    const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      btn.textContent = '✓ 복사 완료 — Safari에 붙여넣기';
-      btn.style.background = 'rgba(34,197,94,.3)';
-    } catch(_) {
-      const ta = document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-      btn.textContent = '✓ 복사 완료';
-    }
-  };
-
-  // 4) 설치 방법 가이드 모달
-  window.openHowToInstall = function(){
-    const ua = navigator.userAgent;
-    const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    const Android = /Android/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua) && /Version\//.test(ua);
-    const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
-    const inApp = detectInAppBrowser();
-
-    let osText = '';
-    let showId = 'howTo-other';
-    if (iOS) {
-      if (inApp || !isSafari) {
-        osText = 'iPhone · ' + (inApp ? `다른 앱 (${inApp})` : '기타 브라우저');
-      } else {
-        osText = 'iPhone · Safari';
-      }
-      showId = 'howTo-ios';
-      // 인앱/비Safari → 빨강 경고, 진짜 Safari → 초록 안내
-      const inappWarn = document.getElementById('howTo-ios-inapp');
-      const safariOK  = document.getElementById('howTo-ios-safari');
-      if (inApp || !isSafari) {
-        inappWarn.style.display = 'block';
-        safariOK.style.display = 'none';
-      } else {
-        inappWarn.style.display = 'none';
-        safariOK.style.display = 'block';
-      }
-    } else if (Android) {
-      osText = 'Android · ' + (inApp ? `다른 앱 (${inApp})` : (isChrome?'Chrome':'기타 브라우저'));
-      showId = 'howTo-android';
-      const aInapp = document.getElementById('howTo-android-inapp');
-      if (aInapp) aInapp.style.display = (inApp || !isChrome) ? 'block' : 'none';
-    } else {
-      osText = '데스크탑';
-      showId = 'howTo-other';
-    }
-    document.getElementById('howToOS').textContent = osText;
-    ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
-      document.getElementById(id).style.display = (id===showId)?'block':'none';
-    });
-    const bgEl = document.getElementById('howToInstallBg');
-    bgEl.style.display = 'flex';
-    document.body.style.overflow = 'h
+\t\t</
