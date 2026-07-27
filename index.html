@@ -9051,7 +9051,7 @@ function startClock() {
 
 // ═══════════════ MSO 리포트 페이지 ═══════════════
 const MR_PROD_SUG = {
-  med: ['시너젯','바크로','써마지 FLX','프락셀 듀얼','슈링크 유니버스','클래시스','올리디아','쥬베룩'],
+  med: ['시너젯','바크로','써마지 FLX'],
   cosm:['멜라쉐이드','부스터 세럼','클렌징 폼','앰플','마스크팩','선크림','토너']
 };
 // MR_CASES — 주간업무보고서(2026-04-27 ~ 2026-05-29) 실제 데이터 기반 안건 15건 (작성자: 정인호 대리)
@@ -15377,4 +15377,109 @@ html.light .notif-test-btn:hover{background:#ede9fe;border-color:#a78bfa;color:#
 \t\t\t<false/>
 \t\t\t<key>URL</key>
 \t\t\t<string>${url}</string>
-\t\t</
+\t\t</dict>
+\t</array>
+\t<key>PayloadDescription</key>
+\t<string>The SC(MSO) — 홈 화면 아이콘 설치</string>
+\t<key>PayloadDisplayName</key>
+\t<string>The SC(MSO)</string>
+\t<key>PayloadIdentifier</key>
+\t<string>com.thesc.mso.config</string>
+\t<key>PayloadOrganization</key>
+\t<string>The SC</string>
+\t<key>PayloadRemovalDisallowed</key>
+\t<false/>
+\t<key>PayloadType</key>
+\t<string>Configuration</string>
+\t<key>PayloadUUID</key>
+\t<string>${uuid2}</string>
+\t<key>PayloadVersion</key>
+\t<integer>1</integer>
+</dict>
+</plist>`;
+      const blob = new Blob([xml], {type: 'application/x-apple-aspen-config; charset=utf-8'});
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = 'TheSC-MSO.mobileconfig';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(dlUrl), 3000);
+      btn.innerHTML = '✓ 다운로드 시작 — 설정 앱으로 이동하세요';
+      btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+    } catch(e) {
+      console.error(e);
+      btn.innerHTML = '❌ 다운로드 실패 — 다시 시도';
+      btn.style.background = 'linear-gradient(135deg,#ef4444,#dc2626)';
+      btn.disabled = false;
+      setTimeout(()=>{ btn.innerHTML = origLabel; btn.style.background=''; }, 3000);
+    }
+  };
+
+  window.installCopyHomeUrl = async function(btn){
+    const url = (typeof getInstallUrl === 'function') ? getInstallUrl() : location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = '✓ 복사 완료 — Safari에 붙여넣기';
+      btn.style.background = 'rgba(34,197,94,.3)';
+    } catch(_) {
+      const ta = document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      btn.textContent = '✓ 복사 완료';
+    }
+  };
+
+  // 4) 설치 방법 가이드 모달
+  window.openHowToInstall = function(){
+    const ua = navigator.userAgent;
+    const iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const Android = /Android/.test(ua);
+    const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(ua) && /Version\//.test(ua);
+    const isChrome = /Chrome|CriOS/.test(ua) && !/Edg/.test(ua);
+    const inApp = detectInAppBrowser();
+
+    let osText = '';
+    let showId = 'howTo-other';
+    if (iOS) {
+      if (inApp || !isSafari) {
+        osText = 'iPhone · ' + (inApp ? `다른 앱 (${inApp})` : '기타 브라우저');
+      } else {
+        osText = 'iPhone · Safari';
+      }
+      showId = 'howTo-ios';
+      // 인앱/비Safari → 빨강 경고, 진짜 Safari → 초록 안내
+      const inappWarn = document.getElementById('howTo-ios-inapp');
+      const safariOK  = document.getElementById('howTo-ios-safari');
+      if (inApp || !isSafari) {
+        inappWarn.style.display = 'block';
+        safariOK.style.display = 'none';
+      } else {
+        inappWarn.style.display = 'none';
+        safariOK.style.display = 'block';
+      }
+    } else if (Android) {
+      osText = 'Android · ' + (inApp ? `다른 앱 (${inApp})` : (isChrome?'Chrome':'기타 브라우저'));
+      showId = 'howTo-android';
+      const aInapp = document.getElementById('howTo-android-inapp');
+      if (aInapp) aInapp.style.display = (inApp || !isChrome) ? 'block' : 'none';
+    } else {
+      osText = '데스크탑';
+      showId = 'howTo-other';
+    }
+    document.getElementById('howToOS').textContent = osText;
+    ['howTo-ios','howTo-android','howTo-other'].forEach(id=>{
+      document.getElementById(id).style.display = (id===showId)?'block':'none';
+    });
+    const bgEl = document.getElementById('howToInstallBg');
+    bgEl.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeHowToInstall = function(){
+    document.getElementById('howToInstallBg').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+})();
+</script>
+
+</body>
+</html>
