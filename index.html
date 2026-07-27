@@ -3116,10 +3116,10 @@ html.light #aurora-bg{opacity:.35}
     </div>
     <h3>비밀번호 재설정</h3>
     <p>대상: <b id="admin-pw-emp-name" style="color:#c4b5fd"></b></p>
-    <input id="admin-pw-input" type="text" placeholder="새 임시 비밀번호 (비워두면 thesc1234)" autocomplete="off" maxlength="20">
+    <input id="admin-pw-input" type="text" placeholder="새 임시 비밀번호 (비워두면 1234)" autocomplete="off" maxlength="20">
     <div id="admin-pw-error" class="pw-error"></div>
     <div style="font-size:11px;color:#94a3b8;text-align:left;padding:0 2px 10px;line-height:1.5">
-      · 입력하지 않으면 초기 비밀번호 <b style="color:#fbbf24">thesc1234</b>로 재설정<br>
+      · 입력하지 않으면 초기 비밀번호 <b style="color:#fbbf24">1234</b>로 재설정<br>
       · 사용자는 다음 로그인 시 새 비밀번호로 변경해야 함
     </div>
     <div class="pw-actions">
@@ -3199,8 +3199,8 @@ html.light #aurora-bg{opacity:.35}
         <input type="email" id="ap-r-email" placeholder="example@gmail.com">
       </div>
       <div class="ap-form-field full" id="ap-r-pw-field">
-        <label>초기 비밀번호 <span class="hint">(미입력 시 thesc1234)</span></label>
-        <input type="text" id="ap-r-initpw" placeholder="6자 이상 또는 비워두면 thesc1234" maxlength="20">
+        <label>초기 비밀번호 <span class="hint">(미입력 시 1234)</span></label>
+        <input type="text" id="ap-r-initpw" placeholder="4자 이상 또는 비워두면 1234" maxlength="20">
       </div>
       <div class="ap-form-field full">
         <label>열람 페이지 <span class="hint">(복수 선택 가능 · 마스터·매니저는 항상 모든 페이지)</span></label>
@@ -9903,26 +9903,26 @@ function sbSubscribeCases(){
 // ═══════════════════════════════════════════════════════════════
 const AUTH_SESSION_KEY = 'thesc-mso-session-v1';
 const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30일 (모바일 편의성)
-const AUTH_DEFAULT_PW = 'thesc1234'; // 초기 비밀번호 (Supabase Auth 최소 6자 이상)
+const AUTH_DEFAULT_PW = '1234'; // 초기 비밀번호
 const AUTH_REMEMBER_KEY = 'thesc-mso-remember-v1';
 
 let CURRENT_USER = null; // {id, name, position, role}
 
-// ── 로그인 계정(Supabase Auth) 생성/재설정 — admin-user 엣지 함수 호출 (관리자 전용) ──
+// ── 로그인 계정(Supabase Auth) 생성/재설정 — mso_admin_upsert_login RPC 호출 (관리자만, DB 함수에서 권한 검사) ──
 async function authProvisionLogin(email, password, name){
   if(!email) return {ok:false, skipped:true, error:'이메일 없음'};
   try{
-    const { data, error } = await sb.functions.invoke('admin-user', { body: { action:'create', email, password: password||AUTH_DEFAULT_PW, name: name||'' } });
+    const { data, error } = await sb.rpc('mso_admin_upsert_login', { p_email: email, p_password: password||AUTH_DEFAULT_PW });
     if(error) return {ok:false, error:(error.message||'호출 실패')};
-    return data || {ok:true};
+    return {ok:true, action:data};
   }catch(e){ return {ok:false, error:String(e)}; }
 }
 async function authProvisionReset(email, password){
   if(!email) return {ok:false, error:'이메일 없음'};
   try{
-    const { data, error } = await sb.functions.invoke('admin-user', { body: { action:'reset', email, password: password||AUTH_DEFAULT_PW } });
+    const { data, error } = await sb.rpc('mso_admin_upsert_login', { p_email: email, p_password: password||AUTH_DEFAULT_PW });
     if(error) return {ok:false, error:(error.message||'호출 실패')};
-    return data || {ok:true};
+    return {ok:true, action:data};
   }catch(e){ return {ok:false, error:String(e)}; }
 }
 
@@ -10403,7 +10403,7 @@ async function apSubmitEmpForm(){
   const isPrivileged = (authLevel==='master' || authLevel==='manager');
   const permissions = isPrivileged ? null : {mso_main: permMain, mso_report: permReport};
   if(!name){ errEl.textContent = '이름을 입력하세요'; return; }
-  if(initPw && initPw.length<6){ errEl.textContent = '비밀번호는 6자 이상이어야 합니다 (Supabase 로그인 정책)'; return; }
+  if(initPw && initPw.length<4){ errEl.textContent = '비밀번호는 4자 이상이어야 합니다'; return; }
   // 중복 체크
   const dupName = MR_EMPLOYEES.find(e=>e.name===name && (!isEdit || e.id!==_apEmpEditId));
   if(dupName){ errEl.textContent = `이미 등록된 이름: ${name}`; return; }
@@ -10430,7 +10430,7 @@ async function apSubmitEmpForm(){
     const today = new Date().toISOString().substring(0,10);
     const newEmp = {id:newId, empNo:finalEmpNo, name, position, email, role, authLevel, createdAt:today, mustChangePassword:true, active:true};
     if(!isPrivileged) newEmp.permissions = permissions;
-    if(initPw && initPw.length>=6){
+    if(initPw && initPw.length>=4){
       newEmp.passwordHash = await _authHash(initPw);
     }
     MR_EMPLOYEES.push(newEmp);
@@ -10665,7 +10665,7 @@ async function authAdminResetPassword(empId, newPassword){
     if(!pr.ok && u.email) return {ok:false, msg:'로그인 비밀번호 재설정 실패: '+(pr.error||'')};
     return {ok:true, defaultPw:true, resetPw:AUTH_DEFAULT_PW};
   }
-  if(newPassword.length<6) return {ok:false, msg:'비밀번호는 6자 이상이어야 합니다 (로그인 정책)'};
+  if(newPassword.length<4) return {ok:false, msg:'비밀번호는 4자 이상이어야 합니다'};
   u.passwordHash = await _authHash(newPassword);
   u.mustChangePassword = true; // 임시 비밀번호 → 강제 변경
   u.passwordChangedAt = new Date().toISOString();
@@ -10713,7 +10713,7 @@ async function handleAdminPwReset(){
   if(!result.ok){ errEl.textContent = result.msg; return; }
   closeAdminPwResetModal();
   if(result.defaultPw){
-    showToast('초기 비밀번호(thesc1234)로 재설정됨 · 다음 로그인 시 변경 필요');
+    showToast('초기 비밀번호(1234)로 재설정됨 · 다음 로그인 시 변경 필요');
   } else {
     showToast('임시 비밀번호 설정됨 · 사용자 변경 필요');
   }
@@ -10852,7 +10852,7 @@ function mrEmpBuildRow(prefill){
   const role = prefill?.role || 'manager';
   const isEdit = !!prefill;
   // 수정 모드에서는 비밀번호 칸 숨김 (별도 재설정 버튼으로 처리)
-  const pwField = isEdit ? '' : `<div><label>초기 비밀번호 <span style="font-size:9px;color:#475569;font-weight:500">(미입력 시 thesc1234)</span></label><input type="text" class="r-initpw" placeholder="6자 이상 또는 비워두면 thesc1234" maxlength="20"></div>`;
+  const pwField = isEdit ? '' : `<div><label>초기 비밀번호 <span style="font-size:9px;color:#475569;font-weight:500">(미입력 시 1234)</span></label><input type="text" class="r-initpw" placeholder="4자 이상 또는 비워두면 1234" maxlength="20"></div>`;
   const empNoVal = prefill?.empNo || '';
   return `<div class="mr-emp-row" data-rowid="${id}">
     <div><label>고유번호 <span style="font-size:9px;color:#475569;font-weight:500">(미입력 시 자동 생성)</span></label><input type="text" class="r-empno" placeholder="예: EMP001 / 1001 / A-01" value="${empNoVal.replace(/"/g,'&quot;')}" maxlength="20"></div>
@@ -10938,7 +10938,7 @@ async function mrEmpSubmit(){
   }
   // 비밀번호 길이 체크
   for(const p of parsed){
-    if(p.initPw && p.initPw.length<6){ showToast(`비밀번호는 6자 이상: ${p.name}`); return; }
+    if(p.initPw && p.initPw.length<4){ showToast(`비밀번호는 4자 이상: ${p.name}`); return; }
   }
   // 중복 체크 — 폼 내부 + 기존 데이터 (수정 모드는 자기 자신 제외)
   const seen = new Set();
@@ -10967,7 +10967,7 @@ async function mrEmpSubmit(){
       // 고유번호 미입력 시 자동 생성 (EMP001 형식)
       if(!empData.empNo) empData.empNo = 'EMP' + String(newId).padStart(3,'0');
       const newEmp = {id:newId, ...empData, createdAt:today, mustChangePassword:true};
-      if(initPw && initPw.length>=6){
+      if(initPw && initPw.length>=4){
         newEmp.passwordHash = await _authHash(initPw);
       }
       MR_EMPLOYEES.push(newEmp);
