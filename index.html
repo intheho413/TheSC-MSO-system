@@ -13522,10 +13522,26 @@ function mrSetupForm(){
   const prodCombo = document.getElementById('mr-prod-combo');
   const prodSug = document.getElementById('mr-prod-sug');
   function refreshSug(){
-    const q = (prodInp.value||'').toLowerCase();
-    const list = (MR_PROD_SUG[MR_SELECTED_CAT]||[]).filter(p=>p.toLowerCase().includes(q));
-    prodSug.innerHTML = list.map(p=>`<button type="button"><b>${p}</b> · 의료장비</button>`).join('') +
-      (q && !list.includes(prodInp.value) ? `<button type="button">＋ 새 물품 "<b>${prodInp.value}</b>" 추가</button>` : '');
+    const esc = x => String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const typed = (prodInp.value||'').trim();
+    const q = typed.toLowerCase();
+    const catLabel = MR_SELECTED_CAT==='med' ? '의료장비' : '화장품';
+    // 실제 등록된 안건의 물품명(현재 카테고리)만 · 중복 제거(대소문자 무시)
+    const seen = new Map();
+    (Array.isArray(MR_CASES)?MR_CASES:[]).forEach(c=>{
+      if(c && c.cat===MR_SELECTED_CAT && c.prod){
+        const nm = String(c.prod).trim();
+        if(nm){ const k = nm.toLowerCase(); if(!seen.has(k)) seen.set(k, nm); }
+      }
+    });
+    const all = [...seen.values()].sort((a,b)=>a.localeCompare(b,'ko'));
+    const list = q ? all.filter(p=>p.toLowerCase().includes(q)) : all;
+    const exists = all.some(p=>p.toLowerCase()===q);
+    let html = list.map(p=>`<button type="button"><b>${esc(p)}</b> · ${catLabel}</button>`).join('');
+    // 이미 등록된 이름이면 "새 물품 추가" 미표시(중복 방지)
+    if(typed && !exists) html += `<button type="button">＋ 새 물품 "<b>${esc(typed)}</b>" 추가</button>`;
+    if(!list.length && !typed) html = `<div style="padding:8px 10px;font-size:11.5px;color:#94a3b8">등록된 물품이 없습니다 — 입력해 새로 추가하세요</div>`;
+    prodSug.innerHTML = html;
     prodSug.querySelectorAll('button').forEach(b=>{
       b.addEventListener('mousedown', e=>{
         e.preventDefault();
