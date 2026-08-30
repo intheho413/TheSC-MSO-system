@@ -1,5 +1,5 @@
 {
-  "version": "2.4.10",
-  "buildTime": "2026-08-30T02:00:00Z",
-  "changelog": "fix: 서비스 워커 파일 파손 복구 — 웹푸시 핸들러(push/notificationclick/message) + PWA installability용 no-op fetch 핸들러 재정비. 캐싱 로직은 도입하지 않음(항상 최신 HTML 서빙)."
+  "version": "2.4.11",
+  "buildTime": "2026-08-30T03:30:00Z",
+  "changelog": "feat: 홈 화면 3번째 카드 '병원 운영 관리' 추가 (마스터 전용). 상단 nav hospital-mode + 페이지 3개(운영지표/재고소모품/일매출 자리표시자). Google Apps Script Web App 연동 유틸리티(hospGetSheet, 설정 모달, 연결 테스트, JSON 원문 뷰) 도입. Apps Script 소스: apps-script/gsheet-bridge.gs."
 }

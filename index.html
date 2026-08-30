@@ -661,7 +661,8 @@ html.light .home-brand-name{color:#0f172a}
 html.light .home-h1{color:#0f172a}
 .home-h1 .grad{background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
 .home-h1-sub{font-size:14px;color:#94a3b8;line-height:1.6;max-width:620px}
-.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.home-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+@media(max-width:1100px){.home-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:880px){.home-grid{grid-template-columns:1fr}.home-h1{font-size:30px}}
 .home-tile{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:30px 32px;cursor:pointer;overflow:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .35s;isolation:isolate;min-height:230px}
 html.light .home-tile{background:linear-gradient(160deg,#fff,#f8fafc);border-color:rgba(0,0,0,.08)}
@@ -669,6 +670,7 @@ html.light .home-tile{background:linear-gradient(160deg,#fff,#f8fafc);border-col
 .home-tile::after{content:"";position:absolute;width:340px;height:340px;border-radius:50%;filter:blur(60px);opacity:.35;z-index:0;pointer-events:none;transition:.5s}
 .home-tile.t1::after{background:radial-gradient(circle,rgba(96,165,250,.6),transparent 60%);top:-120px;right:-100px}
 .home-tile.t2::after{background:radial-gradient(circle,rgba(167,139,250,.6),transparent 60%);bottom:-120px;left:-100px}
+.home-tile.t3::after{background:radial-gradient(circle,rgba(16,185,129,.55),transparent 60%);top:-120px;left:50%;transform:translateX(-50%)}
 .home-tile:hover{transform:translateY(-6px);border-color:rgba(255,255,255,.18);box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
 .home-tile:hover::before{opacity:1}
 .home-tile:hover::after{opacity:.55;transform:scale(1.1)}
@@ -677,6 +679,7 @@ html.light .home-tile{background:linear-gradient(160deg,#fff,#f8fafc);border-col
 .home-tile-icon{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:20px;font-weight:900;color:#fff;letter-spacing:-.5px}
 .t1 .home-tile-icon{background:linear-gradient(135deg,#3b82f6,#6366f1);box-shadow:0 12px 30px rgba(59,130,246,.4)}
 .t2 .home-tile-icon{background:linear-gradient(135deg,#a78bfa,#ec4899);box-shadow:0 12px 30px rgba(167,139,250,.4)}
+.t3 .home-tile-icon{background:linear-gradient(135deg,#10b981,#06b6d4);box-shadow:0 12px 30px rgba(16,185,129,.35)}
 .home-tile-arrow{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:grid;place-items:center;color:#cbd5e1;font-size:16px;transition:.3s}
 .home-tile:hover .home-tile-arrow{background:rgba(255,255,255,.14);transform:translate(4px,-4px) rotate(-12deg);color:#fff}
 /* 카드 제목 — 그라데이션 텍스트 (카드별 색상) */
@@ -762,6 +765,17 @@ body.light-mode .home-install-hint{color:#94a3b8}
   .app:not(.home-mode) #nav-refresh-btn{display:inline-flex !important}
 }
 .topnav.report-mode .nav-sep:nth-of-type(2){display:none}
+
+/* 병원 운영 관리 모드 */
+.topnav.hospital-mode .nav-cats,
+.topnav.hospital-mode #nav-menu-cosm,
+.topnav.hospital-mode #nav-menu-med,
+.topnav.hospital-mode #nav-menu-report{display:none !important}
+.topnav.hospital-mode #nav-menu-hospital{display:flex !important}
+.topnav.hospital-mode #nav-appname{display:none !important}
+.topnav.hospital-mode #nav-appname-hospital{display:inline-flex !important;align-items:center;gap:8px}
+.topnav.hospital-mode .nav-sep:nth-of-type(2){display:none}
+.nav-appname-hospital{font-size:14px;font-weight:800;color:#fff;letter-spacing:.2px;align-items:center;gap:8px;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .nav-appname-report{font-size:14px;font-weight:800;color:#fff;letter-spacing:.2px;align-items:center;gap:8px}
 .nav-refresh-btn{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.35);color:#c4b5fd;width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;margin-left:6px;transition:.2s;padding:0;vertical-align:middle;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .nav-refresh-btn svg{width:14px;height:14px}
@@ -3031,6 +3045,33 @@ html.light .ied-picker .nx:hover{background:#e2e8f0;color:#1e293b}
 }
 html.light #aurora-bg{opacity:.35}
 
+/* ══ 병원 운영 관리 ══ */
+.hosp-wrap{padding:22px 26px;max-width:1400px;margin:0 auto}
+.hosp-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:22px 24px;border-radius:16px;background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(6,182,212,.10));border:1px solid rgba(16,185,129,.24);margin-bottom:16px}
+.hosp-hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.4px;color:#5eead4;margin-bottom:6px}
+.hosp-hero-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px}
+.hosp-hero-sub{font-size:12.5px;color:#94a3b8}
+.hosp-hero-actions{display:flex;gap:8px;flex-shrink:0}
+.hosp-status{font-size:12px;color:#94a3b8;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}
+.hosp-status.ok{color:#6ee7b7;border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.08)}
+.hosp-status.err{color:#fca5a5;border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08)}
+html.light .hosp-hero{background:linear-gradient(135deg,rgba(16,185,129,.10),rgba(6,182,212,.08));border-color:rgba(16,185,129,.28)}
+html.light .hosp-hero-title{color:#0f172a}
+html.light .hosp-hero-sub{color:#475569}
+
+.hosp-cfg-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:9500;display:flex;align-items:center;justify-content:center;padding:20px}
+.hosp-cfg-modal{width:100%;max-width:520px;background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:0;box-shadow:0 20px 60px rgba(0,0,0,.5);color:#e2e8f0}
+.hosp-cfg-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.hosp-cfg-close{background:none;border:0;color:#94a3b8;font-size:22px;cursor:pointer;line-height:1}
+.hosp-cfg-body{padding:18px 20px}
+.hosp-cfg-note{font-size:11px;color:#94a3b8;margin-top:4px}
+.hosp-cfg-footer{padding:12px 20px 18px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid rgba(255,255,255,.06)}
+.hosp-cfg-result{margin:0 20px 16px;padding:10px 12px;border-radius:8px;font-size:12px;display:none;white-space:pre-wrap;font-family:'Fira Code',monospace}
+.hosp-cfg-result.ok{display:block;color:#6ee7b7;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3)}
+.hosp-cfg-result.err{display:block;color:#fca5a5;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3)}
+html.light .hosp-cfg-modal{background:#fff;color:#0f172a;border-color:rgba(0,0,0,.08)}
+html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,.06)}
+
 </style>
 </head>
 <body>
@@ -3299,8 +3340,18 @@ html.light #aurora-bg{opacity:.35}
           <span class="home-feat">차트 드릴다운</span>
         </div>
       </div>
+      <div class="home-tile t3" id="home-tile-hospital" data-dir="right" onclick="enterApp('hospital',this)">
+        <div class="home-tile-head"><div class="home-tile-icon">H</div><div class="home-tile-arrow">→</div></div>
+        <div class="home-tile-title">병원 운영 관리</div>
+        <div class="home-tile-feats">
+          <span class="home-feat">운영 지표</span>
+          <span class="home-feat">재고/소모품</span>
+          <span class="home-feat">일매출 보고</span>
+          <span class="home-feat">실시간 시트 연동</span>
+        </div>
+      </div>
     </div>
-    <div class="home-hint">카드 클릭으로 진입 · <span class="home-kbd">1</span> 통합 관리 · <span class="home-kbd">2</span> 리포트 · <span class="home-kbd">ESC</span> 홈으로</div>
+    <div class="home-hint">카드 클릭으로 진입 · <span class="home-kbd">1</span> 통합 관리 · <span class="home-kbd">2</span> 리포트 · <span class="home-kbd">3</span> 병원 운영 · <span class="home-kbd">ESC</span> 홈으로</div>
     <div class="home-install-row">
       <button class="home-install-btn" onclick="openInstallModal()" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>
@@ -3392,6 +3443,7 @@ html.light #aurora-bg{opacity:.35}
   <div class="nav-brand">
     <span class="nav-appname" id="nav-appname">MSO 통합 관리 시스템</span>
     <span class="nav-appname-report" id="nav-appname-report" style="display:none">MSO 리포트 <span class="nav-badge">REPORT</span></span>
+    <span class="nav-appname-hospital" id="nav-appname-hospital" style="display:none">병원 운영 관리 <span class="nav-badge">HOSP</span></span>
     <span class="nav-caption">TheSC-MSO v2.0</span>
   </div>
   <!-- 새로고침 버튼 (MSO 리포트에서만 표시) -->
@@ -3456,6 +3508,21 @@ html.light #aurora-bg{opacity:.35}
     </div>
     <div class="nav-item" onclick="mrSwitchTab('master',this)">
       <span class="menu-label">기초 관리</span>
+    </div>
+  </div>
+
+  <div class="nav-menu" id="nav-menu-hospital" style="display:none">
+    <div class="nav-item active" onclick="navigate('hosp-dashboard',this)">
+      <span class="menu-label">운영 지표</span>
+    </div>
+    <div class="nav-item" onclick="navigate('hosp-stock',this)">
+      <span class="menu-label">재고/소모품</span>
+    </div>
+    <div class="nav-item" onclick="navigate('hosp-sales',this)">
+      <span class="menu-label">일매출 보고</span>
+    </div>
+    <div class="nav-item" onclick="hospOpenConfig()">
+      <span class="menu-label">연동 설정</span>
     </div>
   </div>
 
@@ -3638,6 +3705,95 @@ html.light #aurora-bg{opacity:.35}
 <main class="content">
 
 <!-- ════ 화장품 대시보드 ════ -->
+
+<!-- ════ 병원 운영 관리 페이지들 (마스터 전용) ════ -->
+<div id="page-hosp-dashboard" class="page" style="display:none">
+  <div class="hosp-wrap">
+    <div class="hosp-hero">
+      <div>
+        <div class="hosp-hero-eyebrow">HOSPITAL OPERATIONS</div>
+        <div class="hosp-hero-title">전체 운영 지표</div>
+        <div class="hosp-hero-sub" id="hosp-config-status">연동 설정을 완료하면 실시간으로 시트 데이터가 표시됩니다.</div>
+      </div>
+      <div class="hosp-hero-actions">
+        <button class="btn btn-primary" onclick="hospTestFetch('운영지표')">운영지표 시트 새로고침</button>
+        <button class="btn" onclick="hospOpenConfig()">연동 설정</button>
+      </div>
+    </div>
+    <div id="hosp-metrics-status" class="hosp-status">대기 중</div>
+    <div class="tbl-wrap" id="hosp-metrics-tbl-wrap" style="margin-top:12px">
+      <div style="padding:24px;color:#94a3b8;font-size:13px;text-align:center">데이터를 불러오면 여기에 테이블이 표시됩니다.</div>
+    </div>
+    <details style="margin-top:16px">
+      <summary style="cursor:pointer;color:#94a3b8;font-size:12px">원시 JSON 응답 보기</summary>
+      <pre id="hosp-metrics-raw" style="max-height:300px;overflow:auto;background:rgba(0,0,0,.2);padding:12px;border-radius:8px;font-size:11px;color:#cbd5e1">아직 요청 없음</pre>
+    </details>
+  </div>
+</div>
+
+<div id="page-hosp-stock" class="page" style="display:none">
+  <div class="hosp-wrap">
+    <div class="hosp-hero">
+      <div>
+        <div class="hosp-hero-eyebrow">STOCK / CONSUMABLES</div>
+        <div class="hosp-hero-title">재고/소모품 현황</div>
+        <div class="hosp-hero-sub">시트에서 실시간 조회. 발주 필요 항목은 강조 표시됩니다.</div>
+      </div>
+      <div class="hosp-hero-actions">
+        <button class="btn btn-primary" onclick="hospTestFetch('재고소모품')">재고 시트 새로고침</button>
+      </div>
+    </div>
+    <div id="hosp-stock-status" class="hosp-status">대기 중</div>
+    <div class="tbl-wrap" id="hosp-stock-tbl-wrap" style="margin-top:12px">
+      <div style="padding:24px;color:#94a3b8;font-size:13px;text-align:center">데이터를 불러오면 여기에 테이블이 표시됩니다.</div>
+    </div>
+    <details style="margin-top:16px">
+      <summary style="cursor:pointer;color:#94a3b8;font-size:12px">원시 JSON 응답 보기</summary>
+      <pre id="hosp-stock-raw" style="max-height:300px;overflow:auto;background:rgba(0,0,0,.2);padding:12px;border-radius:8px;font-size:11px;color:#cbd5e1">아직 요청 없음</pre>
+    </details>
+  </div>
+</div>
+
+<div id="page-hosp-sales" class="page" style="display:none">
+  <div class="hosp-wrap">
+    <div class="hosp-hero">
+      <div>
+        <div class="hosp-hero-eyebrow">DAILY SALES</div>
+        <div class="hosp-hero-title">일매출 보고 자료</div>
+        <div class="hosp-hero-sub">엑셀 업로드(현재) 또는 KOS CRM 연동(예정)으로 매출 자료를 자동 생성합니다.</div>
+      </div>
+    </div>
+    <div class="hosp-status">엑셀 양식 / KOS 연동 스펙 확정 후 구현 예정</div>
+  </div>
+</div>
+
+<!-- ════ 병원 운영 — 연동 설정 모달 ════ -->
+<div class="hosp-cfg-bg" id="hosp-cfg-bg" style="display:none" onclick="if(event.target===this)hospCloseConfig()">
+  <div class="hosp-cfg-modal">
+    <div class="hosp-cfg-header">
+      <h3 style="margin:0;font-size:16px">병원 운영 — 시트 연동 설정</h3>
+      <button class="hosp-cfg-close" onclick="hospCloseConfig()" aria-label="닫기">×</button>
+    </div>
+    <div class="hosp-cfg-body">
+      <div class="form-group">
+        <label class="form-label">Apps Script Web App URL</label>
+        <input type="text" class="form-control" id="hosp-cfg-url" placeholder="https://script.google.com/macros/s/.../exec">
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px">apps-script/gsheet-bridge.gs 배포 후 발급받은 URL</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">SECRET_TOKEN</label>
+        <input type="password" class="form-control" id="hosp-cfg-token" placeholder="Apps Script 코드의 SECRET_TOKEN 값과 동일">
+      </div>
+      <div class="hosp-cfg-note">저장 위치: 이 브라우저의 localStorage (기기별로 별도 설정 필요)</div>
+    </div>
+    <div class="hosp-cfg-footer">
+      <button class="btn" onclick="hospTestConnection()">연결 테스트</button>
+      <button class="btn btn-primary" onclick="hospSaveConfig()">저장</button>
+    </div>
+    <div id="hosp-cfg-result" class="hosp-cfg-result"></div>
+  </div>
+</div>
+
 <!-- ════ MSO 리포트 페이지 (홈 → 리포트 카드 진입) ════ -->
 <div id="page-mso-report" class="page" style="display:none">
 
@@ -5471,6 +5627,14 @@ function navigate(page, el) {
     const nav = document.querySelector('.topnav');
     if(nav) nav.classList.remove('report-mode');
   }
+  // 병원 페이지가 아니면 hospital-mode 해제
+  if(!/^hosp-/.test(page)){
+    const nav = document.querySelector('.topnav');
+    if(nav) nav.classList.remove('hospital-mode');
+  } else {
+    const nav = document.querySelector('.topnav');
+    if(nav) nav.classList.add('hospital-mode');
+  }
 
   document.querySelectorAll('#nav-menu-'+currentCat+' .nav-item').forEach(i=>i.classList.remove('active'));
   if(el) el.closest('.nav-item').classList.add('active');
@@ -5485,6 +5649,7 @@ function navigate(page, el) {
   if(page==='med-recv')   initMedRecv();
   if(page==='med-master') initMedMaster();
   if(page==='mso-report') initMsoReport();
+  if(page==='hosp-dashboard' && typeof hospUpdateStatusText==='function') hospUpdateStatusText();
 }
 
 function switchCat(cat, el) {
@@ -10157,9 +10322,11 @@ function applyHomeTilePermissions(){
   if(!CURRENT_USER) return;
   const canMain = authCanAccessApp('mso_main');
   const canReport = authCanAccessApp('mso_report');
+  const canHosp = (typeof authIsMaster==='function') ? authIsMaster() : false;
   const tileMso = document.getElementById('home-tile-mso');
   const tileReport = document.getElementById('home-tile-report');
-  [{el:tileMso, can:canMain},{el:tileReport, can:canReport}].forEach(({el, can})=>{
+  const tileHosp = document.getElementById('home-tile-hospital');
+  [{el:tileMso, can:canMain},{el:tileReport, can:canReport},{el:tileHosp, can:canHosp}].forEach(({el, can})=>{
     if(!el) return;
     el.classList.toggle('locked', !can);
     // 잠금 배지 처리
@@ -13731,14 +13898,25 @@ function mrRenderCharts(){
 // ── 홈 랜딩 진입/복귀 ────────────────────────────
 function enterApp(mode, tileEl){
   // 권한 체크 — 카드 클릭 시
-  const requiredPerm = mode==='mso' ? 'mso_main' : 'mso_report';
-  if(CURRENT_USER && !authCanAccessApp(requiredPerm)){
-    showToast('이 시스템에 접근 권한이 없습니다 (관리자 문의)');
-    if(tileEl){
-      tileEl.style.animation = 'shake .4s';
-      setTimeout(()=>tileEl.style.animation='', 400);
+  if(mode==='hospital'){
+    if(!authIsMaster()){
+      showToast('병원 운영 관리는 마스터 계정만 접근 가능합니다');
+      if(tileEl){
+        tileEl.style.animation = 'shake .4s';
+        setTimeout(()=>tileEl.style.animation='', 400);
+      }
+      return;
     }
-    return;
+  } else {
+    const requiredPerm = mode==='mso' ? 'mso_main' : 'mso_report';
+    if(CURRENT_USER && !authCanAccessApp(requiredPerm)){
+      showToast('이 시스템에 접근 권한이 없습니다 (관리자 문의)');
+      if(tileEl){
+        tileEl.style.animation = 'shake .4s';
+        setTimeout(()=>tileEl.style.animation='', 400);
+      }
+      return;
+    }
   }
   const root = document.getElementById('app-root');
   const shell = document.querySelector('.app-shell');
@@ -13768,12 +13946,17 @@ function enterApp(mode, tileEl){
   }
   // 프레스 종료(0.18s)에 맞춰 슬라이드 시작 → 끊김 없이 빠르게
   setTimeout(()=>{ root.classList.remove('home-mode'); try{ updateNavUserWidget(); }catch(e){} }, 180);
-  // mso 카드 → 화장품 영업 관리 / report 카드 → MSO 리포트(안건 트래킹)
+  // mso 카드 → 화장품 영업 관리 / report 카드 → MSO 리포트(안건 트래킹) / hospital → 병원 운영
   if(mode==='report'){
-    // 리포트로 진입: 전용 MSO 리포트 페이지
     setTimeout(()=>navigate('mso-report', null), 200);
+  } else if(mode==='hospital'){
+    setTimeout(()=>{
+      const nav = document.querySelector('.topnav');
+      if(nav){ nav.classList.remove('report-mode'); nav.classList.add('hospital-mode'); }
+      currentCat = 'hospital';
+      navigate('hosp-dashboard', document.querySelector('#nav-menu-hospital .nav-item'));
+    }, 200);
   } else {
-    // 통합 관리로 진입: 리포트(대시보드) 화면
     if(currentCat!=='cosm'){
       switchCat('cosm', document.getElementById('cat-btn-cosm'));
     }
@@ -13811,6 +13994,7 @@ document.addEventListener('keydown', e=>{
   if(inHome){
     if(e.key==='1') document.getElementById('home-tile-mso').click();
     if(e.key==='2') document.getElementById('home-tile-report').click();
+    if(e.key==='3') document.getElementById('home-tile-hospital')?.click();
   } else {
     if(e.key==='Escape' && !document.querySelector('.settings-panel.open') && !document.getElementById('sign-page')?.offsetParent) goHome();
   }
@@ -13835,6 +14019,133 @@ window.addEventListener('load', async () => {
 // app_config 테이블 생성 SQL (Supabase SQL Editor에서 1회 실행 → 설정·계약서양식 기기 공유):
 // create table if not exists app_config (id text primary key, settings jsonb, template_b64 text, template_name text, updated_at timestamptz default now());
 // insert into app_config (id) values ('main') on conflict do nothing;
+
+// ══ 병원 운영 관리 — Apps Script 연동 ══════════════════════════
+const HOSP_CFG_KEY = 'mso.hospital.gsheet.v1';
+function hospGetConfig(){
+  try{
+    const raw = localStorage.getItem(HOSP_CFG_KEY);
+    if(!raw) return {url:'', token:''};
+    const o = JSON.parse(raw);
+    return {url: o.url||'', token: o.token||''};
+  }catch(e){ return {url:'', token:''}; }
+}
+function hospSetConfig(url, token){
+  localStorage.setItem(HOSP_CFG_KEY, JSON.stringify({url:url||'', token:token||''}));
+}
+function hospOpenConfig(){
+  const c = hospGetConfig();
+  const urlEl = document.getElementById('hosp-cfg-url');
+  const tokEl = document.getElementById('hosp-cfg-token');
+  if(urlEl) urlEl.value = c.url;
+  if(tokEl) tokEl.value = c.token;
+  const bg = document.getElementById('hosp-cfg-bg');
+  if(bg) bg.style.display = 'flex';
+  const rst = document.getElementById('hosp-cfg-result');
+  if(rst){ rst.className='hosp-cfg-result'; rst.textContent=''; }
+}
+function hospCloseConfig(){
+  const bg = document.getElementById('hosp-cfg-bg');
+  if(bg) bg.style.display = 'none';
+}
+function hospSaveConfig(){
+  const url = document.getElementById('hosp-cfg-url').value.trim();
+  const token = document.getElementById('hosp-cfg-token').value.trim();
+  hospSetConfig(url, token);
+  showToast('연동 설정 저장됨');
+  hospCloseConfig();
+  hospUpdateStatusText();
+}
+function hospUpdateStatusText(){
+  const c = hospGetConfig();
+  const el = document.getElementById('hosp-config-status');
+  if(!el) return;
+  if(c.url && c.token){
+    el.textContent = '연동 설정 완료. 새로고침 버튼으로 시트 데이터를 불러오세요.';
+    el.style.color = '#5eead4';
+  } else {
+    el.textContent = '연동 설정 필요 — 우측 상단 "연동 설정" 클릭';
+    el.style.color = '';
+  }
+}
+async function hospGetSheet(sheetName){
+  const c = hospGetConfig();
+  if(!c.url || !c.token) throw new Error('연동 설정이 필요합니다 (URL/TOKEN 미입력)');
+  const u = c.url + (c.url.indexOf('?')>=0?'&':'?')
+          + 'token=' + encodeURIComponent(c.token)
+          + '&sheet=' + encodeURIComponent(sheetName);
+  const r = await fetch(u, {method:'GET', redirect:'follow'});
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  if(!j || j.ok===false) throw new Error(j && j.error ? j.error : 'Unknown error');
+  return j;
+}
+async function hospTestConnection(){
+  const url = document.getElementById('hosp-cfg-url').value.trim();
+  const token = document.getElementById('hosp-cfg-token').value.trim();
+  const rst = document.getElementById('hosp-cfg-result');
+  if(!url || !token){
+    rst.className='hosp-cfg-result err';
+    rst.textContent='URL과 TOKEN을 모두 입력하세요.';
+    return;
+  }
+  rst.className='hosp-cfg-result';
+  rst.textContent='요청 중...';
+  try{
+    const u = url + (url.indexOf('?')>=0?'&':'?') + 'token=' + encodeURIComponent(token) + '&list=1';
+    const r = await fetch(u, {method:'GET', redirect:'follow'});
+    const j = await r.json();
+    if(!j.ok) throw new Error(j.error||'Unknown');
+    rst.className='hosp-cfg-result ok';
+    rst.textContent = '연결 성공\n시트 목록: ' + (j.sheetNames||[]).join(', ');
+  }catch(err){
+    rst.className='hosp-cfg-result err';
+    rst.textContent = '연결 실패: ' + (err.message||err);
+  }
+}
+function hospRenderTable(rows, tblWrapId){
+  const wrap = document.getElementById(tblWrapId);
+  if(!wrap) return;
+  if(!rows || !rows.length){
+    wrap.innerHTML = '<div style="padding:24px;color:#94a3b8;font-size:13px;text-align:center">데이터가 없습니다.</div>';
+    return;
+  }
+  const headers = Object.keys(rows[0]);
+  let h = '<table><thead><tr>';
+  headers.forEach(k => h += '<th>' + String(k).replace(/[<>&]/g, s=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[s])) + '</th>');
+  h += '</tr></thead><tbody>';
+  rows.forEach(r => {
+    h += '<tr>';
+    headers.forEach(k => {
+      const v = r[k] == null ? '' : String(r[k]);
+      h += '<td>' + v.replace(/[<>&]/g, s=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[s])) + '</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+async function hospTestFetch(sheetName){
+  const isMetrics = sheetName === '운영지표';
+  const statusId = isMetrics ? 'hosp-metrics-status' : 'hosp-stock-status';
+  const rawId = isMetrics ? 'hosp-metrics-raw' : 'hosp-stock-raw';
+  const tblWrapId = isMetrics ? 'hosp-metrics-tbl-wrap' : 'hosp-stock-tbl-wrap';
+  const s = document.getElementById(statusId);
+  const raw = document.getElementById(rawId);
+  if(s){ s.className='hosp-status'; s.textContent='요청 중...'; }
+  try{
+    const j = await hospGetSheet(sheetName);
+    const pack = j.sheets && j.sheets[sheetName];
+    if(!pack) throw new Error('응답에 시트 데이터 없음');
+    if(pack.error) throw new Error(pack.error);
+    if(s){ s.className='hosp-status ok'; s.textContent = pack.count + '건 로드 완료 · updated ' + (j.updated||''); }
+    if(raw) raw.textContent = JSON.stringify(j, null, 2);
+    hospRenderTable(pack.rows, tblWrapId);
+  }catch(err){
+    if(s){ s.className='hosp-status err'; s.textContent='오류: ' + (err.message||err); }
+    if(raw) raw.textContent = String(err && err.stack || err);
+  }
+}
 </script>
 
 <!-- ════ 전자서명 페이지 (URL 해시 #sign=<token>으로 진입) ════ -->
