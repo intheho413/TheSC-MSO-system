@@ -3945,8 +3945,7 @@ html.light .hosp-card-value{color:#0f172a}
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
           <div class="hosp-h2" id="hosp-settle-title" style="margin:0">정산 요약</div>
           <div style="display:flex;gap:8px">
-            <button class="btn" onclick="hospDownloadSettle()">정산지 xlsx 다운로드</button>
-            <button class="btn btn-primary" onclick="hospSaveSettleToDB()" id="hosp-save-btn">Supabase에 저장</button>
+            <button class="btn btn-primary" onclick="hospDownloadSettle()">정산지 xlsx 다운로드</button>
           </div>
         </div>
 
@@ -14587,9 +14586,9 @@ function hospRenderSettleResult(r){
 }
 function hospDownloadSettle(){
   if(!HOSP_LAST_SETTLE){ showToast('정산 결과가 없습니다'); return; }
-  const {result: r, source} = HOSP_LAST_SETTLE;
-  if(source === 'kos' || !r.bytes){
-    showToast('KOS 자동 집계는 xlsx 다운로드 대신 Supabase 저장을 사용하세요');
+  const {result: r} = HOSP_LAST_SETTLE;
+  if(!r.bytes){
+    showToast('xlsx 생성 실패 (템플릿 로드 실패)');
     return;
   }
   const d = r.date;
@@ -14600,6 +14599,48 @@ function hospDownloadSettle(){
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(a.href);
   showToast('다운로드: ' + name);
+}
+
+// KOS summary → settle-engine sheet1 dict 변환 (fillTemplate 호환)
+function hospKosBuildSheet1(summary, y, m, d){
+  // Excel serial date (1900-01-01 = 1, but 1900 leap bug → Dec 30 1899 base)
+  const serial = Math.round((Date.UTC(y, m-1, d) - Date.UTC(1899,11,30)) / 86400000);
+  const CARD = ["D12","D13","D14","D15"], PAY = ["G12","G13","G14","G15"], CASH = ["D17","D18","D19","D20"], BANK = ["G17","G18","G19","G20"];
+  const VISIT = { "국내|초진":"E4","국내|재진":"G4","해외|초진":"E5","해외|재진":"G5" };
+  const setV = {};
+  setV["B2"] = serial;
+  Object.keys(VISIT).forEach(k => setV[VISIT[k]] = summary.visit[k] || 0);
+  const c = summary.cardBySlot || [0,0,0,0];
+  const p = summary.payBySlot || [0,0,0,0];
+  const h = summary.cashBySlot || [0,0,0,0];
+  const b = summary.bankBySlot || [0,0,0,0];
+  for(let i=0;i<4;i++){ setV[CARD[i]]=c[i]; setV[PAY[i]]=p[i]; setV[CASH[i]]=h[i]; setV[BANK[i]]=b[i]; }
+  const sum = a => (a[0]||0)+(a[1]||0)+(a[2]||0)+(a[3]||0);
+  setV["D16"] = sum(c); setV["G16"] = sum(p); setV["D21"] = sum(h); setV["G21"] = sum(b);
+  setV["D22"] = 0;
+  setV["D24"] = c[0]+c[1]+b[0]+b[1]+h[0]+h[1]+p[0]+p[1]; // 국내 합
+  setV["D26"] = c[2]+c[3]+b[2]+b[3]+h[2]+h[3]+p[2]+p[3]; // 해외 합
+  setV["D28"] = sum(c) + sum(p); // 단말기 총매출
+  setV["D30"] = sum(h) + sum(b); // 현금 총매출
+  setV["D32"] = setV["D28"] + setV["D30"]; // 베가스 총매출
+  // 국가별 (K/L/M/N)
+  const COUNTRY_ROWS = { "중국본토":[4,5],"대만":[6,7],"홍콩":[8,9],"일본":[10,11],"영미권":[12,13],"태국":[14,15],"베트남":[16,17],"인도네시아":[18,19],"필리핀":[20,21],"말레이시아":[22,23],"중동":[24,25],"기타 해외 국가":[26,27],"국내":[28,29] };
+  const cs = summary.countryStat || {};
+  Object.keys(COUNTRY_ROWS).forEach(bucket => {
+    const rc = COUNTRY_ROWS[bucket];
+    const stat = cs[bucket] || {count:0, amount:0, newCount:0, reCount:0};
+    setV["K"+rc[0]] = stat.newCount || 0;
+    setV["M"+rc[0]] = 0; // 초진 금액 (KOS API에서 초/재진별 금액 분리 안됨 → 0)
+    setV["K"+rc[1]] = stat.reCount || 0;
+    setV["M"+rc[1]] = 0;
+    setV["L"+rc[0]] = stat.count || 0;
+    setV["N"+rc[0]] = stat.amount || 0;
+  });
+  return {date:{y,m,d,serial}, sheet1:setV, accumSerial:serial, accumValue:setV["D32"], summary:{
+    patients: summary.patients, visit: summary.visit,
+    card: sum(c), cash: sum(h), bank: sum(b), pay: sum(p),
+    vegas: setV["D32"], etcWarn: summary.other||0
+  }};
 }
 
 async function hospKosFetch(){
@@ -14620,17 +14661,23 @@ async function hospKosFetch(){
     const {data, error} = await sb.functions.invoke('kos-settlement', {body:{date, includeRaw:false}});
     if(error) throw error;
     if(!data || data.ok === false) throw new Error((data && data.error) || 'Unknown error');
-    // 응답을 settle-engine 결과 형식으로 변환
     const [y,m,d] = date.split('-').map(Number);
-    const fakeResult = {
-      date: {y, m, d, serial: 0},
-      summary: data.summary,
-      bytes: null
-    };
-    HOSP_LAST_SETTLE = {result: fakeResult, fileName: 'KOS-'+date, source: 'kos'};
+    // settle-engine 결과 형식으로 변환 + fillTemplate로 xlsx 생성
+    const res = hospKosBuildSheet1(data.summary, y, m, d);
+    let bytes = null;
+    if(window.SETTLE && SETTLE.fillTemplate && SETTLE.TEMPLATE_BASE64){
+      try{
+        const bin = atob(SETTLE.TEMPLATE_BASE64);
+        const tpl = new Uint8Array(bin.length);
+        for(let i=0;i<bin.length;i++) tpl[i] = bin.charCodeAt(i);
+        bytes = SETTLE.fillTemplate(tpl, res);
+      }catch(e){ console.warn('[hospKosFetch] fillTemplate failed', e); }
+    }
+    res.bytes = bytes;
+    HOSP_LAST_SETTLE = {result: res, fileName: 'KOS-'+date, source: 'kos'};
     const result = document.getElementById('hosp-settle-result');
     if(result) result.style.display = '';
-    hospRenderSettleResult(fakeResult);
+    hospRenderSettleResult(res);
     msg.style.color = '#5eead4';
     msg.textContent = '성공 · 총 '+ data.summary.transactionCount +'건 (승인) / '+ data.summary.totalTransactionCount +'건 (전체)';
   }catch(err){

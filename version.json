@@ -1,5 +1,5 @@
 {
-  "version": "2.4.13",
-  "buildTime": "2026-08-30T07:00:00Z",
-  "changelog": "feat(hospital): KOS OpenAPI 매출 자동 집계 연동 — 매출 관리 페이지에 날짜 선택 + KOS 매출 집계 버튼 추가. Supabase Edge Function 'kos-settlement' 배포 (KOS_API_KEY 서버 환경변수 보관, 브라우저 노출 없음). POST /statistics/open/v1/queries/get-transaction-statistics 호출 → 결제수단(카드/페이/현금/통장) 집계 + 국내/해외 초/재진 분류 + 국가별 통계. 결과는 xls 업로드와 동일 UI로 표시, Supabase hosp_settlement 저장 가능."
+  "version": "2.4.14",
+  "buildTime": "2026-08-30T07:20:00Z",
+  "changelog": "chg(hospital): 매출 관리 - Supabase 저장 버튼 제거, xlsx 다운로드만 유지. KOS 매출 집계도 정산지 xlsx 다운로드 가능 (settle-engine fillTemplate 재사용, 결제수단×국내/해외/초/재진 4×4 매트릭스 자동 생성). Edge Function v4: cardBySlot/payBySlot/cashBySlot/bankBySlot + countryStat 반환."
 }
