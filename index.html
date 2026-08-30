@@ -3982,6 +3982,18 @@ html.light .hosp-card-value{color:#0f172a}
           </table>
         </div>
       </div>
+
+      <div class="hosp-card" style="margin-top:16px">
+        <div style="cursor:pointer;user-select:none" onclick="hospToggleLog()">
+          <div class="hosp-h2" style="display:flex;justify-content:space-between;align-items:center;margin:0">
+            <span>정산 생성 이력 <span id="hosp-log-count" style="font-size:11px;color:#94a3b8;font-weight:400;margin-left:6px"></span></span>
+            <span id="hosp-log-toggle" style="font-size:12px;color:#94a3b8;font-weight:400">▼ 펼치기</span>
+          </div>
+        </div>
+        <div id="hosp-log-body" style="display:none;margin-top:12px">
+          <div id="hosp-log-list"></div>
+        </div>
+      </div>
     </div>
 
     <div id="hosp-sales-trend-pane" style="display:none">
@@ -5933,7 +5945,7 @@ function navigate(page, el) {
   if(page==='mso-report') initMsoReport();
   if(page==='hosp-dashboard' && typeof hospLoadDashboard==='function') setTimeout(hospLoadDashboard, 30);
   if(page==='hosp-stock' && typeof hospLoadStock==='function') setTimeout(()=>{ hospInitMonthPicker(); hospLoadStock(); }, 30);
-  if(page==='hosp-sales' && typeof hospInitDropzone==='function') setTimeout(hospInitDropzone, 30);
+  if(page==='hosp-sales' && typeof hospInitDropzone==='function') setTimeout(()=>{ hospInitDropzone(); hospSettleLogRefreshCount(); }, 30);
   if(page==='hosp-settings' && typeof hospLoadConfigsToUI==='function') setTimeout(()=>{ hospLoadConfigsToUI(); hospLoadSettleStats(); }, 30);
 }
 
@@ -14538,10 +14550,13 @@ async function hospHandleXlsFile(file){
   try{
     const buf = await file.arrayBuffer();
     const r = SETTLE.generateJeongsanji(buf, 'asdf1234!');
-    HOSP_LAST_SETTLE = {result: r, fileName: file.name};
+    HOSP_LAST_SETTLE = {result: r, fileName: file.name, source: 'xls'};
     msg.innerHTML = '<span style="color:#5eead4">정산 완료 · '+ file.name +' · 환자 '+ r.summary.patients +'명 · 총매출 '+ r.summary.vegas.toLocaleString() +'원</span>';
     if(result) result.style.display = '';
     hospRenderSettleResult(r);
+    // 이력 저장
+    const dateStr = r.date.y + '-' + String(r.date.m).padStart(2,'0') + '-' + String(r.date.d).padStart(2,'0');
+    hospSettleLogSave('xls', dateStr, file.name, r.bytes, r.summary);
   }catch(err){
     if(err.message === 'GUBUN_ERROR'){
       msg.innerHTML = '<span style="color:#fca5a5">구분(H열) 미입력/판별불가:<br>'+ err.rows.map(x=>esc(x.chart)+' '+esc(x.name)).join('<br>') +'</span>';
@@ -14582,7 +14597,7 @@ function hospRenderSettleResult(r){
     '<tr><td>페이(간편결제)</td><td style="text-align:right">'+ s.pay.toLocaleString() +'</td><td style="text-align:right">'+ pct(s.pay) +'</td></tr>' +
     '<tr><td>현금</td><td style="text-align:right">'+ s.cash.toLocaleString() +'</td><td style="text-align:right">'+ pct(s.cash) +'</td></tr>' +
     '<tr><td>계좌이체</td><td style="text-align:right">'+ s.bank.toLocaleString() +'</td><td style="text-align:right">'+ pct(s.bank) +'</td></tr>' +
-    '<tr style="background:rgba(16,185,129,.06)"><td><b>합계 (베가스 총매출)</b></td><td style="text-align:right"><b style="color:#5eead4">'+ s.vegas.toLocaleString() +'</b></td><td style="text-align:right"><b>100%</b></td></tr>';
+    '<tr style="background:rgba(16,185,129,.06)"><td><b>합계</b></td><td style="text-align:right"><b style="color:#5eead4">'+ s.vegas.toLocaleString() +'</b></td><td style="text-align:right"><b>100%</b></td></tr>';
 }
 function hospDownloadSettle(){
   if(!HOSP_LAST_SETTLE){ showToast('정산 결과가 없습니다'); return; }
@@ -14643,6 +14658,99 @@ function hospKosBuildSheet1(summary, y, m, d){
   }};
 }
 
+// ── 정산 생성 이력 (localStorage) ──────────────────────────
+const HOSP_LOG_KEY = 'mso.hospital.settle.log.v1';
+const HOSP_LOG_MAX = 30;
+function hospSettleLogLoad(){
+  try{ const raw = localStorage.getItem(HOSP_LOG_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; }
+}
+function hospSettleLogSave(source, date, fileName, bytes, summary){
+  try{
+    const list = hospSettleLogLoad().filter(x => !(x.date===date && x.source===source));
+    let b64 = '';
+    if(bytes && bytes.length){
+      let s = '';
+      const chunk = 0x8000;
+      for(let i=0;i<bytes.length;i+=chunk) s += String.fromCharCode.apply(null, bytes.subarray(i, i+chunk));
+      b64 = btoa(s);
+    }
+    list.unshift({
+      id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
+      date, source, fileName, bytesB64: b64,
+      summary: {
+        vegas: summary.vegas||0, patients: summary.patients||0,
+        card: summary.card||0, pay: summary.pay||0, cash: summary.cash||0, bank: summary.bank||0
+      },
+      createdAt: new Date().toISOString()
+    });
+    localStorage.setItem(HOSP_LOG_KEY, JSON.stringify(list.slice(0, HOSP_LOG_MAX)));
+    hospSettleLogRefreshCount();
+  }catch(e){
+    console.warn('[hospSettleLogSave]', e);
+    try{
+      const trimmed = hospSettleLogLoad().slice(0, 5);
+      localStorage.setItem(HOSP_LOG_KEY, JSON.stringify(trimmed));
+    }catch(e2){}
+  }
+}
+function hospSettleLogRefreshCount(){
+  const el = document.getElementById('hosp-log-count');
+  if(el){ const n = hospSettleLogLoad().length; el.textContent = n ? '('+n+'건)' : ''; }
+}
+function hospSettleLogRender(){
+  const wrap = document.getElementById('hosp-log-list');
+  if(!wrap) return;
+  const list = hospSettleLogLoad();
+  if(!list.length){
+    wrap.innerHTML = '<div style="padding:20px;text-align:center;color:#64748b;font-size:12px">저장된 이력이 없습니다.<br>정산 생성 시 자동으로 여기에 기록됩니다 (이 브라우저에만 저장).</div>';
+    return;
+  }
+  wrap.innerHTML = list.map(x => {
+    const src = x.source==='kos' ? '<span style="background:rgba(16,185,129,.15);color:#5eead4;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600">KOS</span>' : '<span style="background:rgba(96,165,250,.15);color:#93c5fd;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:600">XLS</span>';
+    const vegas = (x.summary.vegas||0).toLocaleString();
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px">'+
+      '<div>'+
+        '<div style="color:#e2e8f0;font-weight:600;display:flex;align-items:center;gap:8px">'+ src +'<span>'+ x.date +'</span></div>'+
+        '<div style="color:#64748b;font-size:11px;margin-top:3px">환자 '+ (x.summary.patients||0) +'명 · 총매출 '+ vegas +'원</div>'+
+      '</div>'+
+      '<div style="display:flex;gap:6px">'+
+        '<button class="btn" onclick="hospSettleLogDownload(\''+x.id+'\')" '+ (x.bytesB64?'':'disabled') +'>xlsx 재다운로드</button>'+
+        '<button class="btn" onclick="hospSettleLogDelete(\''+x.id+'\')" style="color:#fca5a5">삭제</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+function hospSettleLogDownload(id){
+  const item = hospSettleLogLoad().find(x => x.id === id);
+  if(!item || !item.bytesB64){ showToast('저장된 xlsx가 없습니다'); return; }
+  const bin = atob(item.bytesB64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  const blob = new Blob([bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '정산지_' + item.date + '.xlsx';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+  showToast('다운로드: ' + a.download);
+}
+function hospSettleLogDelete(id){
+  if(!confirm('이 이력을 삭제할까요?')) return;
+  const list = hospSettleLogLoad().filter(x => x.id !== id);
+  localStorage.setItem(HOSP_LOG_KEY, JSON.stringify(list));
+  hospSettleLogRender();
+  hospSettleLogRefreshCount();
+}
+function hospToggleLog(){
+  const body = document.getElementById('hosp-log-body');
+  const toggle = document.getElementById('hosp-log-toggle');
+  if(!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  if(toggle) toggle.textContent = isOpen ? '▼ 펼치기' : '▲ 접기';
+  if(!isOpen) hospSettleLogRender();
+}
+
 async function hospKosFetch(){
   const btn = document.getElementById('hosp-kos-btn');
   const msg = document.getElementById('hosp-kos-msg');
@@ -14678,6 +14786,8 @@ async function hospKosFetch(){
     const result = document.getElementById('hosp-settle-result');
     if(result) result.style.display = '';
     hospRenderSettleResult(res);
+    // 이력 저장
+    hospSettleLogSave('kos', date, 'KOS-'+date, bytes, res.summary);
     msg.style.color = '#5eead4';
     msg.textContent = '성공 · 총 '+ data.summary.transactionCount +'건 (승인) / '+ data.summary.totalTransactionCount +'건 (전체)';
   }catch(err){

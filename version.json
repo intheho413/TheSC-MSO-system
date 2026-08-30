@@ -1,5 +1,5 @@
 {
-  "version": "2.4.14",
-  "buildTime": "2026-08-30T07:20:00Z",
-  "changelog": "chg(hospital): 매출 관리 - Supabase 저장 버튼 제거, xlsx 다운로드만 유지. KOS 매출 집계도 정산지 xlsx 다운로드 가능 (settle-engine fillTemplate 재사용, 결제수단×국내/해외/초/재진 4×4 매트릭스 자동 생성). Edge Function v4: cardBySlot/payBySlot/cashBySlot/bankBySlot + countryStat 반환."
+  "version": "2.4.15",
+  "buildTime": "2026-08-30T07:40:00Z",
+  "changelog": "chg(hospital): 매출 정산 - 결제수단별 합계 라벨 '(베가스 총매출)' 제거, 정산 생성 이력 카드(펼치기/접기, localStorage에 최대 30건 자동 저장, xlsx 재다운로드 지원) 추가. KOS 자동 집계 · xls 업로드 양쪽 모두 정산지 생성 시 자동 기록됨."
 }
