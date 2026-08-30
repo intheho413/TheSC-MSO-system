@@ -3901,6 +3901,11 @@ html.light .hosp-dd-stat-val{color:#0f172a}
       </div>
       <span class="hosp-filter-label" style="margin-left:12px">대분류:</span>
       <span id="hosp-cat-filters"><button class="hosp-filter-pill active" data-cat="">전체</button></span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+        <span class="hosp-filter-label">검색:</span>
+        <input type="text" id="hosp-stock-search" placeholder="상품명, 규격, 카테고리..." oninput="hospOnSearchInput()" class="form-control" style="width:220px;font-size:12px;padding:6px 10px">
+        <button class="btn" id="hosp-stock-search-clear" onclick="hospClearSearch()" style="padding:5px 10px;font-size:11px;display:none">×</button>
+      </div>
     </div>
 
     <div id="hosp-stock-status" class="hosp-status">불러오는 중...</div>
@@ -14368,6 +14373,7 @@ const HOSP_CFG_KEY_PREFIX = 'mso.hospital.gsheet.';
 let HOSP_CURRENT_TEAM = 'nurse'; // 재고 페이지 활성 팀
 let HOSP_CURRENT_MONTH = new Date().getMonth() + 1; // 재고 페이지 활성 월
 let HOSP_CURRENT_CAT = ''; // 재고 페이지 활성 카테고리 필터
+let HOSP_CURRENT_SEARCH = ''; // 재고 페이지 검색어
 let HOSP_CURRENT_STOCK_ROWS = []; // 최근 로드된 재고 데이터
 let HOSP_LAST_SETTLE = null; // 최근 정산 결과
 
@@ -14525,11 +14531,18 @@ function hospPillClass(main, sub){
 function hospRenderStockTable(rows){
   const tb = document.getElementById('hosp-stock-tbody');
   if(!tb) return;
-  const filtered = HOSP_CURRENT_CAT
-    ? rows.filter(r => r.main === HOSP_CURRENT_CAT)
-    : rows;
+  const q = (HOSP_CURRENT_SEARCH || '').trim().toLowerCase();
+  const filtered = rows.filter(r => {
+    if(HOSP_CURRENT_CAT && r.main !== HOSP_CURRENT_CAT) return false;
+    if(q){
+      const hay = (r.name+' '+r.spec+' '+r.main+' '+r.sub).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
   if(!filtered.length){
-    tb.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:#64748b">해당 카테고리에 데이터가 없습니다.</td></tr>';
+    const emptyMsg = q ? '검색 결과 없음 · "'+q+'"' : (HOSP_CURRENT_CAT ? '해당 카테고리에 데이터가 없습니다' : '데이터 없음');
+    tb.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px;color:#64748b">'+emptyMsg+'</td></tr>';
     return;
   }
   const esc = s => String(s).replace(/[<>&]/g, c=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[c]));
@@ -14610,6 +14623,22 @@ async function hospLoadStock(){
     if(tb) tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#fca5a5">로드 실패: '+String(err.message||err)+'</td></tr>';
   }
 }
+function hospOnSearchInput(){
+  const el = document.getElementById('hosp-stock-search');
+  HOSP_CURRENT_SEARCH = el ? el.value : '';
+  const clr = document.getElementById('hosp-stock-search-clear');
+  if(clr) clr.style.display = HOSP_CURRENT_SEARCH ? '' : 'none';
+  hospRenderStockTable(HOSP_CURRENT_STOCK_ROWS);
+}
+function hospClearSearch(){
+  const el = document.getElementById('hosp-stock-search');
+  if(el) el.value = '';
+  HOSP_CURRENT_SEARCH = '';
+  const clr = document.getElementById('hosp-stock-search-clear');
+  if(clr) clr.style.display = 'none';
+  hospRenderStockTable(HOSP_CURRENT_STOCK_ROWS);
+}
+
 function hospShowDrilldown(id){
   const rows = HOSP_CURRENT_STOCK_ROWS || [];
   const r = rows.find(x => x.id === id);
