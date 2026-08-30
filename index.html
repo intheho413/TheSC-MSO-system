@@ -3134,6 +3134,15 @@ html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,
 html.light .hosp-card{background:#fff;border-color:rgba(0,0,0,.08)}
 html.light .hosp-card-value{color:#0f172a}
 
+/* 예약 인사이트 히트맵 */
+.hosp-hm{display:grid;grid-template-columns:32px repeat(24,1fr);gap:2px;font-size:9px}
+.hosp-hm .h-lbl{color:#64748b;text-align:center;padding:2px 0}
+.hosp-hm .h-cell{border-radius:2px;height:16px;background:rgba(255,255,255,.03);position:relative}
+.hosp-country-row{display:grid;grid-template-columns:80px 1fr auto;gap:10px;align-items:center;padding:6px 0;font-size:11.5px;border-bottom:1px solid rgba(255,255,255,.04)}
+.hosp-country-row:last-child{border-bottom:0}
+.hosp-country-bar-bg{background:rgba(255,255,255,.05);border-radius:4px;height:8px;position:relative}
+.hosp-country-bar{height:100%;border-radius:4px}
+
 /* 월간 리포트 페이지 */
 .hosp-rp-grid{display:grid;grid-template-columns:340px 1fr;gap:16px}
 @media(max-width:1000px){.hosp-rp-grid{grid-template-columns:1fr}}
@@ -3654,6 +3663,9 @@ html.light .hosp-dd-stat-val{color:#0f172a}
     <div class="nav-item" onclick="navigate('hosp-sales',this)">
       <span class="menu-label">매출 관리</span>
     </div>
+    <div class="nav-item" onclick="navigate('hosp-reservation',this)">
+      <span class="menu-label">예약 인사이트</span>
+    </div>
     <div class="nav-item" onclick="navigate('hosp-report',this)">
       <span class="menu-label">월간 리포트</span>
     </div>
@@ -4123,6 +4135,90 @@ html.light .hosp-dd-stat-val{color:#0f172a}
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ── 예약 인사이트 ── -->
+<div id="page-hosp-reservation" class="page" style="display:none">
+  <div class="hosp-wrap">
+    <div class="hosp-hero">
+      <div>
+        <div class="hosp-hero-eyebrow">RESERVATION INSIGHTS · 세라미크 명동점</div>
+        <div class="hosp-hero-title">예약 인사이트</div>
+        <div class="hosp-hero-sub">KOS API 실시간 · 국가별·노쇼·재방문·시간대·유입경로 심층 분석</div>
+      </div>
+      <div class="hosp-hero-actions">
+        <select id="hosp-res-month" class="form-control" style="width:170px"></select>
+      </div>
+    </div>
+
+    <div id="hosp-res-status" class="hosp-status">불러오는 중...</div>
+
+    <div class="hosp-grid hosp-g4" style="margin-top:12px">
+      <div class="hosp-card">
+        <div class="hosp-card-title">이번 기간 총 예약</div>
+        <div class="hosp-card-value" id="hres-total">-</div>
+        <div class="hosp-card-sub" id="hres-total-sub">-</div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-card-title">방문 완료율</div>
+        <div class="hosp-card-value" id="hres-comp" style="color:#5eead4">-</div>
+        <div class="hosp-card-sub" id="hres-comp-sub">-</div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-card-title">노쇼율</div>
+        <div class="hosp-card-value" id="hres-noshow" style="color:#fca5a5">-</div>
+        <div class="hosp-card-sub" id="hres-noshow-sub">-</div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-card-title">재방문율</div>
+        <div class="hosp-card-value" id="hres-revisit" style="color:#5eead4">-</div>
+        <div class="hosp-card-sub" id="hres-revisit-sub">-</div>
+      </div>
+    </div>
+
+    <div class="hosp-grid hosp-g2" style="margin-top:14px">
+      <div class="hosp-card">
+        <div class="hosp-h2">국가별 예약률 · 노쇼율 비교</div>
+        <div id="hres-country" style="font-size:11.5px">
+          <div style="padding:20px;color:#64748b;text-align:center">데이터 로드 후 표시</div>
+        </div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-h2">시간대별 예약 밀집도 (히트맵)</div>
+        <div id="hres-heatmap" class="hosp-hm">
+          <div style="padding:20px;color:#64748b;text-align:center;grid-column:1/-1">데이터 로드 후 표시</div>
+        </div>
+        <div style="font-size:10.5px;color:#94a3b8;margin-top:8px">진할수록 예약 밀집. 요일 x 시간(0~23).</div>
+      </div>
+    </div>
+
+    <div class="hosp-grid hosp-g3" style="margin-top:14px">
+      <div class="hosp-card">
+        <div class="hosp-h2">국가별 평균 실결제</div>
+        <table style="width:100%;font-size:12px" id="hres-ticket-table">
+          <tbody><tr><td colspan="2" style="text-align:center;color:#64748b;padding:14px">-</td></tr></tbody>
+        </table>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-h2">첫 시술 예약 비율</div>
+        <div style="text-align:center;padding:14px 0">
+          <div id="hres-first-pct" style="font-size:28px;font-weight:800;color:#5eead4">-</div>
+          <div id="hres-first-sub" style="font-size:11px;color:#94a3b8;margin-top:4px">-</div>
+        </div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-h2">유입 경로 TOP 5</div>
+        <div id="hres-funnel" style="font-size:11.5px">
+          <div style="padding:14px;color:#64748b;text-align:center">-</div>
+        </div>
+      </div>
+    </div>
+
+    <details style="margin-top:16px">
+      <summary style="cursor:pointer;color:#94a3b8;font-size:12px">원시 응답 보기</summary>
+      <pre id="hres-raw" style="max-height:300px;overflow:auto;background:rgba(0,0,0,.2);padding:12px;border-radius:8px;font-size:11px;color:#cbd5e1">아직 요청 없음</pre>
+    </details>
   </div>
 </div>
 
@@ -6118,6 +6214,7 @@ function navigate(page, el) {
   if(page==='hosp-sales' && typeof hospInitDropzone==='function') setTimeout(()=>{ hospInitDropzone(); hospSettleLogRefreshCount(); }, 30);
   if(page==='hosp-settings' && typeof hospLoadConfigsToUI==='function') setTimeout(()=>{ hospLoadConfigsToUI(); hospLoadSettleStats(); }, 30);
   if(page==='hosp-report' && typeof hospReportInit==='function') setTimeout(hospReportInit, 30);
+  if(page==='hosp-reservation' && typeof hospResInit==='function') setTimeout(hospResInit, 30);
 }
 
 function switchCat(cat, el) {
@@ -12358,6 +12455,10 @@ async function navGlobalRefresh(btn){
         if(typeof hospLoadTrend === 'function') await hospLoadTrend();
       } else if(currentPage === 'hosp-settings'){
         if(typeof hospLoadSettleStats === 'function') await hospLoadSettleStats();
+      } else if(currentPage === 'hosp-reservation'){
+        if(typeof hospResLoad === 'function') await hospResLoad();
+      } else if(currentPage === 'hosp-report'){
+        if(typeof hospReportRenderPreview === 'function') await hospReportRenderPreview();
       }
       if(typeof showToast === 'function') showToast('새로고침 완료');
     }catch(e){
@@ -15312,6 +15413,125 @@ async function hospLoadTrend(){
     }
   }catch(err){
     console.error('[hospLoadTrend]', err);
+  }
+}
+
+// ── 예약 인사이트 ──────────────────────────
+function hospResInit(){
+  const sel = document.getElementById('hosp-res-month');
+  if(sel && !sel.options.length){
+    const now = new Date();
+    for(let i=0; i<6; i++){
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val + (i===0 ? ' (이번 달)' : '');
+      sel.appendChild(opt);
+    }
+    sel.onchange = () => hospResLoad();
+  }
+  hospResLoad();
+}
+async function hospResLoad(){
+  const monthStr = document.getElementById('hosp-res-month').value;
+  const status = document.getElementById('hosp-res-status');
+  const rawEl = document.getElementById('hres-raw');
+  if(!monthStr) return;
+  const [y,m] = monthStr.split('-').map(Number);
+  const from = monthStr + '-01';
+  const lastDay = new Date(y, m, 0).getDate();
+  const to = monthStr + '-' + String(lastDay).padStart(2,'0');
+  if(status){ status.className='hosp-status'; status.textContent='KOS API 조회 중... ('+ from +' ~ '+ to +')'; }
+  try{
+    const {data, error} = await sb.functions.invoke('kos-reservation', {body:{from, to, includeRaw:false}});
+    if(error) throw error;
+    if(!data || data.ok===false) throw new Error((data && data.error) || 'Unknown error');
+    const s = data.summary;
+    if(status){ status.className='hosp-status ok'; status.textContent = '예약 '+ s.total +'건 로드 완료 · '+ from +' ~ '+ to; }
+    if(rawEl) rawEl.textContent = JSON.stringify(s, null, 2);
+    hospResRender(s);
+  }catch(err){
+    if(status){ status.className='hosp-status err'; status.textContent='오류: '+ (err.message||err); }
+    console.error('[hospResLoad]', err);
+  }
+}
+function hospResRender(s){
+  const fmt = n => (Number(n)||0).toLocaleString();
+  // KPI cards
+  document.getElementById('hres-total').textContent = fmt(s.total) + '건';
+  document.getElementById('hres-total-sub').textContent = '완료 '+s.statusCount.COMPLETED+' · 취소 '+s.statusCount.CANCELED+' · 노쇼 '+s.statusCount.NO_SHOW;
+  document.getElementById('hres-comp').innerHTML = s.completedRate + '<span style="font-size:14px;color:#94a3b8">%</span>';
+  document.getElementById('hres-comp-sub').textContent = s.statusCount.COMPLETED + ' / ' + s.total + '건';
+  document.getElementById('hres-noshow').innerHTML = s.noShowRate + '<span style="font-size:14px;color:#94a3b8">%</span>';
+  document.getElementById('hres-noshow-sub').textContent = s.statusCount.NO_SHOW + '건';
+  document.getElementById('hres-revisit').innerHTML = s.revisitRate + '<span style="font-size:14px;color:#94a3b8">%</span>';
+  document.getElementById('hres-revisit-sub').textContent = '재방문 '+s.returningVisitors+' / 총 '+s.visitors+'명';
+
+  // 국가별 예약률 · 노쇼율
+  const countryWrap = document.getElementById('hres-country');
+  const colors = ['#3b82f6','#f43f5e','#a78bfa','#fbbf24','#34d399','#ec4899','#06b6d4','#f97316'];
+  const sortedC = Object.entries(s.countryStat).sort((a,b) => b[1].total - a[1].total);
+  if(!sortedC.length){
+    countryWrap.innerHTML = '<div style="padding:20px;color:#64748b;text-align:center">국가별 데이터 없음</div>';
+  } else {
+    const maxT = Math.max(...sortedC.map(([,v]) => v.total)) || 1;
+    countryWrap.innerHTML = sortedC.map(([k,v], i) => {
+      const nsRate = v.total ? (v.no_show/v.total*100).toFixed(1) : 0;
+      const nsClass = nsRate >= 15 ? 'hosp-pill-alert' : (nsRate >= 8 ? 'hosp-pill-warn' : 'hosp-pill-fg');
+      const pct = (v.total/maxT*100).toFixed(0);
+      return '<div class="hosp-country-row">'+
+        '<span>'+k+'</span>'+
+        '<div class="hosp-country-bar-bg"><div class="hosp-country-bar" style="background:'+colors[i%colors.length]+';width:'+pct+'%"></div></div>'+
+        '<span>'+v.total+' · <span class="hosp-pill '+nsClass+'">노쇼 '+nsRate+'%</span></span>'+
+        '</div>';
+    }).join('');
+  }
+
+  // 히트맵 (요일 x 시간)
+  const hmWrap = document.getElementById('hres-heatmap');
+  const dow = ['일','월','화','수','목','금','토'];
+  const maxCell = Math.max(1, ...s.heatmap.flat());
+  let hh = '<div class="h-lbl"></div>';
+  for(let h=0; h<24; h++) hh += '<div class="h-lbl">'+h+'</div>';
+  for(let d=0; d<7; d++){
+    hh += '<div class="h-lbl" style="color:#94a3b8">'+dow[d]+'</div>';
+    for(let h=0; h<24; h++){
+      const v = s.heatmap[d][h] || 0;
+      const opacity = v ? (0.15 + (v/maxCell)*0.85) : 0.03;
+      hh += '<div class="h-cell" style="background:rgba(16,185,129,'+opacity.toFixed(2)+')" title="'+dow[d]+' '+h+'시: '+v+'건"></div>';
+    }
+  }
+  hmWrap.innerHTML = hh;
+
+  // 국가별 평균 실결제
+  const ticketTb = document.querySelector('#hres-ticket-table tbody');
+  const cs = sortedC.filter(([,v]) => v.total > 0);
+  if(!cs.length){
+    ticketTb.innerHTML = '<tr><td colspan="2" style="text-align:center;color:#64748b;padding:14px">-</td></tr>';
+  } else {
+    ticketTb.innerHTML = cs.slice(0,6).map(([k,v]) => {
+      const avg = v.total ? Math.round(v.amount / v.total) : 0;
+      return '<tr><td style="padding:5px 0;border-top:1px solid rgba(255,255,255,.04)">'+k+' <span style="color:#64748b;font-size:10.5px">('+v.total+'건)</span></td><td style="text-align:right"><b>'+fmt(avg)+'원</b></td></tr>';
+    }).join('');
+  }
+
+  // 첫 시술 예약 비율
+  const firstPct = s.visitors ? (s.firstVisitors/s.visitors*100).toFixed(1) : 0;
+  document.getElementById('hres-first-pct').innerHTML = firstPct + '<span style="font-size:16px">%</span>';
+  document.getElementById('hres-first-sub').textContent = '첫 시술 '+s.firstVisitors+'명 / 재예약 '+s.returningVisitors+'명';
+
+  // 유입 경로 TOP 5
+  const funnelWrap = document.getElementById('hres-funnel');
+  const sortedF = Object.entries(s.funnelStat).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const totalF = sortedF.reduce((sum,[,v])=>sum+v, 0) || 1;
+  if(!sortedF.length){
+    funnelWrap.innerHTML = '<div style="padding:14px;color:#64748b;text-align:center">유입 경로 데이터 없음</div>';
+  } else {
+    funnelWrap.innerHTML = sortedF.map(([k,v]) => {
+      const pct = (v/totalF*100).toFixed(0);
+      return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid rgba(255,255,255,.04)">'+k+'<b>'+v+'건 ('+pct+'%)</b></div>';
+    }).join('');
   }
 }
 

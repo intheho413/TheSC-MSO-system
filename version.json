@@ -1,5 +1,5 @@
 {
-  "version": "2.4.23",
-  "buildTime": "2026-08-30T10:00:00Z",
-  "changelog": "feat(hospital): 월간 종합 리포트 페이지 신설. 상단 nav에 '월간 리포트' 탭 추가. 좌측 설정 패널(월 선택 · PPT/xlsx 형식 선택 · 8개 섹션 체크박스) + 우측 실시간 미리보기(PPT 슬라이드 썸네일 or xlsx 시트 탭 구조). Supabase hosp_settlement 월간 집계 → pptxgenjs로 PPT 생성 or xlsx-js-style로 xlsx 생성. 생성 이력 localStorage 자동 저장 + 재생성 지원."
+  "version": "2.4.24",
+  "buildTime": "2026-08-30T10:30:00Z",
+  "changelog": "feat(hospital): 예약 인사이트 탭 신설. Supabase Edge Function 'kos-reservation' 배포 (KOS /statistics/open/v1/queries/get-schedule-statistics 호출, 예약 통계 집계 - 상태별/국가별/시간대/유입경로/재방문율/평균 실결제). 상단 nav에 '예약 인사이트' 탭 추가. 월 선택 후 실시간 조회 → KPI 4카드(총예약/방문완료율/노쇼율/재방문율) + 국가별 예약률·노쇼율 비교 + 요일×시간 히트맵 + 국가별 평균 실결제 + 첫 시술 예약 비율 + 유입 경로 TOP 5. 새로고침 라우터에도 연결."
 }
