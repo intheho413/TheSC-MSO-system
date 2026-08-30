@@ -773,6 +773,7 @@ body.light-mode .home-install-hint{color:#94a3b8}
 .topnav.hospital-mode #nav-menu-med,
 .topnav.hospital-mode #nav-menu-report{display:none !important}
 .topnav.hospital-mode #nav-menu-hospital{display:flex !important}
+.topnav.hospital-mode #nav-refresh-btn{display:inline-flex !important}
 .topnav.hospital-mode #nav-appname{display:none !important}
 .topnav.hospital-mode #nav-appname-hospital{display:inline-flex !important;align-items:center;gap:8px}
 .topnav.hospital-mode .nav-sep:nth-of-type(2){display:none}
@@ -3537,7 +3538,7 @@ html.light .hosp-dd-stat-val{color:#0f172a}
     <span class="nav-caption">TheSC-MSO v2.0</span>
   </div>
   <!-- 새로고침 버튼 (MSO 리포트에서만 표시) -->
-  <button class="nav-refresh-btn" id="nav-refresh-btn" onclick="mrManualRefresh(this)" aria-label="새로고침" title="데이터 새로고침" style="display:none">
+  <button class="nav-refresh-btn" id="nav-refresh-btn" onclick="navGlobalRefresh(this)" aria-label="새로고침" title="데이터 새로고침" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
   </button>
   <div class="nav-sep"></div>
@@ -3882,9 +3883,6 @@ html.light .hosp-dd-stat-val{color:#0f172a}
         <div class="hosp-hero-eyebrow">STOCK MANAGEMENT</div>
         <div class="hosp-hero-title">재고 관리</div>
         <div class="hosp-hero-sub">Google Sheets 두 개(간호/피부) 실시간 조회 · 월별 탭 자동 인식.</div>
-      </div>
-      <div class="hosp-hero-actions">
-        <button class="btn btn-primary" onclick="hospLoadStock()">시트 새로고침</button>
       </div>
     </div>
 
@@ -12225,6 +12223,33 @@ function mrRenderStats(){
 }
 
 // 수동 새로고침 — 상단 새로고침 버튼 클릭 시 (컨텍스트 인식)
+// 컨텍스트별 새로고침 라우터 — 상단 nav-refresh-btn 통합
+async function navGlobalRefresh(btn){
+  const nav = document.querySelector('.topnav');
+  const inHosp = nav && nav.classList.contains('hospital-mode');
+  if(inHosp){
+    try{
+      if(btn) btn.classList.add('spinning');
+      if(currentPage === 'hosp-dashboard' && typeof hospLoadDashboard === 'function') await hospLoadDashboard();
+      else if(currentPage === 'hosp-stock' && typeof hospLoadStock === 'function') await hospLoadStock();
+      else if(currentPage === 'hosp-sales'){
+        if(typeof hospLoadTrend === 'function') await hospLoadTrend();
+      } else if(currentPage === 'hosp-settings'){
+        if(typeof hospLoadSettleStats === 'function') await hospLoadSettleStats();
+      }
+      if(typeof showToast === 'function') showToast('새로고침 완료');
+    }catch(e){
+      console.error('[navGlobalRefresh]', e);
+      if(typeof showToast === 'function') showToast('새로고침 실패: ' + (e.message||e));
+    }finally{
+      if(btn) setTimeout(()=>btn.classList.remove('spinning'), 300);
+    }
+    return;
+  }
+  // 기본: MSO 리포트 새로고침
+  return mrManualRefresh(btn);
+}
+
 async function mrManualRefresh(btn){
   try{
     if(btn) btn.classList.add('spinning');
