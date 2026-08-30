@@ -1,5 +1,5 @@
 {
-  "version": "2.4.27",
-  "buildTime": "2026-08-30T11:45:00Z",
-  "changelog": "chg(settings): 우측 설정 드로어 너비 300px → 420px (모바일 최대 96vw). 병원 운영 섹션의 긴 입력 필드(웹앱 URL 등)가 잘리지 않고 여유롭게 표시."
+  "version": "2.4.28",
+  "buildTime": "2026-08-31T00:00:00Z",
+  "changelog": "chg(hospital): 병원 운영 관리 전체를 S.O.S 커맨드센터로 이관. MSO 앱은 홈 카드 클릭 시 sos-arrange.pages.dev/hospital로 새 창 리디렉트만 담당. 삭제된 것: nav-menu-hospital, page-hosp-* 6개 페이지, hosp* JS 함수 블록(약 1500줄), hospital-mode CSS, hosp-* CSS 블록(약 180줄), 설정 드로어 병원 컨텍스트+4개 섹션, vendor/settle-engine.js, enterApp hospital 분기, navGlobalRefresh hospital 라우팅. 유지된 것: 홈 카드(SOS 뱃지 추가 + 외부 리디렉트), 키보드 단축키 3, 병원 카드 색상. index.html 약 2200줄 감축."
 }
