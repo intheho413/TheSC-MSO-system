@@ -31,6 +31,7 @@ if('serviceWorker' in navigator){
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.5/dist/docx-preview.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+<script src="vendor/settle-engine.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & Base ── */
@@ -3072,6 +3073,66 @@ html.light .hosp-hero-sub{color:#475569}
 html.light .hosp-cfg-modal{background:#fff;color:#0f172a;border-color:rgba(0,0,0,.08)}
 html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,.06)}
 
+/* ══ 병원 운영 관리 — 확장 UI ══ */
+.hosp-grid{display:grid;gap:16px}
+.hosp-g4{grid-template-columns:repeat(4,1fr)}
+.hosp-g3{grid-template-columns:repeat(3,1fr)}
+.hosp-g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:1000px){.hosp-g4{grid-template-columns:repeat(2,1fr)}.hosp-g3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.hosp-g4,.hosp-g3,.hosp-g2{grid-template-columns:1fr}}
+
+.hosp-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+.hosp-card-title{font-size:12px;color:#94a3b8;font-weight:600;margin-bottom:8px}
+.hosp-card-value{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.hosp-card-sub{font-size:11px;color:#64748b;margin-top:4px}
+.hosp-h2{font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:12px}
+.hosp-chart{width:100%;min-height:220px;background:rgba(255,255,255,.02);border-radius:10px;position:relative;overflow:hidden;display:flex;align-items:flex-end}
+
+.hosp-subtabs{display:flex;gap:6px;margin-bottom:16px;background:rgba(255,255,255,.03);padding:6px;border-radius:12px;width:fit-content}
+.hosp-subtab{padding:8px 16px;border-radius:8px;font-size:12.5px;color:#94a3b8;cursor:pointer;transition:.2s}
+.hosp-subtab.active{background:rgba(16,185,129,.15);color:#5eead4;font-weight:600}
+.hosp-subtab:hover:not(.active){background:rgba(255,255,255,.04)}
+
+.hosp-filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.hosp-filter-label{font-size:11px;color:#64748b;font-weight:600}
+.hosp-filter-pill{padding:6px 12px;border-radius:6px;font-size:11.5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);cursor:pointer;color:#cbd5e1;transition:.2s}
+.hosp-filter-pill.active{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:#5eead4;font-weight:600}
+.hosp-filter-pill:hover:not(.active){background:rgba(255,255,255,.06)}
+.hosp-month-picker{display:inline-flex;align-items:center;gap:4px;padding:4px;background:rgba(255,255,255,.04);border-radius:8px}
+.hosp-month-btn{padding:5px 10px;border-radius:5px;background:none;border:0;color:#cbd5e1;cursor:pointer;font-size:11.5px}
+.hosp-month-btn.active{background:rgba(16,185,129,.15);color:#5eead4;font-weight:700}
+
+.hosp-table{width:100%;border-collapse:collapse;font-size:12px}
+.hosp-table th{text-align:left;padding:10px 12px;background:rgba(255,255,255,.04);color:#94a3b8;font-weight:600;font-size:11px;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap}
+.hosp-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#cbd5e1;white-space:nowrap}
+.hosp-table tr:hover td{background:rgba(255,255,255,.02)}
+.hosp-pill{display:inline-block;padding:3px 8px;border-radius:5px;font-size:10.5px;font-weight:600}
+.hosp-pill-b{background:rgba(59,130,246,.15);color:#93c5fd}
+.hosp-pill-f{background:rgba(167,139,250,.15);color:#c4b5fd}
+.hosp-pill-fg{background:rgba(34,197,94,.15);color:#86efac}
+.hosp-pill-sr{background:rgba(251,146,60,.15);color:#fdba74}
+.hosp-pill-inj{background:rgba(239,68,68,.15);color:#fca5a5}
+.hosp-pill-warn{background:rgba(251,191,36,.15);color:#fcd34d}
+.hosp-pill-alert{background:rgba(239,68,68,.15);color:#fca5a5}
+
+.hosp-dropzone{border:2px dashed rgba(16,185,129,.4);border-radius:14px;padding:60px 24px;text-align:center;background:rgba(16,185,129,.04);cursor:pointer;transition:.2s}
+.hosp-dropzone.dragover{background:rgba(16,185,129,.12);border-color:#10b981}
+.hosp-dropzone:hover{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.6)}
+.hosp-dropzone-icon{width:56px;height:56px;margin:0 auto 12px;background:linear-gradient(135deg,#10b981,#06b6d4);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:800}
+.hosp-dropzone-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
+.hosp-dropzone-sub{font-size:12px;color:#94a3b8}
+
+.hosp-settle-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:1000px){.hosp-settle-summary{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.hosp-settle-summary{grid-template-columns:1fr}}
+.hosp-settle-cell{background:rgba(255,255,255,.04);border-radius:10px;padding:14px}
+.hosp-settle-label{font-size:10.5px;color:#94a3b8;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.hosp-settle-value{font-size:20px;font-weight:800;color:#fff}
+.hosp-settle-sub{font-size:10.5px;color:#64748b;margin-top:2px}
+
+html.light .hosp-card{background:#fff;border-color:rgba(0,0,0,.08)}
+html.light .hosp-card-value{color:#0f172a}
+
 </style>
 </head>
 <body>
@@ -3513,15 +3574,15 @@ html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,
 
   <div class="nav-menu" id="nav-menu-hospital" style="display:none">
     <div class="nav-item active" onclick="navigate('hosp-dashboard',this)">
-      <span class="menu-label">운영 지표</span>
+      <span class="menu-label">운영 대시보드</span>
     </div>
     <div class="nav-item" onclick="navigate('hosp-stock',this)">
-      <span class="menu-label">재고/소모품</span>
+      <span class="menu-label">재고 관리</span>
     </div>
     <div class="nav-item" onclick="navigate('hosp-sales',this)">
-      <span class="menu-label">일매출 보고</span>
+      <span class="menu-label">매출 관리</span>
     </div>
-    <div class="nav-item" onclick="hospOpenConfig()">
+    <div class="nav-item" onclick="navigate('hosp-settings',this)">
       <span class="menu-label">연동 설정</span>
     </div>
   </div>
@@ -3707,46 +3768,133 @@ html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,
 <!-- ════ 화장품 대시보드 ════ -->
 
 <!-- ════ 병원 운영 관리 페이지들 (마스터 전용) ════ -->
+
+<!-- ── 운영 대시보드 ── -->
 <div id="page-hosp-dashboard" class="page" style="display:none">
   <div class="hosp-wrap">
     <div class="hosp-hero">
       <div>
-        <div class="hosp-hero-eyebrow">HOSPITAL OPERATIONS</div>
-        <div class="hosp-hero-title">전체 운영 지표</div>
-        <div class="hosp-hero-sub" id="hosp-config-status">연동 설정을 완료하면 실시간으로 시트 데이터가 표시됩니다.</div>
+        <div class="hosp-hero-eyebrow">HOSPITAL OPERATIONS · 세라미크글로벌의원 명동점</div>
+        <div class="hosp-hero-title">운영 대시보드</div>
+        <div class="hosp-hero-sub">최근 정산 매출, 이번 달 누적, 재고 알림을 한 화면에.</div>
       </div>
       <div class="hosp-hero-actions">
-        <button class="btn btn-primary" onclick="hospTestFetch('운영지표')">운영지표 시트 새로고침</button>
-        <button class="btn" onclick="hospOpenConfig()">연동 설정</button>
+        <button class="btn" onclick="hospLoadDashboard()">새로고침</button>
       </div>
     </div>
-    <div id="hosp-metrics-status" class="hosp-status">대기 중</div>
-    <div class="tbl-wrap" id="hosp-metrics-tbl-wrap" style="margin-top:12px">
-      <div style="padding:24px;color:#94a3b8;font-size:13px;text-align:center">데이터를 불러오면 여기에 테이블이 표시됩니다.</div>
+
+    <div class="hosp-grid hosp-g4" style="margin-bottom:20px">
+      <div class="hosp-card">
+        <div class="hosp-card-title">오늘 매출 (베가스 총매출)</div>
+        <div class="hosp-card-value" id="hd-today-vegas">-</div>
+        <div class="hosp-card-sub" id="hd-today-sub">데이터 없음</div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-card-title">이번 달 누적 매출</div>
+        <div class="hosp-card-value" id="hd-month-vegas">-</div>
+        <div class="hosp-card-sub" id="hd-month-sub">데이터 없음</div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-card-title">오늘 환자 수</div>
+        <div class="hosp-card-value" id="hd-today-patients">-</div>
+        <div class="hosp-card-sub" id="hd-today-visits">-</div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-card-title">정산 기록</div>
+        <div class="hosp-card-value" id="hd-settle-count">-</div>
+        <div class="hosp-card-sub" id="hd-settle-range">-</div>
+      </div>
     </div>
-    <details style="margin-top:16px">
-      <summary style="cursor:pointer;color:#94a3b8;font-size:12px">원시 JSON 응답 보기</summary>
-      <pre id="hosp-metrics-raw" style="max-height:300px;overflow:auto;background:rgba(0,0,0,.2);padding:12px;border-radius:8px;font-size:11px;color:#cbd5e1">아직 요청 없음</pre>
-    </details>
+
+    <div class="hosp-grid hosp-g2">
+      <div class="hosp-card">
+        <div class="hosp-h2">일자별 매출 추이 (최근 14일)</div>
+        <div id="hd-chart-trend" class="hosp-chart">
+          <div style="padding:40px;color:#64748b;font-size:12px;text-align:center">정산 데이터가 쌓이면 여기에 차트가 표시됩니다.</div>
+        </div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-h2">결제 수단별 비율 (이번 달)</div>
+        <div id="hd-chart-pay" style="padding:20px 0">
+          <div style="color:#64748b;font-size:12px;text-align:center">정산 데이터가 쌓이면 여기에 비율이 표시됩니다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hosp-grid hosp-g2" style="margin-top:16px">
+      <div class="hosp-card">
+        <div class="hosp-h2">국내/해외 환자 분포 (이번 달)</div>
+        <div id="hd-visit-split" style="display:flex;gap:16px">
+          <div style="flex:1;background:rgba(59,130,246,.08);padding:16px;border-radius:10px;border:1px solid rgba(59,130,246,.2)">
+            <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">국내</div>
+            <div style="font-size:22px;font-weight:800;color:#93c5fd" id="hd-visit-local">0명</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px" id="hd-visit-local-sub">초진 0 · 재진 0</div>
+          </div>
+          <div style="flex:1;background:rgba(251,146,60,.08);padding:16px;border-radius:10px;border:1px solid rgba(251,146,60,.2)">
+            <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">해외</div>
+            <div style="font-size:22px;font-weight:800;color:#fdba74" id="hd-visit-foreign">0명</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px" id="hd-visit-foreign-sub">초진 0 · 재진 0</div>
+          </div>
+        </div>
+      </div>
+      <div class="hosp-card">
+        <div class="hosp-h2">최근 정산 기록</div>
+        <div id="hd-recent-list" style="font-size:12px;color:#94a3b8">불러오는 중...</div>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- ── 재고 관리 ── -->
 <div id="page-hosp-stock" class="page" style="display:none">
   <div class="hosp-wrap">
     <div class="hosp-hero">
       <div>
-        <div class="hosp-hero-eyebrow">STOCK / CONSUMABLES</div>
-        <div class="hosp-hero-title">재고/소모품 현황</div>
-        <div class="hosp-hero-sub">시트에서 실시간 조회. 발주 필요 항목은 강조 표시됩니다.</div>
+        <div class="hosp-hero-eyebrow">STOCK MANAGEMENT</div>
+        <div class="hosp-hero-title">재고 관리</div>
+        <div class="hosp-hero-sub">Google Sheets 두 개(간호/피부) 실시간 조회 · 월별 탭 자동 인식.</div>
       </div>
       <div class="hosp-hero-actions">
-        <button class="btn btn-primary" onclick="hospTestFetch('재고소모품')">재고 시트 새로고침</button>
+        <button class="btn btn-primary" onclick="hospLoadStock()">시트 새로고침</button>
       </div>
     </div>
-    <div id="hosp-stock-status" class="hosp-status">대기 중</div>
-    <div class="tbl-wrap" id="hosp-stock-tbl-wrap" style="margin-top:12px">
-      <div style="padding:24px;color:#94a3b8;font-size:13px;text-align:center">데이터를 불러오면 여기에 테이블이 표시됩니다.</div>
+
+    <div class="hosp-subtabs">
+      <div class="hosp-subtab active" data-team="nurse" onclick="hospSwitchTeam(this,'nurse')">간호 재고</div>
+      <div class="hosp-subtab" data-team="skin" onclick="hospSwitchTeam(this,'skin')">피부 재고</div>
     </div>
+
+    <div class="hosp-filter-row">
+      <span class="hosp-filter-label">기간:</span>
+      <div class="hosp-month-picker" id="hosp-month-picker">
+        <button class="hosp-month-btn active" data-month="8">8월</button>
+        <button class="hosp-month-btn" data-month="9">9월</button>
+      </div>
+      <span class="hosp-filter-label" style="margin-left:12px">대분류:</span>
+      <span id="hosp-cat-filters"><button class="hosp-filter-pill active" data-cat="">전체</button></span>
+    </div>
+
+    <div id="hosp-stock-status" class="hosp-status">불러오는 중...</div>
+    <div class="hosp-card" style="padding:0;overflow:hidden;margin-top:12px">
+      <div style="overflow-x:auto">
+        <table class="hosp-table" id="hosp-stock-table">
+          <thead>
+            <tr>
+              <th>대분류</th><th>중분류</th><th>상품명</th><th>규격</th>
+              <th style="text-align:right">이월재고</th>
+              <th style="text-align:right">총 입고</th>
+              <th style="text-align:right">총 출고</th>
+              <th style="text-align:right">현재고</th>
+              <th>상태</th>
+            </tr>
+          </thead>
+          <tbody id="hosp-stock-tbody">
+            <tr><td colspan="9" style="text-align:center;padding:30px;color:#64748b">연동 설정 후 데이터를 불러오세요.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <details style="margin-top:16px">
       <summary style="cursor:pointer;color:#94a3b8;font-size:12px">원시 JSON 응답 보기</summary>
       <pre id="hosp-stock-raw" style="max-height:300px;overflow:auto;background:rgba(0,0,0,.2);padding:12px;border-radius:8px;font-size:11px;color:#cbd5e1">아직 요청 없음</pre>
@@ -3754,43 +3902,165 @@ html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,
   </div>
 </div>
 
+<!-- ── 매출 관리 ── -->
 <div id="page-hosp-sales" class="page" style="display:none">
   <div class="hosp-wrap">
     <div class="hosp-hero">
       <div>
-        <div class="hosp-hero-eyebrow">DAILY SALES</div>
-        <div class="hosp-hero-title">일매출 보고 자료</div>
-        <div class="hosp-hero-sub">엑셀 업로드(현재) 또는 KOS CRM 연동(예정)으로 매출 자료를 자동 생성합니다.</div>
+        <div class="hosp-hero-eyebrow">SALES / SETTLEMENT</div>
+        <div class="hosp-hero-title">매출 관리 · 정산</div>
+        <div class="hosp-hero-sub">KOS 환자별집계.xls 업로드 → 정산지.xlsx 자동 생성 · 이력 자동 축적.</div>
       </div>
     </div>
-    <div class="hosp-status">엑셀 양식 / KOS 연동 스펙 확정 후 구현 예정</div>
+
+    <div class="hosp-subtabs">
+      <div class="hosp-subtab active" data-sales="daily" onclick="hospSwitchSales(this,'daily')">일매출 정산</div>
+      <div class="hosp-subtab" data-sales="trend" onclick="hospSwitchSales(this,'trend')">매출 추이</div>
+    </div>
+
+    <div id="hosp-sales-daily-pane">
+      <div class="hosp-dropzone" id="hosp-dropzone" onclick="document.getElementById('hosp-xls-input').click()">
+        <div class="hosp-dropzone-icon">↑</div>
+        <div class="hosp-dropzone-title">환자별집계 .xls 파일을 여기로 끌어놓거나 클릭</div>
+        <div class="hosp-dropzone-sub">브라우저 안에서만 처리 · 파일 서버 전송 없음 · 기본 비밀번호 asdf1234!</div>
+        <input type="file" id="hosp-xls-input" accept=".xls,.xlsx" style="display:none">
+      </div>
+
+      <div id="hosp-sales-msg" style="margin-top:12px;font-size:12px;color:#94a3b8"></div>
+
+      <div class="hosp-card" id="hosp-settle-result" style="margin-top:20px;display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div class="hosp-h2" id="hosp-settle-title" style="margin:0">정산 요약</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" onclick="hospDownloadSettle()">정산지 xlsx 다운로드</button>
+            <button class="btn btn-primary" onclick="hospSaveSettleToDB()" id="hosp-save-btn">Supabase에 저장</button>
+          </div>
+        </div>
+
+        <div class="hosp-settle-summary">
+          <div class="hosp-settle-cell">
+            <div class="hosp-settle-label">베가스 총매출</div>
+            <div class="hosp-settle-value" id="hs-vegas">-</div>
+            <div class="hosp-settle-sub" id="hs-patients">-</div>
+          </div>
+          <div class="hosp-settle-cell">
+            <div class="hosp-settle-label">국내 매출</div>
+            <div class="hosp-settle-value" id="hs-local">-</div>
+            <div class="hosp-settle-sub" id="hs-local-visits">-</div>
+          </div>
+          <div class="hosp-settle-cell">
+            <div class="hosp-settle-label">해외 매출</div>
+            <div class="hosp-settle-value" id="hs-foreign">-</div>
+            <div class="hosp-settle-sub" id="hs-foreign-visits">-</div>
+          </div>
+          <div class="hosp-settle-cell">
+            <div class="hosp-settle-label">기타/선수납</div>
+            <div class="hosp-settle-value" id="hs-etc">-</div>
+            <div class="hosp-settle-sub" id="hs-etc-sub">-</div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="hosp-h2">결제 수단별</div>
+          <table class="hosp-table">
+            <thead>
+              <tr><th>결제수단</th><th style="text-align:right">금액</th><th style="text-align:right">비율</th></tr>
+            </thead>
+            <tbody id="hosp-pay-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="hosp-sales-trend-pane" style="display:none">
+      <div class="hosp-grid hosp-g2">
+        <div class="hosp-card">
+          <div class="hosp-h2">일자별 매출 (최근 30일)</div>
+          <div id="ht-chart-daily" class="hosp-chart">
+            <div style="padding:40px;color:#64748b;font-size:12px;text-align:center">저장된 정산 데이터가 없습니다.</div>
+          </div>
+        </div>
+        <div class="hosp-card">
+          <div class="hosp-h2">월별 매출 (최근 6개월)</div>
+          <div id="ht-chart-monthly" class="hosp-chart">
+            <div style="padding:40px;color:#64748b;font-size:12px;text-align:center">저장된 정산 데이터가 없습니다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="hosp-grid hosp-g3" style="margin-top:16px">
+        <div class="hosp-card">
+          <div class="hosp-card-title">누적 환자 수 (이번 달)</div>
+          <div class="hosp-card-value" id="ht-total-patients">-</div>
+          <div class="hosp-card-sub" id="ht-avg-patients">-</div>
+        </div>
+        <div class="hosp-card">
+          <div class="hosp-card-title">평균 객단가 (이번 달)</div>
+          <div class="hosp-card-value" id="ht-avg-ticket">-</div>
+          <div class="hosp-card-sub">베가스 총매출 / 환자 수</div>
+        </div>
+        <div class="hosp-card">
+          <div class="hosp-card-title">해외 매출 비중</div>
+          <div class="hosp-card-value" id="ht-foreign-pct">-</div>
+          <div class="hosp-card-sub" id="ht-foreign-sub">-</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ════ 병원 운영 — 연동 설정 모달 ════ -->
-<div class="hosp-cfg-bg" id="hosp-cfg-bg" style="display:none" onclick="if(event.target===this)hospCloseConfig()">
-  <div class="hosp-cfg-modal">
-    <div class="hosp-cfg-header">
-      <h3 style="margin:0;font-size:16px">병원 운영 — 시트 연동 설정</h3>
-      <button class="hosp-cfg-close" onclick="hospCloseConfig()" aria-label="닫기">×</button>
+<!-- ── 연동 설정 ── -->
+<div id="page-hosp-settings" class="page" style="display:none">
+  <div class="hosp-wrap">
+    <div class="hosp-hero">
+      <div>
+        <div class="hosp-hero-eyebrow">INTEGRATION SETTINGS</div>
+        <div class="hosp-hero-title">연동 설정</div>
+        <div class="hosp-hero-sub">Google Sheets Apps Script 웹앱 URL + 토큰 관리 · Supabase 정산 이력 확인.</div>
+      </div>
     </div>
-    <div class="hosp-cfg-body">
-      <div class="form-group">
+
+    <div class="hosp-card">
+      <div class="hosp-h2">간호 재고 시트 연동</div>
+      <div class="form-group" style="margin-bottom:8px">
         <label class="form-label">Apps Script Web App URL</label>
-        <input type="text" class="form-control" id="hosp-cfg-url" placeholder="https://script.google.com/macros/s/.../exec">
-        <div style="font-size:11px;color:#94a3b8;margin-top:4px">apps-script/gsheet-bridge.gs 배포 후 발급받은 URL</div>
+        <input type="text" class="form-control" id="hosp-cfg-url-nurse" placeholder="https://script.google.com/macros/s/.../exec">
       </div>
-      <div class="form-group">
+      <div class="form-group" style="margin-bottom:8px">
         <label class="form-label">SECRET_TOKEN</label>
-        <input type="password" class="form-control" id="hosp-cfg-token" placeholder="Apps Script 코드의 SECRET_TOKEN 값과 동일">
+        <input type="password" class="form-control" id="hosp-cfg-token-nurse">
       </div>
-      <div class="hosp-cfg-note">저장 위치: 이 브라우저의 localStorage (기기별로 별도 설정 필요)</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" onclick="hospTestConnection('nurse')">연결 테스트</button>
+        <button class="btn btn-primary" onclick="hospSaveConfig('nurse')">저장</button>
+      </div>
+      <div id="hosp-cfg-result-nurse" class="hosp-cfg-result" style="margin-top:10px"></div>
     </div>
-    <div class="hosp-cfg-footer">
-      <button class="btn" onclick="hospTestConnection()">연결 테스트</button>
-      <button class="btn btn-primary" onclick="hospSaveConfig()">저장</button>
+
+    <div class="hosp-card" style="margin-top:14px">
+      <div class="hosp-h2">피부 재고 시트 연동</div>
+      <div class="form-group" style="margin-bottom:8px">
+        <label class="form-label">Apps Script Web App URL</label>
+        <input type="text" class="form-control" id="hosp-cfg-url-skin" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+      <div class="form-group" style="margin-bottom:8px">
+        <label class="form-label">SECRET_TOKEN</label>
+        <input type="password" class="form-control" id="hosp-cfg-token-skin">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" onclick="hospTestConnection('skin')">연결 테스트</button>
+        <button class="btn btn-primary" onclick="hospSaveConfig('skin')">저장</button>
+      </div>
+      <div id="hosp-cfg-result-skin" class="hosp-cfg-result" style="margin-top:10px"></div>
     </div>
-    <div id="hosp-cfg-result" class="hosp-cfg-result"></div>
+
+    <div class="hosp-card" style="margin-top:14px">
+      <div class="hosp-h2">정산 데이터 저장 (Supabase)</div>
+      <div style="font-size:12.5px;color:#94a3b8;line-height:1.8">
+        정산지 생성 시 결과 요약이 <code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:11px">hosp_settlement</code> 테이블에 자동 저장됩니다.
+        "매출 추이" 페이지의 차트가 이 데이터를 시각화합니다.
+        <div style="margin-top:10px" id="hosp-settle-stats">불러오는 중...</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -5649,7 +5919,10 @@ function navigate(page, el) {
   if(page==='med-recv')   initMedRecv();
   if(page==='med-master') initMedMaster();
   if(page==='mso-report') initMsoReport();
-  if(page==='hosp-dashboard' && typeof hospUpdateStatusText==='function') hospUpdateStatusText();
+  if(page==='hosp-dashboard' && typeof hospLoadDashboard==='function') setTimeout(hospLoadDashboard, 30);
+  if(page==='hosp-stock' && typeof hospLoadStock==='function') setTimeout(()=>{ hospInitMonthPicker(); hospLoadStock(); }, 30);
+  if(page==='hosp-sales' && typeof hospInitDropzone==='function') setTimeout(hospInitDropzone, 30);
+  if(page==='hosp-settings' && typeof hospLoadConfigsToUI==='function') setTimeout(()=>{ hospLoadConfigsToUI(); hospLoadSettleStats(); }, 30);
 }
 
 function switchCat(cat, el) {
@@ -14020,70 +14293,46 @@ window.addEventListener('load', async () => {
 // create table if not exists app_config (id text primary key, settings jsonb, template_b64 text, template_name text, updated_at timestamptz default now());
 // insert into app_config (id) values ('main') on conflict do nothing;
 
-// ══ 병원 운영 관리 — Apps Script 연동 ══════════════════════════
-const HOSP_CFG_KEY = 'mso.hospital.gsheet.v1';
-function hospGetConfig(){
+// ══ 병원 운영 관리 — Apps Script 연동 + 정산 + 대시보드 ══════════════════════════
+const HOSP_CFG_KEY_PREFIX = 'mso.hospital.gsheet.';
+let HOSP_CURRENT_TEAM = 'nurse'; // 재고 페이지 활성 팀
+let HOSP_CURRENT_MONTH = new Date().getMonth() + 1; // 재고 페이지 활성 월
+let HOSP_CURRENT_CAT = ''; // 재고 페이지 활성 카테고리 필터
+let HOSP_CURRENT_STOCK_ROWS = []; // 최근 로드된 재고 데이터
+let HOSP_LAST_SETTLE = null; // 최근 정산 결과
+
+function hospGetConfig(team){
   try{
-    const raw = localStorage.getItem(HOSP_CFG_KEY);
+    const raw = localStorage.getItem(HOSP_CFG_KEY_PREFIX + (team||'nurse'));
     if(!raw) return {url:'', token:''};
     const o = JSON.parse(raw);
     return {url: o.url||'', token: o.token||''};
   }catch(e){ return {url:'', token:''}; }
 }
-function hospSetConfig(url, token){
-  localStorage.setItem(HOSP_CFG_KEY, JSON.stringify({url:url||'', token:token||''}));
+function hospSetConfig(team, url, token){
+  localStorage.setItem(HOSP_CFG_KEY_PREFIX + team, JSON.stringify({url:url||'', token:token||''}));
 }
-function hospOpenConfig(){
-  const c = hospGetConfig();
-  const urlEl = document.getElementById('hosp-cfg-url');
-  const tokEl = document.getElementById('hosp-cfg-token');
-  if(urlEl) urlEl.value = c.url;
-  if(tokEl) tokEl.value = c.token;
-  const bg = document.getElementById('hosp-cfg-bg');
-  if(bg) bg.style.display = 'flex';
-  const rst = document.getElementById('hosp-cfg-result');
-  if(rst){ rst.className='hosp-cfg-result'; rst.textContent=''; }
+function hospLoadConfigsToUI(){
+  ['nurse','skin'].forEach(t=>{
+    const c = hospGetConfig(t);
+    const u = document.getElementById('hosp-cfg-url-'+t);
+    const k = document.getElementById('hosp-cfg-token-'+t);
+    if(u) u.value = c.url;
+    if(k) k.value = c.token;
+    const r = document.getElementById('hosp-cfg-result-'+t);
+    if(r){ r.className='hosp-cfg-result'; r.textContent=''; }
+  });
 }
-function hospCloseConfig(){
-  const bg = document.getElementById('hosp-cfg-bg');
-  if(bg) bg.style.display = 'none';
+function hospSaveConfig(team){
+  const url = document.getElementById('hosp-cfg-url-'+team).value.trim();
+  const token = document.getElementById('hosp-cfg-token-'+team).value.trim();
+  hospSetConfig(team, url, token);
+  showToast((team==='nurse'?'간호':'피부')+' 재고 연동 설정 저장됨');
 }
-function hospSaveConfig(){
-  const url = document.getElementById('hosp-cfg-url').value.trim();
-  const token = document.getElementById('hosp-cfg-token').value.trim();
-  hospSetConfig(url, token);
-  showToast('연동 설정 저장됨');
-  hospCloseConfig();
-  hospUpdateStatusText();
-}
-function hospUpdateStatusText(){
-  const c = hospGetConfig();
-  const el = document.getElementById('hosp-config-status');
-  if(!el) return;
-  if(c.url && c.token){
-    el.textContent = '연동 설정 완료. 새로고침 버튼으로 시트 데이터를 불러오세요.';
-    el.style.color = '#5eead4';
-  } else {
-    el.textContent = '연동 설정 필요 — 우측 상단 "연동 설정" 클릭';
-    el.style.color = '';
-  }
-}
-async function hospGetSheet(sheetName){
-  const c = hospGetConfig();
-  if(!c.url || !c.token) throw new Error('연동 설정이 필요합니다 (URL/TOKEN 미입력)');
-  const u = c.url + (c.url.indexOf('?')>=0?'&':'?')
-          + 'token=' + encodeURIComponent(c.token)
-          + '&sheet=' + encodeURIComponent(sheetName);
-  const r = await fetch(u, {method:'GET', redirect:'follow'});
-  if(!r.ok) throw new Error('HTTP ' + r.status);
-  const j = await r.json();
-  if(!j || j.ok===false) throw new Error(j && j.error ? j.error : 'Unknown error');
-  return j;
-}
-async function hospTestConnection(){
-  const url = document.getElementById('hosp-cfg-url').value.trim();
-  const token = document.getElementById('hosp-cfg-token').value.trim();
-  const rst = document.getElementById('hosp-cfg-result');
+async function hospTestConnection(team){
+  const url = document.getElementById('hosp-cfg-url-'+team).value.trim();
+  const token = document.getElementById('hosp-cfg-token-'+team).value.trim();
+  const rst = document.getElementById('hosp-cfg-result-'+team);
   if(!url || !token){
     rst.className='hosp-cfg-result err';
     rst.textContent='URL과 TOKEN을 모두 입력하세요.';
@@ -14103,47 +14352,443 @@ async function hospTestConnection(){
     rst.textContent = '연결 실패: ' + (err.message||err);
   }
 }
-function hospRenderTable(rows, tblWrapId){
-  const wrap = document.getElementById(tblWrapId);
-  if(!wrap) return;
-  if(!rows || !rows.length){
-    wrap.innerHTML = '<div style="padding:24px;color:#94a3b8;font-size:13px;text-align:center">데이터가 없습니다.</div>';
+async function hospFetchRaw(team, sheetName){
+  const c = hospGetConfig(team);
+  if(!c.url || !c.token) throw new Error((team==='nurse'?'간호':'피부')+' 재고 연동 설정이 필요합니다 (연동 설정 페이지에서 등록)');
+  const u = c.url + (c.url.indexOf('?')>=0?'&':'?')
+          + 'token=' + encodeURIComponent(c.token)
+          + '&sheet=' + encodeURIComponent(sheetName)
+          + '&raw=1';
+  const r = await fetch(u, {method:'GET', redirect:'follow'});
+  if(!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  if(!j || j.ok===false) throw new Error(j && j.error ? j.error : 'Unknown error');
+  const pack = j.sheets && j.sheets[sheetName];
+  if(!pack) throw new Error('응답에 시트 데이터 없음');
+  if(pack.error) throw new Error(pack.error);
+  return {values: pack.values, updated: j.updated};
+}
+// 재고 탭 이름 규칙: "간호 재고관리 (26년 M월)" / "피부 재고관리 (26년 M월)"
+function hospStockSheetName(team, month){
+  const prefix = (team==='nurse') ? '간호 재고관리' : '피부 재고관리';
+  const yy = String(new Date().getFullYear()).slice(2);
+  return prefix + ' (' + yy + '년 ' + month + '월)';
+}
+// 재고 시트 파싱: values 2D 배열 → 상품 행 배열
+function hospParseStock(values){
+  // 헤더 = 행 13 (index 12): 대분류(B=1), 중분류(C=2), 상품명(D=3), 하위명(E=4), 회사(F=5), 발주처(G=6), 담당자(H=7), 연락처(I=8), 단위(J=9), 이월재고(K=10), 현재고(L=11), day1_in(M=12)~day31_out
+  // 데이터 = 행 15+ (index 14+)
+  if(!values || values.length < 15) return [];
+  const rows = [];
+  for(let i = 14; i < values.length; i++){
+    const r = values[i] || [];
+    const name = r[3];
+    if(!name) continue;
+    let totalIn = 0, totalOut = 0;
+    for(let d = 0; d < 31; d++){
+      const inQ = Number(r[12 + d*2]) || 0;
+      const outQ = Number(r[13 + d*2]) || 0;
+      totalIn += inQ;
+      totalOut += outQ;
+    }
+    const carry = Number(r[10]) || 0;
+    const current = carry + totalIn - totalOut;
+    rows.push({
+      main: r[1] || '',
+      sub: r[2] || '',
+      name: String(name),
+      spec: r[4] != null ? String(r[4]) : '',
+      carry, totalIn, totalOut, current
+    });
+  }
+  return rows;
+}
+function hospPillClass(main, sub){
+  if(main==='보톡스') return 'hosp-pill hosp-pill-b';
+  if(main==='필러' && sub==='국산') return 'hosp-pill hosp-pill-fg';
+  if(main==='필러') return 'hosp-pill hosp-pill-f';
+  if(main==='스킨부스터') return 'hosp-pill hosp-pill-sr';
+  if(main==='주사제') return 'hosp-pill hosp-pill-inj';
+  return 'hosp-pill';
+}
+function hospRenderStockTable(rows){
+  const tb = document.getElementById('hosp-stock-tbody');
+  if(!tb) return;
+  const filtered = HOSP_CURRENT_CAT
+    ? rows.filter(r=>{
+        const cat = r.main + (r.sub?'/'+r.sub:'');
+        return cat === HOSP_CURRENT_CAT || r.main === HOSP_CURRENT_CAT;
+      })
+    : rows;
+  if(!filtered.length){
+    tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#64748b">해당 카테고리에 데이터가 없습니다.</td></tr>';
     return;
   }
-  const headers = Object.keys(rows[0]);
-  let h = '<table><thead><tr>';
-  headers.forEach(k => h += '<th>' + String(k).replace(/[<>&]/g, s=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[s])) + '</th>');
-  h += '</tr></thead><tbody>';
-  rows.forEach(r => {
-    h += '<tr>';
-    headers.forEach(k => {
-      const v = r[k] == null ? '' : String(r[k]);
-      h += '<td>' + v.replace(/[<>&]/g, s=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[s])) + '</td>';
-    });
-    h += '</tr>';
+  const esc = s => String(s).replace(/[<>&]/g, c=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[c]));
+  const fmt = n => n === 0 ? '0' : (Number(n)||0).toLocaleString();
+  let h = '';
+  filtered.forEach(r => {
+    let statusPill = '';
+    if(r.current < 0) statusPill = '<span class="hosp-pill hosp-pill-alert">재고오류</span>';
+    else if(r.current === 0 && (r.totalIn>0 || r.totalOut>0)) statusPill = '<span class="hosp-pill hosp-pill-alert">품절</span>';
+    else if(r.current > 0 && r.current <= 5) statusPill = '<span class="hosp-pill hosp-pill-warn">부족</span>';
+    h += '<tr>'
+      +'<td><span class="'+hospPillClass(r.main,r.sub)+'">'+esc(r.main)+'</span></td>'
+      +'<td>'+esc(r.sub)+'</td>'
+      +'<td><b>'+esc(r.name)+'</b></td>'
+      +'<td>'+esc(r.spec)+'</td>'
+      +'<td style="text-align:right">'+fmt(r.carry)+'</td>'
+      +'<td style="text-align:right;color:'+(r.totalIn>0?'#34d399':'#64748b')+'">+'+fmt(r.totalIn)+'</td>'
+      +'<td style="text-align:right;color:'+(r.totalOut>0?'#fca5a5':'#64748b')+'">-'+fmt(r.totalOut)+'</td>'
+      +'<td style="text-align:right"><b style="color:'+(r.current<=5?'#fca5a5':(r.current<=10?'#fcd34d':'#fff'))+'">'+fmt(r.current)+'</b></td>'
+      +'<td>'+statusPill+'</td>'
+      +'</tr>';
   });
-  h += '</tbody></table>';
-  wrap.innerHTML = h;
+  tb.innerHTML = h;
 }
-async function hospTestFetch(sheetName){
-  const isMetrics = sheetName === '운영지표';
-  const statusId = isMetrics ? 'hosp-metrics-status' : 'hosp-stock-status';
-  const rawId = isMetrics ? 'hosp-metrics-raw' : 'hosp-stock-raw';
-  const tblWrapId = isMetrics ? 'hosp-metrics-tbl-wrap' : 'hosp-stock-tbl-wrap';
-  const s = document.getElementById(statusId);
-  const raw = document.getElementById(rawId);
-  if(s){ s.className='hosp-status'; s.textContent='요청 중...'; }
+function hospRenderCatFilters(rows){
+  const wrap = document.getElementById('hosp-cat-filters');
+  if(!wrap) return;
+  const cats = {};
+  rows.forEach(r => {
+    const k = r.main + (r.sub ? '/'+r.sub : '');
+    cats[k] = (cats[k]||0) + 1;
+  });
+  let h = '<button class="hosp-filter-pill '+(!HOSP_CURRENT_CAT?'active':'')+'" data-cat="">전체 ('+rows.length+')</button>';
+  Object.keys(cats).sort().forEach(k => {
+    h += '<button class="hosp-filter-pill '+(HOSP_CURRENT_CAT===k?'active':'')+'" data-cat="'+k+'">'+k+' ('+cats[k]+')</button>';
+  });
+  wrap.innerHTML = h;
+  wrap.querySelectorAll('.hosp-filter-pill').forEach(b => {
+    b.onclick = () => { HOSP_CURRENT_CAT = b.dataset.cat; hospRenderStockTable(HOSP_CURRENT_STOCK_ROWS); hospRenderCatFilters(HOSP_CURRENT_STOCK_ROWS); };
+  });
+}
+async function hospLoadStock(){
+  const s = document.getElementById('hosp-stock-status');
+  const raw = document.getElementById('hosp-stock-raw');
+  const tb = document.getElementById('hosp-stock-tbody');
+  if(s){ s.className='hosp-status'; s.textContent='불러오는 중...'; }
+  if(tb) tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#64748b">로딩 중...</td></tr>';
   try{
-    const j = await hospGetSheet(sheetName);
-    const pack = j.sheets && j.sheets[sheetName];
-    if(!pack) throw new Error('응답에 시트 데이터 없음');
-    if(pack.error) throw new Error(pack.error);
-    if(s){ s.className='hosp-status ok'; s.textContent = pack.count + '건 로드 완료 · updated ' + (j.updated||''); }
-    if(raw) raw.textContent = JSON.stringify(j, null, 2);
-    hospRenderTable(pack.rows, tblWrapId);
+    const sheetName = hospStockSheetName(HOSP_CURRENT_TEAM, HOSP_CURRENT_MONTH);
+    const res = await hospFetchRaw(HOSP_CURRENT_TEAM, sheetName);
+    const rows = hospParseStock(res.values);
+    HOSP_CURRENT_STOCK_ROWS = rows;
+    if(s){ s.className='hosp-status ok'; s.textContent = rows.length + '건 로드 완료 · '+ sheetName +' · updated ' + (res.updated||''); }
+    if(raw) raw.textContent = JSON.stringify({sheet:sheetName, rowCount:res.values.length, sampleFirst3:res.values.slice(0,3), parsedCount:rows.length}, null, 2);
+    hospRenderCatFilters(rows);
+    hospRenderStockTable(rows);
   }catch(err){
     if(s){ s.className='hosp-status err'; s.textContent='오류: ' + (err.message||err); }
-    if(raw) raw.textContent = String(err && err.stack || err);
+    if(tb) tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:#fca5a5">로드 실패: '+String(err.message||err)+'</td></tr>';
+  }
+}
+function hospSwitchTeam(el, team){
+  document.querySelectorAll('#page-hosp-stock .hosp-subtab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  HOSP_CURRENT_TEAM = team;
+  HOSP_CURRENT_CAT = '';
+  hospLoadStock();
+}
+function hospInitMonthPicker(){
+  document.querySelectorAll('#hosp-month-picker .hosp-month-btn').forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll('#hosp-month-picker .hosp-month-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      HOSP_CURRENT_MONTH = parseInt(b.dataset.month, 10);
+      HOSP_CURRENT_CAT = '';
+      hospLoadStock();
+    };
+  });
+}
+
+// ── 정산 처리 ─────────────────────────────────────
+function hospInitDropzone(){
+  const dz = document.getElementById('hosp-dropzone');
+  const inp = document.getElementById('hosp-xls-input');
+  if(!dz || !inp || dz.dataset.bound) return;
+  dz.dataset.bound = '1';
+  inp.addEventListener('change', e => { if(inp.files[0]) hospHandleXlsFile(inp.files[0]); inp.value=''; });
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('dragover'); }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('dragover'); }));
+  dz.addEventListener('drop', e => { if(e.dataTransfer.files[0]) hospHandleXlsFile(e.dataTransfer.files[0]); });
+}
+async function hospHandleXlsFile(file){
+  const msg = document.getElementById('hosp-sales-msg');
+  const result = document.getElementById('hosp-settle-result');
+  if(!window.SETTLE || !SETTLE.generateJeongsanji){ msg.innerHTML = '<span style="color:#fca5a5">정산 엔진이 로드되지 않았습니다 (vendor/settle-engine.js 확인)</span>'; return; }
+  msg.textContent = '처리 중… (' + file.name + ')';
+  try{
+    const buf = await file.arrayBuffer();
+    const r = SETTLE.generateJeongsanji(buf, 'asdf1234!');
+    HOSP_LAST_SETTLE = {result: r, fileName: file.name};
+    msg.innerHTML = '<span style="color:#5eead4">정산 완료 · '+ file.name +' · 환자 '+ r.summary.patients +'명 · 총매출 '+ r.summary.vegas.toLocaleString() +'원</span>';
+    if(result) result.style.display = '';
+    hospRenderSettleResult(r);
+  }catch(err){
+    if(err.message === 'GUBUN_ERROR'){
+      msg.innerHTML = '<span style="color:#fca5a5">구분(H열) 미입력/판별불가:<br>'+ err.rows.map(x=>esc(x.chart)+' '+esc(x.name)).join('<br>') +'</span>';
+    } else if(err.message === 'NO_PATIENTS'){
+      msg.innerHTML = '<span style="color:#fcd34d">환자 데이터가 없습니다 (헤더/합계만).</span>';
+    } else {
+      msg.innerHTML = '<span style="color:#fca5a5">오류: '+ (err.message||err) +'</span>';
+    }
+    if(result) result.style.display = 'none';
+  }
+  function esc(s){ return String(s).replace(/[<>&]/g, c=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[c])); }
+}
+function hospRenderSettleResult(r){
+  const s = r.summary;
+  const d = r.date;
+  const dateStr = d.y + '-' + String(d.m).padStart(2,'0') + '-' + String(d.d).padStart(2,'0');
+  document.getElementById('hosp-settle-title').textContent = '정산 요약 (' + dateStr + ')';
+  document.getElementById('hs-vegas').innerHTML = s.vegas.toLocaleString() + '<span style="font-size:11px;color:#94a3b8">원</span>';
+  document.getElementById('hs-patients').textContent = '환자 ' + s.patients + '명';
+  const localSales = s.card + s.pay + s.cash + s.bank; // 총합. 국내/해외 세부는 raw 필요.
+  // s.visit = {"국내|초진":n,"국내|재진":n,"해외|초진":n,"해외|재진":n}
+  const v = s.visit;
+  const localTotal = (v['국내|초진']||0)+(v['국내|재진']||0);
+  const foreignTotal = (v['해외|초진']||0)+(v['해외|재진']||0);
+  document.getElementById('hs-local').innerHTML = '<span style="font-size:14px;color:#94a3b8">환자</span> ' + localTotal + '<span style="font-size:11px;color:#94a3b8">명</span>';
+  document.getElementById('hs-local-visits').textContent = '초진 ' + (v['국내|초진']||0) + ' · 재진 ' + (v['국내|재진']||0);
+  document.getElementById('hs-foreign').innerHTML = '<span style="font-size:14px;color:#94a3b8">환자</span> ' + foreignTotal + '<span style="font-size:11px;color:#94a3b8">명</span>';
+  document.getElementById('hs-foreign-visits').textContent = '초진 ' + (v['해외|초진']||0) + ' · 재진 ' + (v['해외|재진']||0);
+  const etc = s.etcWarn||0;
+  document.getElementById('hs-etc').innerHTML = etc.toLocaleString() + '<span style="font-size:11px;color:#94a3b8">원</span>';
+  document.getElementById('hs-etc-sub').textContent = etc > 0 ? '기타/선수납 발생 — 확인' : '없음';
+  // 결제수단별
+  const total = s.card + s.pay + s.cash + s.bank || 1;
+  const pct = n => (n / total * 100).toFixed(1) + '%';
+  const tb = document.getElementById('hosp-pay-tbody');
+  tb.innerHTML =
+    '<tr><td>카드</td><td style="text-align:right">'+ s.card.toLocaleString() +'</td><td style="text-align:right">'+ pct(s.card) +'</td></tr>' +
+    '<tr><td>페이(간편결제)</td><td style="text-align:right">'+ s.pay.toLocaleString() +'</td><td style="text-align:right">'+ pct(s.pay) +'</td></tr>' +
+    '<tr><td>현금</td><td style="text-align:right">'+ s.cash.toLocaleString() +'</td><td style="text-align:right">'+ pct(s.cash) +'</td></tr>' +
+    '<tr><td>계좌이체</td><td style="text-align:right">'+ s.bank.toLocaleString() +'</td><td style="text-align:right">'+ pct(s.bank) +'</td></tr>' +
+    '<tr style="background:rgba(16,185,129,.06)"><td><b>합계 (베가스 총매출)</b></td><td style="text-align:right"><b style="color:#5eead4">'+ s.vegas.toLocaleString() +'</b></td><td style="text-align:right"><b>100%</b></td></tr>';
+}
+function hospDownloadSettle(){
+  if(!HOSP_LAST_SETTLE){ showToast('정산 결과가 없습니다'); return; }
+  const {result: r} = HOSP_LAST_SETTLE;
+  const d = r.date;
+  const name = '정산지_' + d.y + '-' + String(d.m).padStart(2,'0') + '-' + String(d.d).padStart(2,'0') + '.xlsx';
+  const blob = new Blob([r.bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(a.href);
+  showToast('다운로드: ' + name);
+}
+async function hospSaveSettleToDB(){
+  if(!HOSP_LAST_SETTLE){ showToast('정산 결과가 없습니다'); return; }
+  const btn = document.getElementById('hosp-save-btn');
+  if(btn){ btn.disabled = true; btn.textContent = '저장 중...'; }
+  try{
+    const {result: r, fileName} = HOSP_LAST_SETTLE;
+    const d = r.date;
+    const s = r.summary;
+    const v = s.visit;
+    const reportDate = d.y + '-' + String(d.m).padStart(2,'0') + '-' + String(d.d).padStart(2,'0');
+    const payload = {
+      report_date: reportDate,
+      patients: s.patients,
+      visit_local_new: v['국내|초진']||0,
+      visit_local_re: v['국내|재진']||0,
+      visit_foreign_new: v['해외|초진']||0,
+      visit_foreign_re: v['해외|재진']||0,
+      card: s.card, pay: s.pay, cash: s.cash, bank: s.bank,
+      vegas: s.vegas, etc_warn: s.etcWarn||0,
+      raw_summary: s,
+      source_file_name: fileName,
+      created_by: (CURRENT_USER && CURRENT_USER.email) ? CURRENT_USER.email : null,
+      updated_at: new Date().toISOString()
+    };
+    const {error} = await sb.from('hosp_settlement').upsert(payload, {onConflict:'report_date'});
+    if(error) throw error;
+    showToast('Supabase 저장 완료 (' + reportDate + ')');
+  }catch(err){
+    showToast('저장 실패: ' + (err.message||err));
+  }finally{
+    if(btn){ btn.disabled = false; btn.textContent = 'Supabase에 저장'; }
+  }
+}
+function hospSwitchSales(el, tab){
+  document.querySelectorAll('#page-hosp-sales .hosp-subtab').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('hosp-sales-daily-pane').style.display = tab==='daily' ? '' : 'none';
+  document.getElementById('hosp-sales-trend-pane').style.display = tab==='trend' ? '' : 'none';
+  if(tab==='trend') hospLoadTrend();
+}
+
+// ── 대시보드 ─────────────────────────────────────
+async function hospLoadDashboard(){
+  const today = new Date();
+  const monthStart = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-01';
+  try{
+    // 이번 달 정산 데이터
+    const {data: monthly, error: e1} = await sb.from('hosp_settlement')
+      .select('*').gte('report_date', monthStart).order('report_date', {ascending:false});
+    if(e1) throw e1;
+    // 최근 14일
+    const d14 = new Date(); d14.setDate(d14.getDate()-14);
+    const start14 = d14.toISOString().slice(0,10);
+    const {data: recent14, error: e2} = await sb.from('hosp_settlement')
+      .select('report_date, vegas').gte('report_date', start14).order('report_date');
+    if(e2) throw e2;
+
+    const todayRec = monthly && monthly[0];
+    if(todayRec){
+      document.getElementById('hd-today-vegas').innerHTML = Number(todayRec.vegas).toLocaleString() + '<span style="font-size:14px;color:#94a3b8">원</span>';
+      document.getElementById('hd-today-sub').textContent = todayRec.report_date + ' · 환자 ' + todayRec.patients + '명';
+      document.getElementById('hd-today-patients').innerHTML = todayRec.patients + '<span style="font-size:14px;color:#94a3b8">명</span>';
+      document.getElementById('hd-today-visits').textContent = '국내 ' + (todayRec.visit_local_new+todayRec.visit_local_re) + ' · 해외 ' + (todayRec.visit_foreign_new+todayRec.visit_foreign_re);
+    } else {
+      document.getElementById('hd-today-vegas').textContent = '데이터 없음';
+      document.getElementById('hd-today-sub').textContent = '오늘 정산 기록 없음';
+    }
+    const monthTotal = (monthly||[]).reduce((s,r)=>s+Number(r.vegas||0),0);
+    document.getElementById('hd-month-vegas').innerHTML = monthTotal.toLocaleString() + '<span style="font-size:14px;color:#94a3b8">원</span>';
+    document.getElementById('hd-month-sub').textContent = (monthly||[]).length + '일 누적 · ' + monthStart.slice(0,7);
+
+    // 국내/해외 이번 달 합계
+    let localN=0, localR=0, forN=0, forR=0;
+    (monthly||[]).forEach(r=>{ localN+=r.visit_local_new||0; localR+=r.visit_local_re||0; forN+=r.visit_foreign_new||0; forR+=r.visit_foreign_re||0; });
+    document.getElementById('hd-visit-local').textContent = (localN+localR) + '명';
+    document.getElementById('hd-visit-local-sub').textContent = '초진 ' + localN + ' · 재진 ' + localR;
+    document.getElementById('hd-visit-foreign').textContent = (forN+forR) + '명';
+    document.getElementById('hd-visit-foreign-sub').textContent = '초진 ' + forN + ' · 재진 ' + forR;
+
+    // 정산 기록 요약
+    document.getElementById('hd-settle-count').innerHTML = (monthly||[]).length + '<span style="font-size:14px;color:#94a3b8">건</span>';
+    if(monthly && monthly.length){
+      const dates = monthly.map(r=>r.report_date).sort();
+      document.getElementById('hd-settle-range').textContent = dates[0] + ' ~ ' + dates[dates.length-1];
+    } else {
+      document.getElementById('hd-settle-range').textContent = '기록 없음';
+    }
+
+    // 최근 정산 리스트
+    const list = document.getElementById('hd-recent-list');
+    if(!monthly || !monthly.length){
+      list.innerHTML = '<div style="padding:20px;text-align:center;color:#64748b">저장된 정산 기록이 없습니다.<br><br>매출 관리 → 일매출 정산에서 xls 업로드 후 "Supabase에 저장" 클릭</div>';
+    } else {
+      list.innerHTML = monthly.slice(0,10).map(r =>
+        '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">'+
+        '<span>'+r.report_date+' · 환자 '+r.patients+'</span>'+
+        '<span style="color:#5eead4;font-weight:600">'+Number(r.vegas).toLocaleString()+'원</span>'+
+        '</div>').join('');
+    }
+
+    // 매출 차트 (최근 14일)
+    if(recent14 && recent14.length && typeof Plotly !== 'undefined'){
+      const el = document.getElementById('hd-chart-trend');
+      el.innerHTML = '';
+      Plotly.newPlot(el, [{
+        x: recent14.map(r=>r.report_date), y: recent14.map(r=>Number(r.vegas)),
+        type:'bar', marker:{color:'#10b981'}
+      }], {
+        margin:{l:60,r:20,t:10,b:40}, paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+        font:{color:'#cbd5e1',size:11}, xaxis:{color:'#94a3b8'}, yaxis:{color:'#94a3b8'}
+      }, {displayModeBar:false, responsive:true});
+    }
+
+    // 결제수단 파이
+    if(monthly && monthly.length){
+      let card=0, pay=0, cash=0, bank=0;
+      monthly.forEach(r=>{ card+=Number(r.card)||0; pay+=Number(r.pay)||0; cash+=Number(r.cash)||0; bank+=Number(r.bank)||0; });
+      const el = document.getElementById('hd-chart-pay');
+      if(typeof Plotly !== 'undefined'){
+        el.innerHTML = '';
+        Plotly.newPlot(el, [{
+          values:[card,pay,cash,bank], labels:['카드','페이','현금','계좌'],
+          type:'pie', hole:0.5, marker:{colors:['#3b82f6','#a78bfa','#fbbf24','#34d399']},
+          textinfo:'label+percent', textfont:{color:'#e2e8f0',size:11}
+        }], {
+          margin:{l:20,r:20,t:20,b:20}, paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+          font:{color:'#cbd5e1',size:11}, showlegend:false, height:220
+        }, {displayModeBar:false, responsive:true});
+      }
+    }
+  }catch(err){
+    console.error('[hospLoadDashboard]', err);
+    showToast('대시보드 로드 실패: ' + (err.message||err));
+  }
+}
+
+async function hospLoadTrend(){
+  try{
+    const d30 = new Date(); d30.setDate(d30.getDate()-30);
+    const start30 = d30.toISOString().slice(0,10);
+    const {data: daily} = await sb.from('hosp_settlement')
+      .select('report_date, vegas, patients').gte('report_date', start30).order('report_date');
+
+    if(daily && daily.length && typeof Plotly !== 'undefined'){
+      const el = document.getElementById('ht-chart-daily'); el.innerHTML = '';
+      Plotly.newPlot(el, [{
+        x: daily.map(r=>r.report_date), y: daily.map(r=>Number(r.vegas)),
+        type:'bar', marker:{color:'#10b981'}
+      }], {margin:{l:60,r:20,t:10,b:40}, paper_bgcolor:'transparent', plot_bgcolor:'transparent', font:{color:'#cbd5e1',size:11}, xaxis:{color:'#94a3b8'}, yaxis:{color:'#94a3b8'}, height:220}, {displayModeBar:false, responsive:true});
+    }
+
+    // 월별 (최근 6개월) — Supabase raw SQL 필요. 임시로 클라이언트 집계.
+    const d180 = new Date(); d180.setMonth(d180.getMonth()-6);
+    const start180 = d180.toISOString().slice(0,10);
+    const {data: sixMonths} = await sb.from('hosp_settlement')
+      .select('report_date, vegas, patients, visit_local_new, visit_local_re, visit_foreign_new, visit_foreign_re').gte('report_date', start180).order('report_date');
+    if(sixMonths && sixMonths.length){
+      const monthMap = {};
+      sixMonths.forEach(r => {
+        const m = r.report_date.slice(0,7);
+        if(!monthMap[m]) monthMap[m] = {vegas:0, patients:0, localN:0, localR:0, forN:0, forR:0};
+        monthMap[m].vegas += Number(r.vegas)||0;
+        monthMap[m].patients += r.patients||0;
+        monthMap[m].localN += r.visit_local_new||0;
+        monthMap[m].localR += r.visit_local_re||0;
+        monthMap[m].forN += r.visit_foreign_new||0;
+        monthMap[m].forR += r.visit_foreign_re||0;
+      });
+      const months = Object.keys(monthMap).sort();
+      if(typeof Plotly !== 'undefined'){
+        const el = document.getElementById('ht-chart-monthly'); el.innerHTML = '';
+        Plotly.newPlot(el, [{
+          x: months, y: months.map(m=>monthMap[m].vegas), type:'bar', marker:{color:'#06b6d4'}
+        }], {margin:{l:60,r:20,t:10,b:40}, paper_bgcolor:'transparent', plot_bgcolor:'transparent', font:{color:'#cbd5e1',size:11}, xaxis:{color:'#94a3b8'}, yaxis:{color:'#94a3b8'}, height:220}, {displayModeBar:false, responsive:true});
+      }
+      // 이번 달 통계
+      const thisMonth = new Date().toISOString().slice(0,7);
+      const cur = monthMap[thisMonth];
+      if(cur){
+        document.getElementById('ht-total-patients').innerHTML = cur.patients + '<span style="font-size:14px;color:#94a3b8">명</span>';
+        const days = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
+        const elapsed = new Date().getDate();
+        document.getElementById('ht-avg-patients').textContent = '일 평균 ' + (cur.patients / elapsed).toFixed(1) + '명';
+        document.getElementById('ht-avg-ticket').innerHTML = Math.round(cur.vegas / (cur.patients||1)).toLocaleString() + '<span style="font-size:14px;color:#94a3b8">원</span>';
+        const forTot = cur.forN + cur.forR;
+        const totV = cur.localN + cur.localR + forTot;
+        const pct = totV ? Math.round(forTot/totV*100) : 0;
+        document.getElementById('ht-foreign-pct').innerHTML = pct + '<span style="font-size:14px;color:#94a3b8">%</span>';
+        document.getElementById('ht-foreign-sub').textContent = '해외 ' + forTot + ' / 총 ' + totV + '명';
+      }
+    }
+  }catch(err){
+    console.error('[hospLoadTrend]', err);
+  }
+}
+
+async function hospLoadSettleStats(){
+  const el = document.getElementById('hosp-settle-stats');
+  if(!el) return;
+  try{
+    const {data, count} = await sb.from('hosp_settlement').select('report_date, vegas', {count:'exact'}).order('report_date');
+    if(!data || !data.length){
+      el.innerHTML = '· 저장된 정산 기록: <b style="color:#64748b">0건</b>';
+      return;
+    }
+    const total = data.reduce((s,r)=>s+Number(r.vegas||0),0);
+    const first = data[0].report_date, last = data[data.length-1].report_date;
+    el.innerHTML = '· 저장된 정산 기록: <b style="color:#5eead4">'+ (count||data.length) +'건</b> (' + first + ' ~ ' + last + ')<br>· 총 매출 합: <b style="color:#5eead4">'+ total.toLocaleString() +'원</b>';
+  }catch(err){
+    el.innerHTML = '<span style="color:#fca5a5">로드 실패: '+ (err.message||err) +'</span>';
   }
 }
 </script>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>병원 운영 관리 — 구조 미리보기</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Pretendard','Inter',-apple-system,sans-serif;background:radial-gradient(900px circle at 12% -5%,rgba(96,165,250,.14),transparent 45%),radial-gradient(1000px circle at 100% 8%,rgba(167,139,250,.12),transparent 42%),#070b14;color:#e2e8f0;min-height:100vh;padding-bottom:60px}
+  .top-nav{display:flex;align-items:center;padding:12px 22px;background:rgba(15,23,42,.7);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);gap:20px}
+  .nav-brand{font-size:14px;font-weight:800;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:8px}
+  .nav-badge{font-size:9px;font-weight:800;padding:2px 6px;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;border-radius:4px;-webkit-text-fill-color:#fff}
+  .nav-menu{display:flex;gap:4px;margin-left:20px}
+  .nav-item{padding:8px 14px;border-radius:8px;font-size:13px;color:#94a3b8;cursor:pointer;transition:.2s}
+  .nav-item:hover{background:rgba(255,255,255,.05);color:#e2e8f0}
+  .nav-item.active{background:rgba(16,185,129,.12);color:#5eead4;font-weight:600}
+  .nav-right{margin-left:auto;font-size:12px;color:#64748b}
+
+  .page{padding:22px 26px;max-width:1400px;margin:0 auto;display:none}
+  .page.active{display:block}
+
+  .hero{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:22px 24px;border-radius:16px;background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(6,182,212,.10));border:1px solid rgba(16,185,129,.24);margin-bottom:20px}
+  .hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:1.4px;color:#5eead4;margin-bottom:6px}
+  .hero-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px}
+  .hero-sub{font-size:12.5px;color:#94a3b8}
+  .hero-actions{display:flex;gap:8px;flex-shrink:0}
+  .btn{padding:9px 14px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#e2e8f0;cursor:pointer;transition:.2s}
+  .btn:hover{background:rgba(255,255,255,.08)}
+  .btn-primary{background:linear-gradient(135deg,#10b981,#06b6d4);border-color:transparent;color:#fff}
+
+  .grid{display:grid;gap:16px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:1000px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:640px){.g4,.g3,.g2{grid-template-columns:1fr}}
+
+  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+  .card-title{font-size:12px;color:#94a3b8;font-weight:600;margin-bottom:8px}
+  .card-value{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.5px}
+  .card-sub{font-size:11px;color:#64748b;margin-top:4px}
+  .card-trend-up{color:#34d399;font-size:11px;font-weight:600}
+  .card-trend-down{color:#fca5a5;font-size:11px;font-weight:600}
+
+  .subtabs{display:flex;gap:6px;margin-bottom:16px;background:rgba(255,255,255,.03);padding:6px;border-radius:12px;width:fit-content}
+  .subtab{padding:8px 16px;border-radius:8px;font-size:12.5px;color:#94a3b8;cursor:pointer;transition:.2s}
+  .subtab.active{background:rgba(16,185,129,.15);color:#5eead4;font-weight:600}
+  .subtab:hover:not(.active){background:rgba(255,255,255,.04)}
+
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;padding:10px 12px;background:rgba(255,255,255,.04);color:#94a3b8;font-weight:600;font-size:11px;border-bottom:1px solid rgba(255,255,255,.08)}
+  td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:#cbd5e1}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  .pill{display:inline-block;padding:3px 8px;border-radius:5px;font-size:10.5px;font-weight:600}
+  .pill-b{background:rgba(59,130,246,.15);color:#93c5fd}
+  .pill-f{background:rgba(167,139,250,.15);color:#c4b5fd}
+  .pill-fg{background:rgba(34,197,94,.15);color:#86efac}
+  .pill-sr{background:rgba(251,146,60,.15);color:#fdba74}
+  .pill-inj{background:rgba(239,68,68,.15);color:#fca5a5}
+  .pill-warn{background:rgba(251,191,36,.15);color:#fcd34d}
+
+  .chart{width:100%;height:220px;background:rgba(255,255,255,.02);border-radius:10px;position:relative;overflow:hidden}
+  .chart-bars{display:flex;align-items:flex-end;justify-content:space-around;height:100%;padding:20px 12px}
+  .bar{width:20px;background:linear-gradient(180deg,#10b981,#06b6d4);border-radius:4px 4px 0 0}
+  .chart-line{position:relative;width:100%;height:100%}
+  .chart-line svg{width:100%;height:100%}
+
+  .dropzone{border:2px dashed rgba(16,185,129,.4);border-radius:14px;padding:60px 24px;text-align:center;background:rgba(16,185,129,.04);cursor:pointer;transition:.2s}
+  .dropzone:hover{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.6)}
+  .dropzone-icon{width:56px;height:56px;margin:0 auto 12px;background:linear-gradient(135deg,#10b981,#06b6d4);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:800}
+  .dropzone-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
+  .dropzone-sub{font-size:12px;color:#94a3b8}
+
+  .settle-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+  .settle-cell{background:rgba(255,255,255,.04);border-radius:10px;padding:14px}
+  .settle-label{font-size:10.5px;color:#94a3b8;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+  .settle-value{font-size:20px;font-weight:800;color:#fff}
+  .settle-sub{font-size:10.5px;color:#64748b;margin-top:2px}
+
+  .stock-alert{padding:10px 14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);border-radius:10px;display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:8px}
+  .alert-name{color:#fcd34d;font-weight:600}
+  .alert-detail{color:#94a3b8;font-size:11px}
+
+  .filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .filter-label{font-size:11px;color:#64748b;font-weight:600}
+  .filter-pill{padding:6px 12px;border-radius:6px;font-size:11.5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);cursor:pointer;color:#cbd5e1;transition:.2s}
+  .filter-pill.active{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:#5eead4;font-weight:600}
+  .filter-pill:hover:not(.active){background:rgba(255,255,255,.06)}
+
+  .month-picker{display:inline-flex;align-items:center;gap:4px;padding:4px;background:rgba(255,255,255,.04);border-radius:8px}
+  .month-btn{padding:5px 10px;border-radius:5px;background:none;border:0;color:#cbd5e1;cursor:pointer;font-size:11.5px}
+  .month-btn.active{background:rgba(16,185,129,.15);color:#5eead4;font-weight:700}
+
+  h2{font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:12px}
+  .note{padding:10px 14px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.25);border-radius:10px;color:#67e8f9;font-size:11.5px;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <div class="nav-brand">병원 운영 관리 <span class="nav-badge">HOSP</span></div>
+  <div class="nav-menu">
+    <div class="nav-item active" onclick="showPage('dash', this)">운영 대시보드</div>
+    <div class="nav-item" onclick="showPage('stock', this)">재고 관리</div>
+    <div class="nav-item" onclick="showPage('sales', this)">매출 관리</div>
+    <div class="nav-item" onclick="showPage('setting', this)">연동 설정</div>
+  </div>
+  <div class="nav-right">2026-08-30 (일) · 정인호 대표</div>
+</div>
+
+<!-- ═══════════════════ 운영 대시보드 ═══════════════════ -->
+<div class="page active" id="p-dash">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">HOSPITAL OPERATIONS · 세라미크글로벌의원 명동점</div>
+      <div class="hero-title">운영 대시보드</div>
+      <div class="hero-sub">최근 정산 매출, 이번 달 누적, 재고 알림을 한 화면에.</div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn">데이터 새로고침</button>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:20px">
+    <div class="card">
+      <div class="card-title">오늘 매출 (베가스 총매출)</div>
+      <div class="card-value">7,842,000<span style="font-size:14px;color:#94a3b8">원</span></div>
+      <div class="card-sub">2026-08-30 · <span class="card-trend-up">+18%</span> 전일 대비</div>
+    </div>
+    <div class="card">
+      <div class="card-title">이번 달 누적 매출</div>
+      <div class="card-value">158,340,000</div>
+      <div class="card-sub">D-1 · <span class="card-trend-up">+7.2%</span> 전월 대비</div>
+    </div>
+    <div class="card">
+      <div class="card-title">오늘 환자 수</div>
+      <div class="card-value">28<span style="font-size:14px;color:#94a3b8">명</span></div>
+      <div class="card-sub">국내 22 · 해외 6 (초진 4)</div>
+    </div>
+    <div class="card">
+      <div class="card-title">재고 알림</div>
+      <div class="card-value" style="color:#fcd34d">4<span style="font-size:14px;color:#94a3b8">건</span></div>
+      <div class="card-sub">간호 2 · 피부 2 (부족/발주 필요)</div>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h2>일자별 매출 추이 (최근 14일)</h2>
+      <div class="chart">
+        <div class="chart-bars">
+          <div class="bar" style="height:40%"></div>
+          <div class="bar" style="height:55%"></div>
+          <div class="bar" style="height:48%"></div>
+          <div class="bar" style="height:62%"></div>
+          <div class="bar" style="height:75%"></div>
+          <div class="bar" style="height:58%"></div>
+          <div class="bar" style="height:45%"></div>
+          <div class="bar" style="height:68%"></div>
+          <div class="bar" style="height:72%"></div>
+          <div class="bar" style="height:88%"></div>
+          <div class="bar" style="height:65%"></div>
+          <div class="bar" style="height:78%"></div>
+          <div class="bar" style="height:82%"></div>
+          <div class="bar" style="height:92%"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:11px;color:#64748b">
+        <span>08-17</span><span>08-24</span><span>08-30 (오늘)</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>결제 수단별 비율 (이번 달)</h2>
+      <div style="display:flex;align-items:center;gap:20px;padding:20px 0">
+        <div style="width:150px;height:150px;border-radius:50%;background:conic-gradient(#3b82f6 0 45%,#a78bfa 45% 65%,#34d399 65% 85%,#fbbf24 85% 100%);flex-shrink:0"></div>
+        <div style="flex:1;font-size:12px">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:#3b82f6;border-radius:2px"></span>카드</span><b>45%</b></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:#a78bfa;border-radius:2px"></span>페이</span><b>20%</b></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:#34d399;border-radius:2px"></span>계좌이체</span><b>20%</b></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:#fbbf24;border-radius:2px"></span>현금</span><b>15%</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card">
+      <h2>국내/해외 환자 분포 (이번 달)</h2>
+      <div style="display:flex;gap:16px">
+        <div style="flex:1;background:rgba(59,130,246,.08);padding:16px;border-radius:10px;border:1px solid rgba(59,130,246,.2)">
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">국내 (81%)</div>
+          <div style="font-size:22px;font-weight:800;color:#93c5fd">547명</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">초진 63 · 재진 484</div>
+        </div>
+        <div style="flex:1;background:rgba(251,146,60,.08);padding:16px;border-radius:10px;border:1px solid rgba(251,146,60,.2)">
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">해외 (19%)</div>
+          <div style="font-size:22px;font-weight:800;color:#fdba74">128명</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">중국 62 · 태국 22 · 기타 44</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>재고 알림 (부족/발주 필요)</h2>
+      <div class="stock-alert">
+        <span><span class="pill pill-b">보톡스</span> <span class="alert-name">엘러간 (50U)</span></span>
+        <span class="alert-detail">현재고 3 / 최소 10 · <b style="color:#fcd34d">발주 필요</b></span>
+      </div>
+      <div class="stock-alert">
+        <span><span class="pill pill-f">필러/수입</span> <span class="alert-name">쥬비덤 (볼벨라)</span></span>
+        <span class="alert-detail">현재고 5 / 최소 8 · <b style="color:#fcd34d">발주 필요</b></span>
+      </div>
+      <div class="stock-alert">
+        <span><span class="pill" style="background:rgba(236,72,153,.15);color:#f9a8d4">피부/소모품</span> <span class="alert-name">인모드 팁</span></span>
+        <span class="alert-detail">현재고 12 / 최소 20 · <b style="color:#fcd34d">발주 필요</b></span>
+      </div>
+      <div class="stock-alert">
+        <span><span class="pill" style="background:rgba(236,72,153,.15);color:#f9a8d4">피부/소모품</span> <span class="alert-name">써마지 팁 300s</span></span>
+        <span class="alert-detail">현재고 2 / 최소 5 · <b style="color:#fcd34d">발주 필요</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 재고 관리 ═══════════════════ -->
+<div class="page" id="p-stock">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">STOCK MANAGEMENT</div>
+      <div class="hero-title">재고 관리</div>
+      <div class="hero-sub">Google Sheets 두 개 (간호/피부) 실시간 조회 · 월별 탭 자동 인식.</div>
+    </div>
+  </div>
+
+  <div class="subtabs">
+    <div class="subtab active" onclick="showSubtab(this, 's-nurse')">간호 재고</div>
+    <div class="subtab" onclick="showSubtab(this, 's-skin')">피부 재고</div>
+  </div>
+
+  <div id="s-nurse">
+    <div class="filter-row">
+      <span class="filter-label">기간:</span>
+      <div class="month-picker">
+        <button class="month-btn">7월</button>
+        <button class="month-btn active">8월</button>
+        <button class="month-btn">9월</button>
+      </div>
+      <span class="filter-label" style="margin-left:12px">대분류:</span>
+      <button class="filter-pill active">전체</button>
+      <button class="filter-pill">보톡스 (4)</button>
+      <button class="filter-pill">필러/수입 (12)</button>
+      <button class="filter-pill">필러/국산 (3)</button>
+      <button class="filter-pill">스킨부스터 (20)</button>
+      <button class="filter-pill">주사제 (3)</button>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <table>
+        <thead>
+          <tr>
+            <th>대분류</th><th>중분류</th><th>상품명</th><th>규격</th>
+            <th style="text-align:right">이월재고</th><th style="text-align:right">총 입고</th><th style="text-align:right">총 출고</th><th style="text-align:right">현재고</th><th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="pill pill-b">보톡스</span></td><td></td><td>하이톡스</td><td>200u</td><td style="text-align:right">80</td><td style="text-align:right;color:#34d399">+15</td><td style="text-align:right;color:#fca5a5">-27</td><td style="text-align:right"><b>68</b></td><td></td></tr>
+          <tr><td><span class="pill pill-b">보톡스</span></td><td></td><td>코어톡스(프리미엄)</td><td>100U</td><td style="text-align:right">30</td><td style="text-align:right;color:#34d399">+5</td><td style="text-align:right;color:#fca5a5">-7</td><td style="text-align:right"><b>28</b></td><td></td></tr>
+          <tr><td><span class="pill pill-b">보톡스</span></td><td></td><td>제오민</td><td>100U</td><td style="text-align:right">20</td><td style="text-align:right;color:#34d399">+8</td><td style="text-align:right;color:#fca5a5">-13</td><td style="text-align:right"><b>15</b></td><td><span class="pill pill-warn">부족</span></td></tr>
+          <tr><td><span class="pill pill-b">보톡스</span></td><td></td><td>엘러간</td><td>50U</td><td style="text-align:right">85</td><td style="text-align:right;color:#34d399">+2</td><td style="text-align:right;color:#fca5a5">-84</td><td style="text-align:right"><b style="color:#fca5a5">3</b></td><td><span class="pill" style="background:rgba(239,68,68,.15);color:#fca5a5">발주필요</span></td></tr>
+          <tr><td><span class="pill pill-f">필러/수입</span></td><td>수입</td><td>쥬비덤</td><td>볼벨라</td><td style="text-align:right">32</td><td style="text-align:right;color:#34d399">+2</td><td style="text-align:right;color:#fca5a5">-5</td><td style="text-align:right"><b>29</b></td><td></td></tr>
+          <tr><td><span class="pill pill-f">필러/수입</span></td><td>수입</td><td>레스틸렌</td><td>비탈</td><td style="text-align:right">0</td><td style="text-align:right">-</td><td style="text-align:right">-</td><td style="text-align:right"><b style="color:#64748b">0</b></td><td></td></tr>
+          <tr><td><span class="pill pill-fg">필러/국산</span></td><td>국산</td><td>셀라스텔라</td><td>미테3</td><td style="text-align:right">10</td><td style="text-align:right;color:#34d399">+0</td><td style="text-align:right;color:#fca5a5">-2</td><td style="text-align:right"><b>8</b></td><td></td></tr>
+          <tr><td><span class="pill pill-sr">스킨부스터</span></td><td></td><td>리쥬란</td><td>HB</td><td style="text-align:right">120</td><td style="text-align:right;color:#34d399">+50</td><td style="text-align:right;color:#fca5a5">-24</td><td style="text-align:right"><b>146</b></td><td></td></tr>
+          <tr><td colspan="9" style="text-align:center;padding:14px;color:#64748b;font-size:11px">... 총 42개 품목 (스크롤)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h2>일별 입출고 히트맵 (8월)</h2>
+        <div style="display:grid;grid-template-columns:repeat(31,1fr);gap:2px;padding:8px 0">
+          <script>document.write(Array.from({length:31},(_,i)=>`<div style="aspect-ratio:1;background:rgba(16,185,129,${0.1+Math.random()*0.7});border-radius:2px" title="${i+1}일"></div>`).join(''))</script>
+        </div>
+        <div style="font-size:11px;color:#64748b;margin-top:6px">진할수록 활동량 많음 (입고+출고 합계 기준)</div>
+      </div>
+      <div class="card">
+        <h2>카테고리별 재고 금액</h2>
+        <div style="padding:8px 0">
+          <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>보톡스</span><span>9,710,000원</span></div><div style="height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden"><div style="width:18%;height:100%;background:linear-gradient(90deg,#3b82f6,#6366f1)"></div></div></div>
+          <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>필러/수입</span><span>26,570,000원</span></div><div style="height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden"><div style="width:48%;height:100%;background:linear-gradient(90deg,#a78bfa,#ec4899)"></div></div></div>
+          <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>필러/국산</span><span>370,000원</span></div><div style="height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden"><div style="width:2%;height:100%;background:linear-gradient(90deg,#34d399,#10b981)"></div></div></div>
+          <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>스킨부스터</span><span>45,320,000원</span></div><div style="height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden"><div style="width:82%;height:100%;background:linear-gradient(90deg,#fbbf24,#fb923c)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>주사제</span><span>4,310,000원</span></div><div style="height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden"><div style="width:8%;height:100%;background:linear-gradient(90deg,#ef4444,#f43f5e)"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-skin" style="display:none">
+    <div class="note">피부 재고관리 (26년 8월/9월) 시트 실시간 연동. 컬럼 구조 동일 → 위와 같은 레이아웃.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 매출 관리 ═══════════════════ -->
+<div class="page" id="p-sales">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">SALES / SETTLEMENT</div>
+      <div class="hero-title">매출 관리 · 정산</div>
+      <div class="hero-sub">KOS 환자별집계.xls 업로드 → 정산지.xlsx 자동 생성 · 이력 자동 축적.</div>
+    </div>
+  </div>
+
+  <div class="subtabs">
+    <div class="subtab active" onclick="showSubtab(this, 'sales-daily')">일매출 정산</div>
+    <div class="subtab" onclick="showSubtab(this, 'sales-trend')">매출 추이</div>
+  </div>
+
+  <div id="sales-daily">
+    <div class="dropzone">
+      <div class="dropzone-icon">↑</div>
+      <div class="dropzone-title">환자별집계 .xls 파일을 여기로 끌어놓거나 클릭</div>
+      <div class="dropzone-sub">브라우저 안에서만 처리 · 파일은 서버로 전송되지 않습니다 · 기본 비밀번호 asdf1234!</div>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <h2 style="margin:0">정산 요약 (2026-08-30)</h2>
+        <div style="display:flex;gap:8px">
+          <button class="btn">정산지 xlsx 다운로드</button>
+          <button class="btn btn-primary">Supabase에 저장</button>
+        </div>
+      </div>
+
+      <div class="settle-summary">
+        <div class="settle-cell">
+          <div class="settle-label">베가스 총매출</div>
+          <div class="settle-value">7,842,000<span style="font-size:11px;color:#94a3b8">원</span></div>
+          <div class="settle-sub">환자 28명</div>
+        </div>
+        <div class="settle-cell">
+          <div class="settle-label">국내 매출</div>
+          <div class="settle-value">6,150,000</div>
+          <div class="settle-sub">78% · 초 3, 재 19</div>
+        </div>
+        <div class="settle-cell">
+          <div class="settle-label">해외 매출</div>
+          <div class="settle-value">1,692,000</div>
+          <div class="settle-sub">22% · 초 1, 재 5</div>
+        </div>
+        <div class="settle-cell">
+          <div class="settle-label">기타/선수납</div>
+          <div class="settle-value" style="color:#fcd34d">120,000</div>
+          <div class="settle-sub">경고 확인</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <h2>결제 수단별</h2>
+        <table>
+          <thead><tr><th>결제수단</th><th style="text-align:right">국내 초진</th><th style="text-align:right">국내 재진</th><th style="text-align:right">해외 초진</th><th style="text-align:right">해외 재진</th><th style="text-align:right">합계</th></tr></thead>
+          <tbody>
+            <tr><td>카드</td><td style="text-align:right">450,000</td><td style="text-align:right">2,120,000</td><td style="text-align:right">280,000</td><td style="text-align:right">680,000</td><td style="text-align:right"><b>3,530,000</b></td></tr>
+            <tr><td>페이</td><td style="text-align:right">120,000</td><td style="text-align:right">840,000</td><td style="text-align:right">100,000</td><td style="text-align:right">508,000</td><td style="text-align:right"><b>1,568,000</b></td></tr>
+            <tr><td>현금</td><td style="text-align:right">80,000</td><td style="text-align:right">520,000</td><td style="text-align:right">0</td><td style="text-align:right">176,000</td><td style="text-align:right"><b>776,000</b></td></tr>
+            <tr><td>계좌</td><td style="text-align:right">200,000</td><td style="text-align:right">1,620,000</td><td style="text-align:right">0</td><td style="text-align:right">148,000</td><td style="text-align:right"><b>1,968,000</b></td></tr>
+            <tr style="background:rgba(16,185,129,.06)"><td><b>합계</b></td><td style="text-align:right"><b>850,000</b></td><td style="text-align:right"><b>5,100,000</b></td><td style="text-align:right"><b>380,000</b></td><td style="text-align:right"><b>1,512,000</b></td><td style="text-align:right"><b style="color:#5eead4">7,842,000</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:20px">
+        <h2>국가별 환자 통계</h2>
+        <table>
+          <thead><tr><th>국가</th><th style="text-align:right">초진</th><th style="text-align:right">재진</th><th style="text-align:right">총</th><th style="text-align:right">매출</th></tr></thead>
+          <tbody>
+            <tr><td>국내</td><td style="text-align:right">3</td><td style="text-align:right">19</td><td style="text-align:right"><b>22</b></td><td style="text-align:right">6,150,000</td></tr>
+            <tr><td>중국본토</td><td style="text-align:right">1</td><td style="text-align:right">2</td><td style="text-align:right"><b>3</b></td><td style="text-align:right">890,000</td></tr>
+            <tr><td>일본</td><td style="text-align:right">0</td><td style="text-align:right">2</td><td style="text-align:right"><b>2</b></td><td style="text-align:right">452,000</td></tr>
+            <tr><td>태국</td><td style="text-align:right">0</td><td style="text-align:right">1</td><td style="text-align:right"><b>1</b></td><td style="text-align:right">350,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="sales-trend" style="display:none">
+    <div class="grid g2">
+      <div class="card">
+        <h2>일자별 매출 (8월)</h2>
+        <div class="chart">
+          <div class="chart-bars">
+            <script>document.write(Array.from({length:24},(_,i)=>`<div class="bar" style="height:${30+Math.random()*60}%"></div>`).join(''))</script>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>월별 매출 (6개월)</h2>
+        <div class="chart">
+          <div class="chart-bars">
+            <div class="bar" style="height:65%;width:40px"></div>
+            <div class="bar" style="height:72%;width:40px"></div>
+            <div class="bar" style="height:80%;width:40px"></div>
+            <div class="bar" style="height:78%;width:40px"></div>
+            <div class="bar" style="height:88%;width:40px"></div>
+            <div class="bar" style="height:92%;width:40px"></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-around;margin-top:10px;font-size:11px;color:#64748b">
+          <span>3월</span><span>4월</span><span>5월</span><span>6월</span><span>7월</span><span>8월</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card">
+        <div class="card-title">누적 환자 수 (8월)</div>
+        <div class="card-value">675<span style="font-size:14px;color:#94a3b8">명</span></div>
+        <div class="card-sub">일 평균 22.5명</div>
+      </div>
+      <div class="card">
+        <div class="card-title">평균 객단가 (8월)</div>
+        <div class="card-value">234,570<span style="font-size:14px;color:#94a3b8">원</span></div>
+        <div class="card-sub"><span class="card-trend-up">+4.1%</span> 전월 대비</div>
+      </div>
+      <div class="card">
+        <div class="card-title">해외 매출 비중</div>
+        <div class="card-value">19<span style="font-size:14px;color:#94a3b8">%</span></div>
+        <div class="card-sub"><span class="card-trend-up">+3%p</span> 전월 대비</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 연동 설정 ═══════════════════ -->
+<div class="page" id="p-setting">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">INTEGRATION SETTINGS</div>
+      <div class="hero-title">연동 설정</div>
+      <div class="hero-sub">Google Sheets Apps Script 웹앱 URL + 토큰 관리.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>간호 재고 시트 연동</h2>
+    <div style="display:grid;grid-template-columns:1fr 200px;gap:10px;margin-bottom:12px">
+      <input class="btn" style="text-align:left;font-family:monospace;font-size:11px" value="https://script.google.com/macros/s/AKfyc.../exec" readonly>
+      <button class="btn">연결 테스트</button>
+    </div>
+    <div style="font-size:11px;color:#5eead4">● 연결됨 · 최근 조회 12초 전</div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h2>피부 재고 시트 연동</h2>
+    <div style="display:grid;grid-template-columns:1fr 200px;gap:10px;margin-bottom:12px">
+      <input class="btn" style="text-align:left;font-family:monospace;font-size:11px" value="(미설정)" readonly>
+      <button class="btn btn-primary">웹앱 URL 등록</button>
+    </div>
+    <div style="font-size:11px;color:#fcd34d">● 연결 대기중 · Apps Script 배포 후 URL 입력 필요</div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h2>정산 데이터 저장 (Supabase)</h2>
+    <div style="font-size:12px;color:#94a3b8;line-height:1.7">
+      정산지 생성 시 결과 요약이 <code style="background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px">hosp_settlement</code> 테이블에 자동 저장됩니다.
+      "매출 추이" 페이지의 차트가 이 데이터를 시각화합니다.
+      <div style="margin-top:10px">
+        <div>· 현재 저장된 정산 기록: <b style="color:#5eead4">24건</b> (2026-08-01 ~ 2026-08-30)</div>
+        <div>· 총 매출 합: <b style="color:#5eead4">158,340,000원</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showPage(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('p-' + id).classList.add('active');
+    document.querySelectorAll('.top-nav .nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function showSubtab(el, targetId) {
+    const parent = el.parentElement.parentElement;
+    parent.querySelectorAll('.subtab').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    // toggle sibling divs by id-matching heuristic
+    const container = parent;
+    const ids = ['s-nurse','s-skin','sales-daily','sales-trend'];
+    ids.forEach(i => { const el2 = document.getElementById(i); if (el2) el2.style.display = i === targetId ? '' : 'none'; });
+  }
+</script>
+
+</body>
+</html>

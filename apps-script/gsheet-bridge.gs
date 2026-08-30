@@ -21,8 +21,12 @@
  *     https://script.google.com/macros/s/AKfyc.../exec)
  *
  * ─── 사용 예시 ─────────────────────────────────────────
- *  단일 시트:
+ *  단일 시트 (헤더=1행):
  *    <URL>?token=<TOKEN>&sheet=운영지표
+ *  헤더가 다른 행에 있는 시트 (예: 13행):
+ *    <URL>?token=<TOKEN>&sheet=간호 재고관리 (26년 8월)&headerRow=13
+ *  원시 2D 배열 (헤더 파싱 없이):
+ *    <URL>?token=<TOKEN>&sheet=간호 재고관리 (26년 8월)&raw=1
  *  여러 시트 한 번에:
  *    <URL>?token=<TOKEN>&sheets=운영지표,재고소모품,일매출
  *  시트 목록만:
@@ -75,6 +79,8 @@ function doGet(e) {
     }
 
     // 4) 각 시트 데이터 → JSON
+    var headerRow = p.headerRow ? Math.max(1, parseInt(p.headerRow, 10)) : 1;
+    var rawMode = (p.raw === '1' || p.raw === 'true');
     var result = {};
     for (var i = 0; i < names.length; i++) {
       var name = names[i];
@@ -83,7 +89,13 @@ function doGet(e) {
         result[name] = { error: 'Sheet not found' };
         continue;
       }
-      result[name] = _sheetToJson(sheet);
+      if (rawMode) {
+        var vals = sheet.getDataRange().getValues();
+        var isoVals = vals.map(function(row){ return row.map(function(c){ return (c instanceof Date) ? c.toISOString() : c; }); });
+        result[name] = { rowCount: isoVals.length, colCount: isoVals[0] ? isoVals[0].length : 0, values: isoVals };
+      } else {
+        result[name] = _sheetToJson(sheet, headerRow);
+      }
     }
 
     return _json({ ok: true, updated: new Date().toISOString(), sheets: result });
@@ -92,15 +104,16 @@ function doGet(e) {
   }
 }
 
-// 헤더 행 = 키, 나머지 행 = 객체 배열
-function _sheetToJson(sheet) {
+// 헤더 행(기본 1) = 키, 나머지 행 = 객체 배열
+function _sheetToJson(sheet, headerRow) {
+  headerRow = headerRow || 1;
   var values = sheet.getDataRange().getValues();
-  if (values.length < 2) {
+  if (values.length < headerRow + 1) {
     return { count: 0, rows: [] };
   }
-  var headers = values[0].map(function (h) { return String(h == null ? '' : h).trim(); });
+  var headers = values[headerRow - 1].map(function (h) { return String(h == null ? '' : h).trim(); });
   var rows = [];
-  for (var r = 1; r < values.length; r++) {
+  for (var r = headerRow; r < values.length; r++) {
     var row = values[r];
     // 완전히 비어있는 행 제외
     var isEmpty = true;

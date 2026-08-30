@@ -1,5 +1,5 @@
 {
-  "version": "2.4.11",
-  "buildTime": "2026-08-30T03:30:00Z",
-  "changelog": "feat: 홈 화면 3번째 카드 '병원 운영 관리' 추가 (마스터 전용). 상단 nav hospital-mode + 페이지 3개(운영지표/재고소모품/일매출 자리표시자). Google Apps Script Web App 연동 유틸리티(hospGetSheet, 설정 모달, 연결 테스트, JSON 원문 뷰) 도입. Apps Script 소스: apps-script/gsheet-bridge.gs."
+  "version": "2.4.12",
+  "buildTime": "2026-08-30T05:20:00Z",
+  "changelog": "feat(hospital): 병원 운영 관리 페이지 전면 재설계 — 4개 서브 페이지(운영 대시보드/재고 관리/매출 관리/연동 설정). 정산 엔진 vendor/settle-engine.js 임베드 (KOS 환자별집계.xls → 정산지.xlsx 자동 변환). Supabase hosp_settlement 테이블 자동 저장 → 대시보드/추이 차트 시각화. 재고 관리는 간호/피부 팀별 서브탭 + 월별 선택 + 대분류 필터 + 현재고 자동 계산. gsheet-bridge에 headerRow/raw 파라미터 추가."
 }
