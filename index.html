@@ -14437,7 +14437,22 @@ function hospParseStock(values){
       carry, totalIn, totalOut, current
     });
   }
-  return rows;
+  // 동일 (대분류, 중분류, 상품명, 하위명) 중복 행 병합 — 이월/입고/출고/현재고 합산
+  const agg = new Map();
+  rows.forEach(r => {
+    const k = r.main+'|'+r.sub+'|'+r.name+'|'+r.spec;
+    if(!agg.has(k)){
+      agg.set(k, { ...r, prices: r.price?[r.price]:[] });
+    } else {
+      const x = agg.get(k);
+      x.carry += r.carry;
+      x.totalIn += r.totalIn;
+      x.totalOut += r.totalOut;
+      x.current += r.current;
+      if(r.price && !x.prices.includes(r.price)) x.prices.push(r.price);
+    }
+  });
+  return Array.from(agg.values());
 }
 function hospPillClass(main, sub){
   if(main==='보톡스') return 'hosp-pill hosp-pill-b';
