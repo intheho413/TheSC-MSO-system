@@ -3919,6 +3919,19 @@ html.light .hosp-card-value{color:#0f172a}
     </div>
 
     <div id="hosp-sales-daily-pane">
+      <div class="hosp-card" style="margin-bottom:16px">
+        <div class="hosp-h2">KOS 매출 자동 집계 (실시간)</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <label style="font-size:12px;color:#94a3b8">조회 날짜:</label>
+          <input type="date" id="hosp-kos-date" class="form-control" style="width:180px" value="">
+          <button class="btn btn-primary" onclick="hospKosFetch()" id="hosp-kos-btn">KOS 매출 집계</button>
+          <div id="hosp-kos-msg" style="font-size:12px;color:#94a3b8;margin-left:auto"></div>
+        </div>
+        <div style="font-size:11px;color:#64748b;margin-top:8px">KOS OpenAPI에서 해당 날짜 결제 통계를 조회해 정산 요약을 생성합니다. Supabase Edge Function 프록시 사용 (API Key 서버 보관).</div>
+      </div>
+
+      <div style="text-align:center;color:#64748b;font-size:11px;margin:14px 0">— 또는 —</div>
+
       <div class="hosp-dropzone" id="hosp-dropzone" onclick="document.getElementById('hosp-xls-input').click()">
         <div class="hosp-dropzone-icon">↑</div>
         <div class="hosp-dropzone-title">환자별집계 .xls 파일을 여기로 끌어놓거나 클릭</div>
@@ -14506,6 +14519,11 @@ function hospInitMonthPicker(){
 function hospInitDropzone(){
   const dz = document.getElementById('hosp-dropzone');
   const inp = document.getElementById('hosp-xls-input');
+  const dateEl = document.getElementById('hosp-kos-date');
+  if(dateEl && !dateEl.value){
+    const t = new Date();
+    dateEl.value = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
+  }
   if(!dz || !inp || dz.dataset.bound) return;
   dz.dataset.bound = '1';
   inp.addEventListener('change', e => { if(inp.files[0]) hospHandleXlsFile(inp.files[0]); inp.value=''; });
@@ -14569,7 +14587,11 @@ function hospRenderSettleResult(r){
 }
 function hospDownloadSettle(){
   if(!HOSP_LAST_SETTLE){ showToast('정산 결과가 없습니다'); return; }
-  const {result: r} = HOSP_LAST_SETTLE;
+  const {result: r, source} = HOSP_LAST_SETTLE;
+  if(source === 'kos' || !r.bytes){
+    showToast('KOS 자동 집계는 xlsx 다운로드 대신 Supabase 저장을 사용하세요');
+    return;
+  }
   const d = r.date;
   const name = '정산지_' + d.y + '-' + String(d.m).padStart(2,'0') + '-' + String(d.d).padStart(2,'0') + '.xlsx';
   const blob = new Blob([r.bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
@@ -14578,6 +14600,47 @@ function hospDownloadSettle(){
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(a.href);
   showToast('다운로드: ' + name);
+}
+
+async function hospKosFetch(){
+  const btn = document.getElementById('hosp-kos-btn');
+  const msg = document.getElementById('hosp-kos-msg');
+  const dateEl = document.getElementById('hosp-kos-date');
+  let date = dateEl.value;
+  if(!date){
+    const t = new Date();
+    date = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
+    dateEl.value = date;
+  }
+  btn.disabled = true;
+  btn.textContent = '조회 중...';
+  msg.style.color = '#94a3b8';
+  msg.textContent = 'KOS API 호출 중...';
+  try{
+    const {data, error} = await sb.functions.invoke('kos-settlement', {body:{date, includeRaw:false}});
+    if(error) throw error;
+    if(!data || data.ok === false) throw new Error((data && data.error) || 'Unknown error');
+    // 응답을 settle-engine 결과 형식으로 변환
+    const [y,m,d] = date.split('-').map(Number);
+    const fakeResult = {
+      date: {y, m, d, serial: 0},
+      summary: data.summary,
+      bytes: null
+    };
+    HOSP_LAST_SETTLE = {result: fakeResult, fileName: 'KOS-'+date, source: 'kos'};
+    const result = document.getElementById('hosp-settle-result');
+    if(result) result.style.display = '';
+    hospRenderSettleResult(fakeResult);
+    msg.style.color = '#5eead4';
+    msg.textContent = '성공 · 총 '+ data.summary.transactionCount +'건 (승인) / '+ data.summary.totalTransactionCount +'건 (전체)';
+  }catch(err){
+    msg.style.color = '#fca5a5';
+    msg.textContent = '오류: ' + (err.message || err);
+    console.error('[hospKosFetch]', err);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'KOS 매출 집계';
+  }
 }
 async function hospSaveSettleToDB(){
   if(!HOSP_LAST_SETTLE){ showToast('정산 결과가 없습니다'); return; }

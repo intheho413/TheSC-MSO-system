@@ -1,5 +1,5 @@
 {
-  "version": "2.4.12",
-  "buildTime": "2026-08-30T05:20:00Z",
-  "changelog": "feat(hospital): 병원 운영 관리 페이지 전면 재설계 — 4개 서브 페이지(운영 대시보드/재고 관리/매출 관리/연동 설정). 정산 엔진 vendor/settle-engine.js 임베드 (KOS 환자별집계.xls → 정산지.xlsx 자동 변환). Supabase hosp_settlement 테이블 자동 저장 → 대시보드/추이 차트 시각화. 재고 관리는 간호/피부 팀별 서브탭 + 월별 선택 + 대분류 필터 + 현재고 자동 계산. gsheet-bridge에 headerRow/raw 파라미터 추가."
+  "version": "2.4.13",
+  "buildTime": "2026-08-30T07:00:00Z",
+  "changelog": "feat(hospital): KOS OpenAPI 매출 자동 집계 연동 — 매출 관리 페이지에 날짜 선택 + KOS 매출 집계 버튼 추가. Supabase Edge Function 'kos-settlement' 배포 (KOS_API_KEY 서버 환경변수 보관, 브라우저 노출 없음). POST /statistics/open/v1/queries/get-transaction-statistics 호출 → 결제수단(카드/페이/현금/통장) 집계 + 국내/해외 초/재진 분류 + 국가별 통계. 결과는 xls 업로드와 동일 UI로 표시, Supabase hosp_settlement 저장 가능."
 }
