@@ -14402,11 +14402,22 @@ function hospStockSheetName(team, month){
 function hospParseStock(values){
   // 헤더 = 행 13 (index 12): 대분류(B=1), 중분류(C=2), 상품명(D=3), 하위명(E=4), 회사(F=5), 발주처(G=6), 담당자(H=7), 연락처(I=8), 단위(J=9), 이월재고(K=10), 현재고(L=11), day1_in(M=12)~day31_out
   // 데이터 = 행 15+ (index 14+)
+  // 대분류/중분류는 시트에 병합 셀로 들어있어 상단 행만 값이 있고 아래는 비어있음 → 이전 값으로 forward-fill
   if(!values || values.length < 15) return [];
   const rows = [];
+  let lastMain = '', lastSub = '';
   for(let i = 14; i < values.length; i++){
     const r = values[i] || [];
     const name = r[3];
+    // 대분류 forward-fill (병합셀 대응)
+    const rawMain = r[1] != null ? String(r[1]).trim() : '';
+    const rawSub = r[2] != null ? String(r[2]).trim() : '';
+    if(rawMain) lastMain = rawMain;
+    if(rawMain){ // 새 대분류 시작 → 중분류도 초기화 (블록 경계)
+      lastSub = rawSub;
+    } else if(rawSub){
+      lastSub = rawSub;
+    }
     if(!name) continue;
     let totalIn = 0, totalOut = 0;
     for(let d = 0; d < 31; d++){
@@ -14418,8 +14429,8 @@ function hospParseStock(values){
     const carry = Number(r[10]) || 0;
     const current = carry + totalIn - totalOut;
     rows.push({
-      main: r[1] || '',
-      sub: r[2] || '',
+      main: lastMain,
+      sub: lastSub,
       name: String(name),
       spec: r[4] != null ? String(r[4]) : '',
       carry, totalIn, totalOut, current
