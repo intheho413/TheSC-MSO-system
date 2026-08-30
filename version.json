@@ -1,5 +1,5 @@
 {
-  "version": "2.4.9",
-  "buildTime": "2026-08-09T14:00:00Z",
-  "changelog": "신규 안건 등록 물품명 자동완성 개편 — 하드코딩 목록 제거, 실제 등록된 안건의 물품명(현재 카테고리·중복 제거)만 드롭다운 표시. 새 물품 등록 시 자동 추가, 이미 있는 이름은 중복 추가 안내 미표시."
+  "version": "2.4.10",
+  "buildTime": "2026-08-30T02:00:00Z",
+  "changelog": "fix: 서비스 워커 파일 파손 복구 — 웹푸시 핸들러(push/notificationclick/message) + PWA installability용 no-op fetch 핸들러 재정비. 캐싱 로직은 도입하지 않음(항상 최신 HTML 서빙)."
 }
