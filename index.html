@@ -3134,6 +3134,48 @@ html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,
 html.light .hosp-card{background:#fff;border-color:rgba(0,0,0,.08)}
 html.light .hosp-card-value{color:#0f172a}
 
+/* 월간 리포트 페이지 */
+.hosp-rp-grid{display:grid;grid-template-columns:340px 1fr;gap:16px}
+@media(max-width:1000px){.hosp-rp-grid{grid-template-columns:1fr}}
+.hosp-fmt-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.hosp-fmt-opt{padding:16px;border:2px solid rgba(255,255,255,.08);border-radius:12px;cursor:pointer;transition:.2s;text-align:center;position:relative}
+.hosp-fmt-opt:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.15)}
+.hosp-fmt-opt.active{border-color:#10b981;background:rgba(16,185,129,.08)}
+.hosp-fmt-opt.active:after{content:'✓';position:absolute;top:6px;right:8px;font-size:12px;color:#5eead4;font-weight:800}
+.hosp-fmt-icon{width:44px;height:44px;margin:0 auto 8px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff}
+.hosp-fmt-ppt .hosp-fmt-icon{background:linear-gradient(135deg,#e56b1d,#f4823f)}
+.hosp-fmt-xlsx .hosp-fmt-icon{background:linear-gradient(135deg,#217346,#33a76a)}
+.hosp-fmt-name{font-size:14px;font-weight:700;color:#fff}
+.hosp-fmt-desc{font-size:10.5px;color:#94a3b8;margin-top:3px;line-height:1.5}
+
+.hosp-rp-checks label{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#e2e8f0;padding:8px 10px;border-radius:6px;cursor:pointer;transition:.2s}
+.hosp-rp-checks label:hover{background:rgba(255,255,255,.04)}
+.hosp-rp-checks input{margin-right:8px}
+.hosp-rp-checks .lbl-p{font-size:10.5px;color:#64748b;background:rgba(255,255,255,.04);padding:2px 7px;border-radius:4px}
+
+.hosp-slide-frame{background:#f4f5f7;border-radius:10px;padding:12px;overflow-x:auto}
+.hosp-slides{display:flex;gap:12px}
+.hosp-slide{width:220px;height:150px;background:#fff;border:2px solid transparent;border-radius:6px;padding:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:.2s}
+.hosp-slide-num{font-size:9px;color:#64748b;font-weight:600;text-align:right}
+.hosp-slide-title{font-size:10px;font-weight:700;color:#0f172a;margin-top:4px}
+.hosp-slide-body{margin-top:8px;height:calc(100% - 40px);display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:4px;color:#0f172a;font-size:16px;font-weight:800;text-align:center;padding:6px}
+
+.hosp-xlsx-frame{background:#fff;color:#111;border-radius:8px;overflow:hidden}
+.hosp-xlsx-tabs{background:#f8f9fa;padding:8px 14px;font-size:11px;color:#5f6368;border-bottom:1px solid #e5e7eb;display:flex;gap:12px;overflow-x:auto}
+.hosp-xlsx-tab{padding:2px 8px;border-radius:4px;color:#3c4043;white-space:nowrap}
+.hosp-xlsx-tab.active{background:#e8f0fe;color:#1a73e8;font-weight:600}
+.hosp-xlsx-title{padding:12px 16px;font-size:14px;font-weight:700;color:#202124;background:#fff;border-bottom:1px solid #e5e7eb}
+.hosp-xlsx-table{width:100%;font-size:11px;border-collapse:collapse}
+.hosp-xlsx-table th{background:#f1f3f4;padding:6px 10px;text-align:left;color:#5f6368;font-weight:600;font-size:10px}
+.hosp-xlsx-table td{padding:6px 10px;border-bottom:1px solid #f1f3f4;color:#202124}
+.hosp-xlsx-table td.num{text-align:right}
+
+.hosp-rp-hist-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px}
+.hosp-rp-hist-row:last-child{border-bottom:0}
+.hosp-rp-fmt{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;color:#fff}
+.hosp-rp-fmt-ppt{background:#e56b1d}
+.hosp-rp-fmt-xlsx{background:#217346}
+
 /* 드릴다운 우측 패널 */
 .hosp-dd-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9600;backdrop-filter:blur(2px)}
 .hosp-dd-panel{position:fixed;top:0;right:0;bottom:0;width:440px;max-width:100vw;background:#0f172a;border-left:1px solid rgba(16,185,129,.3);box-shadow:-10px 0 40px rgba(0,0,0,.4);z-index:9700;overflow-y:auto;padding:0;color:#e2e8f0;animation:hosp-dd-slide .22s ease-out}
@@ -3612,6 +3654,9 @@ html.light .hosp-dd-stat-val{color:#0f172a}
     <div class="nav-item" onclick="navigate('hosp-sales',this)">
       <span class="menu-label">매출 관리</span>
     </div>
+    <div class="nav-item" onclick="navigate('hosp-report',this)">
+      <span class="menu-label">월간 리포트</span>
+    </div>
     <div class="nav-item" onclick="navigate('hosp-settings',this)">
       <span class="menu-label">연동 설정</span>
     </div>
@@ -4075,6 +4120,82 @@ html.light .hosp-dd-stat-val{color:#0f172a}
           <div class="hosp-card-title">해외 매출 비중</div>
           <div class="hosp-card-value" id="ht-foreign-pct">-</div>
           <div class="hosp-card-sub" id="ht-foreign-sub">-</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 월간 리포트 ── -->
+<div id="page-hosp-report" class="page" style="display:none">
+  <div class="hosp-wrap">
+    <div class="hosp-hero">
+      <div>
+        <div class="hosp-hero-eyebrow">MONTHLY REPORT · 세라미크 명동점</div>
+        <div class="hosp-hero-title">월간 종합 리포트</div>
+        <div class="hosp-hero-sub">PPT (프리젠테이션) 또는 xlsx (스프레드시트) 형식으로 다운로드</div>
+      </div>
+    </div>
+
+    <div class="hosp-rp-grid">
+      <div>
+        <div class="hosp-card">
+          <div class="hosp-h2">1. 기간 선택</div>
+          <select id="hosp-rp-month" class="form-control" style="width:100%"></select>
+        </div>
+
+        <div class="hosp-card" style="margin-top:12px">
+          <div class="hosp-h2">2. 저장 형식</div>
+          <div class="hosp-fmt-picker">
+            <div class="hosp-fmt-opt hosp-fmt-ppt active" data-fmt="ppt" onclick="hospRpPickFmt(this,'ppt')">
+              <div class="hosp-fmt-icon">PPT</div>
+              <div class="hosp-fmt-name">PowerPoint</div>
+              <div class="hosp-fmt-desc">회의/보고용<br>차트·표 슬라이드</div>
+            </div>
+            <div class="hosp-fmt-opt hosp-fmt-xlsx" data-fmt="xlsx" onclick="hospRpPickFmt(this,'xlsx')">
+              <div class="hosp-fmt-icon">XLS</div>
+              <div class="hosp-fmt-name">Excel</div>
+              <div class="hosp-fmt-desc">원본 데이터·분석<br>필터·수식 편집</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hosp-card" style="margin-top:12px">
+          <div class="hosp-h2">3. 포함 섹션</div>
+          <div class="hosp-rp-checks" id="hosp-rp-checks">
+            <label><span><input type="checkbox" checked data-sect="cover"><span>표지 · 요약 KPI</span></span><span class="lbl-p">1p</span></label>
+            <label><span><input type="checkbox" checked data-sect="daily"><span>일자별 매출 추이</span></span><span class="lbl-p">1p</span></label>
+            <label><span><input type="checkbox" checked data-sect="paymethod"><span>결제수단별 분석</span></span><span class="lbl-p">1p</span></label>
+            <label><span><input type="checkbox" checked data-sect="country"><span>국가별 매출/환자</span></span><span class="lbl-p">1p</span></label>
+            <label><span><input type="checkbox" data-sect="reservation"><span>예약 인사이트</span></span><span class="lbl-p">2p</span></label>
+            <label><span><input type="checkbox" data-sect="cohort"><span>노쇼/재방문 코호트</span></span><span class="lbl-p">1p</span></label>
+            <label><span><input type="checkbox" checked data-sect="stock"><span>재고 요약 · 발주 알림</span></span><span class="lbl-p">1p</span></label>
+            <label><span><input type="checkbox" data-sect="rawdata"><span>부록: 원본 정산 데이터</span></span><span class="lbl-p">3p</span></label>
+          </div>
+        </div>
+
+        <div class="hosp-card" style="margin-top:12px;padding:14px 18px">
+          <button class="btn btn-primary" id="hosp-rp-gen-btn" onclick="hospReportGenerate()" style="width:100%;padding:12px;font-size:13px">PPT 다운로드</button>
+          <div id="hosp-rp-gen-info" style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px">기간 선택 후 다운로드 클릭</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="hosp-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div class="hosp-h2" style="margin:0">미리보기</div>
+            <span id="hosp-rp-prev-info" style="font-size:10.5px;color:#94a3b8;padding:5px 10px;background:rgba(255,255,255,.03);border-radius:6px">PPT 선택됨 · 슬라이드 썸네일</span>
+          </div>
+          <div id="hosp-rp-preview">
+            <div style="padding:30px;color:#64748b;font-size:12px;text-align:center">월 선택 후 미리보기가 표시됩니다.</div>
+          </div>
+        </div>
+
+        <div class="hosp-card" style="margin-top:12px">
+          <div class="hosp-h2">최근 생성 이력</div>
+          <div id="hosp-rp-history">
+            <div style="padding:20px;text-align:center;color:#64748b;font-size:12px">생성 시 자동으로 여기 기록됩니다.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -5996,6 +6117,7 @@ function navigate(page, el) {
   if(page==='hosp-stock' && typeof hospLoadStock==='function') setTimeout(()=>{ hospInitMonthPicker(); hospLoadStock(); }, 30);
   if(page==='hosp-sales' && typeof hospInitDropzone==='function') setTimeout(()=>{ hospInitDropzone(); hospSettleLogRefreshCount(); }, 30);
   if(page==='hosp-settings' && typeof hospLoadConfigsToUI==='function') setTimeout(()=>{ hospLoadConfigsToUI(); hospLoadSettleStats(); }, 30);
+  if(page==='hosp-report' && typeof hospReportInit==='function') setTimeout(hospReportInit, 30);
 }
 
 function switchCat(cat, el) {
@@ -15191,6 +15313,412 @@ async function hospLoadTrend(){
   }catch(err){
     console.error('[hospLoadTrend]', err);
   }
+}
+
+// ── 월간 리포트 ──────────────────────────
+let HOSP_RP_FMT = 'ppt';
+const HOSP_RP_LOG_KEY = 'mso.hospital.report.log.v1';
+
+function hospReportInit(){
+  // 월 셀렉트 초기화 (최근 6개월)
+  const sel = document.getElementById('hosp-rp-month');
+  if(sel && !sel.options.length){
+    const now = new Date();
+    for(let i=0; i<6; i++){
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val + (i===0 ? ' (이번 달)' : '');
+      sel.appendChild(opt);
+    }
+    sel.onchange = () => hospReportRenderPreview();
+  }
+  hospReportRenderPreview();
+  hospReportRenderHistory();
+}
+function hospRpPickFmt(el, fmt){
+  HOSP_RP_FMT = fmt;
+  document.querySelectorAll('.hosp-fmt-opt').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  const btn = document.getElementById('hosp-rp-gen-btn');
+  if(btn) btn.textContent = fmt==='ppt' ? 'PPT 다운로드' : 'xlsx 다운로드';
+  const info = document.getElementById('hosp-rp-prev-info');
+  if(info) info.textContent = fmt==='ppt' ? 'PPT 선택됨 · 슬라이드 썸네일' : 'xlsx 선택됨 · 시트 탭 구조';
+  hospReportRenderPreview();
+}
+function hospRpGetSections(){
+  const arr = [];
+  document.querySelectorAll('#hosp-rp-checks input[type=checkbox]').forEach(c => {
+    if(c.checked) arr.push(c.dataset.sect);
+  });
+  return arr;
+}
+async function hospReportFetchData(monthStr){
+  // Supabase에서 해당 월 정산 데이터
+  const start = monthStr + '-01';
+  const [y,m] = monthStr.split('-').map(Number);
+  const endDate = new Date(y, m, 0);
+  const end = y + '-' + String(m).padStart(2,'0') + '-' + String(endDate.getDate()).padStart(2,'0');
+  const {data, error} = await sb.from('hosp_settlement')
+    .select('*').gte('report_date', start).lte('report_date', end).order('report_date');
+  if(error) throw error;
+  return data || [];
+}
+function hospReportAggregate(rows){
+  const sum = k => rows.reduce((s,r)=>s+Number(r[k]||0),0);
+  const cnt = k => rows.reduce((s,r)=>s+(r[k]||0),0);
+  const total = {
+    days: rows.length,
+    vegas: sum('vegas'),
+    card: sum('card'), pay: sum('pay'), cash: sum('cash'), bank: sum('bank'),
+    patients: cnt('patients'),
+    localNew: cnt('visit_local_new'), localRe: cnt('visit_local_re'),
+    foreignNew: cnt('visit_foreign_new'), foreignRe: cnt('visit_foreign_re'),
+    etcWarn: sum('etc_warn')
+  };
+  const avgTicket = total.patients ? Math.round(total.vegas / total.patients) : 0;
+  const foreignRatio = (total.patients ? ((total.foreignNew+total.foreignRe)/total.patients*100) : 0).toFixed(1);
+  const daily = rows.map(r => ({date: r.report_date, vegas:Number(r.vegas||0), patients:r.patients||0}));
+  return {total, avgTicket, foreignRatio, daily, rows};
+}
+async function hospReportRenderPreview(){
+  const sel = document.getElementById('hosp-rp-month');
+  const wrap = document.getElementById('hosp-rp-preview');
+  const info = document.getElementById('hosp-rp-gen-info');
+  if(!sel || !wrap) return;
+  const monthStr = sel.value;
+  if(!monthStr){ wrap.innerHTML = '<div style="padding:30px;color:#64748b;font-size:12px;text-align:center">월을 선택하세요.</div>'; return; }
+  wrap.innerHTML = '<div style="padding:20px;color:#94a3b8;font-size:12px;text-align:center">데이터 조회 중...</div>';
+  try{
+    const rows = await hospReportFetchData(monthStr);
+    if(!rows.length){
+      wrap.innerHTML = '<div style="padding:30px;color:#fcd34d;font-size:12px;text-align:center">해당 월에 저장된 정산 데이터가 없습니다.<br><span style="color:#64748b;font-size:11px">먼저 매출 관리에서 정산 데이터를 저장하세요.</span></div>';
+      if(info) info.textContent = '데이터 없음';
+      return;
+    }
+    const agg = hospReportAggregate(rows);
+    const sections = hospRpGetSections();
+    if(info) info.textContent = '데이터 ' + rows.length + '일 · ' + sections.length + '개 섹션 포함';
+    if(HOSP_RP_FMT === 'ppt') hospReportRenderPPTPreview(monthStr, agg, sections, wrap);
+    else hospReportRenderXlsxPreview(monthStr, agg, sections, wrap);
+  }catch(err){
+    console.error('[hospReportRenderPreview]', err);
+    wrap.innerHTML = '<div style="padding:20px;color:#fca5a5;font-size:12px;text-align:center">조회 실패: '+ (err.message||err) +'</div>';
+  }
+}
+function hospReportRenderPPTPreview(month, agg, sections, wrap){
+  const fmt = n => (Number(n)||0).toLocaleString();
+  const slides = [];
+  if(sections.includes('cover')) slides.push({title:'표지 · 요약', body:`<div style="background:linear-gradient(135deg,#10b981,#06b6d4);width:100%;height:100%;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:4px;padding:6px"><div style="font-size:11px;opacity:.9">${month}</div><div style="font-size:14px;margin-top:4px">세라미크 명동</div></div>`});
+  if(sections.includes('cover')) slides.push({title:'요약 KPI', body:`<div style="background:#f0fdfa;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:4px;color:#059669;font-size:14px"><b>${fmt(agg.total.vegas)}원</b><div style="font-size:10px;color:#0f766e;margin-top:4px">환자 ${fmt(agg.total.patients)}명</div></div>`});
+  if(sections.includes('daily')) slides.push({title:'일자별 매출 추이', body:`<div style="background:#f0f9ff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:4px"><svg viewBox="0 0 100 40" style="width:80%"><polyline points="${agg.daily.slice(0,20).map((d,i)=>`${i*5},${40-Math.min(38,(d.vegas/(Math.max(...agg.daily.map(x=>x.vegas))||1))*38)}`).join(' ')}" stroke="#06b6d4" fill="none" stroke-width="2"/></svg></div>`});
+  if(sections.includes('paymethod')){
+    const total = agg.total.card + agg.total.pay + agg.total.cash + agg.total.bank || 1;
+    const p = (v)=>(v/total*100).toFixed(0);
+    const pct = { card:p(agg.total.card), pay:p(agg.total.pay), cash:p(agg.total.cash), bank:p(agg.total.bank) };
+    slides.push({title:'결제수단별', body:`<div style="background:#fef3c7;width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:4px"><div style="width:70px;height:70px;border-radius:50%;background:conic-gradient(#3b82f6 0 ${pct.card}%,#a78bfa ${pct.card}% ${Number(pct.card)+Number(pct.pay)}%,#34d399 ${Number(pct.card)+Number(pct.pay)}% ${Number(pct.card)+Number(pct.pay)+Number(pct.bank)}%,#fbbf24 ${Number(pct.card)+Number(pct.pay)+Number(pct.bank)}% 100%)"></div></div>`});
+  }
+  if(sections.includes('country')) slides.push({title:'국가별 매출/환자', body:`<div style="background:#fdf2f8;width:100%;height:100%;padding:8px;color:#831843;font-size:8px;display:flex;flex-direction:column;justify-content:center"><div style="margin:2px 0"><b>국내</b> ${fmt(agg.total.localNew+agg.total.localRe)}명</div><div style="margin:2px 0"><b>해외</b> ${fmt(agg.total.foreignNew+agg.total.foreignRe)}명 (${agg.foreignRatio}%)</div></div>`});
+  if(sections.includes('reservation')) slides.push({title:'예약 인사이트', body:`<div style="background:#ede9fe;width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:4px;color:#5b21b6;font-size:11px">예약 API 연동 예정</div>`});
+  if(sections.includes('cohort')) slides.push({title:'코호트 분석', body:`<div style="background:#e0e7ff;width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:4px;color:#3730a3;font-size:11px">코호트 예정</div>`});
+  if(sections.includes('stock')) slides.push({title:'재고 요약', body:`<div style="background:#fef2f2;width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:4px;color:#dc2626;font-size:11px">재고 연동 예정</div>`});
+  if(sections.includes('rawdata')) slides.push({title:'부록: 원본 데이터', body:`<div style="background:#f1f5f9;width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:4px;color:#334155;font-size:10px">${agg.daily.length}일 기록</div>`});
+  const html = '<div class="hosp-slide-frame"><div class="hosp-slides">'
+    + slides.map((s,i)=>'<div class="hosp-slide"><div class="hosp-slide-num">'+(i+1)+' / '+slides.length+'</div><div class="hosp-slide-title">'+s.title+'</div><div class="hosp-slide-body">'+s.body+'</div></div>').join('')
+    + '</div></div>';
+  wrap.innerHTML = html;
+}
+function hospReportRenderXlsxPreview(month, agg, sections, wrap){
+  const fmt = n => (Number(n)||0).toLocaleString();
+  const tabs = [];
+  if(sections.includes('cover')) tabs.push('요약');
+  if(sections.includes('daily')) tabs.push('일별 매출');
+  if(sections.includes('paymethod')) tabs.push('결제수단');
+  if(sections.includes('country')) tabs.push('국가별');
+  if(sections.includes('reservation')) tabs.push('예약');
+  if(sections.includes('cohort')) tabs.push('코호트');
+  if(sections.includes('stock')) tabs.push('재고');
+  if(sections.includes('rawdata')) tabs.push('원본 데이터');
+  const html = '<div class="hosp-xlsx-frame">'
+    + '<div class="hosp-xlsx-tabs">' + tabs.map((t,i)=>'<span class="hosp-xlsx-tab '+(i===0?'active':'')+'">'+t+'</span>').join('') + '</div>'
+    + '<div class="hosp-xlsx-title">'+month+' 세라미크 명동 월간 리포트 · 요약</div>'
+    + '<table class="hosp-xlsx-table">'
+    + '<tr><th>지표</th><th>값</th><th>비고</th></tr>'
+    + '<tr><td>총 매출</td><td class="num">'+fmt(agg.total.vegas)+'</td><td>'+agg.total.days+'일 기록</td></tr>'
+    + '<tr><td>환자 수</td><td class="num">'+fmt(agg.total.patients)+'명</td><td>일평균 '+(agg.total.days?(agg.total.patients/agg.total.days).toFixed(1):0)+'명</td></tr>'
+    + '<tr><td>평균 객단가</td><td class="num">'+fmt(agg.avgTicket)+'원</td><td>-</td></tr>'
+    + '<tr><td>해외 매출 비중</td><td class="num">'+agg.foreignRatio+'%</td><td>'+fmt(agg.total.foreignNew+agg.total.foreignRe)+'명</td></tr>'
+    + '<tr><td>카드/페이/현금/계좌</td><td class="num">'+fmt(agg.total.card+agg.total.pay+agg.total.cash+agg.total.bank)+'</td><td>합계</td></tr>'
+    + '</table></div>';
+  wrap.innerHTML = html;
+}
+async function hospReportGenerate(){
+  const sel = document.getElementById('hosp-rp-month');
+  const info = document.getElementById('hosp-rp-gen-info');
+  const btn = document.getElementById('hosp-rp-gen-btn');
+  const monthStr = sel.value;
+  if(!monthStr){ showToast('월을 선택하세요'); return; }
+  btn.disabled = true; const oldTxt = btn.textContent; btn.textContent = '생성 중...';
+  try{
+    const rows = await hospReportFetchData(monthStr);
+    if(!rows.length){ showToast('해당 월 데이터가 없습니다'); return; }
+    const agg = hospReportAggregate(rows);
+    const sections = hospRpGetSections();
+    if(HOSP_RP_FMT === 'ppt') await hospReportBuildPPT(monthStr, agg, sections);
+    else await hospReportBuildXLSX(monthStr, agg, sections);
+    hospReportRenderHistory();
+  }catch(err){
+    console.error('[hospReportGenerate]', err);
+    showToast('생성 실패: ' + (err.message||err));
+  }finally{
+    btn.disabled = false; btn.textContent = oldTxt;
+  }
+}
+async function hospReportBuildXLSX(month, agg, sections){
+  if(typeof XLSX === 'undefined'){ showToast('xlsx 라이브러리 로드 실패'); return; }
+  const wb = XLSX.utils.book_new();
+  const fmt = n => Number(n)||0;
+  if(sections.includes('cover')){
+    const data = [
+      ['세라미크 명동점 · '+month+' 월간 리포트'],
+      ['생성일', new Date().toISOString().slice(0,10)],
+      [],
+      ['지표','값','비고'],
+      ['총 매출', fmt(agg.total.vegas), agg.total.days+'일 기록'],
+      ['환자 수', fmt(agg.total.patients), '일평균 '+(agg.total.days?(agg.total.patients/agg.total.days).toFixed(1):0)+'명'],
+      ['평균 객단가', agg.avgTicket, '-'],
+      ['해외 매출 비중(%)', Number(agg.foreignRatio), fmt(agg.total.foreignNew+agg.total.foreignRe)+'명'],
+      ['국내 초진', agg.total.localNew, '-'],
+      ['국내 재진', agg.total.localRe, '-'],
+      ['해외 초진', agg.total.foreignNew, '-'],
+      ['해외 재진', agg.total.foreignRe, '-'],
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), '요약');
+  }
+  if(sections.includes('daily')){
+    const data = [['날짜','매출(vegas)','환자수','카드','페이','현금','계좌','기타/선수납']];
+    agg.rows.forEach(r=>data.push([r.report_date, fmt(r.vegas), r.patients||0, fmt(r.card), fmt(r.pay), fmt(r.cash), fmt(r.bank), fmt(r.etc_warn)]));
+    data.push(['합계', fmt(agg.total.vegas), agg.total.patients, fmt(agg.total.card), fmt(agg.total.pay), fmt(agg.total.cash), fmt(agg.total.bank), fmt(agg.total.etcWarn)]);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), '일별 매출');
+  }
+  if(sections.includes('paymethod')){
+    const total = agg.total.card+agg.total.pay+agg.total.cash+agg.total.bank||1;
+    const data = [
+      ['결제수단','금액','비율(%)'],
+      ['카드', fmt(agg.total.card), (agg.total.card/total*100).toFixed(1)],
+      ['페이', fmt(agg.total.pay), (agg.total.pay/total*100).toFixed(1)],
+      ['현금', fmt(agg.total.cash), (agg.total.cash/total*100).toFixed(1)],
+      ['계좌', fmt(agg.total.bank), (agg.total.bank/total*100).toFixed(1)],
+      ['합계', fmt(total), 100]
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), '결제수단');
+  }
+  if(sections.includes('country')){
+    const data = [
+      ['구분','초진','재진','합계'],
+      ['국내', agg.total.localNew, agg.total.localRe, agg.total.localNew+agg.total.localRe],
+      ['해외', agg.total.foreignNew, agg.total.foreignRe, agg.total.foreignNew+agg.total.foreignRe],
+      ['합계', agg.total.localNew+agg.total.foreignNew, agg.total.localRe+agg.total.foreignRe, agg.total.patients]
+    ];
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), '국가별');
+  }
+  if(sections.includes('reservation')){
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['예약 데이터 - 예약 인사이트 탭 구현 후 채워질 예정']]), '예약');
+  }
+  if(sections.includes('cohort')){
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['코호트 분석 - 예약 인사이트 탭 구현 후 채워질 예정']]), '코호트');
+  }
+  if(sections.includes('stock')){
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['재고 요약 - 재고 관리 페이지의 현재 스냅샷을 여기에 저장']]), '재고');
+  }
+  if(sections.includes('rawdata')){
+    const data = [Object.keys(agg.rows[0]||{})];
+    agg.rows.forEach(r=>data.push(Object.values(r).map(v=>{
+      if(v==null) return '';
+      if(typeof v==='object') return JSON.stringify(v);
+      return v;
+    })));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), '원본 데이터');
+  }
+  const fname = '월간리포트_세라미크명동_'+month+'.xlsx';
+  XLSX.writeFile(wb, fname);
+  hospReportLogSave('xlsx', month, fname, agg.total.vegas);
+  showToast('다운로드: ' + fname);
+}
+async function hospReportBuildPPT(month, agg, sections){
+  if(typeof PptxGenJS === 'undefined'){ showToast('PPT 라이브러리 로드 실패'); return; }
+  const pres = new PptxGenJS();
+  pres.layout = 'LAYOUT_WIDE'; // 13.333 x 7.5 inch
+  pres.title = month + ' 세라미크 명동 월간 리포트';
+  pres.author = (CURRENT_USER && CURRENT_USER.email) || 'TheSC MSO';
+  const C = {white:'FFFFFF', dark:'0F172A', teal:'10B981', cyan:'06B6D4', gray:'94A3B8', green:'34D399', red:'FCA5A5', amber:'FCD34D'};
+  const fmt = n => (Number(n)||0).toLocaleString();
+
+  if(sections.includes('cover')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addShape('rect', {x:0, y:0, w:13.333, h:7.5, fill:{type:'solid', color:'0F172A'}});
+    s.addShape('rect', {x:9, y:0, w:4.3, h:7.5, fill:{type:'solid', color:'10B981', transparency:80}});
+    s.addText('MONTHLY REPORT', {x:0.7, y:2.5, fontSize:14, color:C.teal, bold:true, fontFace:'Pretendard', charSpacing:5});
+    s.addText('세라미크글로벌의원 명동점', {x:0.7, y:3.0, fontSize:32, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addText(month + ' 월간 종합 리포트', {x:0.7, y:4.1, fontSize:22, color:C.gray, fontFace:'Pretendard'});
+    s.addText('발행일: ' + new Date().toISOString().slice(0,10), {x:0.7, y:6.5, fontSize:11, color:C.gray, fontFace:'Pretendard'});
+  }
+  if(sections.includes('cover')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('요약 KPI', {x:0.5, y:0.4, fontSize:24, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addShape('line', {x:0.5, y:1.1, w:12.3, h:0, line:{color:C.teal, width:2}});
+    const kpis = [
+      {label:'총 매출', val:fmt(agg.total.vegas)+'원', c:C.green},
+      {label:'환자 수', val:fmt(agg.total.patients)+'명', c:C.cyan},
+      {label:'평균 객단가', val:fmt(agg.avgTicket)+'원', c:C.teal},
+      {label:'해외 비중', val:agg.foreignRatio+'%', c:C.amber}
+    ];
+    kpis.forEach((k,i)=>{
+      const x = 0.5 + i*3.15;
+      s.addShape('roundRect', {x, y:1.7, w:2.9, h:2.2, fill:{color:'1E293B'}, line:{color:'334155', width:1}, rectRadius:0.15});
+      s.addText(k.label, {x:x+0.2, y:1.9, w:2.5, h:0.5, fontSize:12, color:C.gray, fontFace:'Pretendard'});
+      s.addText(k.val, {x:x+0.2, y:2.5, w:2.5, h:1.3, fontSize:26, color:k.c, bold:true, fontFace:'Pretendard'});
+    });
+    s.addText(agg.total.days + '일 기록 · 이번 달', {x:0.5, y:4.3, w:12.3, fontSize:12, color:C.gray, italic:true, fontFace:'Pretendard'});
+  }
+  if(sections.includes('daily')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('일자별 매출 추이', {x:0.5, y:0.4, fontSize:24, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addShape('line', {x:0.5, y:1.1, w:12.3, h:0, line:{color:C.teal, width:2}});
+    const chartData = [{
+      name: '매출',
+      labels: agg.daily.map(d=>d.date.slice(5)),
+      values: agg.daily.map(d=>d.vegas)
+    }];
+    s.addChart(pres.ChartType.bar, chartData, {
+      x:0.5, y:1.5, w:12.3, h:5.5,
+      barDir:'col', showLegend:false,
+      catAxisLabelColor:C.gray, catAxisLabelFontSize:9,
+      valAxisLabelColor:C.gray, valAxisLabelFontSize:9,
+      chartColors:['10B981']
+    });
+  }
+  if(sections.includes('paymethod')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('결제 수단별 매출', {x:0.5, y:0.4, fontSize:24, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addShape('line', {x:0.5, y:1.1, w:12.3, h:0, line:{color:C.teal, width:2}});
+    const total = agg.total.card+agg.total.pay+agg.total.cash+agg.total.bank||1;
+    const chartData = [{
+      name:'금액',
+      labels:['카드','페이','현금','계좌'],
+      values:[agg.total.card, agg.total.pay, agg.total.cash, agg.total.bank]
+    }];
+    s.addChart(pres.ChartType.doughnut, chartData, {
+      x:0.5, y:1.6, w:6.5, h:5.5,
+      chartColors:['3B82F6','A78BFA','FBBF24','34D399'],
+      showLegend:true, legendPos:'r', legendFontSize:11, legendColor:C.white
+    });
+    const rows = [
+      [{text:'수단',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}, {text:'금액',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}, {text:'비율',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}],
+      ['카드', fmt(agg.total.card), (agg.total.card/total*100).toFixed(1)+'%'],
+      ['페이', fmt(agg.total.pay), (agg.total.pay/total*100).toFixed(1)+'%'],
+      ['현금', fmt(agg.total.cash), (agg.total.cash/total*100).toFixed(1)+'%'],
+      ['계좌', fmt(agg.total.bank), (agg.total.bank/total*100).toFixed(1)+'%'],
+      [{text:'합계',options:{bold:true}}, {text:fmt(total),options:{bold:true}}, '100%']
+    ];
+    s.addTable(rows, {x:7.5, y:2.0, w:5.3, colW:[1.5,2.2,1.6], fontSize:12, fontFace:'Pretendard', color:C.white, border:{color:'334155',pt:0.5}});
+  }
+  if(sections.includes('country')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('국내 · 해외 매출', {x:0.5, y:0.4, fontSize:24, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addShape('line', {x:0.5, y:1.1, w:12.3, h:0, line:{color:C.teal, width:2}});
+    const localTot = agg.total.localNew+agg.total.localRe;
+    const foreignTot = agg.total.foreignNew+agg.total.foreignRe;
+    const rows = [
+      [{text:'구분',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}, {text:'초진',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}, {text:'재진',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}, {text:'합계',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}, {text:'비율',options:{bold:true,color:C.white,fill:{color:'1E293B'}}}],
+      ['국내', agg.total.localNew, agg.total.localRe, localTot, (localTot/agg.total.patients*100||0).toFixed(1)+'%'],
+      ['해외', agg.total.foreignNew, agg.total.foreignRe, foreignTot, agg.foreignRatio+'%'],
+      [{text:'합계',options:{bold:true}}, {text:agg.total.localNew+agg.total.foreignNew,options:{bold:true}}, {text:agg.total.localRe+agg.total.foreignRe,options:{bold:true}}, {text:agg.total.patients,options:{bold:true}}, '100%']
+    ];
+    s.addTable(rows, {x:1.0, y:2.0, w:11.3, colW:[2.5,2.0,2.0,2.4,2.4], fontSize:14, fontFace:'Pretendard', color:C.white, border:{color:'334155',pt:0.5}, valign:'middle', align:'center'});
+  }
+  if(sections.includes('reservation')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('예약 인사이트 (예정)', {x:0.5, y:0.4, fontSize:24, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addText('예약 인사이트 탭 구현 후 KOS API 데이터가 반영됩니다.', {x:0.5, y:3, w:12.3, h:1, fontSize:14, color:C.gray, fontFace:'Pretendard', align:'center'});
+  }
+  if(sections.includes('cohort')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('코호트 분석 (예정)', {x:0.5, y:0.4, fontSize:24, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addText('노쇼/재방문 코호트 분석 - 예약 데이터 축적 후 표시됩니다.', {x:0.5, y:3, w:12.3, h:1, fontSize:14, color:C.gray, fontFace:'Pretendard', align:'center'});
+  }
+  if(sections.includes('stock')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('재고 요약 (예정)', {x:0.5, y:0.4, fontSize:24, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addText('재고 관리 페이지의 월간 스냅샷 저장 기능 추가 후 표시됩니다.', {x:0.5, y:3, w:12.3, h:1, fontSize:14, color:C.gray, fontFace:'Pretendard', align:'center'});
+  }
+  if(sections.includes('rawdata')){
+    const s = pres.addSlide();
+    s.background = {color: C.dark};
+    s.addText('부록: 원본 정산 데이터', {x:0.5, y:0.4, fontSize:20, color:C.white, bold:true, fontFace:'Pretendard'});
+    s.addShape('line', {x:0.5, y:1.0, w:12.3, h:0, line:{color:C.teal, width:2}});
+    const header = [{text:'날짜',options:{bold:true,fill:{color:'1E293B'}}}, {text:'매출',options:{bold:true,fill:{color:'1E293B'}}}, {text:'환자',options:{bold:true,fill:{color:'1E293B'}}}, {text:'카드',options:{bold:true,fill:{color:'1E293B'}}}, {text:'페이',options:{bold:true,fill:{color:'1E293B'}}}, {text:'현금',options:{bold:true,fill:{color:'1E293B'}}}, {text:'계좌',options:{bold:true,fill:{color:'1E293B'}}}];
+    const dataRows = agg.rows.slice(0,25).map(r=>[r.report_date, fmt(r.vegas), r.patients||0, fmt(r.card), fmt(r.pay), fmt(r.cash), fmt(r.bank)]);
+    s.addTable([header, ...dataRows], {x:0.4, y:1.3, w:12.5, fontSize:9, fontFace:'Pretendard', color:C.white, border:{color:'334155',pt:0.3}, valign:'middle', align:'center'});
+  }
+
+  const fname = '월간리포트_세라미크명동_'+month+'.pptx';
+  await pres.writeFile({fileName: fname});
+  hospReportLogSave('ppt', month, fname, agg.total.vegas);
+  showToast('다운로드: ' + fname);
+}
+function hospReportLogSave(fmt, month, fname, vegas){
+  try{
+    const list = hospReportLogLoad();
+    list.unshift({
+      id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
+      fmt, month, fname, vegas: Number(vegas)||0,
+      createdAt: new Date().toISOString(),
+      createdBy: (CURRENT_USER && CURRENT_USER.email) || ''
+    });
+    localStorage.setItem(HOSP_RP_LOG_KEY, JSON.stringify(list.slice(0, 20)));
+  }catch(e){ console.warn('[hospReportLogSave]', e); }
+}
+function hospReportLogLoad(){
+  try{ const raw = localStorage.getItem(HOSP_RP_LOG_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; }
+}
+function hospReportRenderHistory(){
+  const wrap = document.getElementById('hosp-rp-history');
+  if(!wrap) return;
+  const list = hospReportLogLoad();
+  if(!list.length){
+    wrap.innerHTML = '<div style="padding:20px;text-align:center;color:#64748b;font-size:12px">생성 시 자동으로 여기 기록됩니다.</div>';
+    return;
+  }
+  wrap.innerHTML = list.map(x => {
+    const fmtCls = x.fmt==='ppt' ? 'hosp-rp-fmt-ppt' : 'hosp-rp-fmt-xlsx';
+    const created = x.createdAt.replace('T',' ').slice(0,16);
+    return '<div class="hosp-rp-hist-row">'
+      +'<div>'
+        +'<span class="hosp-rp-fmt '+fmtCls+'">'+x.fmt.toUpperCase()+'</span>'
+        +'<span style="margin-left:8px;font-weight:600">'+x.month+' 월간 리포트</span>'
+        +'<span style="color:#64748b;margin-left:8px;font-size:11px">'+created+' · 총매출 '+(x.vegas).toLocaleString()+'원</span>'
+      +'</div>'
+      +'<button class="btn" style="padding:4px 10px;font-size:11px" onclick="hospReportRegen(\''+x.id+'\')">재생성</button>'
+    +'</div>';
+  }).join('');
+}
+function hospReportRegen(id){
+  const item = hospReportLogLoad().find(x=>x.id===id);
+  if(!item){ showToast('이력 없음'); return; }
+  document.getElementById('hosp-rp-month').value = item.month;
+  const fmtEl = document.querySelector('.hosp-fmt-opt[data-fmt="'+item.fmt+'"]');
+  if(fmtEl) hospRpPickFmt(fmtEl, item.fmt);
+  hospReportGenerate();
 }
 
 async function hospLoadSettleStats(){

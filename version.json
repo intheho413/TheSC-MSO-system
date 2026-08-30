@@ -1,5 +1,5 @@
 {
-  "version": "2.4.22",
-  "buildTime": "2026-08-30T09:35:00Z",
-  "changelog": "chg(hospital): 재고 관리의 '시트 새로고침' 버튼 제거. 상단 nav 새로고침 아이콘이 병원 운영 관리 모드에서도 표시되며, 현재 페이지에 맞게 라우팅 (대시보드→Supabase 재조회, 재고→시트 재조회, 매출 추이→차트 재조회, 설정→통계 재조회). navGlobalRefresh 라우터 함수 추가."
+  "version": "2.4.23",
+  "buildTime": "2026-08-30T10:00:00Z",
+  "changelog": "feat(hospital): 월간 종합 리포트 페이지 신설. 상단 nav에 '월간 리포트' 탭 추가. 좌측 설정 패널(월 선택 · PPT/xlsx 형식 선택 · 8개 섹션 체크박스) + 우측 실시간 미리보기(PPT 슬라이드 썸네일 or xlsx 시트 탭 구조). Supabase hosp_settlement 월간 집계 → pptxgenjs로 PPT 생성 or xlsx-js-style로 xlsx 생성. 생성 이력 localStorage 자동 저장 + 재생성 지원."
 }

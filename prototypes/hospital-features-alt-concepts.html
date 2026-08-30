@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>병원 운영 관리 - 신규 기능 대안 시안</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Pretendard','Inter',sans-serif;background:radial-gradient(900px circle at 12% -5%,rgba(96,165,250,.14),transparent 45%),radial-gradient(1000px circle at 100% 8%,rgba(167,139,250,.12),transparent 42%),#070b14;color:#e2e8f0;padding:24px;min-height:100vh}
+  h1{font-size:22px;margin-bottom:6px;color:#fff}
+  .top-sub{font-size:12.5px;color:#94a3b8;margin-bottom:28px}
+  .sec{margin-bottom:44px}
+  .sec-title{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:2px solid rgba(6,182,212,.4);margin-bottom:20px}
+  .sec-badge{font-size:11px;font-weight:800;padding:4px 12px;border-radius:6px;background:linear-gradient(135deg,#06b6d4,#a78bfa);color:#fff}
+  .sec-name{font-size:18px;font-weight:700;color:#fff}
+
+  .concept{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:22px;margin-bottom:22px}
+  .c-title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .c-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:rgba(167,139,250,.15);color:#c4b5fd}
+  .c-name{font-size:16px;font-weight:700;color:#fff}
+  .c-desc{font-size:12.5px;color:#94a3b8;margin-bottom:16px;line-height:1.7}
+
+  .mock-frame{background:#070b14;border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden;margin-top:6px}
+  .mock-nav{display:flex;align-items:center;padding:10px 18px;background:rgba(15,23,42,.7);border-bottom:1px solid rgba(255,255,255,.06);gap:14px}
+  .mn-brand{font-size:12px;font-weight:700;background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .mn-tab{padding:6px 12px;border-radius:6px;font-size:11.5px;color:#94a3b8;cursor:default}
+  .mn-tab.active{background:rgba(16,185,129,.12);color:#5eead4;font-weight:600}
+  .mock-body{padding:20px;position:relative}
+
+  .grid{display:grid;gap:14px}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:900px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}}
+
+  .card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
+  .card-title{font-size:11px;color:#94a3b8;font-weight:600;margin-bottom:6px}
+  .card-value{font-size:22px;font-weight:800;color:#fff}
+  .card-sub{font-size:10.5px;color:#64748b;margin-top:2px}
+  .card-h{font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:10px}
+
+  .up{color:#34d399;font-size:11px;font-weight:600}
+  .down{color:#fca5a5;font-size:11px;font-weight:600}
+
+  .pro{color:#5eead4;font-size:12px;margin-top:6px}
+  .con{color:#fca5a5;font-size:12px}
+
+  .final{margin-top:36px;padding:24px;background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(167,139,250,.08));border:1px solid rgba(6,182,212,.3);border-radius:14px}
+  .final-t{font-size:16px;font-weight:700;color:#fff;margin-bottom:10px}
+  .final-d{font-size:12.5px;color:#e2e8f0;line-height:1.7}
+
+  /* Accordion */
+  .acc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:10px;margin-bottom:10px;overflow:hidden}
+  .acc-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;user-select:none}
+  .acc-head.open{background:rgba(16,185,129,.08);border-bottom:1px solid rgba(16,185,129,.2)}
+  .acc-title{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:700;color:#e2e8f0}
+  .acc-icon{width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+  .acc-icon-s{background:rgba(16,185,129,.2);color:#5eead4}
+  .acc-icon-r{background:rgba(96,165,250,.2);color:#93c5fd}
+  .acc-icon-k{background:rgba(167,139,250,.2);color:#c4b5fd}
+  .acc-meta{font-size:11px;color:#94a3b8}
+  .acc-arrow{font-size:11px;color:#94a3b8;transition:.2s}
+  .acc-arrow.open{transform:rotate(90deg)}
+  .acc-body{padding:16px 18px}
+
+  /* View toggle */
+  .view-toggle{display:inline-flex;background:rgba(255,255,255,.04);border-radius:8px;padding:3px}
+  .view-btn{padding:6px 14px;border-radius:6px;font-size:11.5px;color:#94a3b8;cursor:pointer}
+  .view-btn.active{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;font-weight:600}
+
+  /* Slack/email mockup */
+  .msg-mock{background:#f7f8f8;color:#111;border-radius:12px;padding:18px;margin-top:8px;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+  .msg-head{display:flex;gap:10px;align-items:center;padding-bottom:8px;border-bottom:1px solid #e5e7eb;margin-bottom:10px}
+  .msg-avatar{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+  .msg-sender{font-weight:700;font-size:13px;color:#0f172a}
+  .msg-time{font-size:10px;color:#64748b;margin-left:4px}
+  .msg-title{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:6px}
+  .msg-body{font-size:12px;color:#334155;line-height:1.7}
+  .msg-metric{display:inline-block;padding:6px 12px;background:#eff6ff;border-radius:6px;margin:3px;font-size:11px;color:#1e40af;font-weight:600}
+  .msg-btn{display:inline-block;margin-top:10px;padding:6px 12px;background:#10b981;color:#fff;border-radius:6px;font-size:11px;font-weight:600}
+
+  /* Sheet mockup */
+  .sheet-mock{background:#fff;color:#111;border-radius:8px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.4);margin-top:10px}
+  .sheet-tab-bar{background:#f8f9fa;padding:8px 14px;font-size:11px;color:#5f6368;border-bottom:1px solid #e5e7eb;display:flex;gap:14px}
+  .sh-tab{padding:2px 8px;border-radius:4px;color:#3c4043;cursor:default}
+  .sh-tab.active{background:#e8f0fe;color:#1a73e8;font-weight:600}
+  .sh-title{padding:12px 16px;font-size:14px;font-weight:700;color:#202124;background:#fff;border-bottom:1px solid #e5e7eb}
+  .sh-table{width:100%;font-size:11px;border-collapse:collapse}
+  .sh-table th{background:#f1f3f4;padding:6px 10px;text-align:left;color:#5f6368;font-weight:600;font-size:10px}
+  .sh-table td{padding:6px 10px;border-bottom:1px solid #f1f3f4;color:#202124}
+  .sh-table td.num{text-align:right}
+</style>
+</head>
+<body>
+
+<h1>병원 운영 관리 - 신규 기능 <span style="color:#a78bfa">대안 시안 (앞선 A1/A2/B1/B2 외)</span></h1>
+<div class="top-sub">2가지씩 새로운 방향. 앞의 시안과 조합해서 선택 가능. 하단에 매칭 조합 추천 포함.</div>
+
+<!-- ══ 예약 인사이트 대안 ══ -->
+<div class="sec">
+  <div class="sec-title"><span class="sec-badge">1</span><span class="sec-name">예약 인사이트 - 대안 2가지</span></div>
+
+  <!-- A3: 아코디언 -->
+  <div class="concept">
+    <div class="c-title"><span class="c-badge">A3</span><span class="c-name">아코디언 섹션 대시보드 (매출 / 예약 / 재고 각각 접기·펼치기)</span></div>
+    <div class="c-desc">대시보드를 3개 접기 섹션으로 재구성. 사용자가 관심 있는 섹션만 펼쳐서 봄. 오전엔 예약만, 저녁엔 매출만 등 상황별 사용. 화면 콤팩트.</div>
+
+    <div class="mock-frame">
+      <div class="mock-nav">
+        <div class="mn-brand">병원 운영 관리</div>
+        <div class="mn-tab active">운영 대시보드</div>
+        <div class="mn-tab">재고 관리</div>
+        <div class="mn-tab">매출 관리</div>
+        <div class="mn-tab">연동 설정</div>
+      </div>
+      <div class="mock-body">
+        <div class="acc">
+          <div class="acc-head open">
+            <div class="acc-title"><span class="acc-icon acc-icon-s">S</span><span>매출 현황</span><span class="acc-meta">158,340,000원 · 전월 +7.2%</span></div>
+            <span class="acc-arrow open">▶</span>
+          </div>
+          <div class="acc-body">
+            <div class="grid g4">
+              <div class="card"><div class="card-title">오늘 매출</div><div class="card-value">7,842,000</div><div class="card-sub"><span class="up">+18%</span></div></div>
+              <div class="card"><div class="card-title">이번달 누적</div><div class="card-value">158,340,000</div><div class="card-sub"><span class="up">+7.2%</span></div></div>
+              <div class="card"><div class="card-title">환자 수</div><div class="card-value">675명</div><div class="card-sub">일평균 22.5</div></div>
+              <div class="card"><div class="card-title">객단가</div><div class="card-value">234,570</div><div class="card-sub"><span class="up">+4.1%</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc">
+          <div class="acc-head open">
+            <div class="acc-title"><span class="acc-icon acc-icon-r">R</span><span>예약 인사이트</span><span class="acc-meta">이번주 237건 · 노쇼 7.8% · 재방문 88.4%</span></div>
+            <span class="acc-arrow open">▶</span>
+          </div>
+          <div class="acc-body">
+            <div class="grid g4">
+              <div class="card"><div class="card-title">오늘 예약</div><div class="card-value">34</div><div class="card-sub">완료 28 · 남은 4</div></div>
+              <div class="card"><div class="card-title">노쇼율(주)</div><div class="card-value" style="color:#fca5a5">7.8%</div><div class="card-sub"><span class="down">+1.2%p</span></div></div>
+              <div class="card"><div class="card-title">재방문율(월)</div><div class="card-value" style="color:#5eead4">88.4%</div><div class="card-sub"><span class="up">+3.1%p</span></div></div>
+              <div class="card"><div class="card-title">해외 유입</div><div class="card-value">19%</div><div class="card-sub">128명</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc">
+          <div class="acc-head">
+            <div class="acc-title"><span class="acc-icon acc-icon-k">K</span><span>재고 알림</span><span class="acc-meta" style="color:#fcd34d">4건 발주 필요</span></div>
+            <span class="acc-arrow">▶</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pro">장점: 콤팩트 · 사용 시나리오별 유연 · 화면 세로 스크롤 최소 · 정보 밀도 조절 가능</div>
+    <div class="con">단점: 처음 사용 시 접혀있는 정보를 놓칠 수 있음 · 인터랙션 필요 (한번 더 클릭)</div>
+  </div>
+
+  <!-- A4: 뷰 전환 토글 -->
+  <div class="concept">
+    <div class="c-title"><span class="c-badge">A4</span><span class="c-name">뷰 전환 토글 (매출 / 예약 / 통합)</span></div>
+    <div class="c-desc">대시보드 최상단에 큰 3-way 토글. 클릭 한번으로 매출 중심 뷰 / 예약 중심 뷰 / 통합 뷰 전환. 각 뷰마다 그 영역에 최적화된 차트 배치. 원장/실장/간호팀장 등 역할별 즐겨쓰기 가능.</div>
+
+    <div class="mock-frame">
+      <div class="mock-nav">
+        <div class="mn-brand">병원 운영 관리</div>
+        <div class="mn-tab active">운영 대시보드</div>
+        <div class="mn-tab">재고 관리</div>
+        <div class="mn-tab">매출 관리</div>
+        <div class="mn-tab">연동 설정</div>
+      </div>
+      <div class="mock-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#5eead4;letter-spacing:1.4px">DASHBOARD</div>
+            <div style="font-size:16px;font-weight:800;color:#fff;margin-top:2px">운영 대시보드 <span style="font-size:11px;color:#94a3b8;font-weight:400">· 예약 뷰</span></div>
+          </div>
+          <div class="view-toggle">
+            <div class="view-btn">매출 뷰</div>
+            <div class="view-btn active">예약 뷰</div>
+            <div class="view-btn">통합 뷰</div>
+          </div>
+        </div>
+
+        <div class="grid g4">
+          <div class="card"><div class="card-title">오늘 예약</div><div class="card-value">34</div><div class="card-sub">완료 28 · 남은 4</div></div>
+          <div class="card"><div class="card-title">이번주 총 예약</div><div class="card-value">237</div><div class="card-sub"><span class="up">+14</span> 전주</div></div>
+          <div class="card"><div class="card-title">노쇼율(주)</div><div class="card-value" style="color:#fca5a5">7.8%</div><div class="card-sub">19건</div></div>
+          <div class="card"><div class="card-title">재방문율(월)</div><div class="card-value" style="color:#5eead4">88.4%</div><div class="card-sub">210명</div></div>
+        </div>
+        <div class="grid g2" style="margin-top:14px">
+          <div class="card">
+            <div class="card-h">시간대별 예약 밀집도 (히트맵)</div>
+            <div style="height:100px;background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(6,182,212,.4),rgba(16,185,129,.8),rgba(6,182,212,.6),rgba(16,185,129,.3));border-radius:8px"></div>
+          </div>
+          <div class="card">
+            <div class="card-h">국가별 예약률/노쇼율</div>
+            <div style="font-size:11px;color:#94a3b8;padding:6px 0">국내 62% (노쇼 5%) · 중국 12% (노쇼 18%) · 일본 10% (노쇼 4%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pro">장점: 사용자 역할별 최적 뷰 · 인지 부하 낮음 · 각 뷰가 전용 화면급 · localStorage에 마지막 선택 저장 가능</div>
+    <div class="con">단점: 통합적 통찰 놓칠 수 있음 · 뷰 전환마다 로드 · 3개 화면 관리 부담</div>
+  </div>
+</div>
+
+<!-- ══ 월간 종합 리포트 대안 ══ -->
+<div class="sec">
+  <div class="sec-title"><span class="sec-badge">2</span><span class="sec-name">월간 종합 리포트 - 대안 2가지</span></div>
+
+  <!-- B3: Google Sheets 자동 생성 -->
+  <div class="concept">
+    <div class="c-title"><span class="c-badge">B3</span><span class="c-name">Google Sheets 자동 생성 (팀 공유)</span></div>
+    <div class="c-desc">"월간 리포트 생성" 버튼 → Apps Script가 새 Google Sheets 파일 자동 생성 (예: "2026-08 세라미크 명동 월간 리포트") → URL 반환. 팀원과 공유 편함, 편집 가능. 원본 데이터 시트 링크도 포함.</div>
+
+    <div class="mock-frame">
+      <div class="mock-nav">
+        <div class="mn-brand">병원 운영 관리</div>
+        <div class="mn-tab active">운영 대시보드</div>
+        <div class="mn-tab">재고 관리</div>
+        <div class="mn-tab">매출 관리</div>
+        <div class="mn-tab">연동 설정</div>
+      </div>
+      <div class="mock-body">
+        <div style="padding:14px 16px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin-bottom:2px">월간 종합 리포트</div>
+            <div style="font-size:11px;color:#94a3b8">Google Sheets에 자동 생성해 팀원과 공유</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select style="padding:6px;border-radius:6px;background:rgba(255,255,255,.05);color:#e2e8f0;border:1px solid rgba(255,255,255,.15);font-size:11px"><option>2026-08</option></select>
+            <button style="padding:7px 14px;border-radius:6px;font-size:11.5px;font-weight:600;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;border:0;cursor:pointer">Sheets 생성 →</button>
+          </div>
+        </div>
+
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:6px">생성 완료 (샘플)</div>
+        <div class="sheet-mock">
+          <div class="sh-title">2026-08 세라미크글로벌의원 명동 월간 리포트</div>
+          <div class="sheet-tab-bar">
+            <span class="sh-tab active">요약</span>
+            <span class="sh-tab">일별 매출</span>
+            <span class="sh-tab">결제수단</span>
+            <span class="sh-tab">국가별</span>
+            <span class="sh-tab">예약 인사이트</span>
+            <span class="sh-tab">재고 요약</span>
+            <span class="sh-tab">부록</span>
+          </div>
+          <table class="sh-table">
+            <tr><th>지표</th><th>값</th><th>전월 대비</th></tr>
+            <tr><td>총 매출</td><td class="num">158,340,000</td><td class="num" style="color:#059669">+7.2%</td></tr>
+            <tr><td>환자 수</td><td class="num">675명</td><td class="num" style="color:#059669">+14</td></tr>
+            <tr><td>객단가</td><td class="num">234,570</td><td class="num" style="color:#059669">+4.1%</td></tr>
+            <tr><td>해외 매출 비중</td><td class="num">19%</td><td class="num" style="color:#059669">+3%p</td></tr>
+            <tr><td>노쇼율</td><td class="num">7.8%</td><td class="num" style="color:#dc2626">+1.2%p</td></tr>
+            <tr><td>재방문율</td><td class="num">88.4%</td><td class="num" style="color:#059669">+3.1%p</td></tr>
+          </table>
+        </div>
+        <div style="margin-top:10px;padding:10px 14px;background:rgba(16,185,129,.06);border-radius:8px;font-size:11px;color:#5eead4;display:flex;justify-content:space-between;align-items:center">
+          <span>Google Sheets URL: docs.google.com/spreadsheets/d/1AbCdEfGh.../edit</span>
+          <button style="padding:4px 10px;border-radius:5px;background:rgba(16,185,129,.2);color:#5eead4;font-size:11px;border:0;cursor:pointer">URL 복사</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pro">장점: 팀 공유 즉시 · 편집 가능 · 링크 하나로 배포 · 기존 시트 관리 문화와 부합 · 다른 파일들과 동일 폴더에 축적</div>
+    <div class="con">단점: 웹 페이지 미리보기 없음 · 스타일링 한계 (Sheets 서식만 사용) · 인쇄용 PPT는 별도 필요</div>
+  </div>
+
+  <!-- B4: 이메일/카톡 자동 발송 -->
+  <div class="concept">
+    <div class="c-title"><span class="c-badge">B4</span><span class="c-name">자동 발송 (이메일 / 카카오톡 매일 or 매월)</span></div>
+    <div class="c-desc">스케줄러(Supabase Edge Function + cron)로 매일 오전 9시 어제 요약, 매월 1일 지난달 종합 리포트 자동 발송. 원장/실장이 앱 접속 없이 이메일/카톡으로 수신. 연동 설정에서 수신 대상, 발송 시간 등 커스터마이징.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px">
+      <div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;font-weight:600">1. 카카오톡 알림 (아침 9시)</div>
+        <div class="msg-mock" style="background:#fef01b;color:#3c1e1e;border-radius:16px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px;color:#3c1e1e">TheSC MSO 봇</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px">2026-08-29 (금) 요약</div>
+          <div style="font-size:11.5px;line-height:1.7">
+            매출: 6,930,000원 (+12%)<br>
+            환자: 26명 (국내 21, 해외 5)<br>
+            예약: 28건 (완료 26, 노쇼 2)<br>
+            객단가: 266,540원<br>
+            재고 알림: 3건
+          </div>
+          <div style="margin-top:8px;font-size:11px"><a style="color:#0068ff;text-decoration:underline">앱에서 상세 보기 →</a></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;font-weight:600">2. 이메일 리포트 (매월 1일)</div>
+        <div class="msg-mock">
+          <div class="msg-head">
+            <div class="msg-avatar">M</div>
+            <div>
+              <div class="msg-sender">MSO 시스템 <span class="msg-time">2026-09-01 오전 9:00</span></div>
+              <div style="font-size:11px;color:#64748b">받는사람: 정인호 대표 외 2명</div>
+            </div>
+          </div>
+          <div class="msg-title">[월간 리포트] 세라미크 명동 2026년 8월</div>
+          <div class="msg-body">
+            8월 매출 <b>158,340,000원</b> (전월 +7.2%). 국내 81%, 해외 19%. 노쇼율 소폭 상승.
+            <div style="margin:8px 0">
+              <span class="msg-metric">환자 675명</span>
+              <span class="msg-metric">객단가 234,570</span>
+              <span class="msg-metric">재방문 88.4%</span>
+            </div>
+            <div>첨부: 리포트 PDF, 정산 xlsx, 원본 데이터 링크</div>
+            <a class="msg-btn">웹에서 상세 보기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;padding:14px 16px;background:rgba(255,255,255,.03);border-radius:10px;border:1px dashed rgba(255,255,255,.1)">
+      <div style="font-size:12px;font-weight:700;color:#e2e8f0;margin-bottom:8px">연동 설정 → 자동 발송</div>
+      <div style="font-size:11px;color:#94a3b8;line-height:1.9">
+        · 매일 발송: <span style="color:#5eead4">ON</span> · 오전 9:00 · 카카오톡 · 정인호(010-****-1234), 방유진, 임혜연<br>
+        · 매월 발송: <span style="color:#5eead4">ON</span> · 매월 1일 오전 9:00 · 이메일 · daaain75b@gmail.com 외 2명 · PDF 첨부<br>
+        · 임계값 알림: <span style="color:#5eead4">ON</span> · 매출 30% 이상 하락 시, 재고 5개 이하 시
+      </div>
+    </div>
+
+    <div class="pro">장점: 앱 접속 없이 수신 · 여러 담당자 동시 배포 · 자동화로 관리 부담 없음 · 임계값 알림도 함께</div>
+    <div class="con">단점: 카톡 연동 개발 필요 (알림톡 or 채널) · 이메일 서비스 필요 (Supabase Edge Function + SMTP) · 리포트 미세 조정은 여전히 별도 페이지 필요</div>
+  </div>
+</div>
+
+<div class="final">
+  <div class="final-t">종합 추천 (앞선 시안 포함 6가지 → 조합)</div>
+  <div class="final-d">
+    <b>예약 인사이트</b>: A3 (아코디언) + A2 (별도 탭 상세)<br>
+    → 대시보드에 접기/펼치기 섹션 구조 → 관심 영역만 열어봄. 상세 분석은 별도 "예약 인사이트" 탭에서.<br>
+    → 3가지 뷰 토글(A4)은 사용자마다 취향 갈릴 수 있어 초기엔 skip 권장.<br><br>
+
+    <b>월간 리포트</b>: B3 (Google Sheets 자동 생성) + B4 (일별 카톡 요약)<br>
+    → 팀 문화가 이미 Google Sheets 기반이라 B3이 최적. 리포트 파일이 다른 재고/정산 시트와 같은 폴더에 축적.<br>
+    → 원장/실장이 매일 카톡으로 어제 요약을 받으면 앱 접속 없이 상황 파악 가능. 앱은 상세 조회용으로만 사용.<br><br>
+
+    <b>왜 이 조합?</b><br>
+    1. <b>일상 조회</b>: 매일 카톡으로 요약 → 이상 있을 때만 앱 접속<br>
+    2. <b>앱 조회</b>: 아코디언으로 관심 섹션만 펼침 → 정보 과부하 없음<br>
+    3. <b>월말 리포트</b>: 버튼 한 번으로 Sheets 생성 → 팀 공유<br>
+    4. <b>심층 분석</b>: 별도 예약 인사이트 탭 (필요시)<br><br>
+
+    다른 조합도 가능합니다. 선호 시안(예: A3+B3, A2+B2, A4+B4 등) 알려주시면 그대로 진행하겠습니다.
+  </div>
+</div>
+
+</body>
+</html>
