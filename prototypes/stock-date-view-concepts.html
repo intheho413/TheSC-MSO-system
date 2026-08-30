@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>재고 입출고 날짜 뷰 - 시안</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Pretendard','Inter',sans-serif;background:radial-gradient(900px circle at 12% -5%,rgba(96,165,250,.14),transparent 45%),radial-gradient(1000px circle at 100% 8%,rgba(167,139,250,.12),transparent 42%),#070b14;color:#e2e8f0;padding:24px;min-height:100vh}
+  h1{font-size:20px;margin-bottom:8px;color:#fff}
+  .subtitle{font-size:12px;color:#94a3b8;margin-bottom:24px}
+  .concept{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:24px}
+  .c-title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .c-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff}
+  .c-name{font-size:16px;font-weight:700;color:#fff}
+  .c-desc{font-size:12.5px;color:#94a3b8;margin-bottom:14px;line-height:1.6}
+  .pro{color:#5eead4}
+  .con{color:#fca5a5}
+
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+  th{text-align:left;padding:10px;background:rgba(255,255,255,.04);color:#94a3b8;font-weight:600;font-size:11px;border-bottom:1px solid rgba(255,255,255,.08);white-space:nowrap}
+  td{padding:10px;border-bottom:1px solid rgba(255,255,255,.04);color:#cbd5e1;vertical-align:middle}
+  .pill{display:inline-block;padding:3px 8px;border-radius:5px;font-size:10.5px;font-weight:600;background:rgba(59,130,246,.15);color:#93c5fd}
+  .pill-f{background:rgba(167,139,250,.15);color:#c4b5fd}
+  .pill-sr{background:rgba(251,146,60,.15);color:#fdba74}
+  tr.expandable{cursor:pointer;transition:.15s}
+  tr.expandable:hover{background:rgba(16,185,129,.04)}
+
+  /* Concept A: 드릴다운 모달 */
+  .row-cta{color:#5eead4;font-size:11px;cursor:pointer}
+  .drilldown-modal{position:absolute;right:20px;top:auto;width:400px;background:#0f172a;border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .dm-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .dm-item-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+  .dm-item-sub{font-size:11px;color:#94a3b8}
+  .dm-close{background:none;border:0;color:#94a3b8;font-size:20px;cursor:pointer}
+  .dm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+  .dm-stat{background:rgba(255,255,255,.03);padding:10px;border-radius:8px;text-align:center}
+  .dm-stat-lbl{font-size:10.5px;color:#94a3b8}
+  .dm-stat-val{font-size:16px;font-weight:800;margin-top:2px}
+  .dm-events{max-height:280px;overflow-y:auto}
+  .dm-event{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:6px;font-size:12px;margin-bottom:3px}
+  .dm-event:hover{background:rgba(255,255,255,.02)}
+  .dm-event-in{background:rgba(16,185,129,.06);border-left:2px solid #34d399}
+  .dm-event-out{background:rgba(239,68,68,.06);border-left:2px solid #fca5a5}
+  .dm-event-date{color:#cbd5e1;font-weight:600}
+  .dm-event-qty{font-weight:700}
+  .dm-in-qty{color:#34d399}
+  .dm-out-qty{color:#fca5a5}
+
+  /* Concept B: 인라인 확장 */
+  .expand-row{background:rgba(16,185,129,.03)}
+  .expand-content{padding:16px 20px;border-left:3px solid #10b981}
+  .timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+  .tl-cell{background:rgba(255,255,255,.03);padding:8px 10px;border-radius:6px;font-size:11px}
+  .tl-date{color:#94a3b8;font-size:10px;margin-bottom:2px}
+  .tl-io{display:flex;justify-content:space-between}
+  .tl-in{color:#34d399;font-weight:600}
+  .tl-out{color:#fca5a5;font-weight:600}
+  .expand-arrow{transition:.2s;display:inline-block;font-size:10px;color:#94a3b8}
+  .expand-arrow.open{transform:rotate(90deg)}
+
+  /* Concept C: 미니 히트맵/스파크라인 */
+  .heatmap{display:flex;gap:1px;align-items:center;height:22px}
+  .hm-cell{width:5px;height:100%;border-radius:1px;cursor:pointer}
+  .hm-cell:hover{outline:1px solid #5eead4}
+
+  /* Concept D: 최근 활동 텍스트 */
+  .recent-txt{font-size:11px;color:#94a3b8;font-family:'Fira Code',monospace}
+  .recent-txt b{color:#5eead4}
+
+  /* Concept E: 전용 활동 이력 페이지 */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
+  .cal-day{aspect-ratio:1;background:rgba(255,255,255,.03);border-radius:6px;padding:6px;font-size:10px;position:relative;overflow:hidden}
+  .cal-day.has-in{background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(255,255,255,.02))}
+  .cal-day.has-out{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(255,255,255,.02))}
+  .cal-day.has-both{background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(239,68,68,.12))}
+  .cal-dnum{color:#cbd5e1;font-weight:700}
+  .cal-events{font-size:9px;color:#94a3b8;margin-top:4px}
+  .cal-events span.in{color:#34d399}
+  .cal-events span.out{color:#fca5a5}
+
+  .verdict{margin-top:14px;padding:12px 14px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.25);border-radius:8px;font-size:12px;color:#67e8f9}
+  .verdict b{color:#5eead4}
+
+  .final-rec{margin-top:32px;padding:22px;background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(6,182,212,.08));border:1px solid rgba(16,185,129,.3);border-radius:14px}
+  .fr-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px}
+  .fr-desc{font-size:12.5px;color:#e2e8f0;line-height:1.7}
+</style>
+</head>
+<body>
+
+<h1>재고 입출고 날짜 뷰 - 5가지 시안</h1>
+<div class="subtitle">각 방식의 실제 화면과 장단점을 비교. 아래로 스크롤하며 확인 후 선호안 알려주세요.</div>
+
+<!-- Concept A -->
+<div class="concept">
+  <div class="c-title"><span class="c-badge">A</span><span class="c-name">드릴다운 우측 패널 (권장)</span></div>
+  <div class="c-desc">현재 표는 그대로 유지하고, 행 우측에 "상세" 버튼 → 클릭 시 우측 패널에 해당 상품의 일별 입/출고 이력 표시. 다른 상품 클릭 시 패널만 갱신.</div>
+  <div style="position:relative;overflow:visible">
+    <table>
+      <thead><tr><th>대분류</th><th>중분류</th><th>상품명</th><th>규격</th><th style="text-align:right">이월</th><th style="text-align:right">입고</th><th style="text-align:right">출고</th><th style="text-align:right">현재고</th><th>상세</th></tr></thead>
+      <tbody>
+        <tr class="expandable"><td><span class="pill">보톡스</span></td><td></td><td>하이톡스</td><td>200u</td><td style="text-align:right">99</td><td style="text-align:right;color:#34d399">+15</td><td style="text-align:right;color:#fca5a5">-46</td><td style="text-align:right"><b>68</b></td><td><span class="row-cta">보기 →</span></td></tr>
+        <tr class="expandable" style="background:rgba(16,185,129,.06);outline:1px solid rgba(16,185,129,.3)"><td><span class="pill">보톡스</span></td><td></td><td>제오민</td><td>100U</td><td style="text-align:right">30</td><td style="text-align:right;color:#34d399">+8</td><td style="text-align:right;color:#fca5a5">-13</td><td style="text-align:right"><b>15</b></td><td><span class="row-cta" style="color:#fff">▪ 선택됨</span></td></tr>
+        <tr class="expandable"><td><span class="pill pill-f">필러</span></td><td>수입</td><td>쥬비덤</td><td>볼벨라</td><td style="text-align:right">32</td><td style="text-align:right;color:#34d399">+2</td><td style="text-align:right;color:#fca5a5">-5</td><td style="text-align:right"><b>29</b></td><td><span class="row-cta">보기 →</span></td></tr>
+      </tbody>
+    </table>
+    <div class="drilldown-modal">
+      <div class="dm-head">
+        <div>
+          <div class="dm-item-name">제오민 <span style="color:#94a3b8;font-size:12px;font-weight:400">(100U)</span></div>
+          <div class="dm-item-sub">보톡스 · 2026-08 월간</div>
+        </div>
+        <button class="dm-close">×</button>
+      </div>
+      <div class="dm-stats">
+        <div class="dm-stat"><div class="dm-stat-lbl">이월</div><div class="dm-stat-val">30</div></div>
+        <div class="dm-stat"><div class="dm-stat-lbl">입/출</div><div class="dm-stat-val" style="color:#34d399">+8<span style="color:#fca5a5">-13</span></div></div>
+        <div class="dm-stat"><div class="dm-stat-lbl">현재고</div><div class="dm-stat-val" style="color:#fbbf24">15</div></div>
+      </div>
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;font-weight:600">활동 이력 (활동일만)</div>
+      <div class="dm-events">
+        <div class="dm-event dm-event-in"><span class="dm-event-date">08/07 (수)</span><span class="dm-event-qty dm-in-qty">+8 입고</span></div>
+        <div class="dm-event dm-event-out"><span class="dm-event-date">08/10 (토)</span><span class="dm-event-qty dm-out-qty">-2 출고</span></div>
+        <div class="dm-event dm-event-out"><span class="dm-event-date">08/11 (일)</span><span class="dm-event-qty dm-out-qty">-1 출고</span></div>
+        <div class="dm-event dm-event-out"><span class="dm-event-date">08/14 (수)</span><span class="dm-event-qty dm-out-qty">-2 출고</span></div>
+        <div class="dm-event dm-event-out"><span class="dm-event-date">08/16 (금)</span><span class="dm-event-qty dm-out-qty">-1 출고</span></div>
+        <div class="dm-event dm-event-out"><span class="dm-event-date">08/17 (토)</span><span class="dm-event-qty dm-out-qty">-3 출고</span></div>
+        <div class="dm-event dm-event-out"><span class="dm-event-date">08/20 (화)</span><span class="dm-event-qty dm-out-qty">-1 출고</span></div>
+        <div class="dm-event dm-event-out"><span class="dm-event-date">08/25 (일)</span><span class="dm-event-qty dm-out-qty">-2 출고</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:20px">
+    <div class="pro">장점: 표는 깔끔 유지 · 상세 화면은 큰 공간 확보 · 여러 상품 비교 가능 (패널 갱신) · 활동일만 필터링해서 노이즈 적음</div>
+    <div class="con">단점: 상품별 상세는 한 번에 하나만 확인 (동시 비교는 새로고침 방식)</div>
+  </div>
+</div>
+
+<!-- Concept B -->
+<div class="concept">
+  <div class="c-title"><span class="c-badge">B</span><span class="c-name">인라인 아코디언 (행 확장)</span></div>
+  <div class="c-desc">행 클릭 시 바로 아래로 확장되어 해당 상품의 일별 이력 표시. 여러 상품 동시 펼침 가능.</div>
+  <table>
+    <thead><tr><th style="width:30px"></th><th>상품명</th><th>규격</th><th style="text-align:right">이월</th><th style="text-align:right">입고</th><th style="text-align:right">출고</th><th style="text-align:right">현재고</th></tr></thead>
+    <tbody>
+      <tr class="expandable"><td><span class="expand-arrow">▶</span></td><td>하이톡스</td><td>200u</td><td style="text-align:right">99</td><td style="text-align:right;color:#34d399">+15</td><td style="text-align:right;color:#fca5a5">-46</td><td style="text-align:right"><b>68</b></td></tr>
+      <tr class="expandable"><td><span class="expand-arrow open">▶</span></td><td>제오민</td><td>100U</td><td style="text-align:right">30</td><td style="text-align:right;color:#34d399">+8</td><td style="text-align:right;color:#fca5a5">-13</td><td style="text-align:right"><b>15</b></td></tr>
+      <tr class="expand-row"><td colspan="7"><div class="expand-content"><div class="timeline">
+        <div class="tl-cell"><div class="tl-date">08/07 (수)</div><div class="tl-io"><span class="tl-in">+8</span><span class="tl-out">-0</span></div></div>
+        <div class="tl-cell"><div class="tl-date">08/10 (토)</div><div class="tl-io"><span class="tl-in">+0</span><span class="tl-out">-2</span></div></div>
+        <div class="tl-cell"><div class="tl-date">08/11 (일)</div><div class="tl-io"><span class="tl-in">+0</span><span class="tl-out">-1</span></div></div>
+        <div class="tl-cell"><div class="tl-date">08/14 (수)</div><div class="tl-io"><span class="tl-in">+0</span><span class="tl-out">-2</span></div></div>
+        <div class="tl-cell"><div class="tl-date">08/16 (금)</div><div class="tl-io"><span class="tl-in">+0</span><span class="tl-out">-1</span></div></div>
+        <div class="tl-cell"><div class="tl-date">08/17 (토)</div><div class="tl-io"><span class="tl-in">+0</span><span class="tl-out">-3</span></div></div>
+        <div class="tl-cell"><div class="tl-date">08/20 (화)</div><div class="tl-io"><span class="tl-in">+0</span><span class="tl-out">-1</span></div></div>
+        <div class="tl-cell"><div class="tl-date">08/25 (일)</div><div class="tl-io"><span class="tl-in">+0</span><span class="tl-out">-2</span></div></div>
+      </div></div></td></tr>
+      <tr class="expandable"><td><span class="expand-arrow">▶</span></td><td>쥬비덤</td><td>볼벨라</td><td style="text-align:right">32</td><td style="text-align:right;color:#34d399">+2</td><td style="text-align:right;color:#fca5a5">-5</td><td style="text-align:right"><b>29</b></td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:14px">
+    <div class="pro">장점: 컨텍스트 유지 (해당 행 바로 아래) · 여러 상품 동시 펼침 · 스크롤 상관없이 위치 명확</div>
+    <div class="con">단점: 여러 상품 펼치면 표가 길어짐 · 상세와 요약이 섞임</div>
+  </div>
+</div>
+
+<!-- Concept C -->
+<div class="concept">
+  <div class="c-title"><span class="c-badge">C</span><span class="c-name">미니 히트맵 스트립 (컬럼 내장)</span></div>
+  <div class="c-desc">각 행에 31일 세로 도트 스트립 표시. 초록=입고, 빨강=출고, 진할수록 많음. 도트 hover 시 툴팁으로 날짜/수량. 클릭으로 드릴다운도 가능.</div>
+  <table>
+    <thead><tr><th>상품명</th><th>규격</th><th style="text-align:right">이월</th><th style="text-align:right">현재고</th><th>일별 활동 (1일 → 31일)</th></tr></thead>
+    <tbody>
+      <tr><td>하이톡스</td><td>200u</td><td style="text-align:right">99</td><td style="text-align:right"><b>68</b></td><td><div class="heatmap">
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)" title="1일: -"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(16,185,129,.7)" title="7일: +5"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.4)" title="8일: -2"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.6)" title="10일: -3"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.6)" title="11일: -3"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.8)" title="17일: -3"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.5)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(16,185,129,.8)" title="23일: +10"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.7)" title="24일: -4"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.5)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.9)" title="29일: -5"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+      </div></td></tr>
+      <tr><td>제오민</td><td>100U</td><td style="text-align:right">30</td><td style="text-align:right"><b>15</b></td><td><div class="heatmap">
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(16,185,129,.9)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.4)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.4)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.6)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.3)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.5)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+        <div class="hm-cell" style="background:rgba(255,255,255,.05)"></div>
+      </div></td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:14px">
+    <div class="pro">장점: 한눈에 활동 패턴 파악 · 상품 간 활동성 비교 쉬움 · 공간 효율적</div>
+    <div class="con">단점: 정확한 수량은 툴팁으로만 확인 · 화면 좁을 때 도트 너무 작아짐 · 클릭 상세는 별도 필요</div>
+  </div>
+</div>
+
+<!-- Concept D -->
+<div class="concept">
+  <div class="c-title"><span class="c-badge">D</span><span class="c-name">최근 활동 텍스트 컬럼 (경량)</span></div>
+  <div class="c-desc">표에 "최근 활동" 컬럼 추가 → 최근 3~5개 이벤트를 간결한 텍스트로. 상세 필요 시 A안 드릴다운 병행 가능.</div>
+  <table>
+    <thead><tr><th>상품명</th><th>규격</th><th style="text-align:right">현재고</th><th>최근 활동</th></tr></thead>
+    <tbody>
+      <tr><td>하이톡스</td><td>200u</td><td style="text-align:right"><b>68</b></td><td class="recent-txt">08/31 <b style="color:#fca5a5">-5</b> · 08/29 <b style="color:#fca5a5">-4</b> · 08/23 <b style="color:#34d399">+10</b> · 08/17 <b style="color:#fca5a5">-3</b></td></tr>
+      <tr><td>제오민</td><td>100U</td><td style="text-align:right"><b>15</b></td><td class="recent-txt">08/25 <b style="color:#fca5a5">-2</b> · 08/17 <b style="color:#fca5a5">-3</b> · 08/07 <b style="color:#34d399">+8</b></td></tr>
+      <tr><td>쥬비덤</td><td>볼벨라</td><td style="text-align:right"><b>29</b></td><td class="recent-txt">08/28 <b style="color:#fca5a5">-2</b> · 08/22 <b style="color:#fca5a5">-1</b> · 08/15 <b style="color:#fca5a5">-2</b></td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:14px">
+    <div class="pro">장점: 별도 UI 없이 표 내부에서 최신 활동 확인 · 스캔 빠름 · 구현 단순</div>
+    <div class="con">단점: 최근 몇 건만 볼 수 있음 · 전체 이력은 별도 필요 · 텍스트 폭 넓어짐</div>
+  </div>
+</div>
+
+<!-- Concept E -->
+<div class="concept">
+  <div class="c-title"><span class="c-badge">E</span><span class="c-name">전용 "활동 이력" 서브탭 (달력)</span></div>
+  <div class="c-desc">재고 관리 페이지에 서브탭 추가 (품목 리스트 / 활동 달력). 달력에 일별 활동 요약 표시, 특정 날짜 클릭 시 그날의 모든 상품 활동 상세.</div>
+  <div style="margin-top:8px;font-size:11px;color:#94a3b8;display:flex;gap:8px;margin-bottom:8px">
+    <span style="color:#5eead4;font-weight:700">품목 리스트</span> | <span style="color:#fff;font-weight:700;border-bottom:2px solid #5eead4;padding-bottom:4px">활동 달력</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:10px;color:#64748b;padding:4px 0"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+  <div class="cal-grid">
+    <div class="cal-day"><div class="cal-dnum" style="color:#64748b">27</div></div>
+    <div class="cal-day"><div class="cal-dnum" style="color:#64748b">28</div></div>
+    <div class="cal-day"><div class="cal-dnum" style="color:#64748b">29</div></div>
+    <div class="cal-day"><div class="cal-dnum" style="color:#64748b">30</div></div>
+    <div class="cal-day"><div class="cal-dnum" style="color:#64748b">31</div></div>
+    <div class="cal-day"><div class="cal-dnum" style="color:#64748b">1</div></div>
+    <div class="cal-day"><div class="cal-dnum" style="color:#64748b">2</div></div>
+    <div class="cal-day has-in"><div class="cal-dnum">7</div><div class="cal-events"><span class="in">+3</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">8</div><div class="cal-events"><span class="out">-2</span></div></div>
+    <div class="cal-day"><div class="cal-dnum">9</div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">10</div><div class="cal-events"><span class="out">-3</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">11</div><div class="cal-events"><span class="out">-4</span></div></div>
+    <div class="cal-day has-both"><div class="cal-dnum">12</div><div class="cal-events"><span class="in">+1</span><span class="out">-2</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">13</div><div class="cal-events"><span class="out">-1</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">14</div><div class="cal-events"><span class="out">-3</span></div></div>
+    <div class="cal-day"><div class="cal-dnum">15</div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">16</div><div class="cal-events"><span class="out">-2</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">17</div><div class="cal-events"><span class="out">-5</span></div></div>
+    <div class="cal-day"><div class="cal-dnum">18</div></div>
+    <div class="cal-day has-both"><div class="cal-dnum">19</div><div class="cal-events"><span class="in">+2</span><span class="out">-3</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">20</div><div class="cal-events"><span class="out">-2</span></div></div>
+    <div class="cal-day"><div class="cal-dnum">21</div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">22</div><div class="cal-events"><span class="out">-1</span></div></div>
+    <div class="cal-day has-in"><div class="cal-dnum">23</div><div class="cal-events"><span class="in">+10</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">24</div><div class="cal-events"><span class="out">-4</span></div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">25</div><div class="cal-events"><span class="out">-3</span></div></div>
+    <div class="cal-day"><div class="cal-dnum">26</div></div>
+    <div class="cal-day"><div class="cal-dnum">27</div></div>
+    <div class="cal-day has-out"><div class="cal-dnum">28</div><div class="cal-events"><span class="out">-2</span></div></div>
+    <div class="cal-day has-out" style="outline:2px solid #10b981"><div class="cal-dnum">29</div><div class="cal-events"><span class="out">-5</span></div></div>
+    <div class="cal-day"><div class="cal-dnum">30</div></div>
+    <div class="cal-day"><div class="cal-dnum">31</div></div>
+  </div>
+  <div style="margin-top:14px">
+    <div class="pro">장점: 시간축 중심 시각화 · 특정 날짜 활동 한번에 조회 · 관리자 스타일에 부합</div>
+    <div class="con">단점: 상품 검색이 별도 · 전체 상품 목록은 리스트 탭에서 봐야 함 · 구현 복잡도 큼</div>
+  </div>
+</div>
+
+<div class="final-rec">
+  <div class="fr-title">추천 조합</div>
+  <div class="fr-desc">
+    <b>A안 (드릴다운 우측 패널)</b> + <b>D안 (최근 활동 텍스트 컬럼)</b> 조합을 권장합니다.<br><br>
+    표에서는 최근 3~4건 활동을 텍스트로 즉시 확인 (D안) → 자세히 보고 싶은 상품은 "보기 →" 클릭해 우측 패널로 전체 이력 조회 (A안).<br><br>
+    이 조합이면:<br>
+    · 스캔 속도 (D안) — 목록 보면서 활동 트렌드 즉시 감지<br>
+    · 깊이 있는 조회 (A안) — 필요한 상품만 상세 파악, 표 흐트러지지 않음<br>
+    · 구현 부담 적음 — 기존 표에 컬럼 하나 + 사이드 패널 하나<br><br>
+    선호안 알려주시면 실제 앱에 구현하겠습니다. (다른 조합도 가능)
+  </div>
+</div>
+
+</body>
+</html>
