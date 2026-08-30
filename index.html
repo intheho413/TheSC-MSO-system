@@ -3134,6 +3134,23 @@ html.light .hosp-cfg-header,html.light .hosp-cfg-footer{border-color:rgba(0,0,0,
 html.light .hosp-card{background:#fff;border-color:rgba(0,0,0,.08)}
 html.light .hosp-card-value{color:#0f172a}
 
+/* 운영 대시보드 아코디언 */
+.hosp-acc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:12px;overflow:hidden;transition:.2s}
+.hosp-acc-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;cursor:pointer;user-select:none;transition:.2s;gap:12px}
+.hosp-acc.open .hosp-acc-head{background:rgba(16,185,129,.08);border-bottom:1px solid rgba(16,185,129,.2)}
+.hosp-acc-head:hover{background:rgba(255,255,255,.04)}
+.hosp-acc.open .hosp-acc-head:hover{background:rgba(16,185,129,.12)}
+.hosp-acc-title{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:700;color:#e2e8f0;min-width:0}
+.hosp-acc-icon{width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.hosp-acc-icon-s{background:rgba(16,185,129,.2);color:#5eead4}
+.hosp-acc-icon-r{background:rgba(96,165,250,.2);color:#93c5fd}
+.hosp-acc-icon-k{background:rgba(167,139,250,.2);color:#c4b5fd}
+.hosp-acc-meta{font-size:11.5px;color:#94a3b8;font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hosp-acc-arrow{font-size:11px;color:#94a3b8;transition:.2s;flex-shrink:0}
+.hosp-acc.open .hosp-acc-arrow{transform:rotate(90deg)}
+.hosp-acc-body{padding:18px;display:none}
+.hosp-acc.open .hosp-acc-body{display:block}
+
 /* 예약 인사이트 히트맵 */
 .hosp-hm{display:grid;grid-template-columns:32px repeat(24,1fr);gap:2px;font-size:9px}
 .hosp-hm .h-lbl{color:#64748b;text-align:center;padding:2px 0}
@@ -3856,77 +3873,148 @@ html.light .hosp-dd-stat-val{color:#0f172a}
 
 <!-- ════ 병원 운영 관리 페이지들 (마스터 전용) ════ -->
 
-<!-- ── 운영 대시보드 ── -->
+<!-- ── 운영 대시보드 (아코디언) ── -->
 <div id="page-hosp-dashboard" class="page" style="display:none">
   <div class="hosp-wrap">
     <div class="hosp-hero">
       <div>
         <div class="hosp-hero-eyebrow">HOSPITAL OPERATIONS · 세라미크글로벌의원 명동점</div>
         <div class="hosp-hero-title">운영 대시보드</div>
-        <div class="hosp-hero-sub">최근 정산 매출, 이번 달 누적, 재고 알림을 한 화면에.</div>
+        <div class="hosp-hero-sub">매출 · 예약 · 재고 3개 섹션 · 관심 영역만 펼쳐 확인</div>
       </div>
       <div class="hosp-hero-actions">
-        <button class="btn" onclick="hospLoadDashboard()">새로고침</button>
+        <button class="btn" onclick="navigate('hosp-report', document.querySelector('#nav-menu-hospital .nav-item:nth-child(5)'))">월간 리포트 →</button>
       </div>
     </div>
 
-    <div class="hosp-grid hosp-g4" style="margin-bottom:20px">
-      <div class="hosp-card">
-        <div class="hosp-card-title">오늘 매출</div>
-        <div class="hosp-card-value" id="hd-today-vegas">-</div>
-        <div class="hosp-card-sub" id="hd-today-sub">데이터 없음</div>
-      </div>
-      <div class="hosp-card">
-        <div class="hosp-card-title">이번 달 누적 매출</div>
-        <div class="hosp-card-value" id="hd-month-vegas">-</div>
-        <div class="hosp-card-sub" id="hd-month-sub">데이터 없음</div>
-      </div>
-      <div class="hosp-card">
-        <div class="hosp-card-title">오늘 환자 수</div>
-        <div class="hosp-card-value" id="hd-today-patients">-</div>
-        <div class="hosp-card-sub" id="hd-today-visits">-</div>
-      </div>
-      <div class="hosp-card">
-        <div class="hosp-card-title">정산 기록</div>
-        <div class="hosp-card-value" id="hd-settle-count">-</div>
-        <div class="hosp-card-sub" id="hd-settle-range">-</div>
-      </div>
-    </div>
-
-    <div class="hosp-grid hosp-g2">
-      <div class="hosp-card">
-        <div class="hosp-h2">일자별 매출 추이 (최근 14일)</div>
-        <div id="hd-chart-trend" class="hosp-chart">
-          <div style="padding:40px;color:#64748b;font-size:12px;text-align:center">정산 데이터가 쌓이면 여기에 차트가 표시됩니다.</div>
+    <!-- 매출 현황 -->
+    <div class="hosp-acc open" id="hosp-acc-sales">
+      <div class="hosp-acc-head" onclick="hospToggleAcc('hosp-acc-sales')">
+        <div class="hosp-acc-title">
+          <span class="hosp-acc-icon hosp-acc-icon-s">S</span>
+          <span>매출 현황</span>
+          <span class="hosp-acc-meta" id="hd-sales-meta">-</span>
         </div>
+        <span class="hosp-acc-arrow">▶</span>
       </div>
-      <div class="hosp-card">
-        <div class="hosp-h2">결제 수단별 비율 (이번 달)</div>
-        <div id="hd-chart-pay" style="padding:20px 0">
-          <div style="color:#64748b;font-size:12px;text-align:center">정산 데이터가 쌓이면 여기에 비율이 표시됩니다.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hosp-grid hosp-g2" style="margin-top:16px">
-      <div class="hosp-card">
-        <div class="hosp-h2">국내/해외 환자 분포 (이번 달)</div>
-        <div id="hd-visit-split" style="display:flex;gap:16px">
-          <div style="flex:1;background:rgba(59,130,246,.08);padding:16px;border-radius:10px;border:1px solid rgba(59,130,246,.2)">
-            <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">국내</div>
-            <div style="font-size:22px;font-weight:800;color:#93c5fd" id="hd-visit-local">0명</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px" id="hd-visit-local-sub">초진 0 · 재진 0</div>
+      <div class="hosp-acc-body">
+        <div class="hosp-grid hosp-g4">
+          <div class="hosp-card">
+            <div class="hosp-card-title">오늘 매출</div>
+            <div class="hosp-card-value" id="hd-today-vegas">-</div>
+            <div class="hosp-card-sub" id="hd-today-sub">데이터 없음</div>
           </div>
-          <div style="flex:1;background:rgba(251,146,60,.08);padding:16px;border-radius:10px;border:1px solid rgba(251,146,60,.2)">
-            <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">해외</div>
-            <div style="font-size:22px;font-weight:800;color:#fdba74" id="hd-visit-foreign">0명</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px" id="hd-visit-foreign-sub">초진 0 · 재진 0</div>
+          <div class="hosp-card">
+            <div class="hosp-card-title">이번 달 누적</div>
+            <div class="hosp-card-value" id="hd-month-vegas">-</div>
+            <div class="hosp-card-sub" id="hd-month-sub">-</div>
+          </div>
+          <div class="hosp-card">
+            <div class="hosp-card-title">오늘 환자</div>
+            <div class="hosp-card-value" id="hd-today-patients">-</div>
+            <div class="hosp-card-sub" id="hd-today-visits">-</div>
+          </div>
+          <div class="hosp-card">
+            <div class="hosp-card-title">정산 기록</div>
+            <div class="hosp-card-value" id="hd-settle-count">-</div>
+            <div class="hosp-card-sub" id="hd-settle-range">-</div>
           </div>
         </div>
+        <div class="hosp-grid hosp-g2" style="margin-top:14px">
+          <div class="hosp-card">
+            <div class="hosp-h2">일자별 매출 추이 (최근 14일)</div>
+            <div id="hd-chart-trend" class="hosp-chart">
+              <div style="padding:40px;color:#64748b;font-size:12px;text-align:center">정산 데이터가 쌓이면 표시됩니다.</div>
+            </div>
+          </div>
+          <div class="hosp-card">
+            <div class="hosp-h2">결제 수단별 비율 (이번 달)</div>
+            <div id="hd-chart-pay" style="padding:20px 0">
+              <div style="color:#64748b;font-size:12px;text-align:center">정산 데이터 대기</div>
+            </div>
+          </div>
+        </div>
+        <div class="hosp-grid hosp-g2" style="margin-top:14px">
+          <div class="hosp-card">
+            <div class="hosp-h2">국내/해외 환자 분포 (이번 달)</div>
+            <div id="hd-visit-split" style="display:flex;gap:16px">
+              <div style="flex:1;background:rgba(59,130,246,.08);padding:16px;border-radius:10px;border:1px solid rgba(59,130,246,.2)">
+                <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">국내</div>
+                <div style="font-size:22px;font-weight:800;color:#93c5fd" id="hd-visit-local">0명</div>
+                <div style="font-size:11px;color:#64748b;margin-top:2px" id="hd-visit-local-sub">초진 0 · 재진 0</div>
+              </div>
+              <div style="flex:1;background:rgba(251,146,60,.08);padding:16px;border-radius:10px;border:1px solid rgba(251,146,60,.2)">
+                <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">해외</div>
+                <div style="font-size:22px;font-weight:800;color:#fdba74" id="hd-visit-foreign">0명</div>
+                <div style="font-size:11px;color:#64748b;margin-top:2px" id="hd-visit-foreign-sub">초진 0 · 재진 0</div>
+              </div>
+            </div>
+          </div>
+          <div class="hosp-card">
+            <div class="hosp-h2">최근 정산 기록</div>
+            <div id="hd-recent-list" style="font-size:12px;color:#94a3b8">불러오는 중...</div>
+          </div>
+        </div>
       </div>
-      <div class="hosp-card">
-        <div class="hosp-h2">최근 정산 기록</div>
-        <div id="hd-recent-list" style="font-size:12px;color:#94a3b8">불러오는 중...</div>
+    </div>
+
+    <!-- 예약 인사이트 -->
+    <div class="hosp-acc open" id="hosp-acc-res">
+      <div class="hosp-acc-head" onclick="hospToggleAcc('hosp-acc-res')">
+        <div class="hosp-acc-title">
+          <span class="hosp-acc-icon hosp-acc-icon-r">R</span>
+          <span>예약 인사이트</span>
+          <span class="hosp-acc-meta" id="hd-res-meta">-</span>
+        </div>
+        <span class="hosp-acc-arrow">▶</span>
+      </div>
+      <div class="hosp-acc-body">
+        <div class="hosp-grid hosp-g4">
+          <div class="hosp-card">
+            <div class="hosp-card-title">이번 달 총 예약</div>
+            <div class="hosp-card-value" id="hd-res-total">-</div>
+            <div class="hosp-card-sub" id="hd-res-total-sub">-</div>
+          </div>
+          <div class="hosp-card">
+            <div class="hosp-card-title">방문 완료율</div>
+            <div class="hosp-card-value" id="hd-res-comp" style="color:#5eead4">-</div>
+            <div class="hosp-card-sub" id="hd-res-comp-sub">-</div>
+          </div>
+          <div class="hosp-card">
+            <div class="hosp-card-title">노쇼율</div>
+            <div class="hosp-card-value" id="hd-res-ns" style="color:#fca5a5">-</div>
+            <div class="hosp-card-sub" id="hd-res-ns-sub">-</div>
+          </div>
+          <div class="hosp-card">
+            <div class="hosp-card-title">재방문율</div>
+            <div class="hosp-card-value" id="hd-res-rv" style="color:#5eead4">-</div>
+            <div class="hosp-card-sub" id="hd-res-rv-sub">-</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding:10px 14px;background:rgba(96,165,250,.06);border-radius:8px;font-size:11.5px;color:#93c5fd;display:flex;justify-content:space-between;align-items:center">
+          <span>국가별·시간대·유입경로 상세 분석은 예약 인사이트 탭에서 확인</span>
+          <button class="btn" style="padding:5px 10px;font-size:11px" onclick="navigate('hosp-reservation', document.querySelector('#nav-menu-hospital .nav-item:nth-child(4)'))">예약 인사이트 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 재고 알림 -->
+    <div class="hosp-acc" id="hosp-acc-stock">
+      <div class="hosp-acc-head" onclick="hospToggleAcc('hosp-acc-stock')">
+        <div class="hosp-acc-title">
+          <span class="hosp-acc-icon hosp-acc-icon-k">K</span>
+          <span>재고 알림</span>
+          <span class="hosp-acc-meta" id="hd-stock-meta">-</span>
+        </div>
+        <span class="hosp-acc-arrow">▶</span>
+      </div>
+      <div class="hosp-acc-body">
+        <div id="hd-stock-alerts">
+          <div style="padding:20px;color:#64748b;text-align:center;font-size:12px">불러오는 중...</div>
+        </div>
+        <div style="margin-top:12px;text-align:right">
+          <button class="btn" style="padding:5px 12px;font-size:11px" onclick="navigate('hosp-stock', document.querySelector('#nav-menu-hospital .nav-item:nth-child(2)'))">재고 관리 →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -15261,8 +15349,20 @@ function hospSwitchSales(el, tab){
   if(tab==='trend') hospLoadTrend();
 }
 
-// ── 대시보드 ─────────────────────────────────────
+// ── 대시보드 (아코디언) ─────────────────────────────────────
+function hospToggleAcc(id){
+  const el = document.getElementById(id);
+  if(el) el.classList.toggle('open');
+}
 async function hospLoadDashboard(){
+  // 3개 섹션 동시 병렬 로드
+  await Promise.all([
+    hospLoadDashSales(),
+    hospLoadDashRes(),
+    hospLoadDashStock()
+  ]);
+}
+async function hospLoadDashSales(){
   const today = new Date();
   const monthStart = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-01';
   try{
@@ -15350,9 +15450,105 @@ async function hospLoadDashboard(){
         }, {displayModeBar:false, responsive:true});
       }
     }
+
+    // 아코디언 헤더 요약 텍스트
+    const metaEl = document.getElementById('hd-sales-meta');
+    if(metaEl){
+      const parts = [];
+      if(monthTotal) parts.push(monthTotal.toLocaleString()+'원 (이번 달)');
+      if(todayRec) parts.push('오늘 '+Number(todayRec.vegas).toLocaleString()+'원');
+      if(monthly && monthly.length) parts.push(monthly.length+'건');
+      metaEl.textContent = parts.join(' · ') || '데이터 없음';
+    }
   }catch(err){
-    console.error('[hospLoadDashboard]', err);
-    showToast('대시보드 로드 실패: ' + (err.message||err));
+    console.error('[hospLoadDashSales]', err);
+    const metaEl = document.getElementById('hd-sales-meta');
+    if(metaEl) metaEl.textContent = '로드 실패';
+  }
+}
+
+async function hospLoadDashRes(){
+  const metaEl = document.getElementById('hd-res-meta');
+  try{
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth()+1;
+    const monthStr = y + '-' + String(m).padStart(2,'0');
+    const from = monthStr + '-01';
+    const lastDay = new Date(y, m, 0).getDate();
+    const to = monthStr + '-' + String(lastDay).padStart(2,'0');
+    const {data, error} = await sb.functions.invoke('kos-reservation', {body:{from, to}});
+    if(error) throw error;
+    if(!data || data.ok === false) throw new Error((data && data.error) || 'Unknown');
+    const s = data.summary;
+    document.getElementById('hd-res-total').innerHTML = s.total + '<span style="font-size:14px;color:#94a3b8">건</span>';
+    document.getElementById('hd-res-total-sub').textContent = '완료 '+s.statusCount.COMPLETED+' · 취소 '+s.statusCount.CANCELED+' · 노쇼 '+s.statusCount.NO_SHOW;
+    document.getElementById('hd-res-comp').innerHTML = s.completedRate + '<span style="font-size:14px;color:#94a3b8">%</span>';
+    document.getElementById('hd-res-comp-sub').textContent = s.statusCount.COMPLETED + '/' + s.total;
+    document.getElementById('hd-res-ns').innerHTML = s.noShowRate + '<span style="font-size:14px;color:#94a3b8">%</span>';
+    document.getElementById('hd-res-ns-sub').textContent = s.statusCount.NO_SHOW + '건';
+    document.getElementById('hd-res-rv').innerHTML = s.revisitRate + '<span style="font-size:14px;color:#94a3b8">%</span>';
+    document.getElementById('hd-res-rv-sub').textContent = '재방문 '+s.returningVisitors+'/총 '+s.visitors+'명';
+    if(metaEl) metaEl.textContent = s.total+'건 · 완료율 '+s.completedRate+'% · 노쇼 '+s.noShowRate+'% · 재방문 '+s.revisitRate+'%';
+  }catch(err){
+    console.error('[hospLoadDashRes]', err);
+    if(metaEl) metaEl.textContent = 'KOS 연동 대기 · 예약 데이터 없음';
+    ['hd-res-total','hd-res-comp','hd-res-ns','hd-res-rv'].forEach(id=>{
+      const e = document.getElementById(id); if(e) e.textContent = '-';
+    });
+    ['hd-res-total-sub','hd-res-comp-sub','hd-res-ns-sub','hd-res-rv-sub'].forEach(id=>{
+      const e = document.getElementById(id); if(e) e.textContent = '데이터 없음';
+    });
+  }
+}
+
+async function hospLoadDashStock(){
+  const metaEl = document.getElementById('hd-stock-meta');
+  const wrap = document.getElementById('hd-stock-alerts');
+  const alerts = [];
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const yy = String(now.getFullYear()).slice(2);
+  for(const team of ['nurse','skin']){
+    try{
+      const cfg = hospGetConfig(team);
+      if(!cfg.url || !cfg.token) continue;
+      const sheetName = (team==='nurse'?'간호 재고관리':'피부 재고관리') + ' ('+yy+'년 '+month+'월)';
+      const res = await hospFetchRaw(team, sheetName);
+      const rows = hospParseStock(res.values);
+      rows.forEach(r => {
+        if(r.current < 0){
+          alerts.push({team, main:r.main, sub:r.sub, name:r.name, spec:r.spec, current:r.current, level:'error', tag:'재고오류'});
+        } else if(r.current === 0 && (r.totalIn>0 || r.totalOut>0)){
+          alerts.push({team, main:r.main, sub:r.sub, name:r.name, spec:r.spec, current:0, level:'error', tag:'품절'});
+        } else if(r.current > 0 && r.current <= 5){
+          alerts.push({team, main:r.main, sub:r.sub, name:r.name, spec:r.spec, current:r.current, level:'warn', tag:'부족'});
+        }
+      });
+    }catch(e){ console.warn('[hospLoadDashStock]', team, e.message||e); }
+  }
+  // 정렬: 심각도 → 수량
+  alerts.sort((a,b) => (a.level==='error'?0:1) - (b.level==='error'?0:1) || a.current - b.current);
+  if(!alerts.length){
+    if(wrap) wrap.innerHTML = '<div style="padding:20px;color:#5eead4;text-align:center;font-size:12px">부족·품절 항목 없음. 재고 양호.</div>';
+    if(metaEl){ metaEl.textContent = '0건 · 재고 양호'; metaEl.style.color = ''; }
+    return;
+  }
+  const esc = s => String(s).replace(/[<>&]/g, c=>({ '<':'&lt;','>':'&gt;','&':'&amp;' }[c]));
+  const teamBadge = t => t==='nurse'
+    ? '<span style="font-size:10px;background:rgba(16,185,129,.15);color:#5eead4;padding:2px 6px;border-radius:4px;font-weight:600">간호</span>'
+    : '<span style="font-size:10px;background:rgba(236,72,153,.15);color:#f9a8d4;padding:2px 6px;border-radius:4px;font-weight:600">피부</span>';
+  wrap.innerHTML = alerts.slice(0,15).map(a => {
+    const tagCls = a.level==='error' ? 'hosp-pill-alert' : 'hosp-pill-warn';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px">'
+      +'<div style="display:flex;gap:8px;align-items:center">'+teamBadge(a.team)+'<span style="color:#94a3b8">'+esc(a.main||'')+'</span><b>'+esc(a.name)+'</b><span style="color:#64748b">('+esc(a.spec)+')</span></div>'
+      +'<div style="display:flex;gap:8px;align-items:center"><span style="color:#94a3b8">현재고 <b style="color:'+(a.current<=0?'#fca5a5':'#fcd34d')+'">'+a.current+'</b></span><span class="hosp-pill '+tagCls+'">'+a.tag+'</span></div>'
+    +'</div>';
+  }).join('') + (alerts.length>15 ? '<div style="padding:8px;text-align:center;color:#64748b;font-size:11px">... 외 '+(alerts.length-15)+'건</div>' : '');
+  if(metaEl){
+    const errN = alerts.filter(a=>a.level==='error').length;
+    const warnN = alerts.length - errN;
+    metaEl.textContent = alerts.length+'건 알림 (심각 '+errN+' · 부족 '+warnN+')';
+    metaEl.style.color = errN ? '#fca5a5' : '#fcd34d';
   }
 }
 
